@@ -105,12 +105,12 @@ export class Help extends React.Component<any, any> {
                 <h5>Template the Value payload</h5>
                 <p>
                     Use this option to format the value into a JSON object. You can use the _VALUE_ macro to inject the
-                    mock devices current value. This is an example template
+                    mock devices current value (ensure you set the type) This is an example template
                 </p>
                 <pre>
-                    {FormatJSON({ "d2cProperty-88cf": { "value": "_VALUE_", "status": "completed", "message": "test message", "statusCode": 200, "desiredVersion": 1 } })}
+                    {FormatJSON({ "value": "_VALUE_", "status": "completed", "message": "test message", "statusCode": 200, "desiredVersion": 1 })}
                 </pre>
-                <p>not using this option will create a simple name/value pair JSON object</p>
+                <p>not using this option will create a simple name/value pair JSON object.</p>
                 <pre>
                     {FormatJSON({ "d2cProperty-88cf": "_VALUE_" })}
                 </pre>
