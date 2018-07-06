@@ -57,11 +57,13 @@ class Server {
             this.startService();
         }
         else {
+            electronApp.on('quit', function (err) {
+                console.log("exiting app");
+            });
+
             electronApp.on('ready', this.startService.bind(this));
             electronApp.on('window-all-closed', (() => {
-                if (process.platform !== 'darwin') {
-                    electronApp.quit();
-                }
+                electronApp.quit();
             }));
             electronApp.on('activate', (() => {
                 if (this.mainWindow === null) {

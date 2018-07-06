@@ -27,7 +27,7 @@
     "@types/react-tabs": "^1.0.2",
     "@types/request": "^2.0.6",
     "@types/uuid": "^3.4.0",
-    "@types/ws": "^3.0.2",
+    "@types/ws": "^5.1.2",
     "axios": "^0.16.2",
     "azure-iot-device": "^1.1.10",
     "azure-iot-device-mqtt": "^1.1.11",
@@ -37,7 +37,7 @@
     "classnames": "^2.2.5",
     "cors": "^2.8.4",
     "css-loader": "^0.28.4",
-    "electron": "^1.7.8",
+    "electron": "^2.0.4",
     "express": "^4.15.3",
     "jquery": "^3.1.1",
     "morgan": "^1.8.2",
@@ -48,22 +48,21 @@
     "react-redux": "^5.0.5",
     "react-tabs": "^2.0.0",
     "react-websocket": "^1.2.0",
-    "redux": "^3.7.2",
-    "redux-thunk": "^2.2.0",
+    "redux": "^4.0.0",
+    "redux-thunk": "^2.3.0",
     "tether": "^1.4.0",
-    "typescript": "^2.4.2",
     "uuid": "^3.1.0",
     "webpack": "^2.3.3",
-    "ws": "^3.2.0"
+    "ws": "^5.2.1"
   },
   "devDependencies": {
     "extract-text-webpack-plugin": "2.1.0",
-    "node-sass": "4.5.3",
+    "node-sass": "^4.9.1",
     "sass-loader": "6.0.5",
     "source-map-loader": "0.1.5",
     "style-loader": "0.18.1",
     "ts-loader": "^2.3.1",
     "tsc-watch": "^1.0.8",
-    "typescript": "^2.4.2"
+    "typescript": "^2.9.2"
   }
 }
