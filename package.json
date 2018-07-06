@@ -1,6 +1,6 @@
 {
   "name": "mock-devices",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Use the app to create fake/mock devices that connect to Azure IoT Hub.",
   "main": "./_dist/server/start.js",
   "scripts": {
