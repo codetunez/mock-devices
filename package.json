@@ -33,7 +33,7 @@
     "azure-iot-device-mqtt": "^1.1.11",
     "azure-iothub": "^1.1.11",
     "body-parser": "^1.17.2",
-    "bootstrap": "^4.0.0-alpha.6",
+    "bootstrap": "^4.1.1",
     "classnames": "^2.2.5",
     "cors": "^2.8.4",
     "css-loader": "^0.28.4",

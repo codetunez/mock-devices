@@ -52,11 +52,11 @@ export class DeviceInstanceAdvanced extends React.Component<any, any> {
                 <div className="field"><label>{this.props.resx.FRM_LBL_DEVICE_HUB_CONN_STRING}</label><br />
                     <input name="hubConnectionString" className="form-control full" type="text" onChange={this.handleUpdateDevice} value={this.state.updatePayload.hubConnectionString || ''} /></div>
                 <div className="field"><label>{this.props.resx.FRM_LBL_DEVICE_TEMPLATE}</label><br />
-                    <label className="custom-control custom-checkbox" style={{ marginLeft: "3px", marginBottom: "0" }}>
-                        <input type="checkbox" className="custom-control-input" name="template" onChange={this.handleUpdateDevice} checked={this.state.updatePayload.template} />
-                        <span className="custom-control-indicator"></span>
-                        <span className="custom-control-description seperator-heading">{this.props.resx.FRM_LBL_DEVICE_IS_TEMPLATE}</span>
-                    </label>
+                    <div className="form-check-inline" style={{ marginLeft: "3px" }}>
+                        <label className="form-check-label">
+                            <input type="checkbox" className="form-check-input" name="template" onChange={this.handleUpdateDevice} checked={this.state.updatePayload.template} />{this.props.resx.FRM_LBL_DEVICE_IS_TEMPLATE}
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>

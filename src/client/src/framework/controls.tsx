@@ -43,13 +43,13 @@ export class RadioCollection extends React.Component<any, any> {
     }
 
     render() {
-        return <div>
+        return <div style={{ display: "flex", alignItems: "center" }}>
             {this.state.collection.map((item, index) => {
-                return <label key={index} className="custom-control custom-radio">
-                    <input type="radio" className="custom-control-input" onChange={this.changed.bind(this, item.value)} checked={item.value === this.state.value} />
-                    <span className="custom-control-indicator"></span>
-                    <span className="custom-control-description">{item.label}</span>
-                </label>
+                return <div className="form-check" key={index}>
+                    <label className="form-check-label">
+                        <input type="radio" className="form-check-input" onChange={this.changed.bind(this, item.value)} checked={item.value === this.state.value} />{item.label}
+                    </label>
+                </div>
             })}
         </div>
     }
@@ -87,18 +87,17 @@ export class RadioBoolean extends React.Component<any, any> {
     }
 
     render() {
-        return <div>
-            <label className="custom-control custom-radio">
-                <input type="radio" className="custom-control-input" onChange={this.changed.bind(this, true)} checked={this.state.value} />
-                <span className="custom-control-indicator"></span>
-                <span className="custom-control-description">Yes</span>
-            </label>
-
-            <label className="custom-control custom-radio">
-                <input type="radio" className="custom-control-input" onChange={this.changed.bind(this, false)} checked={!this.state.value} />
-                <span className="custom-control-indicator"></span>
-                <span className="custom-control-description">No</span>
-            </label>
+        return <div style={{ display: "flex", alignItems: "center" }}>
+            <div className="form-check">
+                <label className="form-check-label">
+                    <input type="radio" className="form-check-input" onChange={this.changed.bind(this, true)} checked={this.state.value} />Yes
+                </label>
+            </div>
+            <div className="form-check">
+                <label className="form-check-label">
+                    <input type="radio" className="form-check-input" onChange={this.changed.bind(this, false)} checked={!this.state.value} />No
+                </label>
+            </div>
         </div>
     }
 }

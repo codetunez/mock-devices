@@ -162,7 +162,7 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
                     <div className="field"><label>{this.props.resx.FRM_LBL_VALUE}</label><br />
                         <div className="input-group">
                             <input type="text" name="value" onChange={this.handleChange} value={this.state.property.value} className="form-control" />
-                            <span className="input-group-btn">
+                            <span className="input-group-append">
                                 <button onClick={() => this.sendValue()} className={classNames("btn ", !this.state.property.runloop.include ? "btn-primary" : "btn-outline-primary")}
                                     title={this.props.resx.BTN_LBL_D2C} >
                                     <span className="fa fa-cloud-upload"></span> {this.props.resx.SEND}

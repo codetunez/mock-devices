@@ -54,6 +54,9 @@ label {
     font-weight: bolder;     
     margin:0;           
 }
+.form-check:not(:last-child) {
+    margin-right: $sm-gutter;
+}
 
 /* -- common -- */
 .full {
