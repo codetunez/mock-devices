@@ -74,7 +74,7 @@ export default function reducer(state: any = {
     FRM_LBL_GET_DATA: 'Get Last Sent Value',
     FRM_LBL_DEVICE_NAME: 'mock-devices Device Name',
     FRM_LBL_DEVICE_CONN_STRING: 'Device Connection String',
-    FRM_LBL_DEVICE_HUB_CONN_STRING: 'Hub Device Connection String',
+    FRM_LBL_DEVICE_HUB_CONN_STRING: 'Device Connection String',
     FRM_LBL_DEVICE_TEMPLATE: 'Device as Template',
     FRM_LBL_DEVICE_IS_TEMPLATE: 'Make device a template (cannot be started)',
 

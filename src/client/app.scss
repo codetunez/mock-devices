@@ -145,12 +145,16 @@ label {
     }
     textarea {
         height: 100%;
-        width: 500px;
         font-family: Courier New, Courier, monospace;        
+        font-size: 10px;
     }
     .sm {
         height: 150px;
-    }    
+    }
+
+    .custom-select {
+        width: auto;
+    }
 }
 .panel-dialog-full {
     position: fixed;

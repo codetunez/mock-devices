@@ -69,8 +69,9 @@ export class ExImport extends React.Component<any, any> {
     render() {
         return <Tabs>
             <TabList>
-                <Tab>{this.props.resx.TEXT_TAB_LCL}</Tab>
-                <Tab>{this.props.resx.TEXT_TAB_JSON}</Tab>
+                <Tab><strong>Load from Local Storage</strong></Tab>
+                <Tab><strong>Save to Local Storage</strong></Tab>
+                <Tab><strong>{this.props.resx.TEXT_TAB_JSON}</strong></Tab>
             </TabList>
             <TabPanel>
                 <h4>{this.props.resx.FRM_LBL_EXIMPORT_LCL}</h4>
@@ -112,6 +113,9 @@ export class ExImport extends React.Component<any, any> {
                 <div className="form-group pull-right">
                     <button className="btn btn-outline-primary" onClick={() => this.handleImport()}>{this.props.resx.IMPORT}</button>
                 </div>
+            </TabPanel>
+            <TabPanel>
+
             </TabPanel>
         </Tabs>
     }
