@@ -1,0 +1,73 @@
+@import '../../consts.scss';
+
+.app {
+    height: 100%;
+}
+
+.layout {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+.console-window {
+    flex-shrink: 0;
+
+    display: flex;
+    font-family: "Courier New", courier, serif;
+    color: limegreen;
+    z-index: 999999;
+    background-color: #000;   
+    opacity: 0.92; 
+    font-size: 13px;
+    font-weight: 700;
+    height: 20px;
+    padding-left: 10px;
+    .console-toggle {
+        width: 15px;
+    }
+    .console-messages {
+        div {
+            white-space: nowrap;
+        }
+    }    
+}
+
+.console-window-tall {
+    height: 300px;
+}
+
+.content-window {
+    flex-grow: 1;
+    min-height: 0;
+    height: 100%;
+
+    display: flex;
+    overflow: hidden;
+    background-color: #fff;
+
+    .menu-panel {
+         padding: $sm-gutter; 
+         width: 70px; 
+         background-color: $app-grey-1; 
+         text-align: center; 
+         z-index: 1000;
+        
+         .menu-btn:not(:last-child) {
+            margin-bottom: $sm-gutter;
+         }
+        
+         .menu hr {
+             margin: $xs-gutter 0 $md-gutter 0;
+             border-color: $app-blue-3;
+         }
+    }
+}
+
+.content-window {
+    flex-grow: 1;
+    min-height: 0;
+    height: 100%;
+}

@@ -9,6 +9,9 @@ import * as DevicesActions from '../store/actions/devicesActions'
 import * as DisplayActions from '../store/actions/displayActions'
 import * as SensorsActions from '../store/actions/sensorsActions'
 
+const cx = classNames.bind(require('./layout.scss'));
+
+
 class Layout extends React.Component<any, any> {
 
     public constructor(props: any) {
@@ -45,18 +48,23 @@ class Layout extends React.Component<any, any> {
             m.push(<div key={index} className="ellipsis">{element}</div>);
         });
 
-        return <div>
-            <div className="main-window">
-                <div className="menu-panel"><MenuPanel /></div>
-                <div className="device-cardlist-panel"><DeviceCardListPanel /></div>
-                <div className="device-instance-panel"><DeviceInstancePanel /></div>
-            </div>
-            <div className={classNames("console-window", this.props.display.consoleExpanded ? "console-window-tall" : "")} title={this.state.message}>
+        return <div className={cx("layout")}>
+
+            <div className={cx("console-window", this.props.display.consoleExpanded ? "console-window-tall" : "")} title={this.state.message}>
                 <Websocket url={'ws://127.0.0.1:24386'} onMessage={this.handleData.bind(this)} />
                 <div className="console-toggle">
                     <a onClick={this.toggleConsole}><span className={classNames("fa", !this.props.display.consoleExpanded ? "fa-chevron-up" : "fa-chevron-down")}></span></a>
                 </div>
+                CONSOLE
                 <div className="console-messages">{m}</div>
+            </div>
+
+            <div className="content-window">
+                <div className="menu-panel"><MenuPanel /></div>
+                <div className="inner-content-window">
+                    <div className="device-cardlist-panel"><DeviceCardListPanel /></div>
+                    <div className="device-instance-panel"><DeviceInstancePanel /></div>
+                </div>
             </div>
         </div>
     }

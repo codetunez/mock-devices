@@ -1,0 +1,550 @@
+@import '../../node_modules/react-tabs/style/react-tabs.scss';
+@import './consts.scss';
+
+
+/* -- overrides -- */
+body {
+    margin:0;padding:0;  
+    background-color:  #000;  
+}
+span {
+    font-size: 12px;
+}
+a, button {
+    cursor: pointer;
+}
+label {
+    font-size: 0.8em;
+    font-weight: bolder;     
+    margin:0;           
+}
+.form-check:not(:last-child) {
+    margin-right: $sm-gutter;
+}
+
+/* -- common -- */
+.full {
+    width: 100%;
+}
+.active {
+    background-color: $app-blue-3 !important;
+    border-color: $app-blue-3 !important;
+    color: $app-font-color-1;
+}
+.warning-active {
+    background-color:$app-red-5 !important;
+    border-color: $app-red-1 !important;
+    color: $app-font-color-1;
+}
+.ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.btn-bar {
+    display: flex;
+    flex-wrap: nowrap;
+
+    *:not(:last-child) {
+        margin-right: $xs-gutter;
+    }
+}
+.btn-bar-base-margin {
+    * {
+        margin-bottom: $xs-gutter;
+    }
+}
+.custom-checkbox {
+    margin-bottom: $sm-gutter;
+}
+.nowrap-textarea {
+  white-space: pre;
+  overflow-wrap: normal;
+  overflow-x: scroll;
+}
+
+/* -- UX -- */
+.main-window {
+    display: flex;
+    overflow: hidden;
+    background-color: #fff;
+
+    .menu-panel {
+         padding: $sm-gutter; 
+         width: 70px; 
+         background-color: $app-grey-1; 
+         text-align: center; 
+         z-index: 1000;
+        
+         .menu-btn:not(:last-child) {
+            margin-bottom: $sm-gutter;
+         }
+        
+         .menu hr {
+             margin: $xs-gutter 0 $md-gutter 0;
+             border-color: $app-blue-3;
+         }
+    }
+}
+
+
+.panel-dialog-full {
+    position: fixed;
+    max-width: 100%;
+    top: 40px;
+    left: 40px;
+    textarea {        
+        width: 100%;
+    }
+}
+.panel-dialog-device {    
+    max-height: calc(100vh - 30px);
+}
+.panel-dialog-eximport {
+    min-width: 700px;    
+    height: calc(100vh - 80px);
+    textarea {
+        height: calc(100vh - 280px);
+        width: 100%;
+    }
+}
+.panel-dialog-eximport-local {
+    margin-top: $lg-gutter;
+    margin-right: -17px;
+    padding-right: 2px;
+    overflow-y: scroll;
+    height: calc(100vh - 280px);    
+}
+.panel-dialog-server {
+    width: 968px !important;
+}
+.panel-dialog-iothub {
+    width: calc(100vw - 80px);
+    height: calc(100vh - 195px);
+    margin: auto;    
+}
+
+
+
+
+
+.hub-devices {
+    margin-right: -20px;
+    padding-right: 10px;
+    height: 385px;
+    overflow-y: scroll;
+
+    .conn-string {
+        font-size: 0.6em;
+        font-style: italic;
+    }        
+}
+.hub-device-item {
+    padding: $xs-gutter 0 $xs-gutter 0;
+    border-top: 1px solid $app-grey-4;
+}
+.hub-device-item-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.hub-device-item-line {
+    
+    .line-item-link:hover {
+        background-color: $app-yellow-3;
+        cursor: pointer;
+    }
+}
+.hub-service-client {
+    .header {
+        display: flex;
+        justify-content: space-between;
+    }
+    .body {
+        margin-top: 10px;
+
+        display: flex;
+         
+         .item {
+             flex-grow: 1;
+             text-align: center;
+             width:100%;
+             margin: 0 10px;
+
+             button {
+                 margin-top: 10px;
+             }
+
+             textarea {
+                 height: calc(100vh - 390px);
+             }
+         }
+
+         .item:first-child {
+             margin-left: 0;
+         }
+
+         .item:last-child {
+            margin-right: 0;
+        }
+   }
+   .footer {
+       position: absolute;
+       bottom: 10px;
+       font-weight: bolder;
+   }
+}
+.blast-shield {
+    position: absolute;
+    left: 0;
+    top:0;
+    height: 100vh;
+    width: 100vw;
+    background-color: #000;
+    opacity: 0.8;
+    margin:0;
+    z-index: 10000;
+    transition: background-color 0.25s ease-in-out;
+}
+
+.blast-shield-nottoolbar {
+    margin-left: 70px;
+    width: calc(100vw - 70px); 
+}
+/* -- END DIALOGS -- */
+
+/* -- UI -- */
+.card {
+    width: 180px;
+    min-height: 160px;
+    overflow-wrap: break-word;
+    .card-text {
+        font-size: 0.8em;
+    }
+    .card-type {
+        margin-top: 8px;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: $app-blue-6;
+    }
+    margin-bottom: $xs-gutter;
+    transition: background-color 0.2s ease;
+}
+
+.card:hover {
+    cursor: pointer;
+    background-color: $app-blue-6;
+    color: $app-font-color-1;
+    
+    .card-type {
+        color: $app-font-color-1;
+    }
+}
+.card:active {
+    cursor: pointer;
+    border-color: $app-blue-1;
+}
+.card-block {
+    padding: $sm-gutter;
+    text-align: center;
+}
+
+/* ---- */
+.help {
+    overflow-y: scroll; 
+    height: calc(100vh - 118px);
+
+    img {
+        display: block;
+        margin: auto auto 10px auto;
+    }
+    
+    em {
+        font-weight: bolder;
+    }
+    .img-scale-sm {
+        width: 90%;
+    }
+    .docs-link {
+        font-size:  0.8em;
+    }
+    pre {
+        margin: 10px auto; 
+        width: 90%;
+        padding: 10px;
+        border: 1px solid black;
+        background-color:  $app-grey-2;
+        color: white;
+    }
+
+    .help-row {
+        h4 {
+            margin-top: 30px;
+            
+        }
+        h5 {
+            color: $app-grey-4;
+        }
+    }
+}
+
+.device-cardlist-panel {
+    overflow-x: hidden;
+    overflow-y: scroll; 
+    height: calc(100vh - 18px);
+    padding: $sm-gutter $sm-gutter 0 $sm-gutter;
+    min-width: 220px;
+    background-color: $app-grey-3; 
+}
+
+.device-instance-panel { 
+    width: calc(100vw - 300px);
+    padding: $sm-gutter $lg-gutter 0 $sm-gutter;
+
+    .device-instance-properties {
+        overflow-x: hidden;
+        overflow-y: scroll; 
+        height: calc(100vh - 135px);
+        padding: 0 13px 0 0;
+        margin-right: -30px;
+        margin-top: $sm-gutter;
+    }
+    .device-instance-properties-advanced {
+        height: calc(100vh - 425px);
+
+    }
+    .device-instance-properties-toggler {
+        margin-top: $xs-gutter;
+        display: flex;
+        align-content: center;
+        justify-content: space-between;
+    }
+
+    .device-instance-property-container {
+        background-color: $app-yellow-4;
+        margin-bottom: $md-gutter;
+        overflow: hidden;
+    }
+    .device-instance-advanced {
+        margin-top: $sm-gutter;        
+        color: white;
+        
+        .property-type-form {
+            background-color: $app-grey-3;
+        }
+
+    }
+}
+
+.device-header {
+    border: 1px solid $app-grey-2;
+    border-radius: 5px;
+    background-color: $app-grey-3;
+    height: 65px;
+    padding: $sm-gutter;
+    color: white;
+    overflow: hidden;
+}
+
+.device-header-active {
+    border: 1px solid $app-green-1;
+    background-color: $app-green-2;
+ }
+
+/* ---- */
+
+.property-collapsed {
+    max-height: 60px;    
+}
+
+.property {
+
+    border: 1px solid $app-grey-3;
+    border-radius: 5px;    
+    padding: $md-gutter;
+
+    .seperator-heading {
+        color: #403C33;
+        margin-bottom: $xs-gutter;
+    }
+
+    .property-toolbar {
+        display: flex;
+        align-items: center;        
+        justify-content: space-between;  
+    
+        .property-header {
+            display: flex;
+            align-items: center;
+            font-size: 19px;      
+            line-height: 26px;      
+            div {
+                margin: 0;
+                margin-right: 5px;
+                font-weight: bold;
+            }            
+            div:first-child {
+                margin-top: -3px;
+            }     
+        }
+    }
+
+    .property-body {
+        margin-top: $sm-gutter;    
+    }
+
+    .property-fields {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        margin-bottom: $md-gutter;
+        .name {
+            margin: 0;   
+            min-width: 300px;
+        }
+        .field:not(:last-child) {
+            margin-right: $sm-gutter;
+        }
+        .center {
+            text-align: center;
+        }
+    }
+
+
+    .property-fields-vertical {
+        flex-direction: column;    
+        
+        .field {
+            width: 100%;
+        }
+    }
+}
+
+.property-method {
+    background-color: #FAD7A0;
+}
+
+.property-c2d {
+    background-color: #FAE6A0;
+}
+
+.property-dirty {
+    background-color: $app-red-6;
+}
+
+.property-fields-no-bottom {
+    margin-bottom: 0 !important;
+    
+    .custom-checkbox {
+        margin-bottom: 0 !important;
+    }
+}
+
+.property-type {
+    margin: $lg-gutter 0 0 0;
+
+    p {
+        margin: 0 0 5px 0;
+    }
+}
+
+.property-type-form {
+    align-items: flex-end;
+    border: 1px solid #000;    
+    padding: $sm-gutter;
+    border-radius: $xs-gutter;
+    background-color: #fff;
+    margin-bottom: $lg-gutter;
+
+    textarea {
+        height: 160px;
+    }
+}
+
+
+.live-value-field {
+    display: block;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 5px;
+    height: 38px;
+    width: 160px;
+    overflow-x: hidden;
+    background-color: $app-purple-1;
+    color: $app-yellow-1;
+}
+
+
+.help {
+    margin-top: $lg-gutter;
+
+    .help-row {
+        margin-top: $md-gutter;
+    }
+}
+.toggle-link:hover {
+    text-decoration: none;
+}
+
+.method-horizontal-fields {
+    display: flex;
+    flex-direction: row;
+
+    *:not(:last-child) {
+        margin-right: $sm-gutter;
+    }
+}
+
+
+.add-dialog {
+    width: 800px;
+    height:600px;    
+    display: flex;
+    
+    .add-dialog-nav  {
+        text-align: center;
+        width: 215;
+        padding-right: 20px;
+        border-right: 1px solid #ced4da;
+
+        div {
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 10px;             
+            margin:0 10px 10px 10px;
+        }
+
+        div:not(:first-child) {
+            margin-top:10px;
+        }
+        button { 
+            width: 100%;
+            margin-bottom: 8px;
+        }
+    }
+
+    .add-dialog-content {
+        padding: 0 0 20px 20px;
+        width: 100%;
+
+        .custom-select {
+            width: 100%;
+        }
+
+        .sm {
+            height: 140px;
+        }
+
+        .md {
+            height: 280px;
+        }
+
+        .lg {
+            height: 470px;
+            white-space: nowrap;
+            font-size: 11px;
+        }
+
+    }
+}
