@@ -68,42 +68,43 @@ export class DeviceStore {
         }
 
         d.name = payload.name;
-        d.connectionString = payload.connectionString;
-        d.hubConnectionString = payload.hubConnectionString;
-        d.template = payload.template;
         this.store.setItem(d, d._id);
 
         let md = new MockDevice(d, this.liveUpdatesService);
         this.runners[d._id] = md;
     }
 
-    public addDeviceMethod = (id: string) => {
+    public addDeviceMethod = (id: string, override: any = {}) => {
+
+        let d: Device = this.store.getItem(id);
+        this.stopDevice(d);
+
         let method: Method = {
             "_id": uuidV4(),
             "_type": "method",
-            "name": "method",
+            "name": "method" + crypto.randomBytes(2).toString('hex'),
             "status": 200,
             "receivedParams": null,
             "asProperty": false,
             "payload": JSON.stringify({ "result": "OK" }, null, 2)
         }
-        let d: Device = this.store.getItem(id);
-        this.stopDevice(d);
 
-        method.name = method.name + crypto.randomBytes(2).toString('hex');
+        Object.assign(method, override);
         d.comms.push(method);
+
         this.store.setItem(d, d._id);
         let rd: MockDevice = this.runners[d._id];
         rd.updateDevice(d);
     }
 
     /* method  !!! unsafe !!! */
-    public addDeviceProperty = (id: string, type: string) => {
+    public addDeviceProperty = (id: string, type: string, override: any = {}): string => {
         let property: Property = null;
+        let _id = uuidV4();
         switch (type) {
             case "d2c":
                 property = {
-                    "_id": uuidV4(),
+                    "_id": _id,
                     "_type": "property",
                     "name": "d2cProperty",
                     "string": false,
@@ -126,7 +127,7 @@ export class DeviceStore {
                 break;
             case "c2d":
                 property = {
-                    "_id": uuidV4(),
+                    "_id": _id,
                     "_type": "property",
                     "name": "c2dProperty",
                     "string": false,
@@ -146,10 +147,13 @@ export class DeviceStore {
 
         let d: Device = this.store.getItem(id);
         property.name = property.name + '-' + crypto.randomBytes(2).toString('hex');
+        delete override._id;
+        Object.assign(property, override);
         d.comms.push(property);
         this.store.setItem(d, d._id);
         let rd: MockDevice = this.runners[d._id];
         rd.updateDevice(d);
+        return _id;
     }
 
     /* method !! warning !! */
@@ -214,9 +218,10 @@ export class DeviceStore {
     }
 
     /* method modified safe */
-    public addDevicePropertyMock = (id: string, propertyId: string) => {
+    public addDevicePropertyMock = (id: string, propertyId: string, mockName?: string) => {
 
-        let mock: MockSensor = <MockSensor>this.sensorStore.getListOfItems()[0];
+        var items = this.sensorStore.getListOfItems();
+        let i = items.findIndex((element) => { return element._type === mockName })
 
         let d: Device = this.store.getItem(id);
         var index = d.comms.findIndex(function (item: Property, i: number) {
@@ -229,7 +234,7 @@ export class DeviceStore {
 
         if (index > -1) {
             d.comms[index].type.mock = true;
-            d.comms[index].mock = mock;
+            d.comms[index].mock = i > -1 ? <MockSensor>items[i] : <MockSensor>items[0];
             d.comms[index].runloop.include = true;
             d.comms[index].version = 0;
             d.comms[index].propertyObject.type = "default";
@@ -291,7 +296,7 @@ export class DeviceStore {
 
     public startDevice = (device: Device) => {
 
-        if (device.template) { return; }
+        if (device.configuration._kind === 'template') { return; }
 
         try {
             let rd: MockDevice = this.runners[device._id];
