@@ -7,13 +7,8 @@ export class SensorStore {
 
     public getListOfItems = () => {
 
-        let fanId = uuidV4();
-        let batteryId = uuidV4();
-        let hotplateId = uuidV4();
-        let functionId = uuidV4();
-
         return [{
-            _id: batteryId,
+            _id: uuidV4(),
             _hasState: false,
             _type: "battery",
             _value: 0,
@@ -23,7 +18,7 @@ export class SensorStore {
             timeToRunning: 10800
         },
         {
-            _id: hotplateId,
+            _id: uuidV4(),
             _hasState: false,
             _type: "hotplate",
             _value: 0,
@@ -33,7 +28,7 @@ export class SensorStore {
             timeToRunning: 520
         },
         {
-            _id: fanId,
+            _id: uuidV4(),
             _hasState: false,
             _type: "fan",
             _value: 0,
@@ -43,7 +38,14 @@ export class SensorStore {
             timeToRunning: 1
         },
         {
-            _id: functionId,
+            _id: uuidV4(),
+            _hasState: false,
+            _type: "random",
+            _value: 0,
+            init: 0
+        },
+        {
+            _id: uuidV4(),
             _hasState: false,
             _type: "function",
             _value: 0,
