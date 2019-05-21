@@ -46,6 +46,9 @@ body {
     margin:0;padding:0;  
     background-color:  #000;  
 }
+span {
+    font-size: 12px;
+}
 a, button {
     cursor: pointer;
 }
@@ -127,7 +130,6 @@ label {
 .panel-dialog {
     margin: 0 auto;
     position: absolute;
-    max-width: 700px;
     left: 70px;
     top: $sm-gutter;
     overflow-y: hidden;
@@ -144,14 +146,9 @@ label {
         z-index: 35000;
     }
     textarea {
-        height: 100%;
         font-family: Courier New, Courier, monospace;        
-        font-size: 10px;
+        height: 120px;
     }
-    .sm {
-        height: 150px;
-    }
-
     .custom-select {
         width: auto;
     }
@@ -192,13 +189,18 @@ label {
     margin: auto;    
 }
 .hub-devices {
+    margin-right: -20px;
+    padding-right: 10px;
+    height: 385px;
+    overflow-y: scroll;
+
     .conn-string {
         font-size: 0.6em;
         font-style: italic;
     }        
 }
 .hub-device-item {
-    padding: $sm-gutter 0 $sm-gutter 0;
+    padding: $xs-gutter 0 $xs-gutter 0;
     border-top: 1px solid $app-grey-4;
 }
 .hub-device-item-line {
@@ -234,7 +236,6 @@ label {
              }
 
              textarea {
-                 font-size: 12PX;
                  height: calc(100vh - 390px);
              }
          }
@@ -280,6 +281,12 @@ label {
     .card-text {
         font-size: 0.8em;
     }
+    .card-type {
+        margin-top: 8px;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: $app-blue-6;
+    }
     margin-bottom: $xs-gutter;
     transition: background-color 0.2s ease;
 }
@@ -288,6 +295,10 @@ label {
     cursor: pointer;
     background-color: $app-blue-6;
     color: $app-font-color-1;
+    
+    .card-type {
+        color: $app-font-color-1;
+    }
 }
 .card:active {
     cursor: pointer;
@@ -375,8 +386,7 @@ label {
         overflow: hidden;
     }
     .device-instance-advanced {
-        margin-top: $sm-gutter;
-        height: 300px;
+        margin-top: $sm-gutter;        
         color: white;
         
         .property-type-form {
@@ -535,7 +545,8 @@ label {
     z-index: 20000;
     background-color: #000;   
     opacity: 0.92; 
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: 700;
     height: $lg-gutter;
     padding-left: $xs-gutter;    
     .console-toggle {
@@ -547,11 +558,11 @@ label {
         div {
             white-space: nowrap;
         }
-    }
+    }    
 }
 
 .console-window-tall {
-    height: 150px;
+    height: 300px;
 }
 
 .help {
@@ -571,5 +582,58 @@ label {
 
     *:not(:last-child) {
         margin-right: $sm-gutter;
+    }
+}
+
+
+.add-dialog {
+    width: 800px;
+    height:600px;    
+    display: flex;
+    
+    .add-dialog-nav  {
+        text-align: center;
+        width: 215;
+        padding-right: 20px;
+        border-right: 1px solid #ced4da;
+
+        div {
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 10px;             
+            margin:0 10px 10px 10px;
+        }
+
+        div:not(:first-child) {
+            margin-top:10px;
+        }
+        button { 
+            width: 100%;
+            margin-bottom: 8px;
+        }
+    }
+
+    .add-dialog-content {
+        padding: 0 0 20px 20px;
+        width: 100%;
+
+        .custom-select {
+            width: 100%;
+        }
+
+        .sm {
+            height: 140px;
+        }
+
+        .md {
+            height: 280px;
+        }
+
+        .lg {
+            height: 470px;
+            white-space: nowrap;
+            font-size: 11px;
+        }
+
     }
 }

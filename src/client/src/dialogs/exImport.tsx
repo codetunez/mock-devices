@@ -69,8 +69,7 @@ export class ExImport extends React.Component<any, any> {
     render() {
         return <Tabs>
             <TabList>
-                <Tab><strong>Load from Local Storage</strong></Tab>
-                <Tab><strong>Save to Local Storage</strong></Tab>
+                <Tab><strong>Load from Local Storage</strong></Tab>                
                 <Tab><strong>{this.props.resx.TEXT_TAB_JSON}</strong></Tab>
             </TabList>
             <TabPanel>
@@ -113,9 +112,6 @@ export class ExImport extends React.Component<any, any> {
                 <div className="form-group pull-right">
                     <button className="btn btn-outline-primary" onClick={() => this.handleImport()}>{this.props.resx.IMPORT}</button>
                 </div>
-            </TabPanel>
-            <TabPanel>
-
             </TabPanel>
         </Tabs>
     }

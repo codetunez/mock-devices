@@ -98,7 +98,7 @@ class DeviceInstancePanel extends React.Component<any, any> {
     }
 
     toggleIotHub = () => {
-        this.props.dispatch(DisplayActions.ToggleIoTHubPanel(this.props.device.device.hubConnectionString || ''));
+        this.props.dispatch(DisplayActions.ToggleIoTHubPanel(this.props.device.device.configuration.hubConnectionString || ''));
     }
 
     updateDevice = (payload: any) => {
@@ -163,7 +163,8 @@ class DeviceInstancePanel extends React.Component<any, any> {
                         addC2DHandler={this.addC2DProperty}
                         addMethodHandler={this.addMethod}
                         toggleIotHubHandler={this.toggleIotHub}
-                        hasHubString={this.props.device.device && this.props.device.device.hubConnectionString && this.props.device.device.hubConnectionString.length > 0}
+                        hasHubString={this.props.device.device && this.props.device.device.configuration._kind != 'template' && this.props.device.device.configuration.hubConnectionString && this.props.device.device.configuration.hubConnectionString.length > 0}
+                        isTemplate={this.props.device.device && this.props.device.device.configuration._kind != 'template'}
                         resx={this.props.resx}
                     />
                 </div>
@@ -172,7 +173,7 @@ class DeviceInstancePanel extends React.Component<any, any> {
                     <IoTHub
                         resx={this.props.resx}
                         dispatch={this.props.dispatch}
-                        hubConnectionString={this.props.device.device.hubConnectionString || ''}
+                        hubConnectionString={this.props.device.device.configuration.hubConnectionString || ''}
                         deviceId={this.props.device.device._id}
                     />
                 </div>
@@ -199,7 +200,7 @@ class DeviceInstancePanel extends React.Component<any, any> {
                                 if (item._type === "method") {
                                     return <div key={index} className="device-instance-property-container">
                                         <DeviceInstanceMethod
-                                            index={index}                                            
+                                            index={index}
                                             property={item}
                                             methodParams={this.props.methodParams}
                                             resx={this.props.resx}

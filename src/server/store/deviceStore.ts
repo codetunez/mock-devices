@@ -68,6 +68,7 @@ export class DeviceStore {
         }
 
         d.name = payload.name;
+        Object.assign(d.configuration, payload);
         this.store.setItem(d, d._id);
 
         let md = new MockDevice(d, this.liveUpdatesService);

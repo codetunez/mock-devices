@@ -1,6 +1,7 @@
 export default function reducer(state: any = {
 
     SAVE: 'Save',
+    SET: 'Set',
     IMPORT: 'Import',
     UPDATE: 'Update',
     READ: 'Read',
@@ -72,11 +73,20 @@ export default function reducer(state: any = {
     FRM_LBL_STATUS: 'Status',
     FRM_LBL_STATUSCODE: 'Status Code',
     FRM_LBL_GET_DATA: 'Get Last Sent Value',
-    FRM_LBL_DEVICE_NAME: 'mock-devices Device Name',
+    
+    FRM_LBL_DEVICE_NAME: 'Device Name (mock-devices)',
+    FRM_LBL_DEVICE_CLONE: 'Clone Model (mock-devices)',
     FRM_LBL_DEVICE_CONN_STRING: 'Device Connection String',
-    FRM_LBL_DEVICE_HUB_CONN_STRING: 'Device Connection String',
+    FRM_LBL_DEVICE_HUB_CONN_STRING: 'IoT Hub Connection String',
     FRM_LBL_DEVICE_TEMPLATE: 'Device as Template',
     FRM_LBL_DEVICE_IS_TEMPLATE: 'Make device a template (cannot be started)',
+    FRM_LBL_DEVICE_CAP_MODEL_URI: 'Capability Model Uri',
+    FRM_LBL_DEVICE_ID: 'Device ID',
+    FRM_LBL_DEVICE_DPS_SCOPE: 'DPS Scope',
+    FRM_LBL_DEVICE_DPS_PAYLOAD: 'DPS Payload',
+    FRM_LBL_DEVICE_DPS_SAS: 'SaS Key',
+    FRM_LBL_DEVICE_PASTE_CAP: 'Paste the Capability Model here',
+    FRM_LBL_DEVICE_PASTE_STATE: 'Paste the State here',
 
     FRM_LBL_METHOD_NAME: 'Method Name',
     FRM_LBL_RECEIVED_PARAM: 'Received Params',

@@ -15,7 +15,7 @@ export default function reducer(state: any = {
 }, action: any) {
 
     let s = JSON.parse(JSON.stringify(state));
-
+    // TODO: code needs refactoring
     switch (action.type) {
         case Events.TOGGLE_NEW_DEVICE_PANEL:
             return Object.assign(s, {

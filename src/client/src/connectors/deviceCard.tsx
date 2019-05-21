@@ -16,11 +16,12 @@ class DeviceCard extends React.Component<any, any> {
                 <h4 className="card-title">{this.props.device.name}</h4>
                 <p className="card-text">{this.props.device._id}</p>
                 <div>
-                    {this.props.device.template ?
+                    {this.props.device.configuration._kind === 'template' ?
                         <span className={classNames("fa fa-ban fa-2x fa-fw")}></span> :
-                        <div className={classNames("fa fa-spinner fa-2x fa-fw", { "fa-pulse": this.props.device.running })}></div>
+                        <div className={classNames("fa fa-spinner fa-2x fa-fw", { "fa-pulse": this.props.device.running })}></div>                                                
                     }
                 </div>
+                <div className="card-type">{this.props.device.configuration._kind}</div>
             </div>
         </div>
     }
