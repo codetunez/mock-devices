@@ -179,10 +179,10 @@ class DeviceInstancePanel extends React.Component<any, any> {
                 </div>
                     : null}
 
-                <div className="device-instance-properties-toggler">
+                {/* <div className="device-instance-properties-toggler">
                     <a onClick={this.toggleAdvanced}>{this.props.display.advancedExpanded ? "hide advanced" : "show advanced"}</a>
                     <a onClick={this.toggleAll}>{this.props.display.propertyToggleAll ? "collapse all" : "expand all"}</a>
-                </div>
+                </div> */}
 
                 {this.props.display.advancedExpanded ? <div className="device-instance-advanced">
                     <DeviceInstanceAdvanced

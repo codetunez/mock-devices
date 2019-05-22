@@ -1,0 +1,35 @@
+@import '../../consts.scss';
+
+.card {
+    min-height: 160px;
+    overflow-wrap: break-word;
+    .card-text {
+        font-size: 0.8em;
+    }
+    .card-type {
+        margin-top: 8px;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: $app-blue-6;
+    }
+    margin-bottom: $xs-gutter;
+    transition: background-color 0.2s ease;
+}
+
+.card:hover {
+    cursor: pointer;
+    background-color: $app-blue-6;
+    color: $app-font-color-1;
+    
+    .card-type {
+        color: $app-font-color-1;
+    }
+}
+.card:active {
+    cursor: pointer;
+    border-color: $app-blue-1;
+}
+.card-block {
+    padding: $sm-gutter;
+    text-align: center;
+}

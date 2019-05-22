@@ -1,9 +1,10 @@
 var classNames = require("classnames");
 import * as React from "react";
+const cx = classNames.bind(require('./deviceInstanceCommands.scss'));
 
 export class DeviceInstanceCommands extends React.Component<any, any> {
     render() {
-        return <div className={classNames("device-header", this.props.device.running ? "device-header-active" : "")}>
+        return <div className={cx("device-header", this.props.device.running ? "device-header-active" : "")}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <div className="btn-bar btn-bar-base-margin">
                     <button title={this.props.resx.BTN_LBL_ADD_D2C} className="btn btn-info" onClick={this.props.addD2CHandler}><span className="fa fa-cloud-upload"></span> {this.props.resx.BTN_ADDD2C}</button>

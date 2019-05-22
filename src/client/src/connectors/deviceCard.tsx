@@ -3,6 +3,8 @@ import * as React from "react";
 import { connect } from "react-redux";
 import * as DeviceActions from "../store/actions/deviceActions"
 
+const cx = classNames.bind(require('./deviceCard.scss'));
+
 class DeviceCard extends React.Component<any, any> {
 
     displaySelectedDevice = () => {

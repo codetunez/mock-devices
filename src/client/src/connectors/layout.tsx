@@ -11,7 +11,6 @@ import * as SensorsActions from '../store/actions/sensorsActions'
 
 const cx = classNames.bind(require('./layout.scss'));
 
-
 class Layout extends React.Component<any, any> {
 
     public constructor(props: any) {

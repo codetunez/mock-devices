@@ -1,0 +1,11 @@
+@import '../../consts.scss';
+
+.device-header {
+    height: 65px;    
+    color: white;
+}
+
+.device-header-active {
+    border: 1px solid $app-green-1;
+    background-color: $app-green-2;
+ }

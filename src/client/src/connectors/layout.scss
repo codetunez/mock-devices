@@ -24,7 +24,7 @@
     font-size: 13px;
     font-weight: 700;
     height: 20px;
-    padding-left: 10px;
+    padding-left: 10px;    
     .console-toggle {
         width: 15px;
     }
@@ -64,10 +64,59 @@
              border-color: $app-blue-3;
          }
     }
+
+    .inner-content-window {
+        display: flex;
+        width: 100%;
+    }
 }
 
-.content-window {
-    flex-grow: 1;
-    min-height: 0;
-    height: 100%;
+.device-cardlist-panel {
+    overflow-y: auto; 
+    padding: $sm-gutter;
+    min-width: 220px;
+    background-color: $app-grey-3; 
+}
+
+.device-instance-panel {     
+    overflow-y: auto; 
+    padding: $sm-gutter;
+    background-color: $app-grey-5; 
+    color: white;
+    width: 100%;
+    h1,h2,h3,h4,h5 { color: $app-yellow-4 !important;}
+
+    // .device-instance-properties {
+    //     overflow-x: hidden;
+    //     overflow-y: scroll; 
+    //     height: calc(100vh - 135px);
+    //     padding: 0 13px 0 0;
+    //     margin-right: -30px;
+    //     margin-top: $sm-gutter;
+    // }
+    // .device-instance-properties-advanced {
+    //     height: calc(100vh - 425px);
+
+    // }
+    // .device-instance-properties-toggler {
+    //     margin-top: $xs-gutter;
+    //     display: flex;
+    //     align-content: center;
+    //     justify-content: space-between;
+    // }
+
+    // .device-instance-property-container {
+    //     background-color: $app-yellow-4;
+    //     margin-bottom: $md-gutter;
+    //     overflow: hidden;
+    // }
+    // .device-instance-advanced {
+    //     margin-top: $sm-gutter;        
+    //     color: white;
+        
+    //     .property-type-form {
+    //         background-color: $app-grey-3;
+    //     }
+
+    // }
 }

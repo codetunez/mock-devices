@@ -103,7 +103,7 @@ export default function reducer(state: any = {
     TEXT_D2C: 'D2C',
     TEXT_D2C_MOCK: 'D2C by Mock Sensor',
     TEXT_D2C_NO_DEVICES: 'No devices found on this Iot Hub',
-    TEXT_NODEVICE: 'No device selected or none added',
+    TEXT_NODEVICE: 'Please add or select a device',
     TEXT_FULLTWIN: 'Full Twin',
     TEXT_DESIRED: 'Desired Properties (Only)',
     TEXT_DIRTY_PROPERTY: 'Another property is in an unsaved state. Please save before updating another property or refresh to cancel edit',

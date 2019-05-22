@@ -9,7 +9,7 @@ export class Help extends React.Component<any, any> {
     render() {
         return <div className="help">
             <div className="help-row">
-                <h1>Help</h1>
+                <h2>How to use mock-devices</h2>
                 <p>
                     mock-devices is a dev tool that allows you to create fake devices that
                 can send and receive data like real devices.

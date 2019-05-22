@@ -13,6 +13,35 @@
     transition: background-color 0.25s ease-in-out;
 }
 
+
+.help {
+    em {
+        font-weight: bolder;
+    }
+    .img-scale-sm {
+        width: 90%;
+    }
+    .docs-link {
+        font-size:  0.8em;
+    }
+    pre {
+        margin: 10px auto; 
+        width: 90%;
+        padding: 10px;
+        border: 1px solid black;
+        background-color:  $app-grey-2;
+        color: white;
+    }
+    .help-row {
+        h4 {
+            margin-top: 30px;
+        }
+        h5 {
+            color: $app-grey-4;
+        }
+    }
+}
+
 .panel-dialog {
     position: absolute;
     margin: 0 auto;    
@@ -34,5 +63,68 @@
     }
     .custom-select {
         width: auto;
+    }
+}
+
+
+.add-dialog {
+    text-align: left;
+    width: 800px;
+    height:600px;    
+    display: flex;
+    
+    .add-dialog-nav  {
+        text-align: center;
+        width: 215;
+        padding-right: 20px;
+        border-right: 1px solid #ced4da;
+
+        div {
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 10px;             
+            margin:0 10px 10px 10px;
+        }
+
+        div:not(:first-child) {
+            margin-top:10px;
+        }
+        button { 
+            width: 100%;
+            margin-bottom: 8px;
+        }
+    }
+
+    .add-dialog-content {
+        padding: 0 0 20px 20px;
+        width: 100%;
+        .custom-select {
+            width: 100%;
+        }
+        .sm {
+            height: 140px;
+        }
+        .md {
+            height: 280px;
+        }
+        .lg {
+            height: 470px;
+            white-space: nowrap;
+            font-size: 11px;
+        }
+    }
+}
+
+.btn-bar {
+    display: flex;
+    flex-wrap: nowrap;
+
+    *:not(:last-child) {
+        margin-right: $xs-gutter;
+    }
+}
+.btn-bar-base-margin {
+    * {
+        margin-bottom: $xs-gutter;
     }
 }
