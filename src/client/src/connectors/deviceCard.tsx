@@ -13,9 +13,9 @@ class DeviceCard extends React.Component<any, any> {
     }
 
     render() {
-        return <div className={classNames("card", { "active": this.props.index === this.props.display.deviceSelectedIndex })} onClick={() => this.displaySelectedDevice()} >
+        return <div className={classNames("card", { "card-active": this.props.index === this.props.display.deviceSelectedIndex })} onClick={() => this.displaySelectedDevice()} >
             <div className="card-block" title={this.props.resx.BTN_LBL_SELECT_DEVICE}>
-                <h4 className="card-title">{this.props.device.name}</h4>
+                <h4 className="card-title">{this.props.device.configuration.mockDeviceName}</h4>
                 <p className="card-text">{this.props.device._id}</p>
                 <div>
                     {this.props.device.configuration._kind === 'template' ?

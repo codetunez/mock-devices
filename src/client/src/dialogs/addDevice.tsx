@@ -25,6 +25,8 @@ export class AddDevice extends React.Component<any, any> {
     constructor(props: any) {
         super(props);
         this.state = this.initModel();
+        this.escFunction = this.escFunction.bind(this);
+        this.close = this.close.bind(this);
     }
 
     initModel(): any {
@@ -33,6 +35,14 @@ export class AddDevice extends React.Component<any, any> {
         m.panel = 0;
         m.devices = [];
         return m;
+    }
+
+    escFunction(event) {
+        if (event.keyCode === 27) { this.close(); }
+    }
+
+    close() {
+        this.props.dispatch(DisplayActions.ToggleNewDevicePanel());
     }
 
     getDeviceList = () => {
@@ -51,8 +61,12 @@ export class AddDevice extends React.Component<any, any> {
             })
     }
 
-    componentWillReceiveProps(nextProps: any) {
-        this.setState({});
+    componentDidMount() {
+        document.addEventListener("keydown", this.escFunction, false);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.escFunction, false);
     }
 
     handleChange = (e: any) => {
@@ -115,12 +129,12 @@ export class AddDevice extends React.Component<any, any> {
                 {/* Panel 0 */}
                 {this.state.panel === 0 ? <div>
                     <div className="form-group">
-                        <label>{this.props.resx.FRM_LBL_DEVICE_ID}</label>
-                        <input className="form-control" type="text" name="deviceId" onChange={this.handleChange} value={this.state.updatePayload.deviceId || ''} />
-                    </div>
-                    <div className="form-group">
                         <label>{this.props.resx.FRM_LBL_DEVICE_DPS_SCOPE}</label>
                         <input className="form-control" type="text" name="scopeId" onChange={this.handleChange} value={this.state.updatePayload.scopeId || ''} />
+                    </div>
+                    <div className="form-group">
+                        <label>{this.props.resx.FRM_LBL_DEVICE_ID}</label>
+                        <input className="form-control" type="text" name="deviceId" onChange={this.handleChange} value={this.state.updatePayload.deviceId || ''} />
                     </div>
                     <div className="form-group">
                         <label>{this.props.resx.FRM_LBL_DEVICE_DPS_SAS}</label>
@@ -128,7 +142,7 @@ export class AddDevice extends React.Component<any, any> {
                     </div>
                     <div className="form-group">
                         <label>{this.props.resx.FRM_LBL_DEVICE_DPS_PAYLOAD}</label>
-                        <textarea className="form-control sm" name="dpsPayload" onChange={this.handleChange} value={this.state.updatePayload.dpsPayload || ''}></textarea>
+                        <textarea className="custom-textarea form-control sm" name="dpsPayload" onChange={this.handleChange} value={this.state.updatePayload.dpsPayload || ''}></textarea>
                     </div>
                     <div style={{ display: "flex", alignContent: "stretch" }}>
                         <div className="form-group" style={{ paddingRight: "10px" }} >
@@ -140,7 +154,7 @@ export class AddDevice extends React.Component<any, any> {
                             <Combo collection={deviceList} name="mockDeviceCloneId" onChange={this.handleChange} value={this.state.updatePayload.mockDeviceCloneId || ''} />
                         </div>
                     </div>
-                    <button className="btn btn-info" onClick={() => this.action('dps')}>{this.props.resx.ADD}</button>
+                    <button className="btn btn-info" onClick={() => this.action('dps')}>{this.props.resx.ADD_DPS}</button>
                 </div>
                     : null}
 
@@ -148,7 +162,7 @@ export class AddDevice extends React.Component<any, any> {
                 {this.state.panel === 1 ? <div>
                     <div className="form-group">
                         <label>{this.props.resx.FRM_LBL_DEVICE_HUB_CONN_STRING}</label>
-                        <textarea className="form-control md" name="connectionString" onChange={this.handleChange} value={this.state.updatePayload.connectionString || ''}></textarea>
+                        <textarea className="custom-textarea form-control md" name="connectionString" onChange={this.handleChange} value={this.state.updatePayload.connectionString || ''}></textarea>
                     </div>
                     <div style={{ display: "flex", alignContent: "stretch" }}>
                         <div className="form-group" style={{ paddingRight: "10px" }} >
@@ -170,7 +184,7 @@ export class AddDevice extends React.Component<any, any> {
                     <div className="form-group">
                         <label>IoT Hub Connection String</label><br />
                         <div className="input-group">
-                            <textarea className="form-control sm" name="hubConnectionString" onChange={this.handleChange} value={this.state.updatePayload.hubConnectionString || ''}></textarea>
+                            <textarea className="custom-textarea form-control sm" name="hubConnectionString" onChange={this.handleChange} value={this.state.updatePayload.hubConnectionString || ''}></textarea>
                             <span className="input-group-btn" style={{ marginLeft: "10px" }}>
                                 <button className="btn btn-info" onClick={() => this.getDeviceList()}>
                                     <span className="fa fa-cloud-download"></span>
@@ -214,7 +228,7 @@ export class AddDevice extends React.Component<any, any> {
                 {this.state.panel === 3 ? <div>
                     <div className="form-group">
                         <label>{this.props.resx.FRM_LBL_DEVICE_PASTE_CAP}</label>
-                        <textarea className="form-control lg" name="capabilityModel" onChange={this.handleChange} value={this.state.updatePayload.capabilityModel || ''}></textarea>
+                        <textarea className="custom-textarea form-control lg" name="capabilityModel" onChange={this.handleChange} value={this.state.updatePayload.capabilityModel || ''}></textarea>
                     </div>
                     <button className="btn btn-info" onClick={() => this.action('template')}>{this.props.resx.ADD}</button>
                 </div>
@@ -224,7 +238,7 @@ export class AddDevice extends React.Component<any, any> {
                 {this.state.panel === 4 ? <div>
                     <div className="form-group">
                         <label>{this.props.resx.FRM_LBL_DEVICE_PASTE_STATE}</label>
-                        <textarea className="form-control lg" name="mockDeviceState" onChange={this.handleChange} value={this.state.updatePayload.mockDeviceState || ''}></textarea>
+                        <textarea className="custom-textarea form-control lg" name="mockDeviceState" onChange={this.handleChange} value={this.state.updatePayload.mockDeviceState || ''}></textarea>
                     </div>
                     <button className="btn btn-info" onClick={() => this.import()}>{this.props.resx.IMPORT}</button>
                 </div>
@@ -237,6 +251,8 @@ export class AddDevice extends React.Component<any, any> {
                     : null}
 
             </div>
+
+            <div className="panel-dialog-close" onClick={this.close} title={this.props.resx.CANCEL}><span className="fa fa-times"></span></div>
         </div>
     }
 }

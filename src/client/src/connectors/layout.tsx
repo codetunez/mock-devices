@@ -1,6 +1,7 @@
 var classNames = require("classnames");
 import * as React from "react";
 import { connect } from "react-redux";
+import { IoTHub } from '../dialogs/iotHub';
 import * as Websocket from 'react-websocket';
 import DeviceCardListPanel from './deviceCardListPanel'
 import DeviceInstancePanel from './deviceInstancePanel'
@@ -8,6 +9,7 @@ import MenuPanel from './menuPanel'
 import * as DevicesActions from '../store/actions/devicesActions'
 import * as DisplayActions from '../store/actions/displayActions'
 import * as SensorsActions from '../store/actions/sensorsActions'
+import { AddDevice } from '../dialogs/addDevice';
 
 const cx = classNames.bind(require('./layout.scss'));
 
@@ -49,13 +51,17 @@ class Layout extends React.Component<any, any> {
 
         return <div className={cx("layout")}>
 
+            <div className={classNames(this.props.display.showDevicePanel || this.props.display.showExImportPanel || this.props.display.showIotHubPanel ? "blast-shield blast-shield-nottoolbar" : "")}></div>
+            {this.props.display.showDevicePanel ? <div className="panel-dialog panel-dialog-device"><AddDevice devices={this.props.devices.devices} dispatch={this.props.dispatch} resx={this.props.resx} /></div> : null}
+            {this.props.display.showIotHubPanel ? <div className="panel-dialog panel-dialog-full panel-dialog-iothub"><IoTHub resx={this.props.resx} dispatch={this.props.dispatch} hubConnectionString={this.props.device.device.configuration.hubConnectionString || ''} deviceId={this.props.device.device._id} /></div> : null}
+
+            <Websocket url={'ws://127.0.0.1:24386'} onMessage={this.handleData.bind(this)} />
+
             <div className={cx("console-window", this.props.display.consoleExpanded ? "console-window-tall" : "")} title={this.state.message}>
-                <Websocket url={'ws://127.0.0.1:24386'} onMessage={this.handleData.bind(this)} />
                 <div className="console-toggle">
                     <a onClick={this.toggleConsole}><span className={classNames("fa", !this.props.display.consoleExpanded ? "fa-chevron-up" : "fa-chevron-down")}></span></a>
                 </div>
-                CONSOLE
-                <div className="console-messages">{m}</div>
+                <div className="console-messages">{m.length > 0 ? m : 'CONSOLE OUTPUT'}</div>
             </div>
 
             <div className="content-window">
@@ -73,7 +79,8 @@ class Layout extends React.Component<any, any> {
 function mapStateToProps(state: any) {
     return {
         devices: state.devices,
-        display: state.display
+        display: state.display,
+        resx: state.resx
     }
 }
 

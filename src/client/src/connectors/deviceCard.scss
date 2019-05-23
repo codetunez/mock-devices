@@ -1,8 +1,13 @@
 @import '../../consts.scss';
 
 .card {
-    min-height: 160px;
+    padding: 15px;
     overflow-wrap: break-word;
+    background-color: $app-clr-2;
+    border: 2px solid $app-clr-0;
+    color: white;
+    width: 100%;
+
     .card-text {
         font-size: 0.8em;
     }
@@ -10,10 +15,14 @@
         margin-top: 8px;
         font-weight: 800;
         text-transform: uppercase;
-        color: $app-blue-6;
+        color: $app-clr-yellow-1;
     }
-    margin-bottom: $xs-gutter;
+    margin-bottom: $sm-gutter;
     transition: background-color 0.2s ease;
+}
+
+.card-active {
+    background-color: $app-clr-0;
 }
 
 .card:hover {
@@ -24,12 +33,4 @@
     .card-type {
         color: $app-font-color-1;
     }
-}
-.card:active {
-    cursor: pointer;
-    border-color: $app-blue-1;
-}
-.card-block {
-    padding: $sm-gutter;
-    text-align: center;
 }

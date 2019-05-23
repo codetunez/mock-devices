@@ -1,11 +1,12 @@
 @import '../../consts.scss';
 
-.device-header {
+.device-instance-commands {
+    padding: $sm-gutter;
     height: 65px;    
     color: white;
+    border-bottom: 2px solid $app-clr-0;
 }
 
-.device-header-active {
-    border: 1px solid $app-green-1;
-    background-color: $app-green-2;
+.device-instance-commands-active {
+    background-color: $app-grey-1;
  }

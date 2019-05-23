@@ -1,28 +1,93 @@
 @import './consts.scss';
 
-.blast-shield {
-    position: absolute;
-    left: 63px;
-    top:0;
-    height: 100vh;
-    width: calc(100% - 63px);
-    background-color: #000;
-    opacity: 0.8;
-    margin:0;
-    z-index: 10000;
-    transition: background-color 0.25s ease-in-out;
+body {
+    color: white;
 }
 
+input[type='text'], input[type='text']:focus {
+    background-color: $app-grey-3;
+    color: #ced4da;
+}
+
+.custom-textarea , .custom-textarea:focus {
+    background-color: $app-grey-3;
+    color: #ced4da;    
+}
+
+.custom-select, .custom-select:focus {
+    background-color: $app-grey-3;
+    color: #ced4da;    
+}
+
+.btn-bar {
+    display: flex;
+    flex-wrap: nowrap;
+
+    *:not(:last-child) {
+        margin-right: $xs-gutter;
+    }
+}
+
+.btn-bar-base-margin {
+    * {
+        margin-bottom: $xs-gutter;
+    }
+}
+
+.active {
+    background-color: $app-blue-3 !important;
+    border-color: $app-blue-3 !important;
+    color: $app-font-color-1;
+}
+
+.warning-active {
+    background-color:$app-red-5 !important;
+    border-color: $app-red-1 !important;
+    color: $app-font-color-1;
+}
+
+.ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.blast-shield {
+    z-index: $order-blastshield;
+    position: absolute;
+    left: 0;
+    top:0;
+    height: 100vh;
+    width: 100vw;
+    background-color: #000;
+    opacity: 0.85;
+    transition: background-color 0.30s ease-in-out;
+}
+
+.section-title {
+    text-align: center;
+    font-size:  14px;
+    color: white;
+    padding: 15px;    
+    text-transform: uppercase;
+    font-weight: 800;    
+}
+
+.section-title-header {    
+    text-align: left;    
+    border-bottom: 2px solid $app-clr-0;
+}
+
+.section-title-menu {
+    cursor: pointer;
+    color: $app-clr-blue-1;
+}
 
 .help {
+    margin-top:-5px;
+    padding: $sm-gutter;
     em {
         font-weight: bolder;
-    }
-    .img-scale-sm {
-        width: 90%;
-    }
-    .docs-link {
-        font-size:  0.8em;
     }
     pre {
         margin: 10px auto; 
@@ -33,8 +98,12 @@
         color: white;
     }
     .help-row {
+        h2 {
+            color: $app-clr-yellow-1;            
+        }
         h4 {
             margin-top: 30px;
+            color: $app-clr-yellow-1;            
         }
         h5 {
             color: $app-grey-4;
@@ -43,29 +112,25 @@
 }
 
 .panel-dialog {
-    position: absolute;
-    margin: 0 auto;    
-    top: $sm-gutter;
-    left: 63px;    
+    z-index: $order-dialog;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 850px;
+    height: 650px;
     padding: $lg-gutter;
-    color: #000;
-    background-color: white;
-    border: 1px solid $app-grey-3;
-    margin-bottom: $sm-gutter;;
-    box-shadow: 0px 0px 56px -5px rgba(0,0,0,0.75);    
-    z-index: 35000;
-    * {
-        z-index: 35000;
-    }
-    textarea {
-        font-family: Courier New, Courier, monospace;        
-        height: 120px;
-    }
-    .custom-select {
-        width: auto;
-    }
+    color: white;
+    background-color: $app-grey-3;
+    border: 1px solid $app-grey-4;
+    border-radius: 3px;
 }
 
+.panel-dialog-close {
+    margin-right: -10px;
+    margin-top: -10px;
+    cursor: pointer;
+}
 
 .add-dialog {
     text-align: left;
@@ -98,6 +163,36 @@
     .add-dialog-content {
         padding: 0 0 20px 20px;
         width: 100%;
+
+        .hub-devices {
+            margin-right: -30px;
+            padding-right: 20px;
+            height: 375px;
+            overflow-y: scroll;
+        
+            .conn-string {
+                font-size: 0.6em;
+                font-style: italic;
+            }        
+        }
+        .hub-device-item {
+            padding: $xs-gutter 0 $xs-gutter 0;
+            border-top: 1px solid $app-grey-4;
+        }
+        .hub-device-item-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .hub-device-item-line {
+            
+            .line-item-link:hover {
+                background-color: $app-yellow-3;
+                cursor: pointer;
+            }
+        }
+
+
         .custom-select {
             width: 100%;
         }
@@ -112,19 +207,5 @@
             white-space: nowrap;
             font-size: 11px;
         }
-    }
-}
-
-.btn-bar {
-    display: flex;
-    flex-wrap: nowrap;
-
-    *:not(:last-child) {
-        margin-right: $xs-gutter;
-    }
-}
-.btn-bar-base-margin {
-    * {
-        margin-bottom: $xs-gutter;
     }
 }

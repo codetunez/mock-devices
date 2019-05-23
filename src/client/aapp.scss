@@ -26,21 +26,6 @@ label {
 .full {
     width: 100%;
 }
-.active {
-    background-color: $app-blue-3 !important;
-    border-color: $app-blue-3 !important;
-    color: $app-font-color-1;
-}
-.warning-active {
-    background-color:$app-red-5 !important;
-    border-color: $app-red-1 !important;
-    color: $app-font-color-1;
-}
-.ellipsis {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
 
 .custom-checkbox {
     margin-bottom: $sm-gutter;
@@ -116,33 +101,6 @@ label {
 
 
 
-.hub-devices {
-    margin-right: -20px;
-    padding-right: 10px;
-    height: 385px;
-    overflow-y: scroll;
-
-    .conn-string {
-        font-size: 0.6em;
-        font-style: italic;
-    }        
-}
-.hub-device-item {
-    padding: $xs-gutter 0 $xs-gutter 0;
-    border-top: 1px solid $app-grey-4;
-}
-.hub-device-item-line {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.hub-device-item-line {
-    
-    .line-item-link:hover {
-        background-color: $app-yellow-3;
-        cursor: pointer;
-    }
-}
 .hub-service-client {
     .header {
         display: flex;

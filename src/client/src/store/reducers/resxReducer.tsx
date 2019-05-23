@@ -14,11 +14,14 @@ export default function reducer(state: any = {
     FETCHED: 'READ',
     WROTE: 'WRITE',
     REFRESH: 'Refresh',
+    CANCEL: 'Cancel',
 
     BTN_ADDD2C: 'Add D2C',
     BTN_ADDC2D: 'Add C2D',
     BTN_ADD_METHOD: 'Add Method',
     BTN_ADD_MOCK: 'Add a Mock Sensor',
+    
+    ADD_DPS: 'Add DPS device',
 
     BTN_LBL_SERVER: 'IoT Hub Inspector',
     BTN_LBL_REFRESH: 'Refresh the devices',
@@ -110,6 +113,7 @@ export default function reducer(state: any = {
     TEXT_JSON_TEMPLATE: 'JSON Template for Value',
     TEXT_DISPLAY_VALUE: 'Display Value as JSON',
     TEXT_CLONE_MODEL: 'Clone the model of this device',
+    TEXT_MOCK_DEVICES: 'Devices',
 
     TEXT_TAB_JSON: 'JSON',
     TEXT_TAB_LCL: 'Local Storage',
