@@ -28,7 +28,7 @@ export class Help extends React.Component<any, any> {
                 <em>Add a new mock using a clone of an existing device</em>
                 <p>
                     Any running mock device device can be cloned for it's model and current state. Follow the
-                    add device flow and select the device from the 'Clone the model of this device' drop down
+                    + flow and select the device ore template from the 'Clone Model (mock-devices)' drop down
                 </p>
             </div>
             <div className="help-row">
@@ -83,12 +83,12 @@ export class Help extends React.Component<any, any> {
                 <p>When the device is running, use the send button to send a new value. Set <em>As String</em> to "No" to send
                 booleans and numerics.
                 </p>
-                <h5>Include in run loop</h5>
+                <em>Include in run loop</em>
                 <p>
                     Check <em>Include in run loop</em> to have the property value automatically send on the selected duration. The
                     Send button can still be used and will modify the value sent and report the new value immediately.
                 </p>
-                <h5>Template the Value payload</h5>
+                <em>Template the Value payload</em>
                 <p>
                     Use this option to format the value into a JSON object. You can use the _VALUE_ macro to inject the
                     mock devices current value (ensure you set the type) This is an example template
@@ -101,7 +101,7 @@ export class Help extends React.Component<any, any> {
                     {FormatJSON({ "d2cProperty-88cf": "_VALUE_" })}
                 </pre>
                 <br />
-                <h5>Mock Sensor Configuration</h5>
+                <em>Mock Sensor Configuration</em>
                 <p>The mock-device tool includes 3 fake sensors to simulate useful telemetry trends. You can also provide a web hook like
                     Azure Functions to process a simulated value. An update to the parameters of the simulated property will cause sensor to restart. A mock
                     sensor will override the value field of the property. The Send button can still be used with a supplied value causing a spiking effect on the sensor.
@@ -117,7 +117,7 @@ export class Help extends React.Component<any, any> {
                     <em>timeToRunning</em> is the number of ms to reach running<br />
                     <em>Reported "Live" Value</em> show the current value of the simulated sensor<br />
                 </p>
-                <h5><em>Web Hook/Azure Function</em></h5>
+                <em><em>Web Hook/Azure Function</em></em>
                 <p>To use a web hook to calculate a sensor value click the Function button.</p>
                 <p>Provide the parameters ...</p>
                 <p>
