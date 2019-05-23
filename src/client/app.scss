@@ -66,6 +66,9 @@ input[type='text'], input[type='text']:focus {
 	padding-left: 25px;
 	border-bottom: 2px solid $app-clr-0;
 }
+.section-title-header-active {
+	background-color: $app-clr-1;
+}
 .section-title-menu {
 	cursor: pointer;
 	color: $app-clr-blue-1;

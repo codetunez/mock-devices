@@ -143,10 +143,10 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
 
                 {/* c2d */}
                 {this.state.property.type.direction === "c2d" ? <div className="property-fields">
-                    <div className="field"><label>{this.props.resx.FRM_LBL_FIELD_NAME}</label><br /><input className="form-control full" type="text" name="name" onChange={this.handleChange} value={this.state.property.name} /></div>
+                    <div className="field"><label>{this.props.resx.FRM_LBL_FIELD_NAME}</label><br /><input className="form-control full form-control-sm" type="text" name="name" onChange={this.handleChange} value={this.state.property.name} /></div>
                     <div className="field"><label>{this.props.resx.FRM_LBL_DEVICE_SDKIN}</label><br /><Combo collection={References.deviceInOutCombo} name="sdk" onChange={this.handleChange} value={this.state.property.sdk} /></div>
-                    <div className="field"><label>{this.props.resx.FRM_LBL_LAST_READ_VALUE}</label><br /><input type="text" name="value" className="form-control" value={this.state.property.value} readOnly={true} /></div>
-                    <div className="field"><label>{this.props.resx.FRM_LBL_VERSION}</label><br /><input type="text" name="value" className="form-control" value={this.state.property.version} readOnly={true} /></div>
+                    <div className="field"><label>{this.props.resx.FRM_LBL_LAST_READ_VALUE}</label><br /><input type="text" name="value" className="form-control form-control-sm" value={this.state.property.value} readOnly={true} /></div>
+                    <div className="field"><label>{this.props.resx.FRM_LBL_VERSION}</label><br /><input type="text" name="value" className="form-control form-control-sm" value={this.state.property.version} readOnly={true} /></div>
                     <div className="field"><label>{this.props.resx.FRM_LBL_GET_DATA}</label><br />
                         <button onClick={() => this.readValue()} title={this.props.resx.BTN_LBL_C2D} className={classNames("btn ", !this.state.isDirty ? "btn-primary" : "btn-outline-primary")} >
                             <span className="fa fa-cloud-download"></span> {this.props.resx.READ}
@@ -156,8 +156,8 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
 
                 {/* d2c */}
                 {this.state.property.type.direction === "d2c" ? <div className="property-fields">
-                    <div className="field"><label>{this.props.resx.FRM_LBL_FIELD_NAME}</label><br /><input className="form-control full" type="text" name="name" onChange={this.handleChange} value={this.state.property.name} /></div>
-                    <div className="field"><label>{this.props.resx.FRM_LBL_DEVICE_SDKOUT}</label><br /><Combo collection={References.deviceInOutCombo} name="sdk" onChange={this.handleChange} value={this.state.property.sdk} /></div>
+                    <div className="field"><label>{this.props.resx.FRM_LBL_FIELD_NAME}</label><br /><input className="form-control full form-control-sm" type="text" name="name" onChange={this.handleChange} value={this.state.property.name} /></div>
+                    <div className="field"><label>{this.props.resx.FRM_LBL_DEVICE_SDKOUT}</label><br /><Combo class="form-control-sm" collection={References.deviceInOutCombo} name="sdk" onChange={this.handleChange} value={this.state.property.sdk} /></div>
                     <div className="field"><label>{this.props.resx.FRM_LBL_AS_STRING}</label><br /><RadioBoolean name="string" onChange={this.handleChange} value={this.state.property.string} /></div>
                     <div className="field"><label>{this.props.resx.FRM_LBL_VALUE}</label><br />
                         <div className="input-group">

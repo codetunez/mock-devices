@@ -8,8 +8,7 @@ export interface NameValuePair {
 
 export class Combo extends React.Component<any, any> {
     render() {
-        let s: any = this.props.style && this.props.style === "small" ? "custom-select sm" : "custom-select";
-        return <select className={s} name={this.props.name} onChange={this.props.onChange} value={this.props.value}>
+        return <select className={"custom-select " + this.props.class} name={this.props.name} onChange={this.props.onChange} value={this.props.value}>
             {this.props.showSelect === false ? null : <option key={0} value="">--Select</option>}
             {this.props.collection.map(function (item: NameValuePair, index: number) {
                 return <option key={index + 1} value={!item.value ? item._id : item.value}>{item.name}</option>

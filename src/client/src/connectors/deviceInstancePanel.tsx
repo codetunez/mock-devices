@@ -147,9 +147,11 @@ class DeviceInstancePanel extends React.Component<any, any> {
         <a onClick={this.toggleAll}>{this.props.display.propertyToggleAll ? "collapse all" : "expand all"}</a>
         </div> */}
 
+        let d = this.props.device.device;
+
         return <div className="device-instance-scroller">
             <div className="device-instance-scroller-header">
-                <div className="section-title section-title-header">{this.props.device.device.configuration.mockDeviceName || '(Device has no name)'}</div>
+                <div className={classNames("section-title section-title-header", d.running ? "section-title-header-active" : "")}><span>{d.configuration.mockDeviceName || ''} </span>{(!d.running ? 'Device is not running' : '')}</div>
                 <div className="device-instance-commands">
                     <DeviceInstanceCommands
                         device={this.props.device.device}
@@ -160,8 +162,8 @@ class DeviceInstancePanel extends React.Component<any, any> {
                         addC2DHandler={this.addC2DProperty}
                         addMethodHandler={this.addMethod}
                         toggleIotHubHandler={this.toggleIotHub}
-                        hasHubString={this.props.device.device && this.props.device.device.configuration._kind != 'template' && this.props.device.device.configuration.hubConnectionString && this.props.device.device.configuration.hubConnectionString.length > 0}
-                        isTemplate={this.props.device.device && this.props.device.device.configuration._kind != 'template'}
+                        hasHubString={d && d.configuration._kind != 'template' && d.hubConnectionString && d.configuration.hubConnectionString.length > 0}
+                        isTemplate={d && d.configuration._kind != 'template'}
                         resx={this.props.resx}
                     />
                 </div>
@@ -175,8 +177,8 @@ class DeviceInstancePanel extends React.Component<any, any> {
                 </div> : null}
 
                 <div className={classNames("device-instance-properties", this.props.display.advancedExpanded ? "device-instance-properties-advanced" : "")}>
-                    {this.props.device.device.comms ?
-                        this.props.device.device.comms.map((item: any, index: number) => {
+                    {d.comms ?
+                        d.comms.map((item: any, index: number) => {
                             if (item._type === "method") {
                                 return <div key={index} className="device-instance-property-container">
                                     <DeviceInstanceMethod
