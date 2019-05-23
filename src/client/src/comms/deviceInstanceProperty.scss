@@ -1,0 +1,64 @@
+@import '../../consts.scss';
+
+.property-collapsed {
+    max-height: 60px;    
+}
+
+.property {
+    background-color: $app-clr-1;
+    border-radius: 5px;    
+    overflow: hidden;
+    padding: 15px;
+    margin-top: 15px;
+
+    .seperator-heading {
+        color: #403C33;
+        margin-bottom: $xs-gutter;
+    }
+    .property-toolbar {
+        display: flex;
+        align-items: center;        
+        justify-content: space-between;  
+    
+        .property-header {
+            display: flex;
+            align-items: center;
+            font-size: 19px;      
+            line-height: 26px;      
+            div {
+                margin: 0;
+                margin-right: 5px;
+                font-weight: bold;
+            }            
+            div:first-child {
+                margin-top: -3px;
+            }     
+        }
+    }
+    .property-body {
+        margin-top: $sm-gutter;    
+    }
+    .property-fields {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        margin-bottom: $md-gutter;
+        .name {
+            margin: 0;   
+            min-width: 300px;
+        }
+        .field:not(:last-child) {
+            margin-right: $sm-gutter;
+        }
+        .center {
+            text-align: center;
+        }
+    }
+    .property-fields-vertical {
+        flex-direction: column;    
+        .field {
+            width: 100%;
+        }
+    }
+}

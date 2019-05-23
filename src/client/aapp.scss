@@ -36,29 +36,6 @@ label {
   overflow-x: scroll;
 }
 
-/* -- UX -- */
-// .main-window {
-//     display: flex;
-//     overflow: hidden;
-//     background-color: #fff;
-
-//     .menu-panel {
-//          padding: $sm-gutter; 
-//          width: 70px; 
-//          background-color: $app-grey-1; 
-//          text-align: center; 
-//          z-index: 1000;
-        
-//          .menu-btn:not(:last-child) {
-//             margin-bottom: $sm-gutter;
-//          }
-        
-//          .menu hr {
-//              margin: $xs-gutter 0 $md-gutter 0;
-//              border-color: $app-blue-3;
-//          }
-//     }
-// }
 
 
 .panel-dialog-full {
@@ -140,100 +117,9 @@ label {
        font-weight: bolder;
    }
 }
-.blast-shield {
-    position: absolute;
-    left: 0;
-    top:0;
-    height: 100vh;
-    width: 100vw;
-    background-color: #000;
-    opacity: 0.8;
-    margin:0;
-    z-index: 10000;
-    transition: background-color 0.25s ease-in-out;
-}
-
-.blast-shield-nottoolbar {
-    margin-left: 70px;
-    width: calc(100vw - 70px); 
-}
-/* -- END DIALOGS -- */
-
-/* -- UI -- */
 
 
-/* ---- */
 
-
-/* ---- */
-
-.property-collapsed {
-    max-height: 60px;    
-}
-
-.property {
-
-    border: 1px solid $app-grey-3;
-    border-radius: 5px;    
-    padding: $md-gutter;
-
-    .seperator-heading {
-        color: #403C33;
-        margin-bottom: $xs-gutter;
-    }
-
-    .property-toolbar {
-        display: flex;
-        align-items: center;        
-        justify-content: space-between;  
-    
-        .property-header {
-            display: flex;
-            align-items: center;
-            font-size: 19px;      
-            line-height: 26px;      
-            div {
-                margin: 0;
-                margin-right: 5px;
-                font-weight: bold;
-            }            
-            div:first-child {
-                margin-top: -3px;
-            }     
-        }
-    }
-
-    .property-body {
-        margin-top: $sm-gutter;    
-    }
-
-    .property-fields {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        margin-bottom: $md-gutter;
-        .name {
-            margin: 0;   
-            min-width: 300px;
-        }
-        .field:not(:last-child) {
-            margin-right: $sm-gutter;
-        }
-        .center {
-            text-align: center;
-        }
-    }
-
-
-    .property-fields-vertical {
-        flex-direction: column;    
-        
-        .field {
-            width: 100%;
-        }
-    }
-}
 
 .property-method {
     background-color: #FAD7A0;
@@ -290,13 +176,6 @@ label {
 }
 
 
-.help {
-    margin-top: $lg-gutter;
-
-    .help-row {
-        margin-top: $md-gutter;
-    }
-}
 .toggle-link:hover {
     text-decoration: none;
 }

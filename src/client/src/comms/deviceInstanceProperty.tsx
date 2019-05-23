@@ -1,9 +1,10 @@
-var classNames = require("classnames");
+var classNames = require("classNames");
 import * as React from "react";
 import { DeviceInstancePropertyMock } from '../components/deviceInstancePropertyMock';
 import { DeviceInstancePropertyRunLoop } from '../components/deviceInstancePropertyRunLoop';
 import { Combo, RadioBoolean, RadioCollection } from '../framework/controls'
 import { FormatJSON } from '../framework/utils'
+const cx = classNames.bind(require('./deviceInstanceProperty.scss'));
 
 let References = {
     propTypeD2C: [{ label: "No use default", value: "default" }, { label: "Use a Template", value: "templated" }],
@@ -114,18 +115,18 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
 
     render() {
 
-        let propertyButtonIcon = classNames("fa", this.state.property.type.direction === "d2c" ? "fa-cloud-upload" : "fa-cloud-download");
+        let propertyButtonIcon = cx("fa", this.state.property.type.direction === "d2c" ? "fa-cloud-upload" : "fa-cloud-download");
         let propertyColor = this.state.property.type.direction === "d2c" ? "" : "property-c2d";
         let sendButtonLabel = this.state.property.type.mock === true ? this.props.resx.TEXT_OVERRIDE_MOCK :
             (this.state.property.type.direction === "d2c" && this.state.property.runloop && this.state.property.runloop.include === true ? this.props.resx.TEXT_SEND_NOW : this.props.resx.TEXT_SEND);
 
-        return <div key={this.props.index} className={classNames("property", propertyColor, this.props.dirty.devicePropertyId === this.state.property._id ? "property-dirty" : "", this.state.collapsed ? "property-collapsed" : "")}>
+        return <div key={this.props.index} className={cx("property", propertyColor, this.props.dirty.devicePropertyId === this.state.property._id ? "property-dirty" : "", this.state.collapsed ? "property-collapsed" : "")}>
 
             {/* toolbar */}
             <div className="property-fields property-toolbar">
                 <a className="toggle-link" href="javascript:void(0)" onClick={() => this.toggleMe()}>
-                    <div className={classNames("text-primary property-header")}>
-                        <div className={classNames("fa", this.state.collapsed ? "fa-chevron-down" : "fa-chevron-up")}></div>
+                    <div className={cx("text-primary property-header")}>
+                        <div className={cx("fa", this.state.collapsed ? "fa-chevron-down" : "fa-chevron-up")}></div>
                         <div className={propertyButtonIcon}></div>
                         <div>{this.state.property.type.direction === "d2c" ? (this.state.property.type.mock === true ? this.props.resx.TEXT_D2C_MOCK : this.props.resx.TEXT_D2C) : this.props.resx.TEXT_C2D}</div>
                         <div>({this.state.property.name})</div>
@@ -134,8 +135,8 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
                     </div>
                 </a>
                 <div className="btn-bar">
-                    <button title={this.props.resx.BTN_LBL_PROPERTY_SAVE} className={classNames("btn btn-sm", this.props.dirty.devicePropertyId === this.state.property._id ? "btn-warning" : "btn-outline-secondary")} onClick={() => this.updateProperty()}><span className="fa fa-floppy-o"></span></button>
-                    <button title={this.props.resx.BTN_LBL_PROPERTY_DELETE} className="btn btn-sm btn-outline-danger" onClick={() => this.props.deleteHandler(this.state.property._id)}><span className={classNames("fa fa-trash")}></span></button>
+                    <button title={this.props.resx.BTN_LBL_PROPERTY_SAVE} className={cx("btn btn-sm", this.props.dirty.devicePropertyId === this.state.property._id ? "btn-warning" : "btn-outline-secondary")} onClick={() => this.updateProperty()}><span className="fa fa-floppy-o"></span></button>
+                    <button title={this.props.resx.BTN_LBL_PROPERTY_DELETE} className="btn btn-sm btn-outline-danger" onClick={() => this.props.deleteHandler(this.state.property._id)}><span className={cx("fa fa-trash")}></span></button>
                 </div>
             </div>
 
@@ -148,7 +149,7 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
                     <div className="field"><label>{this.props.resx.FRM_LBL_LAST_READ_VALUE}</label><br /><input type="text" name="value" className="form-control form-control-sm" value={this.state.property.value} readOnly={true} /></div>
                     <div className="field"><label>{this.props.resx.FRM_LBL_VERSION}</label><br /><input type="text" name="value" className="form-control form-control-sm" value={this.state.property.version} readOnly={true} /></div>
                     <div className="field"><label>{this.props.resx.FRM_LBL_GET_DATA}</label><br />
-                        <button onClick={() => this.readValue()} title={this.props.resx.BTN_LBL_C2D} className={classNames("btn ", !this.state.isDirty ? "btn-primary" : "btn-outline-primary")} >
+                        <button onClick={() => this.readValue()} title={this.props.resx.BTN_LBL_C2D} className={cx("btn ", !this.state.isDirty ? "btn-primary" : "btn-outline-primary")} >
                             <span className="fa fa-cloud-download"></span> {this.props.resx.READ}
                         </button>
                     </div>
@@ -163,7 +164,7 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
                         <div className="input-group">
                             <input type="text" name="value" onChange={this.handleChange} value={this.state.property.value} className="form-control" />
                             <span className="input-group-append">
-                                <button onClick={() => this.sendValue()} className={classNames("btn ", !this.state.property.runloop.include ? "btn-primary" : "btn-outline-primary")}
+                                <button onClick={() => this.sendValue()} className={cx("btn ", !this.state.property.runloop.include ? "btn-primary" : "btn-outline-primary")}
                                     title={this.props.resx.BTN_LBL_D2C} >
                                     <span className="fa fa-cloud-upload"></span> {this.props.resx.SEND}
                                 </button>
