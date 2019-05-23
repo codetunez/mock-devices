@@ -20,22 +20,31 @@
     font-family: "Courier New", courier, serif;
     color: limegreen;    
     background-color: #000;   
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     height: 20px;
-    padding-left: 10px;    
+    padding-left: 30px;    
     .console-toggle {
-        width: 15px;
+        position: fixed;
+        left: 5;
+        margin-left: -18px;
+        cursor: pointer;
     }
     .console-messages {
         div {
             white-space: nowrap;
         }
-    }        
+    }  
+    .ellipsis {
+        width: calc(100vw - 35px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }      
 }
 
 .console-window-tall {
-    height: 300px;
+    height: 400px;
     overflow-x: hidden;
     overflow-y: auto;
 }

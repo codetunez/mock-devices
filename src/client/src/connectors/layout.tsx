@@ -34,7 +34,7 @@ class Layout extends React.Component<any, any> {
         let s: any = this.state;
         let liveUpdates = JSON.parse(data);
         s.messages.unshift(liveUpdates.message);
-        if (s.messages.length > 10) {
+        if (s.messages.length > 500) {
             s.messages.pop();
         }
         this.setState(s);
