@@ -20,9 +20,8 @@
     font-family: "Courier New", courier, serif;
     color: limegreen;    
     background-color: #000;   
-    opacity: 0.92; 
     font-size: 13px;
-    font-weight: 200;
+    font-weight: 600;
     height: 20px;
     padding-left: 10px;    
     .console-toggle {
@@ -39,7 +38,6 @@
     height: 300px;
     overflow-x: hidden;
     overflow-y: auto;
-    border-bottom: 1px solid  $app-grey-3;
 }
 
 .content-window {
@@ -49,6 +47,7 @@
 
     display: flex;
     background-color: #fff;
+    border-top: 1px solid  $app-clr-0;
 
     .inner-content-window {
         display: flex;
@@ -93,7 +92,7 @@
 
 .device-cardlist-scroller-header {
     flex-shrink: 0;
-    border-bottom: 2px solid $app-clr-0;
+    border-right: 2px solid $app-clr-0;
 }
 
 .device-cardlist-scroller-body {
@@ -101,7 +100,8 @@
     min-height: 0;
     height: 100%;
     overflow-y: auto;
-    padding: 10px 15px;
+    padding: 0 15px;
+    border-right: 2px solid $app-clr-0;
 }
 
 .device-instance-panel {     
@@ -131,8 +131,41 @@
     height: 100%;
 
     overflow-y: auto;
-    padding: 10px 15px;
+    padding: 10px 20px;
 }
+
+.help {
+    background-color: $app-clr-3;
+    padding: $sm-gutter;
+    overflow-y: auto;
+    em {
+        font-weight: bolder;
+    }
+    pre {
+        margin: 10px auto; 
+        width: 90%;
+        padding: 10px;
+        border: 1px solid black;
+        background-color:  $app-grey-2;
+        color: white;
+    }
+    .help-row:first-child {
+        margin-top: -10px;
+    }
+    .help-row {
+        h2 {
+            color: $app-clr-yellow-1;            
+        }
+        h4 {
+            margin-top: 30px;
+            color: $app-clr-yellow-1;            
+        }
+        h5 {
+            color: $app-grey-4;
+        }
+    }
+}
+
 
     // .device-instance-properties {
     //     overflow-x: hidden;

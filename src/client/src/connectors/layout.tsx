@@ -10,6 +10,7 @@ import * as DevicesActions from '../store/actions/devicesActions'
 import * as DisplayActions from '../store/actions/displayActions'
 import * as SensorsActions from '../store/actions/sensorsActions'
 import { AddDevice } from '../dialogs/addDevice';
+import { Help } from "../help";
 
 const cx = classNames.bind(require('./layout.scss'));
 
@@ -68,7 +69,7 @@ class Layout extends React.Component<any, any> {
                 <div className="menu-panel"><MenuPanel /></div>
                 <div className="inner-content-window">
                     <div className="device-cardlist-panel"><DeviceCardListPanel /></div>
-                    <div className="device-instance-panel"><DeviceInstancePanel /></div>
+                    {this.props.device.device ? <div className="device-instance-panel"><DeviceInstancePanel /></div> : <Help />}
                 </div>
             </div>
         </div>
@@ -78,6 +79,7 @@ class Layout extends React.Component<any, any> {
 /* this is to avoid the TypeScript issue using @connect */
 function mapStateToProps(state: any) {
     return {
+        device: state.device,
         devices: state.devices,
         display: state.display,
         resx: state.resx

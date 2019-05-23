@@ -11,8 +11,6 @@ import { DeviceInstanceProperty } from "../comms/deviceInstanceProperty";
 import { DeviceInstanceCommands } from "../comms/deviceInstanceCommands"
 import { DeviceInstanceMethod } from "../comms/deviceInstanceMethod"
 
-import { Help } from "../help";
-
 class DeviceInstancePanel extends React.Component<any, any> {
 
     constructor(props: any) {
@@ -149,82 +147,77 @@ class DeviceInstancePanel extends React.Component<any, any> {
         <a onClick={this.toggleAll}>{this.props.display.propertyToggleAll ? "collapse all" : "expand all"}</a>
         </div> */}
 
-        let content = this.props.device.device === null ? <div className="device-instance-scroller">
-            <div className="device-instance-panel-scroller"><Help /></div></div> :
-
-            <div className="device-instance-scroller">
-                <div className="device-instance-scroller-header">
-                    <div className="section-title section-title-header">{this.props.device.device.configuration.mockDeviceName || '(Device has no name)'}</div>
-                    <div className="device-instance-commands">
-                        <DeviceInstanceCommands
-                            device={this.props.device.device}
-                            startHandler={this.startDevice}
-                            stopHandler={this.stopDevice}
-                            deleteHandler={this.deleteDevice}
-                            addD2CHandler={this.addD2CProperty}
-                            addC2DHandler={this.addC2DProperty}
-                            addMethodHandler={this.addMethod}
-                            toggleIotHubHandler={this.toggleIotHub}
-                            hasHubString={this.props.device.device && this.props.device.device.configuration._kind != 'template' && this.props.device.device.configuration.hubConnectionString && this.props.device.device.configuration.hubConnectionString.length > 0}
-                            isTemplate={this.props.device.device && this.props.device.device.configuration._kind != 'template'}
-                            resx={this.props.resx}
-                        />
-                    </div>
+        return <div className="device-instance-scroller">
+            <div className="device-instance-scroller-header">
+                <div className="section-title section-title-header">{this.props.device.device.configuration.mockDeviceName || '(Device has no name)'}</div>
+                <div className="device-instance-commands">
+                    <DeviceInstanceCommands
+                        device={this.props.device.device}
+                        startHandler={this.startDevice}
+                        stopHandler={this.stopDevice}
+                        deleteHandler={this.deleteDevice}
+                        addD2CHandler={this.addD2CProperty}
+                        addC2DHandler={this.addC2DProperty}
+                        addMethodHandler={this.addMethod}
+                        toggleIotHubHandler={this.toggleIotHub}
+                        hasHubString={this.props.device.device && this.props.device.device.configuration._kind != 'template' && this.props.device.device.configuration.hubConnectionString && this.props.device.device.configuration.hubConnectionString.length > 0}
+                        isTemplate={this.props.device.device && this.props.device.device.configuration._kind != 'template'}
+                        resx={this.props.resx}
+                    />
                 </div>
-                <div className="device-instance-scroller-body">
-                    {this.props.display.advancedExpanded ? <div className="device-instance-advanced">
-                        <DeviceInstanceAdvanced
-                            resx={this.props.resx}
-                            device={this.props.device.device}
-                            updateHandler={this.updateDevice} />
-                    </div> : null}
+            </div>
+            <div className="device-instance-scroller-body">
+                {this.props.display.advancedExpanded ? <div className="device-instance-advanced">
+                    <DeviceInstanceAdvanced
+                        resx={this.props.resx}
+                        device={this.props.device.device}
+                        updateHandler={this.updateDevice} />
+                </div> : null}
 
-                    <div className={classNames("device-instance-properties", this.props.display.advancedExpanded ? "device-instance-properties-advanced" : "")}>
-                        {this.props.device.device.comms ?
-                            this.props.device.device.comms.map((item: any, index: number) => {
-                                if (item._type === "method") {
-                                    return <div key={index} className="device-instance-property-container">
-                                        <DeviceInstanceMethod
-                                            index={index}
-                                            property={item}
-                                            methodParams={this.props.methodParams}
-                                            resx={this.props.resx}
-                                            display={this.props.display}
-                                            deleteHandler={this.deleteProperty}
-                                            updateHandler={this.updateMethod.bind(this, item._id)}
-                                            toggleHandler={this.handleToggle.bind(this, item._id)}
-                                            dirtyHandler={this.handleDirty}
-                                            methodParamsHandler={this.methodParamsHandler.bind(this, item._id)}
-                                            dirty={this.props.dirty} />
-                                    </div>
-                                }
-                                if (item._type === "property") {
-                                    return <div key={index} className="device-instance-property-container">
-                                        <DeviceInstanceProperty
-                                            index={index}
-                                            property={item}
-                                            deleteHandler={this.deleteProperty}
-                                            addMockHandler={this.addPropertyMock}
-                                            deleteMockHandler={this.deletePropertyMock}
-                                            updateHandler={this.updateProperty.bind(this, item._id)}
-                                            sendValueHandler={this.sendProperty.bind(this, item._id)}
-                                            readValueHandler={this.readProperty.bind(this, item._id)}
-                                            sensorList={this.props.sensors.sensors}
-                                            resx={this.props.resx}
-                                            display={this.props.display}
-                                            toggleHandler={this.handleToggle.bind(this, item._id)}
-                                            dirtyHandler={this.handleDirty}
-                                            dirty={this.props.dirty} />
-                                    </div>
-                                }
+                <div className={classNames("device-instance-properties", this.props.display.advancedExpanded ? "device-instance-properties-advanced" : "")}>
+                    {this.props.device.device.comms ?
+                        this.props.device.device.comms.map((item: any, index: number) => {
+                            if (item._type === "method") {
+                                return <div key={index} className="device-instance-property-container">
+                                    <DeviceInstanceMethod
+                                        index={index}
+                                        property={item}
+                                        methodParams={this.props.methodParams}
+                                        resx={this.props.resx}
+                                        display={this.props.display}
+                                        deleteHandler={this.deleteProperty}
+                                        updateHandler={this.updateMethod.bind(this, item._id)}
+                                        toggleHandler={this.handleToggle.bind(this, item._id)}
+                                        dirtyHandler={this.handleDirty}
+                                        methodParamsHandler={this.methodParamsHandler.bind(this, item._id)}
+                                        dirty={this.props.dirty} />
+                                </div>
+                            }
+                            if (item._type === "property") {
+                                return <div key={index} className="device-instance-property-container">
+                                    <DeviceInstanceProperty
+                                        index={index}
+                                        property={item}
+                                        deleteHandler={this.deleteProperty}
+                                        addMockHandler={this.addPropertyMock}
+                                        deleteMockHandler={this.deletePropertyMock}
+                                        updateHandler={this.updateProperty.bind(this, item._id)}
+                                        sendValueHandler={this.sendProperty.bind(this, item._id)}
+                                        readValueHandler={this.readProperty.bind(this, item._id)}
+                                        sensorList={this.props.sensors.sensors}
+                                        resx={this.props.resx}
+                                        display={this.props.display}
+                                        toggleHandler={this.handleToggle.bind(this, item._id)}
+                                        dirtyHandler={this.handleDirty}
+                                        dirty={this.props.dirty} />
+                                </div>
+                            }
 
-                            })
-                            : null}
-                    </div>
-                </div >
+                        })
+                        : null}
+                </div>
             </div >
-
-        return content;
+        </div >
     }
 }
 

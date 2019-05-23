@@ -32,7 +32,6 @@ class MenuPanel extends React.Component<any, any> {
         return <div className="menu">
             <div onClick={this.help} className="section-title section-title-menu">HELP</div>
             <div>
-                < hr />
                 <button title={this.props.resx.BTN_LBL_ADDEVICE} className={classNames("btn btn-outline-primary menu-btn", this.props.display.showDevicePanel ? "warning-active" : "")} onClick={() => this.toggleNewDevicePanel()}>
                     <span className="fa fa-lg fa-plus"></span>
                 </button >
@@ -42,15 +41,15 @@ class MenuPanel extends React.Component<any, any> {
                 {this.props.display.showExImportPanel ? <div className="panel-dialog panel-dialog-eximport"><ExImport dispatch={this.props.dispatch} state={this.props.state} resx={this.props.resx} /></div> : null}
                 <hr />
 
-                <button title={this.props.resx.BTN_LBL_STARTALL} className="btn btn-outline-primary menu-btn" onClick={this.startAllDevices}>
+                <button title={this.props.resx.BTN_LBL_STARTALL} className="btn btn-outline-primary menu-btn" onClick={this.startAllDevices.bind(this)}>
                     <span className="fa fa-lg fa-play"></span>
                 </button>
 
-                <button title={this.props.resx.BTN_LBL_STOPALL} className="btn btn-outline-primary menu-btn" onClick={this.stopAllDevices}>
+                <button title={this.props.resx.BTN_LBL_STOPALL} className="btn btn-outline-primary menu-btn" onClick={this.stopAllDevices.bind(this)}>
                     <span className="fa fa-lg fa-stop"></span>
                 </button>
 
-                <button title={this.props.resx.BTN_LBL_REFRESH} className="btn btn-outline-primary menu-btn" onClick={this.reinit}>
+                <button title={this.props.resx.BTN_LBL_REFRESH} className="btn btn-outline-primary menu-btn" onClick={this.reinit.bind(this)}>
                     <span className="fa fa-lg fa-refresh"></span>
                 </button>
             </div>
