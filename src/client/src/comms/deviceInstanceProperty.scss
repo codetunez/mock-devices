@@ -1,64 +1,77 @@
 @import '../../consts.scss';
-
 .property-collapsed {
-    max-height: 60px;    
+	max-height: 165px;
 }
 
 .property {
-    background-color: $app-clr-1;
-    border-radius: 5px;    
-    overflow: hidden;
-    padding: 15px;
+    width: 670px;
+	background-color: $app-clr-1;
+	border-radius: 5px;
+	overflow: hidden;
+	padding: 5px 10px;
     margin-top: 15px;
+    margin-right: 15px;
+}
 
-    .seperator-heading {
-        color: #403C33;
-        margin-bottom: $xs-gutter;
-    }
-    .property-toolbar {
-        display: flex;
-        align-items: center;        
-        justify-content: space-between;  
-    
-        .property-header {
-            display: flex;
-            align-items: center;
-            font-size: 19px;      
-            line-height: 26px;      
-            div {
-                margin: 0;
-                margin-right: 5px;
-                font-weight: bold;
-            }            
-            div:first-child {
-                margin-top: -3px;
-            }     
-        }
-    }
-    .property-body {
-        margin-top: $sm-gutter;    
-    }
-    .property-fields {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        margin-bottom: $md-gutter;
-        .name {
-            margin: 0;   
-            min-width: 300px;
-        }
-        .field:not(:last-child) {
-            margin-right: $sm-gutter;
-        }
-        .center {
-            text-align: center;
-        }
-    }
-    .property-fields-vertical {
-        flex-direction: column;    
-        .field {
-            width: 100%;
-        }
+.p2-toolbar {
+    display: flex;
+    justify-content: space-between;
+	.p2-toolbar-left {
+		display: flex;
+		align-items: flex-start;
+				.chevron {
+			width: 35px;
+			a {
+				font-size: 22px;
+				color: white
+			}
+		}
+		.title {
+			font-weight: 700;
+			label {
+				margin: 0;
+				color: $app-clr-4;
+			}
+			div {
+				margin: 0;
+				font-size: 22px;
+				color: $app-clr-yellow-1;
+			}
+		}
+	}
+	.p2-toolbar-right {
+		.title {
+            text-align: right;
+			font-weight: 700;
+			label {
+				margin: 0;
+				color: $app-clr-4;
+			}
+			div {
+				margin: 0;
+				font-size: 22px;
+				color: white;
+			}
+		}
     }
 }
+
+.p2-fields {
+    margin: 15px 0 30px 0;
+    padding-left: 35px;
+	display: flex;	
+    align-items: flex-start;
+
+    label {
+        font-size: 12px;
+        font-weight: 700
+     }
+    .field:nth-child(1) {
+        width: 130px;
+    }
+    .field {
+        width: 80px;
+        margin-right: 8px;
+    }
+}
+

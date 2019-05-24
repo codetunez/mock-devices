@@ -1,6 +1,7 @@
 var classNames = require("classnames");
 import * as React from "react";
 import * as Websocket from 'react-websocket';
+const cx = classNames.bind(require('../comms/deviceInstanceProperty.scss'));
 
 export class DeviceInstancePropertyMock extends React.Component<any, any> {
 
@@ -50,7 +51,7 @@ export class DeviceInstancePropertyMock extends React.Component<any, any> {
             if (propertyName[0] != "_") {
                 fields.push(<div className="field" key={keyCounter}>
                     <label title={propertyName}>{propertyName}</label>
-                    <input type="text" className="form-control" onChange={this.onValueChange} name={propertyName} value={this.state.sensor[propertyName]} />
+                    <input type="text" className="form-control form-control-sm" onChange={this.onValueChange} name={propertyName} value={this.state.sensor[propertyName]} />
                 </div>)
                 keyCounter++;
             }
@@ -63,18 +64,15 @@ export class DeviceInstancePropertyMock extends React.Component<any, any> {
 
 
         return this.props.property.type.mock === true ? <div className="property-type-form">
-            <Websocket url={'ws://127.0.0.1:24376'} onMessage={this.handleData.bind(this)} />
+            
             <label className="seperator-heading"><b>{this.props.resx.FRM_LBL_MOCK_SEN_CFG}</b></label>
-            <div className="">
-                <div className="btn-group" role="group" style={{ marginRight: "5px" }} >
-                    {this.props.sensorList.map((item: any, index: number) => {
-                        return <button key={index} type="button" className={classNames("btn btn-sm btn-outline-primary", this.state.sensor && this.state.sensor._type === item._type ? "active" : "")} onClick={() => this.onSensorSelected(item)}>{item._type}</button>
-                    })}
-                </div>
-                <button className="btn btn-sm btn-outline-danger" onClick={this.props.deleteMockHandler} title={this.props.resx.BTN_LBL_REMOVE_SENSOR}><span className={classNames("fa fa-times")}></span></button>
-                <div className="property-fields property-fields-no-bottom ">
-                    {fields}
-                </div>
+            <div className="btn-group" role="group" >
+                {this.props.sensorList.map((item: any, index: number) => {
+                    return <button key={index} type="button" className={classNames("btn btn-sm btn-outline-primary", this.state.sensor && this.state.sensor._type === item._type ? "active" : "")} onClick={() => this.onSensorSelected(item)}>{item._type}</button>
+                })}
+            </div>
+            <div className={cx("p2-fields")}>
+                {fields}
             </div>
         </div>
             : this.props.property.type.direction === "d2c" ? <div className="property-type-form">

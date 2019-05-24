@@ -5,6 +5,7 @@
 }
 
 .layout {
+    overflow-x: hidden;
     width: 100%;
     height: 100%;
     display: flex;
@@ -36,7 +37,7 @@
         }
     }  
     .ellipsis {
-        width: calc(100vw - 35px);
+        width: calc(100vw - 45px);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -66,11 +67,11 @@
 
 .menu-panel {    
     text-align: center;     
-    width: 70px; 
+    min-width: 70px; 
+    max-width: 70px; 
     background-color: $app-clr-1; 
     padding: $xs-gutter;
     margin-top: -5px;
-    overflow: hidden;
  
     .menu-btn:not(:last-child) {
        margin-bottom: $sm-gutter;
@@ -87,13 +88,10 @@
 .device-cardlist-panel {
     z-index: $order-floating;
     text-align: center;
-    overflow-y: auto; 
-    min-width: 240px;
-    background-color: $app-clr-2; 
+    background-color: $app-clr-2;     
 }
  
-.device-cardlist-scroller {
-    width: 100%;
+.device-cardlist-scroller {    
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -142,6 +140,11 @@
 
     overflow-y: auto;
     padding: 10px 20px;
+}
+
+.device-instance-properties {
+    display: flex;
+    flex-flow: wrap;
 }
 
 .help {

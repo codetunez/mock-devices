@@ -1,12 +1,12 @@
 @import '../../consts.scss';
 
 .card {
+    width: 140px;
     padding: 15px;
     overflow-wrap: break-word;
     background-color: $app-clr-2;
     border: 2px solid $app-clr-0;
     color: white;
-    width: 100%;
 
     .card-text {
         font-size: 0.8em;

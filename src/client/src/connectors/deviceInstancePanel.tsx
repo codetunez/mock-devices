@@ -180,8 +180,7 @@ class DeviceInstancePanel extends React.Component<any, any> {
                     {d.comms ?
                         d.comms.map((item: any, index: number) => {
                             if (item._type === "method") {
-                                return <div key={index} className="device-instance-property-container">
-                                    <DeviceInstanceMethod
+                                return <DeviceInstanceMethod
                                         index={index}
                                         property={item}
                                         methodParams={this.props.methodParams}
@@ -193,11 +192,9 @@ class DeviceInstancePanel extends React.Component<any, any> {
                                         dirtyHandler={this.handleDirty}
                                         methodParamsHandler={this.methodParamsHandler.bind(this, item._id)}
                                         dirty={this.props.dirty} />
-                                </div>
                             }
                             if (item._type === "property") {
-                                return <div key={index} className="device-instance-property-container">
-                                    <DeviceInstanceProperty
+                                return <DeviceInstanceProperty
                                         index={index}
                                         property={item}
                                         deleteHandler={this.deleteProperty}
@@ -212,7 +209,6 @@ class DeviceInstancePanel extends React.Component<any, any> {
                                         toggleHandler={this.handleToggle.bind(this, item._id)}
                                         dirtyHandler={this.handleDirty}
                                         dirty={this.props.dirty} />
-                                </div>
                             }
 
                         })
