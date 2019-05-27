@@ -38,12 +38,11 @@ input[type='text'], input[type='text']:focus {
 	color: $app-font-color-1;
 }
 .live-value-field {
-	display: block;
 	font-size: 12px;
-    border: 1px solid black;
+    border: 1px solid white;
     border-radius: 3px;
     padding: 4px;
-    height: 30px;
+    height: 31px;
     width: 80px;
     overflow: hidden;
     background-color: $app-purple-1;

@@ -3,8 +3,10 @@ import * as React from "react";
 import { DeviceInstancePropertyMock } from '../components/deviceInstancePropertyMock';
 import { Combo, RadioBoolean, RadioCollection } from '../framework/controls'
 import { FormatJSON } from '../framework/utils'
-import Toggle from 'react-toggle'
 const cx = classNames.bind(require('./deviceInstanceProperty.scss'));
+import Toggle from 'react-toggle'
+import * as Websocket from 'react-websocket';
+
 
 let References = {
     devicePropType: [{ name: "String", value: "true" }, { name: "Num/Bool", value: "false" }],
@@ -21,7 +23,8 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
 
         this.state = {
             property: this.props.property,
-            collapsed: this.props.display.propertyToggle[this.props.property._id]
+            collapsed: this.props.display.propertyToggle[this.props.property._id],
+            liveValue: 0
         }
     }
 
@@ -90,13 +93,21 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
         } else { alert(this.props.resx.TEXT_DIRTY_PROPERTY); }
     }
 
-    addMockLocalHandler = () => {
-        this.props.addMockHandler(this.state.property);
+    mockChangedHandler = () => {
+        if (this.state.property.type.mock) {
+            this.props.deleteMockHandler(this.state.property._id);
+        } else {
+            this.props.addMockHandler(this.state.property);
+        }
     }
 
-    deleteMockLocalHandler = () => {
-        this.props.deleteMockHandler(this.state.property._id);
-    }
+    // addMockLocalHandler = () => {
+    //     this.props.addMockHandler(this.state.property);
+    // }
+
+    // deleteMockLocalHandler = () => {
+    //     this.props.deleteMockHandler(this.state.property._id);
+    // }
 
     updateProperty = () => {
         this.props.updateHandler(this.state.property);
@@ -114,6 +125,26 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
         this.props.toggleHandler(this.state.property);
     }
 
+    /* mock sensor */
+    onSensorSelected = (sensor: any) => {
+        this.mockChangeHandler(sensor);
+    }
+
+    onMockValueChange = (e: any) => {
+        // let s: any = this.state;
+        // s.sensor[e.target.name] = e.target.value;
+        // this.setState(s, () => {
+        //    this.mockChangeHandler(s.sensor);
+        // });
+    }
+
+    handleData = (data: any) => {
+        let s: any = this.state;
+        let liveUpdates = JSON.parse(data);
+        s.liveValue = liveUpdates[this.props.property.name];
+        this.setState(s);
+    }
+
     render() {
 
         let frequencyCombo = [{ name: "secs", value: "secs" }, { name: "min", value: "min" }]
@@ -121,8 +152,28 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
         let sendButtonLabel = this.state.property.type.mock === true ? this.props.resx.TEXT_OVERRIDE_MOCK :
             (this.state.property.type.direction === "d2c" && this.state.property.runloop && this.state.property.runloop.include === true ? this.props.resx.TEXT_SEND_NOW : this.props.resx.TEXT_SEND);
 
+        let fields = [];
+        if (this.props.property.mock) {
+            let keyCounter = 0;
+            for (var propertyName in this.props.property.mock) {
+                if (propertyName[0] != "_") {
+                    fields.push(<div className="field" key={keyCounter}>
+                        <label title={propertyName}>{this.props.property.mock._resx[propertyName]}</label>
+                        <input type="text" className="form-control form-control-sm" onChange={this.onMockValueChange} name={propertyName} value={this.props.property.mock[propertyName]} />
+                    </div>)
+                    keyCounter++;
+                }
+            }
+
+            fields.push(<div className="field" key={999}>
+                <label title="Live Value">{this.props.resx.FRM_LBL_LIVE_VALUE}</label>
+                <div className="live-value-field">{this.state.liveValue}</div>
+            </div>);
+        }
+
 
         return <div key={this.props.index} className={cx("property", propertyColor, this.props.dirty.devicePropertyId === this.state.property._id ? "property-dirty" : "", this.state.collapsed ? "property-collapsed" : "")}>
+            <Websocket url={'ws://127.0.0.1:24376'} onMessage={this.handleData.bind(this)} />
 
             {/* toolbar */}
             <div className="p2-toolbar">
@@ -141,13 +192,26 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
                         <div>{this.state.property.name}</div>
                     </div>
                 </div>
-                <div className="p2-toolbar-right">
+                {this.state.property.type.direction === "d2c" ? <div className="p2-toolbar-right">
                     <div className="title">
                         <label>LAST SENT VALUE</label>
-                        <div>0000.00000</div>
+                        <div>{this.state.liveValue}</div>
                     </div>
-                </div>
+                </div> : null}
             </div>
+
+            {/* c2d */}
+            {this.state.property.type.direction === "c2d" ? <div className="property-fields">
+                <div className="field"><label>{this.props.resx.FRM_LBL_FIELD_NAME}</label><br /><input className="form-control full form-control-sm" type="text" name="name" onChange={this.handleChange} value={this.state.property.name} /></div>
+                <div className="field"><label>{this.props.resx.FRM_LBL_DEVICE_SDKIN}</label><br /><Combo collection={References.deviceInOutCombo} name="sdk" onChange={this.handleChange} value={this.state.property.sdk} /></div>
+                <div className="field"><label>{this.props.resx.FRM_LBL_LAST_READ_VALUE}</label><br /><input type="text" name="value" className="form-control form-control-sm" value={this.state.property.value} readOnly={true} /></div>
+                <div className="field"><label>{this.props.resx.FRM_LBL_VERSION}</label><br /><input type="text" name="value" className="form-control form-control-sm" value={this.state.property.version} readOnly={true} /></div>
+                <div className="field"><label>{this.props.resx.FRM_LBL_GET_DATA}</label><br />
+                    <button onClick={() => this.readValue()} title={this.props.resx.BTN_LBL_C2D} className={cx("btn ", !this.state.isDirty ? "btn-primary" : "btn-outline-primary")} >
+                        <span className="fa fa-cloud-download"></span> {this.props.resx.READ}
+                    </button>
+                </div>
+            </div> : null}
 
             {/* toolbar */}
             {this.state.property.type.direction === "d2c" ? <div>
@@ -167,22 +231,32 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
 
                 <div className="p2-fields">
                     <div className="field"><label>Send Data Frequently</label><br /><div><Toggle name="include" defaultChecked={this.state.property.runloop.include} icons={false} onChange={this.runloopChangeHandler} /></div></div>
-                    <div className="field"><label>{this.props.resx.FRM_LBL_TIME_PERIOD}</label><br /><Combo class="form-control-sm" collection={frequencyCombo} name="unit" onChange={this.props.changeHandler} value={this.props.property.runloop.unit} showSelect={false} /></div>
-                    <div className="field"><label>{this.props.resx.FRM_LBL_VALUE}</label><br /><input maxLength={2} name="value" className="form-control  form-control-sm" type="text" onChange={this.props.changeHandler} value={this.props.property.runloop.value} /></div>
+                    {this.state.property.runloop.include ? <div className="field"><label>{this.props.resx.FRM_LBL_TIME_PERIOD}</label><br /><Combo class="form-control-sm" collection={frequencyCombo} name="unit" onChange={this.props.changeHandler} value={this.props.property.runloop.unit} showSelect={false} /></div> : null}
+                    {this.state.property.runloop.include ? <div className="field"><label>{this.props.resx.FRM_LBL_VALUE}</label><br /><input maxLength={2} name="value" className="form-control  form-control-sm" type="text" onChange={this.props.changeHandler} value={this.props.property.runloop.value} /></div> : null}
                 </div>
 
+
                 <div className="p2-fields">
-                    <div className="field"><label>Use a Mock Sensor</label><br /><div><Toggle defaultChecked={this.state.property.runloop.include} icons={false} /></div></div>
-                    <div className="field">
-                        <DeviceInstancePropertyMock
-                            property={this.state.property}
-                            addMockHandler={this.addMockLocalHandler}
-                            deleteMockHandler={this.deleteMockLocalHandler}
-                            changeHandler={this.mockChangeHandler}
-                            sensorList={this.props.sensorList}
-                            resx={this.props.resx} />
-                    </div>
+                    <div className="field"><label>Use a Mock Sensor</label><br /><div><Toggle defaultChecked={this.props.property.type.mock} onChange={this.mockChangedHandler} icons={false} /></div></div>
+                    {this.state.property.type.mock ?
+                        <div className="field">
+                            <label className="seperator-heading"><b>{this.props.resx.FRM_LBL_MOCK_SEN_CFG}</b></label>
+                            <div className="btn-group" role="group" >
+                                {this.props.sensorList.map((item: any, index: number) => {
+                                    return <button key={
+                                        index} type="button" className={classNames("btn btn-sm btn-outline-primary", this.props.property.mock && this.props.property.mock._type === item._type ? "active" : "")} onClick={() => this.onSensorSelected(item)}>{item._type}</button>
+                                })}
+                            </div>
+                        </div>
+                        : null}
                 </div>
+
+                {this.state.property.type.mock ?
+                    <div className="p2-fields" style={{ marginTop: "-20px" }}>
+                        <div className="field"></div>
+                        {fields}
+                    </div>
+                    : null}
 
                 <div className="p2-fields">
                     <div className="field"><label>JSON Value Template</label><br /><div><Toggle defaultChecked={this.state.tofuIsReady} icons={false} /></div></div>

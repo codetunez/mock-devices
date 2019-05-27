@@ -167,7 +167,7 @@ export default function (deviceStore: DeviceStore) {
             let t = new Device();
             t._id = uuid();
             t.configuration = updatePayload;
-            t.name = dcm.displayName;
+            t.configuration.mockDeviceName = dcm.displayName;
             deviceStore.addDevice(t);
 
             dcm.implements.forEach(element => {

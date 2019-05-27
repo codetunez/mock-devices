@@ -221,8 +221,12 @@ export class DeviceStore {
     /* method modified safe */
     public addDevicePropertyMock = (id: string, propertyId: string, mockName?: string) => {
 
+        let name = mockName || 'random'
+
         var items = this.sensorStore.getListOfItems();
-        let i = items.findIndex((element) => { return element._type === mockName })
+        let i = items.findIndex((element) => { 
+            return element._type === name 
+        })
 
         let d: Device = this.store.getItem(id);
         var index = d.comms.findIndex(function (item: Property, i: number) {
@@ -235,7 +239,7 @@ export class DeviceStore {
 
         if (index > -1) {
             d.comms[index].type.mock = true;
-            d.comms[index].mock = i > -1 ? <MockSensor>items[i] : <MockSensor>items[0];
+            d.comms[index].mock = items[i];
             d.comms[index].runloop.include = true;
             d.comms[index].version = 0;
             d.comms[index].propertyObject.type = "default";

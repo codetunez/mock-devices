@@ -316,6 +316,7 @@ export class MockDevice {
                 payload = this.transformPayload(payload);
                 twin.properties.reported.update(payload, ((err) => {
                     this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][TWIN] -> " + (err ? err.toString() : JSON.stringify(payload)));
+                    this.liveUpdates.sendAsLiveUpdate(payload);
                 }))
             }
         }
@@ -332,6 +333,7 @@ export class MockDevice {
                 let msg = new Message(JSON.stringify(payload));
                 this.iotHubDevice.client.sendEvent(msg, ((err) => {
                     this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][MSG] -> " + (err ? err.toString() : JSON.stringify(payload)));
+                    this.liveUpdates.sendAsLiveUpdate(payload);
                 }))
             }
         }
