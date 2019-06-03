@@ -176,39 +176,43 @@ class DeviceInstancePanel extends React.Component<any, any> {
                         updateHandler={this.updateDevice} />
                 </div> : null}
 
+                <div style={{ cursor: "pointer" }} onClick={() => {
+                    this.props.dispatch(DisplayActions.CollapseAllProperties(this.props.device.device));
+                }}><b>collapse all</b></div>
+
                 <div className={classNames("device-instance-properties", this.props.display.advancedExpanded ? "device-instance-properties-advanced" : "")}>
                     {d.comms ?
                         d.comms.map((item: any, index: number) => {
                             if (item._type === "method") {
                                 return <DeviceInstanceMethod
-                                        index={index}
-                                        property={item}
-                                        methodParams={this.props.methodParams}
-                                        resx={this.props.resx}
-                                        display={this.props.display}
-                                        deleteHandler={this.deleteProperty}
-                                        updateHandler={this.updateMethod.bind(this, item._id)}
-                                        toggleHandler={this.handleToggle.bind(this, item._id)}
-                                        dirtyHandler={this.handleDirty}
-                                        methodParamsHandler={this.methodParamsHandler.bind(this, item._id)}
-                                        dirty={this.props.dirty} />
+                                    index={index}
+                                    property={item}
+                                    methodParams={this.props.methodParams}
+                                    resx={this.props.resx}
+                                    display={this.props.display}
+                                    deleteHandler={this.deleteProperty}
+                                    updateHandler={this.updateMethod.bind(this, item._id)}
+                                    toggleHandler={this.handleToggle.bind(this, item._id)}
+                                    dirtyHandler={this.handleDirty}
+                                    methodParamsHandler={this.methodParamsHandler.bind(this, item._id)}
+                                    dirty={this.props.dirty} />
                             }
                             if (item._type === "property") {
                                 return <DeviceInstanceProperty
-                                        index={index}
-                                        property={item}
-                                        deleteHandler={this.deleteProperty}
-                                        addMockHandler={this.addPropertyMock}
-                                        deleteMockHandler={this.deletePropertyMock}
-                                        updateHandler={this.updateProperty.bind(this, item._id)}
-                                        sendValueHandler={this.sendProperty.bind(this, item._id)}
-                                        readValueHandler={this.readProperty.bind(this, item._id)}
-                                        sensorList={this.props.sensors.sensors}
-                                        resx={this.props.resx}
-                                        display={this.props.display}
-                                        toggleHandler={this.handleToggle.bind(this, item._id)}
-                                        dirtyHandler={this.handleDirty}
-                                        dirty={this.props.dirty} />
+                                    index={index}
+                                    property={item}
+                                    deleteHandler={this.deleteProperty}
+                                    addMockHandler={this.addPropertyMock}
+                                    deleteMockHandler={this.deletePropertyMock}
+                                    updateHandler={this.updateProperty.bind(this, item._id)}
+                                    sendValueHandler={this.sendProperty.bind(this, item._id)}
+                                    readValueHandler={this.readProperty.bind(this, item._id)}
+                                    sensorList={this.props.sensors.sensors}
+                                    resx={this.props.resx}
+                                    display={this.props.display}
+                                    toggleHandler={this.handleToggle.bind(this, item._id)}
+                                    dirtyHandler={this.handleDirty}
+                                    dirty={this.props.dirty} />
                             }
 
                         })

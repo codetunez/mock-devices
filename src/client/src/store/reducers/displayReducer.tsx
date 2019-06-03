@@ -60,6 +60,12 @@ export default function reducer(state: any = {
             }
             s.propertyToggleAll = !s.propertyToggleAll;
             return s;
+        case Events.COLLAPSE_ALL_PROPERTY_PANEL:
+            for (let i = 0; i < action.payload.comms.length; i++) {
+                s.propertyToggle[action.payload.comms[i]._id] = true;
+            }
+            s.propertyToggleAll = true;
+            return s;
         case Events.TOGGLE_CONSOLE:
             return Object.assign(s, { consoleExpanded: !s.consoleExpanded });
         case Events.TOGGLE_ADVANCED_PANEL:
