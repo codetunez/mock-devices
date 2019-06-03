@@ -72,6 +72,7 @@
     background-color: $app-clr-1; 
     padding: $xs-gutter;
     margin-top: -5px;
+    overflow: hidden;
  
     .menu-btn:not(:last-child) {
        margin-bottom: $sm-gutter;
