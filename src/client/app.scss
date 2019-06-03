@@ -2,9 +2,16 @@
 body {
 	color: white;
 }
-input[type='text'], input[type='text']:focus {
+
+input[type='text'],
+input[type='text']:read-only,
+input[type='text']:focus {
 	background-color: $app-grey-3;
 	color: white;
+}
+input[type='text']:read-only {
+	color: $app-clr-4;
+	border: 1px solid $app-clr-4;
 }
 .custom-textarea , .custom-textarea:focus {
 	background-color: $app-grey-3;

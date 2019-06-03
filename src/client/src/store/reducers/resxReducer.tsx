@@ -17,7 +17,7 @@ export default function reducer(state: any = {
     CANCEL: 'Cancel',
 
     BTN_ADDD2C: 'Add D2C',
-    BTN_ADDC2D: 'Add C2D',
+    BTN_ADDC2D: 'Add Desired',
     BTN_ADD_METHOD: 'Add Method',
     BTN_ADD_MOCK: 'Add a Mock Sensor',
     
@@ -60,7 +60,7 @@ export default function reducer(state: any = {
     FRM_LBL_DEVICE_SDKOUT: 'API',
     FRM_LBL_LAST_READ_VALUE: 'Value',
     FRM_LBL_AS_STRING: 'Type',
-    FRM_LBL_AS_PROPERTY: 'Return Method Name Property (Return Payload must be String)',
+    FRM_LBL_AS_PROPERTY: 'Return payload through Twin property using Method name as property name',
     FRM_LBL_VALUE: 'Value',
     FRM_LBL_RUN_LOOP: 'Include in run loop',
     FRM_LBL_SEND_AS_PROPOBJ: 'Send as JSON object',
@@ -75,7 +75,7 @@ export default function reducer(state: any = {
     FRM_LBL_MESSAGE: 'Message',
     FRM_LBL_STATUS: 'Status',
     FRM_LBL_STATUSCODE: 'Status Code',
-    FRM_LBL_GET_DATA: 'Get Last Sent Value',
+    FRM_LBL_GET_DATA: 'Get LKV',
     
     FRM_LBL_DEVICE_NAME: 'Device Name (mock-devices)',
     FRM_LBL_DEVICE_CLONE: 'Clone Model (mock-devices)',
@@ -102,7 +102,7 @@ export default function reducer(state: any = {
     TEXT_OVERRIDE_MOCK: 'Override Mock value',
     TEXT_SEND_NOW: 'Send Now',
     TEXT_SEND: 'Send',
-    TEXT_C2D: 'C2D',
+    TEXT_C2D: 'Desired',
     TEXT_D2C: 'D2C',
     TEXT_D2C_MOCK: 'D2C by Mock Sensor',
     TEXT_D2C_NO_DEVICES: 'No devices found on this Iot Hub',

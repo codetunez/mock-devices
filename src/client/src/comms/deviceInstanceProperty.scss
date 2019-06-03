@@ -67,11 +67,17 @@
         font-weight: 700
      }
     .field:nth-child(1) {
-        width: 130px;
+       min-width: 130px;
     }
     .field {
         width: 80px;
         margin-right: 8px;
-    }
+	}
+	.field-w {
+		width: 120px !important;
+	}
+	.field-xw {
+		width: 100% !important;
+	}
 }
 
