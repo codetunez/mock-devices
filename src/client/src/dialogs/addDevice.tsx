@@ -79,7 +79,7 @@ export class AddDevice extends React.Component<any, any> {
 
     action = (kind: string) => {
 
-        let updatePayload: Payload = this.state.updatePayload;
+        let updatePayload: any = this.state.updatePayload;
         updatePayload._kind = kind;
 
         if (kind === 'dps') { updatePayload.hubConnectionString = null; }
@@ -113,9 +113,6 @@ export class AddDevice extends React.Component<any, any> {
                 <button onClick={() => this.setState({ panel: 2 })} className={cx("btn btn-outline-primary", this.state.panel === 2 ? "active" : "")}>Use an IoT Hub</button><br />
                 <div>Add a Template</div>
                 <button onClick={() => this.setState({ panel: 3 })} className={cx("btn btn-outline-primary", this.state.panel === 3 ? "active" : "")}>Use a Capability Model</button><br />
-                <div>Manage State</div>
-                <button onClick={() => this.setState({ panel: 4 })} className={cx("btn btn-outline-primary", this.state.panel === 4 ? "active" : "")}>Import JSON</button><br />
-                <button onClick={() => this.setState({ panel: 5 })} className={cx("btn btn-outline-primary", this.state.panel === 5 ? "active" : "")}>Load Local Storage</button><br />
             </div>
 
             <div className="add-dialog-content">
@@ -123,8 +120,6 @@ export class AddDevice extends React.Component<any, any> {
                 {this.state.panel === 1 ? <h5>Add a Device using a Connection String</h5> : null}
                 {this.state.panel === 2 ? <h5>Add a Device from an IoT Hub</h5> : null}
                 {this.state.panel === 3 ? <h5>Add a Template using a Device Capability Model</h5> : null}
-                {this.state.panel === 4 ? <h5>Replace mock-devices current State</h5> : null}
-                {this.state.panel === 5 ? <h5>Replace mock-devices current state from Local Storage</h5> : null}
 
                 {/* Panel 0 */}
                 {this.state.panel === 0 ? <div>
@@ -233,25 +228,7 @@ export class AddDevice extends React.Component<any, any> {
                     <button className="btn btn-info" onClick={() => this.action('template')}>{this.props.resx.ADD}</button>
                 </div>
                     : null}
-
-                {/* Panel 4 */}
-                {this.state.panel === 4 ? <div>
-                    <div className="form-group">
-                        <label>{this.props.resx.FRM_LBL_DEVICE_PASTE_STATE}</label>
-                        <textarea className="custom-textarea form-control lg" name="mockDeviceState" onChange={this.handleChange} value={this.state.updatePayload.mockDeviceState || ''}></textarea>
-                    </div>
-                    <button className="btn btn-info" onClick={() => this.import()}>{this.props.resx.IMPORT}</button>
-                </div>
-                    : null}
-
-                {/* Panel 5 */}
-                {this.state.panel === 5 ? <div>
-
-                </div>
-                    : null}
-
             </div>
-
             <div className="panel-dialog-close" onClick={this.close} title={this.props.resx.CANCEL}><span className="fa fa-times"></span></div>
         </div>
     }

@@ -187,6 +187,7 @@ export default function (deviceStore: DeviceStore) {
                         o.name = item.name;
                         o.string = (item.schema != 'string' ? false : true);
 
+
                         // if this is Telemetry set up a timer
                         if (item['@type'] === 'Telemetry') {
                             o.sdk = 'msg';
@@ -196,17 +197,21 @@ export default function (deviceStore: DeviceStore) {
                                 'value': Math.floor(Math.random() * (90 - 45)) + 45
                             }
                         }
-                        let propertyId = deviceStore.addDeviceProperty(t._id, 'd2c', o);
+
+                        // add the property
+                        let propertyId = deviceStore.addDeviceProperty(t._id, (item['@type'] === 'Property' && item.writable ? 'c2d' : 'd2c'), o);
+
                         if (item['@type'] === 'Telemetry') { deviceStore.addDevicePropertyMock(t._id, propertyId, 'random'); }
 
-                        // if this is a writable property create a C2D for settings
+                        // if this is a writable property create a D2C for settings
                         if (item['@type'] === 'Property' && item.writable) {
-                            var o: any = {};
-                            o._id = uuid();
-                            o.name = item.name;
-                            o.string = (item.schema != 'string' ? false : true);
-                            o.propertyObject = { type: 'templated' };
-                            deviceStore.addDeviceProperty(t._id, 'c2d', o);
+                            var oP: any = {};
+                            oP._id = uuid();
+                            oP.name = item.name;
+                            oP.sdk = 'twin';
+                            oP.string = (item.schema != 'string' ? false : true);
+                            oP.propertyObject = { type: 'templated', template: "{\n\t\"value\" : _VALUE_,\n\t\"status\" : \"completed\",\n\t\"message\" : \"test message\",\n\t\"statusCode\" : 200,\n\t\"desiredVersion\" : 1\n}" }
+                            deviceStore.addDeviceProperty(t._id, 'd2c', oP);
                         }
                     })
                 }

@@ -275,7 +275,7 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
                         <div className="field field-xw">
                             <label className="seperator-heading"><b>Template</b></label>
                             {this.state.property.propertyObject.type === "templated" ?
-                                <textarea name="template" rows={5} className="form-control custom-textarea" onChange={this.handlePropertyObjectValueChange} value={this.state.property.propertyObject.template}>
+                                <textarea name="template" rows={7} className="form-control custom-textarea" onChange={this.handlePropertyObjectValueChange} value={this.state.property.propertyObject.template}>
                                     {FormatJSON({ "value": "_VALUE_" })}
                                 </textarea>
                                 : null}

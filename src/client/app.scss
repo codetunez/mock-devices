@@ -16,6 +16,10 @@ input[type='text']:read-only {
 .custom-textarea , .custom-textarea:focus {
 	background-color: $app-grey-3;
 	color: white;
+	white-space: pre;
+  overflow-wrap: normal;
+	overflow: auto;
+	font-size: 0.8rem;
 }
 .custom-select, .custom-select:focus {
 	background-color: $app-grey-3;
@@ -147,9 +151,11 @@ input[type='text']:read-only {
 				font-style: italic;
 			}
 		}
+
 		.hub-device-item {
 			padding: $xs-gutter 0 $xs-gutter 0;
 			border-top: 1px solid $app-grey-4;
+			border-bottom: 1px solid $app-grey-4;
 		}
 		.hub-device-item-line {
 			display: flex;
@@ -157,11 +163,18 @@ input[type='text']:read-only {
 			align-items: center;
 		}
 		.hub-device-item-line {
+
+			.line-item-link {
+				width: 100%;
+				margin-right: 10px;
+			}
+
 			.line-item-link:hover {
 				background-color: $app-yellow-3;
 				cursor: pointer;
 			}
 		}
+
 		.custom-select {
 			width: 100%;
 		}
