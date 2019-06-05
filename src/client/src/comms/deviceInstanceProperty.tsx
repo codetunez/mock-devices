@@ -243,8 +243,8 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
 
                     <div className="p2-fields">
                         <div className="field"><label>Send Data Frequently</label><br /><div><Toggle name="include" defaultChecked={this.state.property.runloop.include} icons={false} onChange={this.runloopChangeHandler} /></div></div>
-                        {this.state.property.runloop.include ? <div className="field"><label>{this.props.resx.FRM_LBL_TIME_PERIOD}</label><br /><Combo class="form-control-sm" collection={frequencyCombo} name="unit" onChange={this.props.changeHandler} value={this.props.property.runloop.unit} showSelect={false} /></div> : null}
-                        {this.state.property.runloop.include ? <div className="field"><label>{this.props.resx.FRM_LBL_VALUE}</label><br /><input maxLength={2} name="value" className="form-control  form-control-sm" type="text" onChange={this.props.changeHandler} value={this.props.property.runloop.value} /></div> : null}
+                        {this.state.property.runloop.include ? <div className="field"><label>{this.props.resx.FRM_LBL_TIME_PERIOD}</label><br /><Combo class="form-control-sm" collection={frequencyCombo} name="unit" onChange={this.runloopChangeHandler} value={this.props.property.runloop.unit} showSelect={false} /></div> : null}
+                        {this.state.property.runloop.include ? <div className="field"><label>{this.props.resx.FRM_LBL_VALUE}</label><br /><input maxLength={2} name="value" className="form-control  form-control-sm" type="number" onChange={this.runloopChangeHandler} value={this.props.property.runloop.value} /></div> : null}
                     </div>
 
 
