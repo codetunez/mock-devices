@@ -91,7 +91,6 @@ export class AddDevice extends React.Component<any, any> {
     }
 
     addHubDevice = (item: any) => {
-
         let s: any = this.state;
         s.updatePayload.mockDeviceName = item.deviceId;
         s.updatePayload.connectionString = item.connectionString;
