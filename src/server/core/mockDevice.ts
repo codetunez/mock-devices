@@ -18,9 +18,9 @@ import * as request from 'request';
 
 import * as Crypto from 'crypto';
 
-const MSG_HUB_EVENT = ">> [ENGINE]-[HUB] - ";
-const MSG_DPS_EVENT = ">> [ENGINE]-[DPS] - ";
-const MSG_ENG_EVENT = ">> [ENGINE]-[DEV] - ";
+const MSG_HUB_EVENT = ">> [RUNNER]-[HUB] - ";
+const MSG_DPS_EVENT = ">> [RUNNER]-[DPS] - ";
+const MSG_ENG_EVENT = ">> [RUNNER]-[DEV] - ";
 
 export class MockDevice {
 
@@ -166,7 +166,7 @@ export class MockDevice {
 
                 if (this.dpsProvisionStatus === 'error') {
                     clearInterval(this.waitingOnDpsTimer);
-                    this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT REGISTRATION, RESTART THIS DEVICE AFTER ASSOCIATING");
+                    this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT REGISTRATION ERR, RESTART THIS DEVICE AFTER DPS FIXES");
                 }
             }, 500);
         }
@@ -282,9 +282,10 @@ export class MockDevice {
             provisioningClient.setProvisioningPayload(dpsPayload);
             this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] REGISTERING DEVICE");
 
-            provisioningClient.register((err, result) => {
+            provisioningClient.register((err: any, result) => {
                 if (err) {
-                    this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] REGISTERING ERROR " + err);
+                    let msg = err.result.registrationState && err.result.registrationState.errorMessage || err;
+                    this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] REGISTERING ERROR " + msg);
                     this.dpsProvisionStatus = 'error';
                 }
                 else {
