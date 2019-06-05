@@ -16,6 +16,8 @@ import * as Utils from './utils';
 import { LiveUpdatesService } from './liveUpdatesService';
 import * as request from 'request';
 
+import * as Crypto from 'crypto';
+
 export class MockDevice {
 
     private CONNECT_LOOP = 1000 * 60 * 50;
@@ -243,6 +245,7 @@ export class MockDevice {
     }
 
     connectClient() {
+        let config = this.device.configuration;
         this.iotHubDevice = {};
 
         if (this.device.configuration._kind === 'hub') {
@@ -260,12 +263,15 @@ export class MockDevice {
         }
 
         if (this.device.configuration._kind === 'dps') {
-            this.waitingOnDpsProvision = true;
+            this.waitingOnDpsProvision = true;          
+              
+            let sasKey = this.device.configuration.isMasterKey ? this.computeDrivedSymmetricKey(this.device.configuration.sasKey, this.device.configuration.deviceId) : this.device.configuration.sasKey;
 
-            var provisioningSecurityClient = new SymmetricKeySecurityClient(this.device.configuration.deviceId, this.device.configuration.sasKey);
-            var provisioningClient = ProvisioningDeviceClient.create('global.azure-devices-provisioning.net', this.device.configuration.scopeId, new M2(), provisioningSecurityClient);
-            provisioningClient.setProvisioningPayload(this.device.configuration.dpsPayload || {});
-            this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT DPS - REGISTERING DEVICE " + this.device._id + " >>>>");
+            let dpsPayload = this.device.configuration.dpsPayload && Object.keys(this.device.configuration.dpsPayload).length > 0 ? JSON.parse(this.device.configuration.dpsPayload) : {};
+            var provisioningSecurityClient = new SymmetricKeySecurityClient(this.device.configuration.deviceId, sasKey);
+            var provisioningClient = ProvisioningDeviceClient.create('global.azure-devices-provisioning.net', this.device.configuration.scopeId, new M2(), provisioningSecurityClient);            
+            provisioningClient.setProvisioningPayload(dpsPayload);            
+            this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT DPS - REGISTERING DEVICE " + this.device._id + " >>>>");            
             provisioningClient.register((err, result) => {
                 if (err) { 
                     this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT DPS - REGISTERING ERROR " + err + " >>>>");
@@ -283,6 +289,12 @@ export class MockDevice {
             })
         }
     }
+
+    computeDrivedSymmetricKey(masterKey, regId) {
+        return Crypto.createHmac('SHA256', Buffer.from(masterKey, 'base64'))
+          .update(regId, 'utf8')
+          .digest('base64');
+      }
 
     setupCommands() {
         // this block needs a refactor

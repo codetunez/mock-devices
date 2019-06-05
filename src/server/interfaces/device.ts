@@ -80,4 +80,5 @@ export class DeviceConfiguration {
     public dpsPayload?: any;
     public sasKey?: string;
     public capabilityModel?: any;
+    public isMasterKey: boolean;
 }

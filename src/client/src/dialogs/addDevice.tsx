@@ -18,6 +18,7 @@ interface Payload {
     dpsPayload?: any;
     sasKey?: string;
     capabilityModel?: any;
+    isMasterKey?: boolean;
 }
 
 export class AddDevice extends React.Component<any, any> {
@@ -71,7 +72,7 @@ export class AddDevice extends React.Component<any, any> {
 
     handleChange = (e: any) => {
         let s = this.state;
-        s.updatePayload[e.target.name] = e.target.value;
+        s.updatePayload[e.target.name] = e.target.name === 'isMasterKey' ? e.target.checked : e.target.value;
         this.setState(s);
     }
 
@@ -133,6 +134,10 @@ export class AddDevice extends React.Component<any, any> {
                     </div>
                     <div className="form-group">
                         <label>{this.props.resx.FRM_LBL_DEVICE_DPS_SAS}</label>
+                        <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
+                            <input style={{ width: "25px" }} className="form-control" type="checkbox" name="isMasterKey" onChange={this.handleChange} value={this.state.updatePayload.isMasterKey} />
+                            <div>Generate a HMAC-SHA265 Key</div>
+                        </div>
                         <input className="form-control" type="text" name="sasKey" onChange={this.handleChange} value={this.state.updatePayload.sasKey || ''} />
                     </div>
                     <div className="form-group">

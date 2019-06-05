@@ -83,7 +83,7 @@ class Server {
                 "minWidth": Config.APP_WIDTH,
                 "minHeight": Config.APP_HEIGHT,
                 webPreferences: {
-                    devTools: false
+                    devTools: true
                 }
             });
 
