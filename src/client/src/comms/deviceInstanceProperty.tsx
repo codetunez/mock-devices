@@ -144,7 +144,7 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
     handleData = (data: any) => {
         let s: any = this.state;
         let liveUpdates = JSON.parse(data);
-        s.liveValue = liveUpdates[this.props.property.name];
+        s.liveValue = liveUpdates[this.props.property._id];
         this.setState(s);
     }
 

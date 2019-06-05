@@ -166,6 +166,7 @@ export class MockDevice {
 
                 if (this.dpsProvisionStatus === 'error') {
                     clearInterval(this.waitingOnDpsTimer);
+                    this.waitingOnDpsTimer = null;
                     this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT REGISTRATION ERR, RESTART THIS DEVICE AFTER DPS FIXES");
                 }
             }, 500);
@@ -337,9 +338,9 @@ export class MockDevice {
             Object.assign(payload, additions);
 
             if (Object.keys(payload).length > 0) {
-                payload = this.transformPayload(payload);
-                twin.properties.reported.update(payload, ((err) => {
-                    this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][TWIN] -> " + (err ? err.toString() : JSON.stringify(payload)));
+                let wire = this.transformPayload(payload);
+                twin.properties.reported.update(wire, ((err) => {
+                    this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][TWIN] -> " + (err ? err.toString() : JSON.stringify(wire)));
                     this.liveUpdates.sendAsLiveUpdate(payload);
                 }))
             }
@@ -353,10 +354,10 @@ export class MockDevice {
             Object.assign(payload, additions);
 
             if (Object.keys(payload).length > 0) {
-                payload = this.transformPayload(payload);
+                let wire = this.transformPayload(payload);
                 let msg = new Message(JSON.stringify(payload));
                 this.iotHubDevice.client.sendEvent(msg, ((err) => {
-                    this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][MSG] -> " + (err ? err.toString() : JSON.stringify(payload)));
+                    this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][MSG] -> " + (err ? err.toString() : JSON.stringify(wire)));
                     this.liveUpdates.sendAsLiveUpdate(payload);
                 }))
             }
