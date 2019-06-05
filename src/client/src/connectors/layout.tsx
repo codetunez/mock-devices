@@ -62,7 +62,7 @@ class Layout extends React.Component<any, any> {
                 <div className="console-toggle">
                     <a onClick={this.toggleConsole}><span className={classNames("fa", !this.props.display.consoleExpanded ? "fa-chevron-up" : "fa-chevron-down")}></span></a>
                 </div>
-                <div className="console-messages">{m.length > 0 ? m : 'CONSOLE OUTPUT'}</div>
+                <div className="console-messages">{m.length > 0 ? m : 'DEVICE RUNNER OUTPUT'}</div>
             </div>
 
             <div className="content-window">
