@@ -114,14 +114,14 @@ export class IoTHub extends React.Component<any, any> {
                     <b>{this.props.resx.TEXT_FULLTWIN}</b>
                     <textarea value={this.state.twinRead} readOnly />
                     <button className={classNames("btn btn-primary")} onClick={this.getTwin}>
-                        <span className={classNames("fa fa-lg fa-cloud-download")}></span> {this.props.resx.READ} Twin on Server (D2C)
+                        <span className={classNames("fa fa-lg fa-cloud-download")}></span> (D2C) {this.props.resx.READ} the report properties of the Device Twin
                     </button>
                 </div>
                 <div className="item">
                 <b>{this.props.resx.TEXT_DESIRED}</b>
                     <textarea name="twinWrite" value={this.state.twinWrite} onChange={this.handleChange} />
                     <button className={classNames("btn btn-primary")} onClick={this.writeTwin}>
-                        <span className={classNames("fa fa-lg fa-cloud-upload")}></span> {this.props.resx.WRITE} Twin on Server (C2D)
+                        <span className={classNames("fa fa-lg fa-cloud-upload")}></span> (C2D) {this.props.resx.SET} the desired state of the Device Twin
                     </button>
                 </div>
             </div>

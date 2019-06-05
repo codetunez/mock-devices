@@ -4,6 +4,7 @@ import { Device } from '../interfaces/device'
 import * as Utils from '../core/utils'
 import { ConnectionString } from 'azure-iot-common';
 import { IotHub } from '../core/iotHub';
+import uuid = require('uuid');
 
 export default function (deviceStore: DeviceStore) {
     let api = Router();
@@ -150,75 +151,91 @@ export default function (deviceStore: DeviceStore) {
     });
 
     api.post('/new', function (req, res, next) {
-        var body = req.body;
-        var cloneId = req.body.cloneId;
 
-        if (!deviceStore.maxReached()) {
-
-            let id: string = Utils.getDeviceId(body.connectionString);
-
-            if (id) {
-                /* this is using a device connection string */
-                if (!deviceStore.exists(id)) {
-
-                    let d = new Device();
-                    d._id = id;
-                    d.name = !body.name || body.name === "" ? id : body.name;
-                    d.connectionString = body.connectionString;
-                    d.hubConnectionString = body.hubConnectionString || null;
-                    d.template = false;
-
-                    if (cloneId) { d.cloneId = cloneId; }
-
-                    deviceStore.addDevice(d);
-
-                    res.json(deviceStore.getListOfItems());
-                    res.end();
-                } else {
-                    res.status(500).json({ "message": "Device already added" });
-                    res.end();
-                }
-            } else {
-                var cn = ConnectionString.parse(body.connectionString);
-                if (cn.HostName && cn.HostName != "" &&
-                    cn.SharedAccessKeyName && cn.SharedAccessKeyName != "" &&
-                    cn.SharedAccessKey && cn.SharedAccessKey != "") {
-
-                    IotHub.CreateDevice(body.connectionString)
-                        .then((deviceInfo: any) => {
-                            let id = deviceInfo.deviceId;
-                            let name = body.name === "" ? deviceInfo.deviceId : body.name;
-                            let hostName = cn.HostName;
-                            let key = deviceInfo.authentication.symmetricKey.primaryKey;
-
-                            let connString = "HostName=" + hostName + ";DeviceId=" + id + ";SharedAccessKey=" + key;
-
-                            let d = new Device();
-                            d._id = id;
-                            d.name = name;
-                            d.connectionString = connString;
-                            d.hubConnectionString = body.connectionString;
-                            d.template = false;
-
-                            deviceStore.addDevice(d);
-                            res.json(deviceStore.getListOfItems());
-                            res.end();
-                        })
-                        .catch((err) => {
-                            res.status(500).json({ "message": err.toString() });
-                            res.end();
-                        })
-                }
-                else {
-                    res.status(500).json({ "message": "Cannot find the device id in connection string" });
-                    res.end();
-                }
-            }
-        }
-        else {
+        if (deviceStore.maxReached()) {
             res.status(500).json({ "message": "Max devices reached" });
             res.end();
+            return;
         }
+
+        var updatePayload = req.body;
+
+        if (updatePayload._kind === 'template') {
+
+            var dcm = JSON.parse(updatePayload.capabilityModel);
+
+            let t = new Device();
+            t._id = uuid();
+            t.configuration = updatePayload;
+            t.configuration.mockDeviceName = dcm.displayName;
+            deviceStore.addDevice(t);
+
+            dcm.implements.forEach(element => {
+                if (element.contents) {
+                    element.contents.forEach(item => {
+
+                        if (item['@type'] === 'Command') {
+                            var o: any = {};
+                            o._id = uuid();
+                            o.name = item.name;
+                            deviceStore.addDeviceMethod(t._id, o);
+                            return;
+                        }
+
+                        var o: any = {};
+                        o._id = uuid();
+                        o.name = item.name;
+                        o.string = (item.schema != 'string' ? false : true);
+
+
+                        // if this is Telemetry set up a timer
+                        if (item['@type'] === 'Telemetry') {
+                            o.sdk = 'msg';
+                            o.runloop = {
+                                'include': true,
+                                'unit': 'secs',
+                                'value': Math.floor(Math.random() * (90 - 45)) + 45
+                            }
+                        }
+
+                        // add the property
+                        let propertyId = deviceStore.addDeviceProperty(t._id, (item['@type'] === 'Property' && item.writable ? 'c2d' : 'd2c'), o);
+
+                        if (item['@type'] === 'Telemetry') { deviceStore.addDevicePropertyMock(t._id, propertyId, 'random'); }
+
+                        // if this is a writable property create a D2C for settings
+                        if (item['@type'] === 'Property' && item.writable) {
+                            var oP: any = {};
+                            oP._id = uuid();
+                            oP.name = item.name;
+                            oP.sdk = 'twin';
+                            oP.string = (item.schema != 'string' ? false : true);
+                            oP.propertyObject = { type: 'templated', template: "{\n\t\"value\" : _VALUE_,\n\t\"status\" : \"completed\",\n\t\"message\" : \"test message\",\n\t\"statusCode\" : 200,\n\t\"desiredVersion\" : 1\n}" }
+                            deviceStore.addDeviceProperty(t._id, 'd2c', oP);
+                        }
+                    })
+                }
+            })
+        } else {
+
+            let d = new Device();
+            let id = updatePayload._kind === 'dps' ? updatePayload.deviceId : Utils.getDeviceId(updatePayload.connectionString);
+
+            if (deviceStore.exists(id)) {
+                res.status(500).json({ "message": "Device already added" });
+                res.end();
+                return;
+            }
+
+            d._id = id;
+            d.configuration = updatePayload;
+            d.name = !updatePayload.name || updatePayload.name === "" ? id : updatePayload.name;
+            d.cloneId = updatePayload.mockDeviceCloneId ? updatePayload.mockDeviceCloneId : undefined
+            deviceStore.addDevice(d);
+        }
+
+        res.json(deviceStore.getListOfItems());
+        res.end();
     });
 
     return api;

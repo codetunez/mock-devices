@@ -24,6 +24,10 @@ export function ToggleAllProperties(device: any) {
     return { type: Events.TOGGLE_ALL_PROPERTY_PANEL, payload: device };
 }
 
+export function CollapseAllProperties(device: any) {
+    return { type: Events.COLLAPSE_ALL_PROPERTY_PANEL, payload: device };
+}
+
 export function ToggleConsole() {
     return { type: Events.TOGGLE_CONSOLE };
 }

@@ -6,6 +6,7 @@ export const TOGGLE_ALL_PROPERTY_PANEL = 'toggle:property:all';
 export const TOGGLE_CONSOLE = 'toggle:console';
 export const TOGGLE_ADVANCED_PANEL = 'toggle:advanced';
 export const TOGGLE_IOTHUB_PANEL = 'toggle:iothub';
+export const COLLAPSE_ALL_PROPERTY_PANEL = 'collapse:property';
 
 export const SELECTED_INDEX_DEVICE = 'select:device:index';
 export const DISPLAY_DEVICE = 'select:device:display';

@@ -13,6 +13,8 @@ export default function (deviceStore: DeviceStore) {
         deviceStore.startAll();
         res.json(deviceStore.getListOfItems());
         res.end();
+
+        //TODO: this needs push to trap errors
     });
 
     api.get('/stop', function (req, res, next) {

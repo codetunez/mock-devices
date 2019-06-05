@@ -12,7 +12,7 @@ export interface RunLoop {
 export interface MockSensor {
     _id: string;
     _hasState: boolean;
-    _type: 'fan' | 'hotplate' | 'battery' | 'function';
+    _type: 'fan' | 'hotplate' | 'battery' | 'random' | 'function';
     _value: number;
     init: number;
     running?: number;
@@ -41,7 +41,7 @@ export interface Method {
     name: string;
     status: 200 | 404 | 500;
     receivedParams: string;
-    asProperty: boolean;    
+    asProperty: boolean;
     payload: any;
 }
 
@@ -56,16 +56,29 @@ export interface PropertyObjectTemplated {
 
 export class Device {
     public _id: string;
+    public configuration: DeviceConfiguration;
     public name: string;
-    public connectionString: string;
-    public hubConnectionString: string;
-    public template: boolean;
     public comms: Array<any>;
     public running: boolean;
     public cloneId?: string;
 
     constructor() {
         this.comms = new Array<any>();
+        this.configuration = new DeviceConfiguration();
     }
+}
 
+export class DeviceConfiguration {
+    public _kind: 'dps' | 'hub' | 'template';
+    public deviceId: string;
+    public mockDeviceName: string;
+    public mockDeviceCloneId?: string;
+    public mockDeviceState?: any;
+    public connectionString?: string;
+    public hubConnectionString?: string;
+    public scopeId?: string;
+    public dpsPayload?: any;
+    public sasKey?: string;
+    public capabilityModel?: any;
+    public isMasterKey: boolean;
 }

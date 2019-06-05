@@ -83,10 +83,11 @@ class Server {
                 "minWidth": Config.APP_WIDTH,
                 "minHeight": Config.APP_HEIGHT,
                 webPreferences: {
-                    devTools: false
+                    devTools: true
                 }
             });
 
+            //this.mainWindow.setMenu(null);
             this.mainWindow.loadURL(Config.LOCALHOST + ':' + Config.APP_PORT);
 
             this.mainWindow.on('closed', (() => {

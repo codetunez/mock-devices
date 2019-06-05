@@ -1,3 +1,6 @@
+# *NO LONGER BEING SUPPORTED*
+This version will be replaced by rewrite based on React Hooks and a reskined UX (previewed in this version)
+
 # mock-devices
 Use mock-devices to create fake/mock devices that connect to an Azure IoT Hub. The devices can send and receive data like a normal device would. The app runs on Windows or OSX
 
@@ -13,26 +16,3 @@ From a command prompt navigate to the folder where the repo was sync'd and perfo
 
 # Usage Instructions
 Help is available inside the application
-
-# Contributing as a Developer
-To contribute to the codebase ...
-
-#### Install
-Follow instructions above
-
-#### Watch Build the UX codebase
-From a command prompt navigate to the folder where the repo was sync'. Perform the following command
-
-        npm run watchux
-
-#### Watch Build the Server codebase
-From a command prompt navigate to the folder where the repo was sync'. Perform the following command
-
-        npm run watchsrv
-
-#### Run Server (NodeJS+Express)
-From a command prompt navigate to the folder where the repo was sync'. Perform the following command
-
-        npm run dev
-
-Use a browser to navigate to the http://localhost:port listed in the command window

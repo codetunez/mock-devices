@@ -1,14 +1,18 @@
-var classNames = require("classnames");
+var cx = require("classnames");
+
 import * as React from "react";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import * as Local from '../localStorage';
 import * as StateActions from "../store/actions/stateActions"
+import * as DisplayActions from "../store/actions/displayActions"
 
 export class ExImport extends React.Component<any, any> {
 
     constructor(props: any) {
         super(props);
         this.state = this.initModel();
+        this.escFunction = this.escFunction.bind(this);
+        this.close = this.close.bind(this);
     }
 
     initModel(model?: any): any {
@@ -18,6 +22,22 @@ export class ExImport extends React.Component<any, any> {
         m.local = Local.GetSaveStates();
         m.saveName = '';
         return m;
+    }
+
+    escFunction(event) {
+        if (event.keyCode === 27) { this.close(); }
+    }
+
+    close() {
+        this.props.dispatch(DisplayActions.ToggleEximportPanel());
+    }
+
+    componentDidMount() {
+        document.addEventListener("keydown", this.escFunction, false);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.escFunction, false);
     }
 
     componentWillReceiveProps(nextProps: any) {
@@ -67,52 +87,66 @@ export class ExImport extends React.Component<any, any> {
     }
 
     render() {
-        return <Tabs>
-            <TabList>
-                <Tab>{this.props.resx.TEXT_TAB_LCL}</Tab>
-                <Tab>{this.props.resx.TEXT_TAB_JSON}</Tab>
-            </TabList>
-            <TabPanel>
-                <h4>{this.props.resx.FRM_LBL_EXIMPORT_LCL}</h4>
-                <div className="input-group">
-                    <input className="form-control" name="saveName" onChange={this.handleChange} value={this.state.saveName} />
-                    <span className="input-group-btn">
-                        <button onClick={() => this.saveState()} title={this.props.resx.SAVE} className={classNames("btn ", "btn-primary")}>
-                            <span className="fa fa-floppy-o"></span>
-                        </button>
-                    </span>
-                </div>
-                <div className="panel-dialog-eximport-local">
-                    <h5>{this.props.resx.FRM_LBL_EXIMPORT_LCL_LOAD}</h5>
-                    {
-                        this.state.local.map((item: Local.LocalStoragePayload, index) => {
-                            return <div key={index} className="hub-device-item">
-                                <div className="hub-device-item-line">
-                                    <div className="line-item-link" onClick={() => this.loadState(index)}>
-                                        <div>{item.name}</div>
-                                        <div>{item.date}</div>
-                                    </div>
-                                    <div className="btn-bar">
-                                        <button title={this.props.resx.DELETE} className="btn btn-danger" onClick={() => this.deleteState(index)}>
-                                            <span className="fa fa-trash-o"></span>
-                                        </button>
+        return <div className="add-dialog">
+            <div className="add-dialog-nav">
+                <div>Local Storage</div>
+                <button onClick={() => this.setState({ panel: 0 })} className={cx("btn btn-outline-primary", this.state.panel === 0 ? "active" : "")}>Load Local Storage</button><br />
+                <button onClick={() => this.setState({ panel: 1 })} className={cx("btn btn-outline-primary", this.state.panel === 1 ? "active" : "")}>Save to Local Storage</button><br />
+                <div>JSON</div>
+                <button onClick={() => this.setState({ panel: 2 })} className={cx("btn btn-outline-primary", this.state.panel === 2 ? "active" : "")}>Import/Export</button><br />
+            </div>
+
+            <div className="add-dialog-content">
+                {this.state.panel === 0 ? <h5>Load a set of mock devices</h5> : null}
+                {this.state.panel === 1 ? <h5>{this.props.resx.FRM_LBL_EXIMPORT_LCL}</h5> : null}
+                {this.state.panel === 2 ? <h5>{this.props.resx.FRM_LBL_EXIMPORT_JSON}</h5> : null}
+
+                {/* Panel 0 */}
+                {this.state.panel === 0 ? <div>
+                    <div className="form-group">
+                        {
+                            this.state.local.map((item: Local.LocalStoragePayload, index) => {
+                                return <div key={index} className="hub-device-item">
+                                    <div className="hub-device-item-line">
+                                        <div>
+                                            <div>{item.name}</div>
+                                            <div className="conn-string">{item.date}</div>
+                                        </div>
+                                        <div className="btn-bar">
+                                            <button title={this.props.resx.DELETE} className="btn btn-success" onClick={() => this.loadState(index)}><span className="fa fa-check"></span></button>
+                                            <button title={this.props.resx.DELETE} className="btn btn-danger" onClick={() => this.deleteState(index)}><span className="fa fa-trash-o"></span></button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        })
-                    }
+                            })
+                        }
+                    </div>
                 </div>
-            </TabPanel>
-            <TabPanel>
-                <h4>{this.props.resx.FRM_LBL_EXIMPORT_JSON}</h4>
-                <div className="form-group">
-                    <textarea className="form-control nowrap-textarea" name="exImport" onChange={this.handleChange} value={this.state.exImport}></textarea>
+                    : null}
+
+                {/* Panel 1 */}
+                {this.state.panel === 1 ? <div>
+                    <div className="form-group">
+                        <input className="form-control" name="saveName" onChange={this.handleChange} value={this.state.saveName} />
+                    </div>
+                    <button onClick={() => this.saveState()} title={this.props.resx.SAVE} className="btn btn-info">{this.props.resx.SAVE}</button>
                 </div>
-                <span>{this.props.resx.TEXT_CTRLC_EXPORT}</span>
-                <div className="form-group pull-right">
-                    <button className="btn btn-outline-primary" onClick={() => this.handleImport()}>{this.props.resx.IMPORT}</button>
+                    : null}
+
+                {/* Panel 2 */}
+                {this.state.panel === 2 ? <div>
+                    <div className="form-group">
+                        <textarea rows={24} className="form-control custom-textarea" name="exImport" onChange={this.handleChange} value={this.state.exImport}></textarea>
+                    </div>
+                    <div className="form-group">
+                        <span>{this.props.resx.TEXT_CTRLC_EXPORT}</span>
+                    </div>
+                    <button className="btn btn-info" onClick={() => this.handleImport()}>{this.props.resx.IMPORT}</button>
                 </div>
-            </TabPanel>
-        </Tabs>
+                    : null}
+
+            </div>
+            <div className="panel-dialog-close" onClick={this.close} title={this.props.resx.CANCEL}><span className="fa fa-times"></span></div>
+        </div>
     }
 }

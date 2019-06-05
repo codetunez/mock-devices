@@ -1,6 +1,9 @@
 var classNames = require("classnames");
+const cx = classNames.bind(require('./deviceInstanceProperty.scss'));
+
 import * as React from "react";
 import { Combo, RadioBoolean } from '../framework/controls'
+import Toggle from 'react-toggle'
 
 let References = {
     methodResponseStatus: [{ name: "200", value: 200 }, { name: "404", value: 404 }, { name: "500", value: 500 }],
@@ -56,50 +59,40 @@ export class DeviceInstanceMethod extends React.Component<any, any> {
     render() {
 
         return <div key={this.props.index} className={classNames("property", "property-method", this.props.dirty.devicePropertyId === this.state.property._id ? "property-dirty" : "", this.state.collapsed ? "property-collapsed" : "")}>
-
-            {/* toolbar */}
-            <div className="property-fields property-toolbar">
-                <a className="toggle-link" href="javascript:void(0)" onClick={() => this.toggleMe()}>
-                    <div className={classNames("text-primary property-header")}>
-                        <div className={classNames("fa", this.state.collapsed ? "fa-chevron-down" : "fa-chevron-up")}></div>
-                        <div className={classNames("fa", "fa-code")}></div>
-                        <div>Device Method ({this.state.property.name})</div>
+            {/* method */}
+            <div className="p2-toolbar">
+                <div className="p2-toolbar-left">
+                    <div className="chevron">
+                        <a className="toggle-link" href="javascript:void(0)" onClick={() => this.toggleMe()}><div className={cx("fa", this.state.collapsed ? "fa-chevron-down" : "fa-chevron-up")}></div></a>
                     </div>
-                </a>
-                <div className="btn-bar">
+                    <div className="title">
+                        <label>Device Method</label>
+                        <div>{this.state.property.name}</div>
+                    </div>
+                </div>
+            </div>
+            <div className="p2-fields">
+                <div className="field"><label>{this.props.resx.FRM_LBL_METHOD_NAME}</label><br /><input className="form-control form-control-sm" type="text" name="name" onChange={this.handleChange} value={this.state.property.name} /></div>
+                <div className="field"><label>{this.props.resx.FRM_LBL_RETURN_STATUS}</label><br /><Combo class="form-control-sm" collection={References.methodResponseStatus} name="status" onChange={this.handleChange} value={this.state.property.status} /></div>
+                <div className="field field-w"><label>Param Payload</label><br /><input className="form-control form-control-sm" type="text" value={this.state.paramsPayload} readOnly={true} /></div>
+                <div className="field field-w"><label>Param Date</label><br /><input className="form-control form-control-sm" type="text" value={this.state.paramsDateTime} readOnly={true} /></div>
+                <div className="field"><label>Actions</label><br /><div className="btn-bar">
+                    <button title={this.props.resx.BTN_LBL_METHOD_PARAMS} className="btn btn-sm btn-outline-success" onClick={this.getParams} ><span className={classNames("fa", "fa-refresh")}></span></button>
                     <button title={this.props.resx.BTN_LBL_PROPERTY_SAVE} className={classNames("btn btn-sm", this.props.dirty.devicePropertyId === this.state.property._id ? "btn-warning" : "btn-outline-secondary")} onClick={() => this.updateProperty()}><span className="fa fa-floppy-o"></span></button>
                     <button title={this.props.resx.BTN_LBL_PROPERTY_DELETE} className="btn btn-sm btn-outline-danger" onClick={() => this.props.deleteHandler(this.state.property._id)}><span className={classNames("fa fa-trash")}></span></button>
                 </div>
-            </div>
-
-            <div className="property-body">
-                <div className="property-fields property-fields-vertical">
-                    <div className="field"><label>{this.props.resx.FRM_LBL_METHOD_NAME}</label><br />
-                        <input className="form-control" type="text" name="name" onChange={this.handleChange} value={this.state.property.name} />
-                    </div>
-                    <div className="field"><label>{this.props.resx.FRM_LBL_RECEIVED_PARAM}</label><br />
-                        <div className="method-horizontal-fields">
-                            <input className="form-control" type="text" value={this.state.paramsPayload} readOnly={true} />
-                            <input className="form-control" type="text" value={this.state.paramsDateTime} readOnly={true} />
-                            <button title={this.props.resx.BTN_LBL_METHOD_PARAMS} className="btn btn-sm btn-outline-success" onClick={this.getParams} >
-                                <span className={classNames("fa", "fa-refresh")}></span>
-                            </button>
-                        </div>
-                    </div>
-                    <div className="field"><label>{this.props.resx.FRM_LBL_RETURN_STATUS}</label><br />
-                        <Combo collection={References.methodResponseStatus} name="status" onChange={this.handleChange} value={this.state.property.status} />
-                    </div>
-
-                    <div className="field"><label>{this.props.resx.FRM_LBL_AS_PROPERTY}</label><br />
-                        <RadioBoolean name="asProperty" onChange={this.handleChange} value={this.state.property.asProperty} />
-                    </div>
-                    
-                    <div className="field"><label>{this.props.resx.FRM_LBL_PAYLOAD}</label><br />
-                        <textarea style={{ height: "200px" }} className="form-control" name="payload" onChange={this.handleChange} value={this.state.property.payload} />
-                    </div>
                 </div>
             </div>
-
+            <div className="p2-fields">
+                <div className="field field-xw"><label>{this.props.resx.FRM_LBL_PAYLOAD}</label><br />
+                    <textarea className="form-control custom-textarea" name="payload" rows={5} onChange={this.handleChange} value={this.state.property.payload} />
+                </div>
+            </div>
+            <div className="p2-fields">
+                <div className="field field-xw"><label>{this.props.resx.FRM_LBL_AS_PROPERTY}</label><br />
+                    <Toggle name="include" defaultChecked={this.state.property.asProperty} icons={true} onChange={this.handleChange} />
+                </div>
+            </div>
         </div>
     }
 }

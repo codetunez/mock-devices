@@ -15,7 +15,7 @@ export default function reducer(state: any = {
 }, action: any) {
 
     let s = JSON.parse(JSON.stringify(state));
-
+    // TODO: code needs refactoring
     switch (action.type) {
         case Events.TOGGLE_NEW_DEVICE_PANEL:
             return Object.assign(s, {
@@ -59,6 +59,12 @@ export default function reducer(state: any = {
                 s.propertyToggle[action.payload.comms[i]._id] = s.propertyToggleAll;
             }
             s.propertyToggleAll = !s.propertyToggleAll;
+            return s;
+        case Events.COLLAPSE_ALL_PROPERTY_PANEL:
+            for (let i = 0; i < action.payload.comms.length; i++) {
+                s.propertyToggle[action.payload.comms[i]._id] = true;
+            }
+            s.propertyToggleAll = true;
             return s;
         case Events.TOGGLE_CONSOLE:
             return Object.assign(s, { consoleExpanded: !s.consoleExpanded });

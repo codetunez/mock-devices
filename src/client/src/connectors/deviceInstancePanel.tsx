@@ -6,13 +6,10 @@ import * as DisplayActions from "../store/actions/displayActions"
 import * as DevicesActions from "../store/actions/devicesActions"
 import * as DirtyActions from "../store/actions/dirtyActions"
 import * as MethodParamsActions from "../store/actions/methodParamsActions"
-import { IoTHub } from '../dialogs/iotHub';
 import { DeviceInstanceAdvanced } from "../comms/deviceInstanceAdvanced";
 import { DeviceInstanceProperty } from "../comms/deviceInstanceProperty";
 import { DeviceInstanceCommands } from "../comms/deviceInstanceCommands"
 import { DeviceInstanceMethod } from "../comms/deviceInstanceMethod"
-
-import { Help } from "../help";
 
 class DeviceInstancePanel extends React.Component<any, any> {
 
@@ -98,7 +95,7 @@ class DeviceInstancePanel extends React.Component<any, any> {
     }
 
     toggleIotHub = () => {
-        this.props.dispatch(DisplayActions.ToggleIoTHubPanel(this.props.device.device.hubConnectionString || ''));
+        this.props.dispatch(DisplayActions.ToggleIoTHubPanel(this.props.device.device.configuration.hubConnectionString || ''));
     }
 
     updateDevice = (payload: any) => {
@@ -145,14 +142,16 @@ class DeviceInstancePanel extends React.Component<any, any> {
     }
 
     render() {
+        {/* <div className="device-instance-properties-toggler">
+        <a onClick={this.toggleAdvanced}>{this.props.display.advancedExpanded ? "hide advanced" : "show advanced"}</a>
+        <a onClick={this.toggleAll}>{this.props.display.propertyToggleAll ? "collapse all" : "expand all"}</a>
+        </div> */}
 
-        let content = this.props.device.device === null ?
-            <div style={{ wordWrap: "break-word" }} >
-                <div className="alert alert-danger">{this.props.resx.TEXT_NODEVICE}</div>
-                <Help />
-            </div>
-            :
-            <div>
+        let d = this.props.device.device;
+
+        return <div className="device-instance-scroller">
+            <div className="device-instance-scroller-header">
+                <div className={classNames("section-title section-title-header", d.running ? "section-title-header-active" : "")}><span>{d.configuration.mockDeviceName || ''} </span>{(!d.running ? 'Device is not running' : '')}</div>
                 <div className="device-instance-commands">
                     <DeviceInstanceCommands
                         device={this.props.device.device}
@@ -163,85 +162,64 @@ class DeviceInstancePanel extends React.Component<any, any> {
                         addC2DHandler={this.addC2DProperty}
                         addMethodHandler={this.addMethod}
                         toggleIotHubHandler={this.toggleIotHub}
-                        hasHubString={this.props.device.device && this.props.device.device.hubConnectionString && this.props.device.device.hubConnectionString.length > 0}
+                        hasHubString={d && d.configuration._kind != 'template' && d.hubConnectionString && d.configuration.hubConnectionString.length > 0}
+                        isTemplate={d && d.configuration._kind != 'template'}
                         resx={this.props.resx}
                     />
                 </div>
-
-                {this.props.display.showIotHubPanel ? <div className="panel-dialog panel-dialog-full panel-dialog-iothub">
-                    <IoTHub
-                        resx={this.props.resx}
-                        dispatch={this.props.dispatch}
-                        hubConnectionString={this.props.device.device.hubConnectionString || ''}
-                        deviceId={this.props.device.device._id}
-                    />
-                </div>
-                    : null}
-
-                <div className="device-instance-properties-toggler">
-                    <a onClick={this.toggleAdvanced}>{this.props.display.advancedExpanded ? "hide advanced" : "show advanced"}</a>
-                    <a onClick={this.toggleAll}>{this.props.display.propertyToggleAll ? "collapse all" : "expand all"}</a>
-                </div>
-
+            </div>
+            <div className="device-instance-scroller-body">
                 {this.props.display.advancedExpanded ? <div className="device-instance-advanced">
                     <DeviceInstanceAdvanced
                         resx={this.props.resx}
                         device={this.props.device.device}
                         updateHandler={this.updateDevice} />
-                </div>
-                    : null}
+                </div> : null}
+
+                <div style={{ cursor: "pointer" }} onClick={() => {
+                    this.props.dispatch(DisplayActions.CollapseAllProperties(this.props.device.device));
+                }}><b>collapse all</b></div>
 
                 <div className={classNames("device-instance-properties", this.props.display.advancedExpanded ? "device-instance-properties-advanced" : "")}>
-                    {
-                        this.props.device.device.comms ?
-                            this.props.device.device.comms.map((item: any, index: number) => {
+                    {d.comms ?
+                        d.comms.map((item: any, index: number) => {
+                            if (item._type === "method") {
+                                return <DeviceInstanceMethod
+                                    index={index}
+                                    property={item}
+                                    methodParams={this.props.methodParams}
+                                    resx={this.props.resx}
+                                    display={this.props.display}
+                                    deleteHandler={this.deleteProperty}
+                                    updateHandler={this.updateMethod.bind(this, item._id)}
+                                    toggleHandler={this.handleToggle.bind(this, item._id)}
+                                    dirtyHandler={this.handleDirty}
+                                    methodParamsHandler={this.methodParamsHandler.bind(this, item._id)}
+                                    dirty={this.props.dirty} />
+                            }
+                            if (item._type === "property") {
+                                return <DeviceInstanceProperty
+                                    index={index}
+                                    property={item}
+                                    deleteHandler={this.deleteProperty}
+                                    addMockHandler={this.addPropertyMock}
+                                    deleteMockHandler={this.deletePropertyMock}
+                                    updateHandler={this.updateProperty.bind(this, item._id)}
+                                    sendValueHandler={this.sendProperty.bind(this, item._id)}
+                                    readValueHandler={this.readProperty.bind(this, item._id)}
+                                    sensorList={this.props.sensors.sensors}
+                                    resx={this.props.resx}
+                                    display={this.props.display}
+                                    toggleHandler={this.handleToggle.bind(this, item._id)}
+                                    dirtyHandler={this.handleDirty}
+                                    dirty={this.props.dirty} />
+                            }
 
-                                if (item._type === "method") {
-                                    return <div key={index} className="device-instance-property-container">
-                                        <DeviceInstanceMethod
-                                            index={index}                                            
-                                            property={item}
-                                            methodParams={this.props.methodParams}
-                                            resx={this.props.resx}
-                                            display={this.props.display}
-                                            deleteHandler={this.deleteProperty}
-                                            updateHandler={this.updateMethod.bind(this, item._id)}
-                                            toggleHandler={this.handleToggle.bind(this, item._id)}
-                                            dirtyHandler={this.handleDirty}
-                                            methodParamsHandler={this.methodParamsHandler.bind(this, item._id)}
-                                            dirty={this.props.dirty} />
-                                    </div>
-                                }
-
-                                if (item._type === "property") {
-                                    return <div key={index} className="device-instance-property-container">
-                                        <DeviceInstanceProperty
-                                            index={index}
-                                            property={item}
-                                            deleteHandler={this.deleteProperty}
-                                            addMockHandler={this.addPropertyMock}
-                                            deleteMockHandler={this.deletePropertyMock}
-                                            updateHandler={this.updateProperty.bind(this, item._id)}
-                                            sendValueHandler={this.sendProperty.bind(this, item._id)}
-                                            readValueHandler={this.readProperty.bind(this, item._id)}
-                                            sensorList={this.props.sensors.sensors}
-                                            resx={this.props.resx}
-                                            display={this.props.display}
-                                            toggleHandler={this.handleToggle.bind(this, item._id)}
-                                            dirtyHandler={this.handleDirty}
-                                            dirty={this.props.dirty} />
-                                    </div>
-                                }
-                            })
-                            : null
-                    }
+                        })
+                        : null}
                 </div>
-
-                <div className={classNames(this.props.display.showIotHubPanel ? "blast-shield" : "")}></div>
-
             </div >
-
-        return content;
+        </div >
     }
 }
 

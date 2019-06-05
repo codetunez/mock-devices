@@ -9,9 +9,8 @@ export class DeviceInstanceAdvanced extends React.Component<any, any> {
         this.state = {
             updatePayload: {
                 name: this.props.device.name,
-                connectionString: this.props.device.connectionString,
-                hubConnectionString: this.props.device.hubConnectionString,
-                template: this.props.device.template,
+                connectionString: this.props.device.configuration.connectionString,
+                hubConnectionString: this.props.device.configuration.hubConnectionString
             },
             isDirty: false
         }
@@ -21,9 +20,8 @@ export class DeviceInstanceAdvanced extends React.Component<any, any> {
         let s: any = this.state;
         s.updatePayload = {
             name: nextProps.device.name,
-            connectionString: nextProps.device.connectionString,
-            hubConnectionString: nextProps.device.hubConnectionString,
-            template: nextProps.device.template
+            connectionString: nextProps.device.configuration.connectionString,
+            hubConnectionString: nextProps.device.configuration.hubConnectionString
         };
         s.isDirty = false;
         this.setState(s);
@@ -31,7 +29,8 @@ export class DeviceInstanceAdvanced extends React.Component<any, any> {
 
     handleUpdateDevice = (e: any) => {
         let s: any = this.state;
-        s.updatePayload[e.target.name] = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+        s.updatePayload[e.target.name] = e.target.value;
+        s.updatePayload.hubConnectionString = ''; // by design to keep integrity
         s.isDirty = true;
         this.setState(s);
     }
@@ -50,15 +49,8 @@ export class DeviceInstanceAdvanced extends React.Component<any, any> {
                 <div className="field"><label>{this.props.resx.FRM_LBL_DEVICE_CONN_STRING}</label><br />
                     <input name="connectionString" className="form-control full" type="text" onChange={this.handleUpdateDevice} value={this.state.updatePayload.connectionString || ''} /></div>
                 <div className="field"><label>{this.props.resx.FRM_LBL_DEVICE_HUB_CONN_STRING}</label><br />
-                    <input name="hubConnectionString" className="form-control full" type="text" onChange={this.handleUpdateDevice} value={this.state.updatePayload.hubConnectionString || ''} /></div>
-                <div className="field"><label>{this.props.resx.FRM_LBL_DEVICE_TEMPLATE}</label><br />
-                    <div className="form-check-inline" style={{ marginLeft: "3px" }}>
-                        <label className="form-check-label">
-                            <input type="checkbox" className="form-check-input" name="template" onChange={this.handleUpdateDevice} checked={this.state.updatePayload.template} />{this.props.resx.FRM_LBL_DEVICE_IS_TEMPLATE}
-                        </label>
-                    </div>
-                </div>
+                    <input name="hubConnectionString" className="form-control full" type="text" onChange={this.handleUpdateDevice} value={this.state.updatePayload.hubConnectionString || ''} readOnly /></div>
             </div>
-        </div>
+        </div >
     }
 }

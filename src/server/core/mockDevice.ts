@@ -1,13 +1,26 @@
 import { AssociativeStore } from '../framework/associativeStore'
 import { Device, Property, MockSensor, Method } from '../interfaces/device';
-import { Mqtt, clientFromConnectionString } from 'azure-iot-device-mqtt';
+
+
+import { Mqtt as M1, clientFromConnectionString } from 'azure-iot-device-mqtt';
 import { Client } from 'azure-iot-device';
 import { Message, SharedAccessSignature } from 'azure-iot-device';
 import { anHourFromNow, ConnectionString } from 'azure-iot-common';
+
+import { Mqtt as M2 } from 'azure-iot-provisioning-device-mqtt';
+import { SymmetricKeySecurityClient } from 'azure-iot-security-symmetric-key';
+import { ProvisioningDeviceClient } from 'azure-iot-provisioning-device';
+
 import { ValueByIdPayload } from '../interfaces/payload';
 import * as Utils from './utils';
 import { LiveUpdatesService } from './liveUpdatesService';
 import * as request from 'request';
+
+import * as Crypto from 'crypto';
+
+const MSG_HUB_EVENT = ">> [RUNNER]-[HUB] - ";
+const MSG_DPS_EVENT = ">> [RUNNER]-[DPS] - ";
+const MSG_ENG_EVENT = ">> [RUNNER]-[DEV] - ";
 
 export class MockDevice {
 
@@ -15,6 +28,10 @@ export class MockDevice {
     private CONNECT_RESTART: boolean = false;
 
     private useSasMode = true;
+
+    // TODO: refactor. by default wait and clear the flag if not dps
+    private dpsProvisionStatus: 'init' | 'connected' | 'error' | 'non';
+    private waitingOnDpsTimer = null;
 
     // device is not mutable
     private connectionTimer = null;
@@ -103,8 +120,8 @@ export class MockDevice {
     }
 
     updateDevice(device: Device) {
-        if (this.device != null && this.device.connectionString != device.connectionString) {
-            this.liveUpdates.sendConsoleUpdate("<<<< DEVICE UPDATE ERROR - != CONN STRING >>>>");
+        if (this.device != null && this.device.configuration.connectionString != device.configuration.connectionString) {
+            this.liveUpdates.sendConsoleUpdate(MSG_ENG_EVENT + "[" + this.device._id + "] DEVICE UPDATE ERROR. CONNECTION STRING HAS CHANGED. DELETE DEVICE");
         } else {
             this.device = JSON.parse(JSON.stringify(device));
             this.configure();
@@ -129,23 +146,37 @@ export class MockDevice {
 
     /// starts a device
     start() {
-        if (!this.device.template) {
-            this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT - STARTING " + this.device._id + " >>>>");
+        if (this.device.configuration._kind != 'template') {
+            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT INIT");
+
             this.connectClient();
-            this.mainLoop();
-            this.connectionTimer = setInterval(() => {
-                this.cleanUp();
-                this.connectClient();
-                this.CONNECT_RESTART = true;
-                this.mainLoop();
-            }, this.CONNECT_LOOP)
+            this.waitingOnDpsTimer = setInterval(() => {
+                if (this.dpsProvisionStatus === 'connected' || this.dpsProvisionStatus === 'non') {
+                    clearInterval(this.waitingOnDpsTimer);
+                    this.mainLoop();
+                    // refactor this to reconnect
+                    // this.connectionTimer = setInterval(() => {
+                    //     this.cleanUp();
+                    //     this.connectClient();
+                    //     this.dpsProvisionStatus = true;
+                    //     this.CONNECT_RESTART = true;
+                    //     this.mainLoop();
+                    // }, this.CONNECT_LOOP)
+                }
+
+                if (this.dpsProvisionStatus === 'error') {
+                    clearInterval(this.waitingOnDpsTimer);
+                    this.waitingOnDpsTimer = null;
+                    this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT REGISTRATION ERR, RESTART THIS DEVICE AFTER DPS FIXES");
+                }
+            }, 500);
         }
     }
 
     end() {
 
         if (this.running === true && this.iotHubDevice.client != null) {
-            this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT - RUNLOOP ENDING >>>>");
+            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] RUNLOOP ENDING");
             clearInterval(this.connectionTimer);
             this.cleanUp();
         }
@@ -156,7 +187,7 @@ export class MockDevice {
             try {
                 this.iotHubDevice.client.open(() => {
                     this.running = true;
-                    this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT - CONNECTING " + this.device._id + " >>>>");
+                    this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT OPEN");
 
                     this.setupCommands();
 
@@ -200,8 +231,7 @@ export class MockDevice {
                 })
             }
             catch (err) {
-                this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT - OPEN ERROR >>>>");
-                console.error(err.message);
+                this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] OPEN ERROR: " + err.message);
             }
         }
     }
@@ -216,25 +246,68 @@ export class MockDevice {
             this.iotHubDevice.client.close();
             this.iotHubDevice.client = null;
         } catch (err) {
-            this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT - TEAR DOWN ERROR (RESTART APP) >>>>")
-            console.error(err.message);
+            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "TEAR DOWN ERROR (RESTART APP) : " + err.message);
         } finally {
             this.running = false;
         }
     }
 
     connectClient() {
+        let config = this.device.configuration;
         this.iotHubDevice = {};
 
-        if (this.useSasMode) {
-            const cn = ConnectionString.parse(this.device.connectionString);
-            let sas: any = SharedAccessSignature.create(cn.HostName, cn.DeviceId, cn.SharedAccessKey, anHourFromNow());
-            this.iotHubDevice.client = Client.fromSharedAccessSignature(sas, Mqtt);
-            this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT - SAS CONN STRING " + this.device._id + " >>>>");
-        } else {
-            this.iotHubDevice.client = clientFromConnectionString(this.device.connectionString);
-            this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT - CLASSIC CONN STRING " + this.device._id + " >>>>");
+        if (config._kind === 'hub') {
+            this.dpsProvisionStatus = 'non';
+
+            if (this.useSasMode) {
+                const cn = ConnectionString.parse(config.connectionString);
+                let sas: any = SharedAccessSignature.create(cn.HostName, cn.DeviceId, cn.SharedAccessKey, anHourFromNow());
+                this.iotHubDevice.client = Client.fromSharedAccessSignature(sas, M1);
+                this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CONNECTING VIA SAS CONNECTION STRING. RESTARTS AFTER 55 MINUTES");
+            } else {
+                this.iotHubDevice.client = clientFromConnectionString(config.connectionString);
+                this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CONNECTING VIA CONN STRING API");
+            }
         }
+
+        if (config._kind === 'dps') {
+            this.dpsProvisionStatus = 'init';
+
+            let transformedSasKey = config.isMasterKey ? this.computeDrivedSymmetricKey(config.sasKey, config.deviceId) : config.sasKey;
+
+            let dpsPayload = config.dpsPayload && Object.keys(config.dpsPayload).length > 0 ? JSON.parse(config.dpsPayload) : {};
+
+            var provisioningSecurityClient = new SymmetricKeySecurityClient(config.deviceId, transformedSasKey);
+            var provisioningClient = ProvisioningDeviceClient.create('global.azure-devices-provisioning.net', config.scopeId, new M2(), provisioningSecurityClient);
+
+            provisioningClient.setProvisioningPayload(dpsPayload);
+            this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] REGISTERING DEVICE");
+
+            provisioningClient.register((err: any, result) => {
+                if (err) {
+                    let msg = err.result.registrationState && err.result.registrationState.errorMessage || err;
+                    this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] REGISTERING ERROR " + msg);
+                    this.dpsProvisionStatus = 'error';
+                }
+                else {
+                    this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] DEVICE REGISTERED " + this.device._id + " >>>>");
+                    this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] HUB " + result.assignedHub + " >>>>");
+                    var connectionString = 'HostName=' + result.assignedHub + ';DeviceId=' + result.deviceId + ';SharedAccessKey=' + transformedSasKey;
+                    const cn = ConnectionString.parse(connectionString);
+                    let sas: any = SharedAccessSignature.create(cn.HostName, cn.DeviceId, cn.SharedAccessKey, anHourFromNow());
+                    this.iotHubDevice.client = Client.fromSharedAccessSignature(sas, M1);
+                    this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] SAS CONN STRING " + this.device._id + " >>>>");
+                    this.dpsProvisionStatus = 'connected';
+                }
+            })
+        }
+    }
+
+    // creates the HMAC key
+    computeDrivedSymmetricKey(masterKey, regId) {
+        return Crypto.createHmac('SHA256', Buffer.from(masterKey, 'base64'))
+            .update(regId, 'utf8')
+            .digest('base64');
     }
 
     setupCommands() {
@@ -250,9 +323,8 @@ export class MockDevice {
                     this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][METH] <- " + request.methodName + " " + JSON.stringify(request.payload));
                     Object.assign(this.receivedMethodParams, { [m._id]: { date: new Date().toUTCString(), payload: JSON.stringify(request.payload) } });
                     response.send((m.status), payload, (err) => {
-                        // if (err) { console.error('An error ocurred when sending a method response:\n' + err.toString());  }
                         if (m.asProperty) { this.methodReturnPayload = Object.assign({}, { [m.name]: m.payload }) }
-                        this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][RESP] -> " + JSON.stringify(payload));
+                        this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][RESP] -> " + (err ? err.toString() : JSON.stringify(payload)));
                     })
                 });
             }
@@ -266,9 +338,10 @@ export class MockDevice {
             Object.assign(payload, additions);
 
             if (Object.keys(payload).length > 0) {
-                payload = this.transformPayload(payload);
-                twin.properties.reported.update(payload, ((err) => {
-                    this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][TWIN] -> " + (err ? err.toString() : JSON.stringify(payload)));
+                let wire = this.transformPayload(payload);
+                twin.properties.reported.update(wire, ((err) => {
+                    this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][TWIN] -> " + (err ? err.toString() : JSON.stringify(wire)));
+                    this.liveUpdates.sendAsLiveUpdate(payload);
                 }))
             }
         }
@@ -281,10 +354,11 @@ export class MockDevice {
             Object.assign(payload, additions);
 
             if (Object.keys(payload).length > 0) {
-                payload = this.transformPayload(payload);
+                let wire = this.transformPayload(payload);
                 let msg = new Message(JSON.stringify(payload));
                 this.iotHubDevice.client.sendEvent(msg, ((err) => {
-                    this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][MSG] -> " + (err ? err.toString() : JSON.stringify(payload)));
+                    this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][MSG] -> " + (err ? err.toString() : JSON.stringify(wire)));
+                    this.liveUpdates.sendAsLiveUpdate(payload);
                 }))
             }
         }
@@ -356,6 +430,10 @@ export class MockDevice {
             p.mock._value = newCurrent > p.mock.running ? newCurrent : p.mock.running;
         }
 
+        if (p.mock._type === "random") {
+            p.mock._value = Math.floor(Math.random() * Math.floor(1000));
+        }
+
         if (p.mock._type === "function") {
 
             try {
@@ -365,7 +443,7 @@ export class MockDevice {
                     body: JSON.stringify({ "value": p.mock._value })
                 }, function (error, response, body) {
                     if (error) {
-                        console.error('[FUNCTION REQUEST][ERR] - ' + error);
+                        this.liveUpdates.sendConsoleUpdate('[FUNCTION REQUEST][ERR] - ' + error)
                     }
                     else {
                         p.mock._value = parseInt(JSON.parse(body).value);
@@ -373,7 +451,7 @@ export class MockDevice {
                 });
             }
             catch (err) {
-                console.log('[FUNCTION REQUEST][FAILED] -' + err.message);
+                this.liveUpdates.sendConsoleUpdate('[FUNCTION REQUEST][FAILED] - ' + err.message);
             }
         }
     }

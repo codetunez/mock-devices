@@ -2,8 +2,17 @@ import { Data } from "../../data";
 import * as Events from "../events"
 
 export interface NewDevicePayload {
-    name: string;
-    connectionString: string;
+    _kind: string;
+    deviceId: string;
+    mockDeviceName: string;
+    mockDeviceCloneId?: string;
+    mockDeviceState?: any;
+    connectionString?: string;
+    hubConnectionString?: string;    
+    scopeId?: string;
+    dpsPayload?: any;
+    sasKey?: string;
+    capabilityModel?: any;
 }
 
 export interface UpdatedDevicePayload {

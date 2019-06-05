@@ -9,7 +9,7 @@ export class Help extends React.Component<any, any> {
     render() {
         return <div className="help">
             <div className="help-row">
-                <h1>Help</h1>
+                <h2>How to use mock-devices</h2>
                 <p>
                     mock-devices is a dev tool that allows you to create fake devices that
                 can send and receive data like real devices.
@@ -17,44 +17,31 @@ export class Help extends React.Component<any, any> {
             </div>
             <div className="help-row">
                 <h4>Adding a new mock device</h4>
-                To add a new mock device, use the + button from menu. Use a ...
-                        <ul>
-                    <li>Hub Connection String - a new device will be created on the Azure IoT Hub</li>
-                    <li>Device Connection String - mock an existing device that exists in Azure IoT Hub</li>
+                To add a new mock device, use the + button from menu. Devices can be added in the following way
+                <br /><br />
+                <ul>
+                    <li>DPS - Any device can be registered if you have the ScopeID and SaS Key</li>
+                    <li>Device Connection String - Mock an existing device that exists in Azure IoT Hub</li>
+                    <li>From IoT Hub - Browse an Azure IoT Hub and select the device you wish to create a mock from</li>
                 </ul>
-                <p>A device can only be added once. Multiple Hubs can be used.</p>
-                <h5>Add a new mock using a clone of an existing device</h5>
+                <p>Mock devices can be from any Hub or DPS endpoint. A device can only be added once</p>
+                <em>Add a new mock using a clone of an existing device</em>
                 <p>
-                    Any running mock-device device can be cloned for it's model and current state. Follow the
-                    add device flow and select the device from the 'Clone the model of this device' drop down
-                </p>
-                <h5>Add a new mock using an existing device on an IoT Hub</h5>
-                <p>
-                    Use the server icon to select an existing device on an IoT Hub by providing a hub connection string.
-                    Follow the add new device flow
+                    Any running mock device device can be cloned for it's model and current state. Follow the
+                    + flow and select the device ore template from the 'Clone Model (mock-devices)' drop down
                 </p>
             </div>
             <div className="help-row">
-                <h4>Adding a new mock device as a Template</h4>
+                <h4>Adding a Template</h4>
                 <p>
-                    Any device can be changed to a template under the Advanced tab. This will stop the device from being
-                    started but will allow it's model to be cloned. This is useful in Start All. To reuse the device
-                    id "templated", change the connection string to anything conforming
+                    Templates are used as a blueprint when creating new devices and can be made from an existing device. Adding
+                    templates can be done from the + dialog. Use the Clone Model option when adding a new device
                 </p>
-            </div>
-            <div className="help-row">
-                <h4>Save current set of devices</h4>
+                <em>Device Capability Models</em>
                 <p>
-                    Use the save icon to get a JSON dump of all the mock devices and their configurations. To load, use
-                a previously exported JSON dump. State is not exported. You can also save to local storage on the
-                machine you are currently using
-                </p>
-            </div>
-            <div className="help-row">
-                <h4>Debug the server side twin for a mock-device</h4>
-                <p>
-                    Use the Advanced view of a device to provide the hub connection string. A debug icon will appear for
-                    in the device's toolbar
+                    A template can be created from a DCM where all of the DCM capabilities are model in the mock device. By default,
+                    telemetry type device properties will be given a random run loop timer and will emit a random number from 0 to 1000.
+                    This can be changed later
                 </p>
             </div>
             <div className="help-row">
@@ -65,11 +52,10 @@ export class Help extends React.Component<any, any> {
                 the device. Starting the device will make the device enter it's run loop. The device must be running
                 to send and receive values. When the device is running the tool bar will be green.</p>
                 <p>Both C2D and D2C Properties have common fields.</p>
-                <p>
-                    <em>Field Name</em> is the name of the property used in the SDK payload. A field name is auto generated on pressing add<br />
-                    <em>Device SDK Out/In</em> selects between using the SDK telemetry/message channel or the SDK Twin API. Docs can be found here
-                    <br /><span className="docs-link">https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-sdks</span>
-                </p>
+                <ul>
+                    <li>Field Name - Is the name of the property used in the SDK payload. A field name is auto generated on pressing add</li>
+                    <li>Device SDK Out/In - Selects between using the SDK telemetry/message channel or the SDK Twin API. Docs can be found <a href="https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-sdks">here</a></li>
+                </ul>
                 <p>
                     Adding, removing and changing any of the fields in a property does not require the device to be stopped. Some changes will be applied
                     immediately, whilst others will highlight the save button. Saving will update the property. If in a run loop it will happen on the next
@@ -97,12 +83,12 @@ export class Help extends React.Component<any, any> {
                 <p>When the device is running, use the send button to send a new value. Set <em>As String</em> to "No" to send
                 booleans and numerics.
                 </p>
-                <h5>Include in run loop</h5>
+                <em>Include in run loop</em>
                 <p>
                     Check <em>Include in run loop</em> to have the property value automatically send on the selected duration. The
                     Send button can still be used and will modify the value sent and report the new value immediately.
                 </p>
-                <h5>Template the Value payload</h5>
+                <em>Template the Value payload</em>
                 <p>
                     Use this option to format the value into a JSON object. You can use the _VALUE_ macro to inject the
                     mock devices current value (ensure you set the type) This is an example template
@@ -115,7 +101,7 @@ export class Help extends React.Component<any, any> {
                     {FormatJSON({ "d2cProperty-88cf": "_VALUE_" })}
                 </pre>
                 <br />
-                <h5>Mock Sensor Configuration</h5>
+                <em>Mock Sensor Configuration</em>
                 <p>The mock-device tool includes 3 fake sensors to simulate useful telemetry trends. You can also provide a web hook like
                     Azure Functions to process a simulated value. An update to the parameters of the simulated property will cause sensor to restart. A mock
                     sensor will override the value field of the property. The Send button can still be used with a supplied value causing a spiking effect on the sensor.
@@ -131,7 +117,7 @@ export class Help extends React.Component<any, any> {
                     <em>timeToRunning</em> is the number of ms to reach running<br />
                     <em>Reported "Live" Value</em> show the current value of the simulated sensor<br />
                 </p>
-                <h5><em>Web Hook/Azure Function</em></h5>
+                <em><em>Web Hook/Azure Function</em></em>
                 <p>To use a web hook to calculate a sensor value click the Function button.</p>
                 <p>Provide the parameters ...</p>
                 <p>
@@ -154,11 +140,25 @@ export class Help extends React.Component<any, any> {
                     to test a flow between a client and the mock-device device. Parameters sent by the caller to a method are ignored (but can be viewed). Too add a method use
                     the Add Method button in the top most toolbar. Complete the method name, status and return payload (must be JSON)
                 </p>
-                <h5><em>Return Method Name Property</em></h5>
+                <em>Return Method Name Property</em>
                 <p>
-                    If you select <em>Return Method Name Property</em>, a twin D2C property will also be sent using the method name as the property name and the
+                    If you select 'Return Method Name Property', a twin D2C property will also be sent using the method name as the property name and the
                     Return Payload as the value. Use a string value as the payload. The method will also return the value in a JSON payload
                     </p>
+            </div>
+            <div className="help-row">
+                <h4>Save current set of devices</h4>
+                <p>
+                    Use the save icon to get a JSON dump of all the mock devices and their configurations. To load, use
+                a previously exported JSON dump. State is not exported. You can also save to local storage on the
+                machine you are currently using
+                </p>
+            </div>
+            <div className="help-row">
+                <h4>Debug the server side twin for a mock-device</h4>
+                <p>
+                   If a device is added through an IoT Hub you will be able to debug the Device Twin. A debug button will appear in the top right if this is possible
+                </p>
             </div>
         </div >
     }
