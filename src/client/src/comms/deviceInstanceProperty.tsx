@@ -272,18 +272,17 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
 
                     <div className="p2-fields">
                         <div className="field"><label>JSON Value Template</label><br /><div><Toggle defaultChecked={this.state.property.propertyObject.type === 'templated' ? true : false} icons={false} onChange={this.handlePropertyObjectChange} /></div></div>
-                        <div className="field field-xw">
-                            <label className="seperator-heading"><b>Template</b></label>
-                            {this.state.property.propertyObject.type === "templated" ?
+                        {this.state.property.propertyObject.type === "templated" ?
+                            <div className="field field-xw">
+                                <label className="seperator-heading"><b>Template</b></label>
                                 <textarea name="template" rows={7} className="form-control custom-textarea" onChange={this.handlePropertyObjectValueChange} value={this.state.property.propertyObject.template}>
                                     {FormatJSON({ "value": "_VALUE_" })}
                                 </textarea>
-                                : null}
-                        </div>
+                            </div>
+                            : null}
                     </div>
                 </div>
                 : null}
         </div>
-
     }
 }

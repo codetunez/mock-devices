@@ -304,7 +304,7 @@ export class DeviceStore {
         if (device.configuration._kind === 'template') { return; }
 
         try {
-            let rd: MockDevice = this.runners[device._id];
+            let rd: MockDevice = this.runners[device._id];       
             rd.start();
 
             let d: Device = this.store.getItem(device._id);

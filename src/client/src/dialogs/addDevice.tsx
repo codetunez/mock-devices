@@ -102,7 +102,7 @@ export class AddDevice extends React.Component<any, any> {
         let deviceList = [];
         if (this.props.devices) {
             this.props.devices.map(function (ele, i) {
-                deviceList.push({ name: ele.name, value: ele._id });
+                deviceList.push({ name: ele.configuration.mockDeviceName, value: ele._id });
             })
         }
 
@@ -133,10 +133,15 @@ export class AddDevice extends React.Component<any, any> {
                         <input className="form-control" type="text" name="deviceId" onChange={this.handleChange} value={this.state.updatePayload.deviceId || ''} />
                     </div>
                     <div className="form-group">
-                        <label>{this.props.resx.FRM_LBL_DEVICE_DPS_SAS}</label>
-                        <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
-                            <input style={{ width: "25px" }} className="form-control" type="checkbox" name="isMasterKey" onChange={this.handleChange} value={this.state.updatePayload.isMasterKey} />
-                            <div>Generate a HMAC-SHA265 Key</div>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <label>{this.props.resx.FRM_LBL_DEVICE_DPS_SAS}</label>
+                            <div style={{ display: "flex", justifyContent: "center" }}>
+                                <label className="custom-checkbox">
+                                    <input type="checkbox" name="isMasterKey" onChange={this.handleChange} value={this.state.updatePayload.isMasterKey} />
+                                    <span className="checkmark"></span>
+                                </label>
+                                <span>Generate a HMAC-SHA265 Key</span>
+                            </div>
                         </div>
                         <input className="form-control" type="text" name="sasKey" onChange={this.handleChange} value={this.state.updatePayload.sasKey || ''} />
                     </div>

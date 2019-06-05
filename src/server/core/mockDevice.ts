@@ -18,6 +18,10 @@ import * as request from 'request';
 
 import * as Crypto from 'crypto';
 
+const MSG_HUB_EVENT = ">> [ENGINE]-[HUB] - ";
+const MSG_DPS_EVENT = ">> [ENGINE]-[DPS] - ";
+const MSG_ENG_EVENT = ">> [ENGINE]-[DEV] - ";
+
 export class MockDevice {
 
     private CONNECT_LOOP = 1000 * 60 * 50;
@@ -26,7 +30,7 @@ export class MockDevice {
     private useSasMode = true;
 
     // TODO: refactor. by default wait and clear the flag if not dps
-    private waitingOnDpsProvision = true;
+    private dpsProvisionStatus: 'init' | 'connected' | 'error' | 'non';
     private waitingOnDpsTimer = null;
 
     // device is not mutable
@@ -117,7 +121,7 @@ export class MockDevice {
 
     updateDevice(device: Device) {
         if (this.device != null && this.device.configuration.connectionString != device.configuration.connectionString) {
-            this.liveUpdates.sendConsoleUpdate("<<<< DEVICE UPDATE ERROR - != CONN STRING >>>>");
+            this.liveUpdates.sendConsoleUpdate(MSG_ENG_EVENT + "[" + this.device._id + "] DEVICE UPDATE ERROR. CONNECTION STRING HAS CHANGED. DELETE DEVICE");
         } else {
             this.device = JSON.parse(JSON.stringify(device));
             this.configure();
@@ -143,21 +147,26 @@ export class MockDevice {
     /// starts a device
     start() {
         if (this.device.configuration._kind != 'template') {
-            this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT - CLIENT INIT " + this.device._id + " >>>>");
+            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT INIT");
 
             this.connectClient();
             this.waitingOnDpsTimer = setInterval(() => {
-                if (!this.waitingOnDpsProvision) {
+                if (this.dpsProvisionStatus === 'connected' || this.dpsProvisionStatus === 'non') {
                     clearInterval(this.waitingOnDpsTimer);
                     this.mainLoop();
                     // refactor this to reconnect
                     // this.connectionTimer = setInterval(() => {
                     //     this.cleanUp();
                     //     this.connectClient();
-                    //     this.waitingOnDpsProvision = true;
+                    //     this.dpsProvisionStatus = true;
                     //     this.CONNECT_RESTART = true;
                     //     this.mainLoop();
                     // }, this.CONNECT_LOOP)
+                }
+
+                if (this.dpsProvisionStatus === 'error') {
+                    clearInterval(this.waitingOnDpsTimer);
+                    this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT REGISTRATION, RESTART THIS DEVICE AFTER ASSOCIATING");
                 }
             }, 500);
         }
@@ -166,7 +175,7 @@ export class MockDevice {
     end() {
 
         if (this.running === true && this.iotHubDevice.client != null) {
-            this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT - RUNLOOP ENDING >>>>");
+            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] RUNLOOP ENDING");
             clearInterval(this.connectionTimer);
             this.cleanUp();
         }
@@ -177,7 +186,7 @@ export class MockDevice {
             try {
                 this.iotHubDevice.client.open(() => {
                     this.running = true;
-                    this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT - CLIENT OPEN " + this.device._id + " >>>>");
+                    this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT OPEN");
 
                     this.setupCommands();
 
@@ -221,8 +230,7 @@ export class MockDevice {
                 })
             }
             catch (err) {
-                this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT - OPEN ERROR >>>>");
-                console.error(err.message);
+                this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] OPEN ERROR: " + err.message);
             }
         }
     }
@@ -237,8 +245,7 @@ export class MockDevice {
             this.iotHubDevice.client.close();
             this.iotHubDevice.client = null;
         } catch (err) {
-            this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT - TEAR DOWN ERROR (RESTART APP) >>>>")
-            console.error(err.message);
+            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "TEAR DOWN ERROR (RESTART APP) : " + err.message);
         } finally {
             this.running = false;
         }
@@ -248,53 +255,58 @@ export class MockDevice {
         let config = this.device.configuration;
         this.iotHubDevice = {};
 
-        if (this.device.configuration._kind === 'hub') {
-            this.waitingOnDpsProvision = false;
+        if (config._kind === 'hub') {
+            this.dpsProvisionStatus = 'non';
 
             if (this.useSasMode) {
-                const cn = ConnectionString.parse(this.device.configuration.connectionString);
+                const cn = ConnectionString.parse(config.connectionString);
                 let sas: any = SharedAccessSignature.create(cn.HostName, cn.DeviceId, cn.SharedAccessKey, anHourFromNow());
                 this.iotHubDevice.client = Client.fromSharedAccessSignature(sas, M1);
-                this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT - SAS CONN STRING " + this.device._id + " >>>>");
+                this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CONNECTING VIA SAS CONNECTION STRING. RESTARTS AFTER 55 MINUTES");
             } else {
-                this.iotHubDevice.client = clientFromConnectionString(this.device.configuration.connectionString);
-                this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT - CLASSIC CONN STRING " + this.device._id + " >>>>");
+                this.iotHubDevice.client = clientFromConnectionString(config.connectionString);
+                this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CONNECTING VIA CONN STRING API");
             }
         }
 
-        if (this.device.configuration._kind === 'dps') {
-            this.waitingOnDpsProvision = true;          
-              
-            let sasKey = this.device.configuration.isMasterKey ? this.computeDrivedSymmetricKey(this.device.configuration.sasKey, this.device.configuration.deviceId) : this.device.configuration.sasKey;
+        if (config._kind === 'dps') {
+            this.dpsProvisionStatus = 'init';
 
-            let dpsPayload = this.device.configuration.dpsPayload && Object.keys(this.device.configuration.dpsPayload).length > 0 ? JSON.parse(this.device.configuration.dpsPayload) : {};
-            var provisioningSecurityClient = new SymmetricKeySecurityClient(this.device.configuration.deviceId, sasKey);
-            var provisioningClient = ProvisioningDeviceClient.create('global.azure-devices-provisioning.net', this.device.configuration.scopeId, new M2(), provisioningSecurityClient);            
-            provisioningClient.setProvisioningPayload(dpsPayload);            
-            this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT DPS - REGISTERING DEVICE " + this.device._id + " >>>>");            
+            let transformedSasKey = config.isMasterKey ? this.computeDrivedSymmetricKey(config.sasKey, config.deviceId) : config.sasKey;
+
+            let dpsPayload = config.dpsPayload && Object.keys(config.dpsPayload).length > 0 ? JSON.parse(config.dpsPayload) : {};
+
+            var provisioningSecurityClient = new SymmetricKeySecurityClient(config.deviceId, transformedSasKey);
+            var provisioningClient = ProvisioningDeviceClient.create('global.azure-devices-provisioning.net', config.scopeId, new M2(), provisioningSecurityClient);
+
+            provisioningClient.setProvisioningPayload(dpsPayload);
+            this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] REGISTERING DEVICE");
+
             provisioningClient.register((err, result) => {
-                if (err) { 
-                    this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT DPS - REGISTERING ERROR " + err + " >>>>");
+                if (err) {
+                    this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] REGISTERING ERROR " + err);
+                    this.dpsProvisionStatus = 'error';
                 }
                 else {
-                    this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT DPS - DEVICE REGISTERED " + this.device._id + " >>>>");
-                    this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT DPS - HUB " + result.assignedHub + " >>>>");
-                    var connectionString = 'HostName=' + result.assignedHub + ';DeviceId=' + result.deviceId + ';SharedAccessKey=' + this.device.configuration.sasKey;
+                    this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] DEVICE REGISTERED " + this.device._id + " >>>>");
+                    this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] HUB " + result.assignedHub + " >>>>");
+                    var connectionString = 'HostName=' + result.assignedHub + ';DeviceId=' + result.deviceId + ';SharedAccessKey=' + transformedSasKey;
                     const cn = ConnectionString.parse(connectionString);
                     let sas: any = SharedAccessSignature.create(cn.HostName, cn.DeviceId, cn.SharedAccessKey, anHourFromNow());
                     this.iotHubDevice.client = Client.fromSharedAccessSignature(sas, M1);
-                    this.liveUpdates.sendConsoleUpdate("<<<< HUB EVENT DPS - SAS CONN STRING " + this.device._id + " >>>>");
+                    this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] SAS CONN STRING " + this.device._id + " >>>>");
+                    this.dpsProvisionStatus = 'connected';
                 }
-                this.waitingOnDpsProvision = false;
             })
         }
     }
 
+    // creates the HMAC key
     computeDrivedSymmetricKey(masterKey, regId) {
         return Crypto.createHmac('SHA256', Buffer.from(masterKey, 'base64'))
-          .update(regId, 'utf8')
-          .digest('base64');
-      }
+            .update(regId, 'utf8')
+            .digest('base64');
+    }
 
     setupCommands() {
         // this block needs a refactor
@@ -309,9 +321,8 @@ export class MockDevice {
                     this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][METH] <- " + request.methodName + " " + JSON.stringify(request.payload));
                     Object.assign(this.receivedMethodParams, { [m._id]: { date: new Date().toUTCString(), payload: JSON.stringify(request.payload) } });
                     response.send((m.status), payload, (err) => {
-                        // if (err) { console.error('An error ocurred when sending a method response:\n' + err.toString());  }
                         if (m.asProperty) { this.methodReturnPayload = Object.assign({}, { [m.name]: m.payload }) }
-                        this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][RESP] -> " + JSON.stringify(payload));
+                        this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][RESP] -> " + (err ? err.toString() : JSON.stringify(payload)));
                     })
                 });
             }
@@ -430,7 +441,7 @@ export class MockDevice {
                     body: JSON.stringify({ "value": p.mock._value })
                 }, function (error, response, body) {
                     if (error) {
-                        console.error('[FUNCTION REQUEST][ERR] - ' + error);
+                        this.liveUpdates.sendConsoleUpdate('[FUNCTION REQUEST][ERR] - ' + error)
                     }
                     else {
                         p.mock._value = parseInt(JSON.parse(body).value);
@@ -438,7 +449,7 @@ export class MockDevice {
                 });
             }
             catch (err) {
-                console.log('[FUNCTION REQUEST][FAILED] -' + err.message);
+                this.liveUpdates.sendConsoleUpdate('[FUNCTION REQUEST][FAILED] - ' + err.message);
             }
         }
     }
