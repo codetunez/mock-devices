@@ -38,6 +38,13 @@ input[type="text"]:read-only {
   *:not(:last-child) {
     margin-right: $xs-gutter;
   }
+
+  .btn-bar-horiz-sep {
+    border-left: 1px solid $app-grey-3;
+    margin:0 10px 0 5px;
+    height: 40px;
+  }
+
 }
 .btn-bar-base-margin {
   * {
