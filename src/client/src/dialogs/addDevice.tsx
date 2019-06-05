@@ -91,6 +91,7 @@ export class AddDevice extends React.Component<any, any> {
     }
 
     addHubDevice = (item: any) => {
+
         let s: any = this.state;
         s.updatePayload.mockDeviceName = item.deviceId;
         s.updatePayload.connectionString = item.connectionString;
@@ -140,7 +141,7 @@ export class AddDevice extends React.Component<any, any> {
                                     <input type="checkbox" name="isMasterKey" onChange={this.handleChange} value={this.state.updatePayload.isMasterKey} />
                                     <span className="checkmark"></span>
                                 </label>
-                                <span>Generate a HMAC-SHA265 Key</span>
+                                <span>Generate a HMAC-SHA265 SaS Key</span>
                             </div>
                         </div>
                         <input className="form-control" type="text" name="sasKey" onChange={this.handleChange} value={this.state.updatePayload.sasKey || ''} />
