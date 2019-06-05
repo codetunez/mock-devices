@@ -1,8 +1,8 @@
 @import '../../consts.scss';
 
 .card {
-    width: 140px;
-    padding: 15px;
+    width: 100%;
+    padding: 15px 25px 15px 15px;
     overflow-wrap: break-word;
     background-color: $app-clr-2;
     border: 2px solid $app-clr-0;

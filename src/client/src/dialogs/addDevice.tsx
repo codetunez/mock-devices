@@ -140,7 +140,7 @@ export class AddDevice extends React.Component<any, any> {
                                     <input type="checkbox" name="isMasterKey" onChange={this.handleChange} value={this.state.updatePayload.isMasterKey} />
                                     <span className="checkmark"></span>
                                 </label>
-                                <span>Generate a HMAC-SHA265 SaS Key</span>
+                                <span>Generate as HMAC-SHA265 SaS Key</span>
                             </div>
                         </div>
                         <input className="form-control" type="text" name="sasKey" onChange={this.handleChange} value={this.state.updatePayload.sasKey || ''} />
