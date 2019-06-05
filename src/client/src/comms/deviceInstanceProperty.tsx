@@ -228,7 +228,7 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
             {this.state.property.type.direction === "d2c" ?
                 <div>
                     <div className="p2-fields">
-                        <div className="field"><label>Enabled</label><br /><div><Toggle defaultChecked={true} icons={false} /></div></div>
+                        <div className="field"><label>Enabled</label><br /><div><Toggle disabled={true} defaultChecked={true} icons={false} /></div></div>
                         <div className="field"><label>{this.props.resx.FRM_LBL_FIELD_NAME}</label><br /><input className="form-control full form-control-sm" type="text" name="name" onChange={this.handleChange} value={this.state.property.name} /></div>
                         <div className="field"><label>{this.props.resx.FRM_LBL_DEVICE_SDKOUT}</label><br /><Combo class="form-control-sm" collection={References.deviceInOutCombo} name="sdk" onChange={this.handleChange} value={this.state.property.sdk} /></div>
                         <div className="field"><label>{this.props.resx.FRM_LBL_AS_STRING}</label><br /><Combo class="form-control-sm" collection={References.devicePropType} name="string" onChange={this.handleChange} value={this.state.property.string} /></div>
