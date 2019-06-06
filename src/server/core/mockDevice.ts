@@ -24,16 +24,12 @@ const MSG_ENG_EVENT = ">> [RUNNER]-[DEV] - ";
 
 export class MockDevice {
 
-    private CONNECT_LOOP = 1000 * 60 * 50;
+    private CONNECT_LOOP = 300000;
     private CONNECT_RESTART: boolean = false;
-
     private useSasMode = true;
 
-    // TODO: refactor. by default wait and clear the flag if not dps
-    private dpsProvisionStatus: 'init' | 'connected' | 'error' | 'non';
-    private waitingOnDpsTimer = null;
-
     // device is not mutable
+    private connectionDPSTimer = null;
     private connectionTimer = null;
     private device: Device = null;
     private iotHubDevice: any = null;
@@ -59,6 +55,8 @@ export class MockDevice {
     private liveUpdates: LiveUpdatesService = null;
 
     private receivedMethodParams = {}
+
+    private registrationConnectionString: string = null;
 
     constructor(device, liveUpdates: LiveUpdatesService) {
         this.updateDevice(device);
@@ -145,38 +143,44 @@ export class MockDevice {
     }
 
     /// starts a device
-    start() {
-        if (this.device.configuration._kind != 'template') {
-            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT INIT");
+    start() {        
+        if (this.device.configuration._kind === 'template') { return; }
+        this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT START");
 
-            this.connectClient();
-            this.waitingOnDpsTimer = setInterval(() => {
-                if (this.dpsProvisionStatus === 'connected' || this.dpsProvisionStatus === 'non') {
-                    clearInterval(this.waitingOnDpsTimer);
-                    this.mainLoop();
-                    // refactor this to reconnect
-                    // this.connectionTimer = setInterval(() => {
-                    //     this.cleanUp();
-                    //     this.connectClient();
-                    //     this.dpsProvisionStatus = true;
-                    //     this.CONNECT_RESTART = true;
-                    //     this.mainLoop();
-                    // }, this.CONNECT_LOOP)
+        if (this.device.configuration._kind === 'dps') {
+            this.registrationConnectionString = null;
+            this.connectionDPSTimer = setInterval(() => {
+                this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] WAITING FOR REGISTRATION");
+                if (this.registrationConnectionString != null && this.registrationConnectionString != 'init') {
+                    clearInterval(this.connectionDPSTimer);
+                    this.connectLoop(this.registrationConnectionString);
+                    return;
                 }
-
-                if (this.dpsProvisionStatus === 'error') {
-                    clearInterval(this.waitingOnDpsTimer);
-                    this.waitingOnDpsTimer = null;
-                    this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT REGISTRATION ERR, RESTART THIS DEVICE AFTER DPS FIXES");
-                }
-            }, 500);
+                this.dpsRegistration();
+            }, 2000);
+        }
+        else {
+            this.connectLoop(this.device.configuration.connectionString);
         }
     }
 
-    end() {
+    connectLoop(connectionString?: string) {
+        this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT STARTING CONNECT LOOP");
+        this.connectClient(connectionString);
+        this.mainLoop();
+        this.connectionTimer = setInterval(() => {
+            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT READY");
+            this.CONNECT_RESTART = true;
+            this.cleanUp();
+            this.connectClient(connectionString);
+            this.mainLoop();
+        }, this.CONNECT_LOOP)
+    }
 
+    end() {
+        this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] RUNLOOP ENDING");
+        clearInterval(this.connectionDPSTimer);
         if (this.running === true && this.iotHubDevice.client != null) {
-            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] RUNLOOP ENDING");
             clearInterval(this.connectionTimer);
             this.cleanUp();
         }
@@ -242,65 +246,56 @@ export class MockDevice {
         clearInterval(this.methodRLTimer);
 
         try {
-            this.iotHubDevice.client.removeAllListeners();
-            this.iotHubDevice.client.close();
-            this.iotHubDevice.client = null;
+            if (this.iotHubDevice.client) {
+                this.iotHubDevice.client.removeAllListeners();
+                this.iotHubDevice.client.close();
+                this.iotHubDevice.client = null;
+            }
         } catch (err) {
-            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "TEAR DOWN ERROR (RESTART APP) : " + err.message);
+            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] TEAR DOWN ERROR: " + err.message);
         } finally {
             this.running = false;
         }
     }
 
-    connectClient() {
-        let config = this.device.configuration;
+    connectClient(connectionString) {
         this.iotHubDevice = {};
 
-        if (config._kind === 'hub') {
-            this.dpsProvisionStatus = 'non';
+        if (this.useSasMode) {
+            const cn = ConnectionString.parse(connectionString);
+            let sas: any = SharedAccessSignature.create(cn.HostName, cn.DeviceId, cn.SharedAccessKey, anHourFromNow());
+            this.iotHubDevice.client = Client.fromSharedAccessSignature(sas, M1);
+            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CONNECTING VIA SAS CONNECTION STRING. RESTARTS AFTER " + (this.CONNECT_LOOP / 60000) + " MINUTES");
+        } else {
+            this.iotHubDevice.client = clientFromConnectionString(connectionString);
+            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CONNECTING VIA CONN STRING API");
+        }
+    }
 
-            if (this.useSasMode) {
-                const cn = ConnectionString.parse(config.connectionString);
-                let sas: any = SharedAccessSignature.create(cn.HostName, cn.DeviceId, cn.SharedAccessKey, anHourFromNow());
-                this.iotHubDevice.client = Client.fromSharedAccessSignature(sas, M1);
-                this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CONNECTING VIA SAS CONNECTION STRING. RESTARTS AFTER 55 MINUTES");
-            } else {
-                this.iotHubDevice.client = clientFromConnectionString(config.connectionString);
-                this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CONNECTING VIA CONN STRING API");
+    dpsRegistration() {
+
+        if (this.registrationConnectionString === 'init') { return; }
+
+        let config = this.device.configuration;
+        this.iotHubDevice = {};
+        this.registrationConnectionString = 'init';
+
+        let transformedSasKey = config.isMasterKey ? this.computeDrivedSymmetricKey(config.sasKey, config.deviceId) : config.sasKey;
+        let dpsPayload = config.dpsPayload && Object.keys(config.dpsPayload).length > 0 ? JSON.parse(config.dpsPayload) : {};
+        var provisioningSecurityClient = new SymmetricKeySecurityClient(config.deviceId, transformedSasKey);
+        var provisioningClient = ProvisioningDeviceClient.create('global.azure-devices-provisioning.net', config.scopeId, new M2(), provisioningSecurityClient);
+
+        provisioningClient.setProvisioningPayload(dpsPayload);
+        this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] REGISTERING ...");
+        provisioningClient.register((err: any, result) => {
+            if (err) {
+                let msg = err.result && err.result.registrationState && err.result.registrationState.errorMessage || err;
+                this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] REGISTERING ERROR " + msg);
+                this.registrationConnectionString = null;
+                return;
             }
-        }
-
-        if (config._kind === 'dps') {
-            this.dpsProvisionStatus = 'init';
-
-            let transformedSasKey = config.isMasterKey ? this.computeDrivedSymmetricKey(config.sasKey, config.deviceId) : config.sasKey;
-
-            let dpsPayload = config.dpsPayload && Object.keys(config.dpsPayload).length > 0 ? JSON.parse(config.dpsPayload) : {};
-
-            var provisioningSecurityClient = new SymmetricKeySecurityClient(config.deviceId, transformedSasKey);
-            var provisioningClient = ProvisioningDeviceClient.create('global.azure-devices-provisioning.net', config.scopeId, new M2(), provisioningSecurityClient);
-
-            provisioningClient.setProvisioningPayload(dpsPayload);
-            this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] REGISTERING DEVICE");
-
-            provisioningClient.register((err: any, result) => {
-                if (err) {
-                    let msg = err.result.registrationState && err.result.registrationState.errorMessage || err;
-                    this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] REGISTERING ERROR " + msg);
-                    this.dpsProvisionStatus = 'error';
-                }
-                else {
-                    this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] DEVICE REGISTERED " + this.device._id + " >>>>");
-                    this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] HUB " + result.assignedHub + " >>>>");
-                    var connectionString = 'HostName=' + result.assignedHub + ';DeviceId=' + result.deviceId + ';SharedAccessKey=' + transformedSasKey;
-                    const cn = ConnectionString.parse(connectionString);
-                    let sas: any = SharedAccessSignature.create(cn.HostName, cn.DeviceId, cn.SharedAccessKey, anHourFromNow());
-                    this.iotHubDevice.client = Client.fromSharedAccessSignature(sas, M1);
-                    this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] SAS CONN STRING " + this.device._id + " >>>>");
-                    this.dpsProvisionStatus = 'connected';
-                }
-            })
-        }
+            this.registrationConnectionString = 'HostName=' + result.assignedHub + ';DeviceId=' + result.deviceId + ';SharedAccessKey=' + transformedSasKey;
+        })
     }
 
     // creates the HMAC key
@@ -355,7 +350,7 @@ export class MockDevice {
 
             if (Object.keys(payload).length > 0) {
                 let wire = this.transformPayload(payload);
-                let msg = new Message(JSON.stringify(payload));
+                let msg = new Message(JSON.stringify(wire));
                 this.iotHubDevice.client.sendEvent(msg, ((err) => {
                     this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][MSG] -> " + (err ? err.toString() : JSON.stringify(wire)));
                     this.liveUpdates.sendAsLiveUpdate(payload);
