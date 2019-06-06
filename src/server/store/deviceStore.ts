@@ -179,7 +179,7 @@ export class DeviceStore {
                     if (d.comms[index].propertyObject.type === "templated") {
                         d.comms[index].propertyObject["template"] = JSON.stringify(p[key], null, 2);
                     }
-                    d.comms[index].value = p[key];
+                    d.comms[index].value = JSON.stringify(p[key]);
                     d.comms[index].version = parseInt(p["$version"]);
                 }
             }

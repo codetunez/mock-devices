@@ -24,7 +24,7 @@ const MSG_ENG_EVENT = ">> [RUNNER]-[DEV] - ";
 
 export class MockDevice {
 
-    private CONNECT_LOOP = 300000;
+    private CONNECT_LOOP = 3000000;
     private CONNECT_RESTART: boolean = false;
     private useSasMode = true;
 
@@ -143,7 +143,7 @@ export class MockDevice {
     }
 
     /// starts a device
-    start() {        
+    start() {
         if (this.device.configuration._kind === 'template') { return; }
         this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT START");
 
@@ -320,6 +320,7 @@ export class MockDevice {
                     response.send((m.status), payload, (err) => {
                         if (m.asProperty) { this.methodReturnPayload = Object.assign({}, { [m.name]: m.payload }) }
                         this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][RESP] -> " + (err ? err.toString() : JSON.stringify(payload)));
+                        this.liveUpdates.sendAsLiveUpdate({ [m._id]: new Date().toUTCString() });
                     })
                 });
             }
