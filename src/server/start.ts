@@ -87,7 +87,7 @@ class Server {
                 }
             });
 
-            //this.mainWindow.setMenu(null);
+            this.mainWindow.setMenu(null);
             this.mainWindow.loadURL(Config.LOCALHOST + ':' + Config.APP_PORT);
 
             this.mainWindow.on('closed', (() => {
