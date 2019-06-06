@@ -24,7 +24,7 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
         this.state = {
             property: this.props.property,
             collapsed: this.props.display.propertyToggle[this.props.property._id],
-            liveValue: 0
+            liveValue: 'Nothing'
         }
     }
 
@@ -104,14 +104,6 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
         }
     }
 
-    // addMockLocalHandler = () => {
-    //     this.props.addMockHandler(this.state.property);
-    // }
-
-    // deleteMockLocalHandler = () => {
-    //     this.props.deleteMockHandler(this.state.property._id);
-    // }
-
     updateProperty = () => {
         this.props.updateHandler(this.state.property);
     }
@@ -142,10 +134,13 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
     }
 
     handleData = (data: any) => {
-        let s: any = this.state;
         let liveUpdates = JSON.parse(data);
-        s.liveValue = liveUpdates[this.props.property._id];
-        this.setState(s);
+        let v = liveUpdates[this.props.property._id];
+        if (v != undefined) {
+            let s: any = this.state;
+            s.liveValue = v;
+            this.setState(s);
+        }
     }
 
     render() {
@@ -195,94 +190,105 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
                         <div>{this.state.property.name}</div>
                     </div>
                 </div>
-                {this.state.property.type.direction === "d2c" ? <div className="p2-toolbar-right">
-                    <div className="title">
-                        <label>LAST SENT VALUE</label>
-                        <div>{this.state.liveValue}</div>
-                    </div>
-                </div> : null}
+                <div className="p2-toolbar-right">
+                    {this.state.property.type.direction === "c2d" ?
+                        <div className="title">
+                            <label>LAST VALUE READ</label>
+                            <div>{this.state.property.value || 'Never'}</div>
+                        </div>
+                        :
+                        <div className="title">
+                            <label>LAST VALUE SENT</label>
+                            <div>{this.state.liveValue}</div>
+                        </div>
+                    }
+                </div>
             </div>
 
             {/* c2d */}
-            {this.state.property.type.direction === "c2d" ?
-                <div>
-                    <div className="p2-fields">
-                        <div className="field"><label>{this.props.resx.FRM_LBL_FIELD_NAME}</label><br /><input className="form-control full form-control-sm" type="text" name="name" onChange={this.handleChange} value={this.state.property.name} /></div>
-                        <div className="field"><label>{this.props.resx.FRM_LBL_DEVICE_SDKIN}</label><br /><Combo class="form-control-sm" collection={References.deviceInOutCombo} name="sdk" onChange={this.handleChange} value={this.state.property.sdk} /></div>
-                        <div className="field"><label>{this.props.resx.FRM_LBL_LAST_READ_VALUE}</label><br /><input type="text" name="value" className="form-control form-control-sm" value={this.state.property.value} readOnly={true} /></div>
-                        <div className="field"><label>{this.props.resx.FRM_LBL_VERSION}</label><br /><input type="text" name="value" className="form-control form-control-sm" value={this.state.property.version} readOnly={true} /></div>
+            {
+                this.state.property.type.direction === "c2d" ?
+                    <div>
+                        <div className="p2-fields">
+                            <div className="field"><label>{this.props.resx.FRM_LBL_FIELD_NAME}</label><br /><input className="form-control full form-control-sm" type="text" name="name" onChange={this.handleChange} value={this.state.property.name} /></div>
+                            <div className="field"><label>{this.props.resx.FRM_LBL_DEVICE_SDKIN}</label><br /><Combo class="form-control-sm" collection={References.deviceInOutCombo} name="sdk" onChange={this.handleChange} value={this.state.property.sdk} /></div>
+                            <div className="field"><label>{this.props.resx.FRM_LBL_LAST_READ_VALUE}</label><br /><input type="text" name="value" className="form-control form-control-sm" value={this.state.property.value} readOnly={true} /></div>
+                            <div className="field"><label>{this.props.resx.FRM_LBL_VERSION}</label><br /><input type="text" name="value" className="form-control form-control-sm" value={this.state.property.version} readOnly={true} /></div>
 
-                        <div className="field"><label>{this.props.resx.FRM_LBL_GET_DATA}</label><br /><div className="btn-bar">
-                            <button onClick={() => this.readValue()} title={this.props.resx.BTN_LBL_C2D} className={cx("btn btn-sm", !this.state.isDirty ? "btn-primary" : "btn-outline-primary")} >
-                                <span className="fa fa-cloud-download"></span> {this.props.resx.READ}
-                            </button>
-                            <button title={this.props.resx.BTN_LBL_PROPERTY_SAVE} className={cx("btn btn-sm", this.props.dirty.devicePropertyId === this.state.property._id ? "btn-warning" : "btn-outline-secondary")} onClick={() => this.updateProperty()}><span className="fa fa-floppy-o"></span></button>
-                            <button title={this.props.resx.BTN_LBL_PROPERTY_DELETE} className="btn btn-sm btn-outline-danger" onClick={() => this.props.deleteHandler(this.state.property._id)}><span className={cx("fa fa-trash")}></span></button>
-                        </div>
+                            <div className="field"><label>{this.props.resx.FRM_LBL_GET_DATA}</label><br /><div className="btn-bar">
+                                <button onClick={() => this.readValue()} title={this.props.resx.BTN_LBL_C2D} className={cx("btn btn-sm", !this.state.isDirty ? "btn-primary" : "btn-outline-primary")} >
+                                    <span className="fa fa-cloud-download"></span> {this.props.resx.READ}
+                                </button>
+                                <button title={this.props.resx.BTN_LBL_PROPERTY_SAVE} className={cx("btn btn-sm", this.props.dirty.devicePropertyId === this.state.property._id ? "btn-warning" : "btn-outline-secondary")} onClick={() => this.updateProperty()}><span className="fa fa-floppy-o"></span></button>
+                                <button title={this.props.resx.BTN_LBL_PROPERTY_DELETE} className="btn btn-sm btn-outline-danger" onClick={() => this.props.deleteHandler(this.state.property._id)}><span className={cx("fa fa-trash")}></span></button>
+                            </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                : null}
+                    : null
+            }
 
             {/* d2c */}
-            {this.state.property.type.direction === "d2c" ?
-                <div>
-                    <div className="p2-fields">
-                        <div className="field"><label>Enabled</label><br /><div><Toggle disabled={true} defaultChecked={true} icons={false} /></div></div>
-                        <div className="field"><label>{this.props.resx.FRM_LBL_FIELD_NAME}</label><br /><input className="form-control full form-control-sm" type="text" name="name" onChange={this.handleChange} value={this.state.property.name} /></div>
-                        <div className="field"><label>{this.props.resx.FRM_LBL_DEVICE_SDKOUT}</label><br /><Combo class="form-control-sm" collection={References.deviceInOutCombo} name="sdk" onChange={this.handleChange} value={this.state.property.sdk} /></div>
-                        <div className="field"><label>{this.props.resx.FRM_LBL_AS_STRING}</label><br /><Combo class="form-control-sm" collection={References.devicePropType} name="string" onChange={this.handleChange} value={this.state.property.string} /></div>
-                        <div className="field"><label>{this.props.resx.FRM_LBL_VALUE}</label><br /><input type="text" name="value" onChange={this.handleChange} value={this.state.property.value} className="form-control form-control-sm" /></div>
-                        <div className="field"><label>Actions</label><br /><div className="btn-bar">
-                            <button onClick={() => this.sendValue()} className={cx("btn btn-sm ", !this.state.property.runloop.include ? "btn-primary" : "btn-outline-primary")} title={this.props.resx.BTN_LBL_D2C} >Test</button>
-                            <button title={this.props.resx.BTN_LBL_PROPERTY_SAVE} className={cx("btn btn-sm", this.props.dirty.devicePropertyId === this.state.property._id ? "btn-warning" : "btn-outline-secondary")} onClick={() => this.updateProperty()}><span className="fa fa-floppy-o"></span></button>
-                            <button title={this.props.resx.BTN_LBL_PROPERTY_DELETE} className="btn btn-sm btn-outline-danger" onClick={() => this.props.deleteHandler(this.state.property._id)}><span className={cx("fa fa-trash")}></span></button>
+            {
+                this.state.property.type.direction === "d2c" ?
+                    <div>
+                        <div className="p2-fields">
+                            <div className="field"><label>Enabled</label><br /><div><Toggle disabled={true} defaultChecked={true} icons={false} /></div></div>
+                            <div className="field"><label>{this.props.resx.FRM_LBL_FIELD_NAME}</label><br /><input className="form-control full form-control-sm" type="text" name="name" onChange={this.handleChange} value={this.state.property.name} /></div>
+                            <div className="field"><label>{this.props.resx.FRM_LBL_DEVICE_SDKOUT}</label><br /><Combo class="form-control-sm" collection={References.deviceInOutCombo} name="sdk" onChange={this.handleChange} value={this.state.property.sdk} /></div>
+                            <div className="field"><label>{this.props.resx.FRM_LBL_AS_STRING}</label><br /><Combo class="form-control-sm" collection={References.devicePropType} name="string" onChange={this.handleChange} value={this.state.property.string} /></div>
+                            <div className="field"><label>{this.props.resx.FRM_LBL_VALUE}</label><br /><input type="text" name="value" onChange={this.handleChange} value={this.state.property.value} className="form-control form-control-sm" /></div>
+                            <div className="field"><label>Actions</label><br /><div className="btn-bar">
+                                <button onClick={() => this.sendValue()} className={cx("btn btn-sm ", !this.state.property.runloop.include ? "btn-primary" : "btn-outline-primary")} title={this.props.resx.BTN_LBL_D2C} >Test</button>
+                                <button title={this.props.resx.BTN_LBL_PROPERTY_SAVE} className={cx("btn btn-sm", this.props.dirty.devicePropertyId === this.state.property._id ? "btn-warning" : "btn-outline-secondary")} onClick={() => this.updateProperty()}><span className="fa fa-floppy-o"></span></button>
+                                <button title={this.props.resx.BTN_LBL_PROPERTY_DELETE} className="btn btn-sm btn-outline-danger" onClick={() => this.props.deleteHandler(this.state.property._id)}><span className={cx("fa fa-trash")}></span></button>
+                            </div>
+                            </div>
                         </div>
+
+                        <div className="p2-fields">
+                            <div className="field"><label>Send Data Frequently</label><br /><div><Toggle name="include" defaultChecked={this.state.property.runloop.include} icons={false} onChange={this.runloopChangeHandler} /></div></div>
+                            {this.state.property.runloop.include ? <div className="field"><label>{this.props.resx.FRM_LBL_TIME_PERIOD}</label><br /><Combo class="form-control-sm" collection={frequencyCombo} name="unit" onChange={this.runloopChangeHandler} value={this.props.property.runloop.unit} showSelect={false} /></div> : null}
+                            {this.state.property.runloop.include ? <div className="field"><label>{this.props.resx.FRM_LBL_VALUE}</label><br /><input maxLength={2} name="value" className="form-control  form-control-sm" type="number" onChange={this.runloopChangeHandler} value={this.props.property.runloop.value} /></div> : null}
                         </div>
-                    </div>
-
-                    <div className="p2-fields">
-                        <div className="field"><label>Send Data Frequently</label><br /><div><Toggle name="include" defaultChecked={this.state.property.runloop.include} icons={false} onChange={this.runloopChangeHandler} /></div></div>
-                        {this.state.property.runloop.include ? <div className="field"><label>{this.props.resx.FRM_LBL_TIME_PERIOD}</label><br /><Combo class="form-control-sm" collection={frequencyCombo} name="unit" onChange={this.runloopChangeHandler} value={this.props.property.runloop.unit} showSelect={false} /></div> : null}
-                        {this.state.property.runloop.include ? <div className="field"><label>{this.props.resx.FRM_LBL_VALUE}</label><br /><input maxLength={2} name="value" className="form-control  form-control-sm" type="number" onChange={this.runloopChangeHandler} value={this.props.property.runloop.value} /></div> : null}
-                    </div>
 
 
-                    <div className="p2-fields">
-                        <div className="field"><label>Use a Mock Sensor</label><br /><div><Toggle defaultChecked={this.props.property.type.mock} onChange={this.mockChangedHandler} icons={false} /></div></div>
-                        {this.state.property.type.mock ?
-                            <div className="field">
-                                <label className="seperator-heading"><b>{this.props.resx.FRM_LBL_MOCK_SEN_CFG}</b></label>
-                                <div className="btn-group" role="group" >
-                                    {this.props.sensorList.map((item: any, index: number) => {
-                                        return <button key={
-                                            index} type="button" className={classNames("btn btn-sm btn-outline-primary", this.props.property.mock && this.props.property.mock._type === item._type ? "active" : "")} onClick={() => this.onSensorSelected(item)}>{item._type}</button>
-                                    })}
+                        <div className="p2-fields">
+                            <div className="field"><label>Use a Mock Sensor</label><br /><div><Toggle defaultChecked={this.props.property.type.mock} onChange={this.mockChangedHandler} icons={false} /></div></div>
+                            {this.state.property.type.mock ?
+                                <div className="field">
+                                    <label className="seperator-heading"><b>{this.props.resx.FRM_LBL_MOCK_SEN_CFG}</b></label>
+                                    <div className="btn-group" role="group" >
+                                        {this.props.sensorList.map((item: any, index: number) => {
+                                            return <button key={
+                                                index} type="button" className={classNames("btn btn-sm btn-outline-primary", this.props.property.mock && this.props.property.mock._type === item._type ? "active" : "")} onClick={() => this.onSensorSelected(item)}>{item._type}</button>
+                                        })}
+                                    </div>
                                 </div>
-                            </div>
-                            : null}
-                    </div>
-
-                    {this.state.property.type.mock ?
-                        <div className="p2-fields" style={{ marginTop: "-20px" }}>
-                            <div className="field"></div>
-                            {fields}
+                                : null}
                         </div>
-                        : null}
 
-                    <div className="p2-fields">
-                        <div className="field"><label>JSON Value Template</label><br /><div><Toggle defaultChecked={this.state.property.propertyObject.type === 'templated' ? true : false} icons={false} onChange={this.handlePropertyObjectChange} /></div></div>
-                        {this.state.property.propertyObject.type === "templated" ?
-                            <div className="field field-xw">
-                                <label className="seperator-heading"><b>Template</b></label>
-                                <textarea name="template" rows={7} className="form-control custom-textarea" onChange={this.handlePropertyObjectValueChange} value={this.state.property.propertyObject.template}>
-                                    {FormatJSON({ "value": "_VALUE_" })}
-                                </textarea>
+                        {this.state.property.type.mock ?
+                            <div className="p2-fields" style={{ marginTop: "-20px" }}>
+                                <div className="field"></div>
+                                {fields}
                             </div>
                             : null}
+
+                        <div className="p2-fields">
+                            <div className="field"><label>JSON Value Template</label><br /><div><Toggle defaultChecked={this.state.property.propertyObject.type === 'templated' ? true : false} icons={false} onChange={this.handlePropertyObjectChange} /></div></div>
+                            {this.state.property.propertyObject.type === "templated" ?
+                                <div className="field field-xw">
+                                    <label className="seperator-heading"><b>Template</b></label>
+                                    <textarea name="template" rows={7} className="form-control custom-textarea" onChange={this.handlePropertyObjectValueChange} value={this.state.property.propertyObject.template}>
+                                        {FormatJSON({ "value": "_VALUE_" })}
+                                    </textarea>
+                                </div>
+                                : null}
+                        </div>
                     </div>
-                </div>
-                : null}
-        </div>
+                    : null
+            }
+        </div >
     }
 }

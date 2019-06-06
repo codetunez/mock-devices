@@ -2,8 +2,9 @@ var classNames = require("classnames");
 const cx = classNames.bind(require('./deviceInstanceProperty.scss'));
 
 import * as React from "react";
-import { Combo, RadioBoolean } from '../framework/controls'
+import { Combo } from '../framework/controls'
 import Toggle from 'react-toggle'
+import * as Websocket from 'react-websocket';
 
 let References = {
     methodResponseStatus: [{ name: "200", value: 200 }, { name: "404", value: 404 }, { name: "500", value: 500 }],
@@ -25,7 +26,8 @@ export class DeviceInstanceMethod extends React.Component<any, any> {
             property: props.property,
             collapsed: props.display.propertyToggle[props.property._id],
             paramsPayload: props.methodParams.methodParams && props.methodParams.methodParams[props.property._id] ? props.methodParams.methodParams[props.property._id].payload : '',
-            paramsDateTime: props.methodParams.methodParams && props.methodParams.methodParams[props.property._id] ? props.methodParams.methodParams[props.property._id].date : ''
+            paramsDateTime: props.methodParams.methodParams && props.methodParams.methodParams[props.property._id] ? props.methodParams.methodParams[props.property._id].date : '',
+            liveValue: 'Never'
         }
     }
 
@@ -56,9 +58,21 @@ export class DeviceInstanceMethod extends React.Component<any, any> {
         this.props.methodParamsHandler(this.state.property._id);
     }
 
+    handleData = (data: any) => {
+        let liveUpdates = JSON.parse(data);
+        let v = liveUpdates[this.props.property._id];
+        if (v != undefined) {
+            let s: any = this.state;
+            s.liveValue = v;
+            this.setState(s);
+        }
+    }
+
     render() {
 
         return <div key={this.props.index} className={classNames("property", "property-method", this.props.dirty.devicePropertyId === this.state.property._id ? "property-dirty" : "", this.state.collapsed ? "property-collapsed" : "")}>
+            <Websocket url={'ws://127.0.0.1:24376'} onMessage={this.handleData.bind(this)} />
+
             {/* method */}
             <div className="p2-toolbar">
                 <div className="p2-toolbar-left">
@@ -68,6 +82,12 @@ export class DeviceInstanceMethod extends React.Component<any, any> {
                     <div className="title">
                         <label>Device Method</label>
                         <div>{this.state.property.name}</div>
+                    </div>
+                </div>
+                <div className="p2-toolbar-right">
+                    <div className="title">
+                        <label>LAST EXECUTED</label>
+                        <div>{this.state.liveValue}</div>
                     </div>
                 </div>
             </div>
