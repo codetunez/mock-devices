@@ -126,13 +126,14 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
     }
 
     onMockValueChange = (e: any) => {
-        // let s: any = this.state;
-        // s.sensor[e.target.name] = e.target.value;
-        // this.setState(s, () => {
-        //    this.mockChangeHandler(s.sensor);
-        // });
+        let s: any = this.state;
+        s.property.mock[e.target.name] = e.target.value;
+        this.setState(s, () => {
+            this.props.dirtyHandler(s.property._id);
+        });
     }
 
+    /* web socket */
     handleData = (data: any) => {
         let liveUpdates = JSON.parse(data);
         let v = liveUpdates[this.props.property._id];
