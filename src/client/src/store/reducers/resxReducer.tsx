@@ -77,8 +77,8 @@ export default function reducer(state: any = {
     FRM_LBL_STATUSCODE: 'Status Code',
     FRM_LBL_GET_DATA: 'Get LKV',
     
-    FRM_LBL_DEVICE_NAME: 'Device Name (mock-devices)',
-    FRM_LBL_DEVICE_CLONE: 'Clone Model (mock-devices)',
+    FRM_LBL_DEVICE_NAME: 'mock-device Name',
+    FRM_LBL_DEVICE_CLONE: 'Clone mock-device',
     FRM_LBL_DEVICE_CONN_STRING: 'Device Connection String',
     FRM_LBL_DEVICE_HUB_CONN_STRING: 'IoT Hub Connection String',
     FRM_LBL_DEVICE_TEMPLATE: 'Device as Template',

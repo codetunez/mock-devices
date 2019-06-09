@@ -11,7 +11,7 @@ class DeviceCardListPanel extends React.Component<any, any> {
     render() {
         return <div className="device-cardlist-scroller">
             <div className="device-cardlist-scroller-header">
-                <div className="section-title">{this.props.resx.TEXT_MOCK_DEVICES}</div>
+                <div className="section-title">{this.props.resx.TEXT_MOCK_DEVICES} ({this.props.devices.devices && this.props.devices.devices.length || "0"})</div>
             </div>
             <div className="device-cardlist-scroller-body">
                 {this.props.devices.devices && this.props.devices.devices.length > 0 ?

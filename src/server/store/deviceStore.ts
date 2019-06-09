@@ -31,8 +31,8 @@ export class DeviceStore {
 
     public addDevice = (d: Device) => {
 
-        if (d.cloneId && d.cloneId != null) {
-            let origDevice: Device = JSON.parse(JSON.stringify(this.store.getItem(d.cloneId)));
+        if (d.configuration.mockDeviceCloneId && d.configuration.mockDeviceCloneId != null) {
+            let origDevice: Device = JSON.parse(JSON.stringify(this.store.getItem(d.configuration.mockDeviceCloneId)));
             origDevice.running = false;
             for (let i = 0; i < origDevice.comms.length; i++) {
                 let p = origDevice.comms[i];
@@ -40,7 +40,7 @@ export class DeviceStore {
                 if (p.mock) { p.mock._id = uuidV4(); }
             }
             d.comms = origDevice.comms;
-            delete d.cloneId;
+            delete d.configuration.mockDeviceCloneId;
         }
 
         this.store.setItem(d, d._id);
@@ -50,7 +50,7 @@ export class DeviceStore {
 
     public renameDevice = (id: string, name: string) => {
         let d: Device = this.store.getItem(id);
-        d.name = name;
+        d.configuration.mockDeviceName = name;
         this.store.setItem(d, d._id);
     }
 
@@ -66,8 +66,6 @@ export class DeviceStore {
             d._id = newId;
             this.store.deleteItem(id);
         }
-
-        d.name = payload.name;
         Object.assign(d.configuration, payload);
         this.store.setItem(d, d._id);
 

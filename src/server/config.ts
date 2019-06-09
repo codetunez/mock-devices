@@ -12,5 +12,5 @@ export class Config {
     public static APP_HEIGHT: number = 750;
     public static APP_WIDTH: number = 1080;
 
-    public static MAX_NUM_DEVICES: number = 25;
+    public static MAX_NUM_DEVICES: number = 350;
 }

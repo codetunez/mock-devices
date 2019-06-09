@@ -19,6 +19,7 @@ interface Payload {
     sasKey?: string;
     capabilityModel?: any;
     isMasterKey?: boolean;
+    mockCreateCount?: number;
 }
 
 export class AddDevice extends React.Component<any, any> {
@@ -33,6 +34,7 @@ export class AddDevice extends React.Component<any, any> {
     initModel(): any {
         let m: any = {};
         m.updatePayload = {};
+        m.updatePayload.mockCreateCount = 1;
         m.panel = 0;
         m.devices = [];
         return m;
@@ -73,6 +75,9 @@ export class AddDevice extends React.Component<any, any> {
     handleChange = (e: any) => {
         let s = this.state;
         s.updatePayload[e.target.name] = e.target.name === 'isMasterKey' ? e.target.checked : e.target.value;
+        if (e.target.name === 'mockCreateCount' && parseInt(e.target.value) > 1) {
+            s.updatePayload['isMasterKey'] = true;
+        }
         this.setState(s);
     }
 
@@ -114,6 +119,7 @@ export class AddDevice extends React.Component<any, any> {
                 <button onClick={() => this.setState({ panel: 2 })} className={cx("btn btn-outline-primary", this.state.panel === 2 ? "active" : "")}>Use an IoT Hub</button><br />
                 <div>Add a Template</div>
                 <button onClick={() => this.setState({ panel: 3 })} className={cx("btn btn-outline-primary", this.state.panel === 3 ? "active" : "")}>Use a Capability Model</button><br />
+                <button onClick={() => this.setState({ panel: 4 })} className={cx("btn btn-outline-primary", this.state.panel === 4 ? "active" : "")}>Use a Blank Device</button><br />
             </div>
 
             <div className="add-dialog-content">
@@ -121,6 +127,7 @@ export class AddDevice extends React.Component<any, any> {
                 {this.state.panel === 1 ? <h5>Add a Device using a Connection String</h5> : null}
                 {this.state.panel === 2 ? <h5>Add a Device from an IoT Hub</h5> : null}
                 {this.state.panel === 3 ? <h5>Add a Template using a Device Capability Model</h5> : null}
+                {this.state.panel === 4 ? <h5>Add a Template using a Blank Device</h5> : null}
 
                 {/* Panel 0 */}
                 {this.state.panel === 0 ? <div>
@@ -137,10 +144,10 @@ export class AddDevice extends React.Component<any, any> {
                             <label>{this.props.resx.FRM_LBL_DEVICE_DPS_SAS}</label>
                             <div style={{ display: "flex", justifyContent: "center" }}>
                                 <label className="custom-checkbox">
-                                    <input type="checkbox" name="isMasterKey" onChange={this.handleChange} value={this.state.updatePayload.isMasterKey} />
+                                    <input type="checkbox" name="isMasterKey" disabled={this.state.updatePayload.mockCreateCount > 1} onChange={this.handleChange} checked={this.state.updatePayload.isMasterKey} />
                                     <span className="checkmark"></span>
                                 </label>
-                                <span>Generate as HMAC-SHA265 SaS Key</span>
+                                <span>Generate a HMAC-SHA265 SaS Key</span>
                             </div>
                         </div>
                         <input className="form-control" type="text" name="sasKey" onChange={this.handleChange} value={this.state.updatePayload.sasKey || ''} />
@@ -154,9 +161,13 @@ export class AddDevice extends React.Component<any, any> {
                             <label>{this.props.resx.FRM_LBL_DEVICE_NAME}</label>
                             <input className="form-control" type="text" name="mockDeviceName" onChange={this.handleChange} value={this.state.updatePayload.mockDeviceName || ''} />
                         </div>
-                        <div className="form-group">
+                        <div className="form-group" style={{ paddingRight: "10px" }}>
                             <label>{this.props.resx.FRM_LBL_DEVICE_CLONE}</label><br />
                             <Combo collection={deviceList} name="mockDeviceCloneId" onChange={this.handleChange} value={this.state.updatePayload.mockDeviceCloneId || ''} />
+                        </div>
+                        <div className="form-group" >
+                            <label>Bulk Add Count</label>
+                            <input className="form-control" type="number" min={1} max={350} name="mockCreateCount" onChange={this.handleChange} value={this.state.updatePayload.mockCreateCount || '1'} />
                         </div>
                     </div>
                     <button className="btn btn-info" onClick={() => this.action('dps')}>{this.props.resx.ADD_DPS}</button>
@@ -234,6 +245,16 @@ export class AddDevice extends React.Component<any, any> {
                     <div className="form-group">
                         <label>{this.props.resx.FRM_LBL_DEVICE_PASTE_CAP}</label>
                         <textarea className="custom-textarea form-control lg" name="capabilityModel" onChange={this.handleChange} value={this.state.updatePayload.capabilityModel || ''}></textarea>
+                    </div>
+                    <button className="btn btn-info" onClick={() => this.action('template')}>{this.props.resx.ADD}</button>
+                </div>
+                    : null}
+
+                {/* Panel 4 */}
+                {this.state.panel === 4 ? <div>
+                    <div className="form-group">
+                        <label>Template Name</label>
+                        <input className="form-control" type="text" name="mockDeviceName" onChange={this.handleChange} value={this.state.updatePayload.mockDeviceName || ''} />
                     </div>
                     <button className="btn btn-info" onClick={() => this.action('template')}>{this.props.resx.ADD}</button>
                 </div>

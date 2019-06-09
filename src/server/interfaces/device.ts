@@ -57,10 +57,8 @@ export interface PropertyObjectTemplated {
 export class Device {
     public _id: string;
     public configuration: DeviceConfiguration;
-    public name: string;
     public comms: Array<any>;
     public running: boolean;
-    public cloneId?: string;
 
     constructor() {
         this.comms = new Array<any>();
