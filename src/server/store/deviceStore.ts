@@ -222,8 +222,8 @@ export class DeviceStore {
         let name = mockName || 'random'
 
         var items = this.sensorStore.getListOfItems();
-        let i = items.findIndex((element) => { 
-            return element._type === name 
+        let i = items.findIndex((element) => {
+            return element._type === name
         })
 
         let d: Device = this.store.getItem(id);
@@ -302,7 +302,7 @@ export class DeviceStore {
         if (device.configuration._kind === 'template') { return; }
 
         try {
-            let rd: MockDevice = this.runners[device._id];       
+            let rd: MockDevice = this.runners[device._id];
             rd.start();
 
             let d: Device = this.store.getItem(device._id);
@@ -331,7 +331,25 @@ export class DeviceStore {
 
     public startAll = () => {
         let devices: Array<Device> = this.store.getAllItems();
-        for (let i = 0; i < devices.length; i++) {
+        let count = devices.length;
+        let from: number = 0;
+        let to: number = 10;
+
+        this.startAllBatch(from, count > to ? to : count, devices)
+        let timer = setInterval(() => {
+            from = to;
+            if (to + 10 > count) {
+                to = count;
+                clearInterval(timer);
+            } else {
+                to += 10;
+            }
+            if (to <= devices.length) { this.startAllBatch(from, to, devices); }
+        }, 5000);
+    }
+
+    public startAllBatch = (from: number, to: number, devices: Array<Device>) => {
+        for (let i = from; i < to; i++) {
             this.startDevice(devices[i]);
         }
     }

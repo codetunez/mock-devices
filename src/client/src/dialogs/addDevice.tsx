@@ -167,7 +167,7 @@ export class AddDevice extends React.Component<any, any> {
                         </div>
                         <div className="form-group" >
                             <label>Bulk Add Count</label>
-                            <input className="form-control" type="number" min={1} max={350} name="mockCreateCount" onChange={this.handleChange} value={this.state.updatePayload.mockCreateCount || '1'} />
+                            <input className="form-control" type="number" min={1} max={999} name="mockCreateCount" onChange={this.handleChange} value={this.state.updatePayload.mockCreateCount || '1'} />
                         </div>
                     </div>
                     <button className="btn btn-info" onClick={() => this.action('dps')}>{this.props.resx.ADD_DPS}</button>
