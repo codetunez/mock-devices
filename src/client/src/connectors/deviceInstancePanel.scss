@@ -1,0 +1,13 @@
+.device-instance-options {
+  display: flex;
+
+  div {
+    cursor: pointer;
+    padding-right: 10px;
+    margin-right: 10px;
+  }
+
+  div:not(:last-child) {
+    border-right: 1px solid white;
+  }
+}

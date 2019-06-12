@@ -1,0 +1,28 @@
+@import "../../consts.scss";
+
+.property-advanced {
+  width: 690px;
+  background-color: $app-clr-1;
+  border-radius: 5px;
+  padding: 25px;
+  margin-top: 15px;
+}
+
+.p2-advanced-fields {
+  label {
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .field {
+    margin-bottom: 15px;
+  }
+  .field-check {
+    div {
+      font-size: 12px;
+      font-weight: 700;
+    }
+    label {
+        padding: 15px;
+    }
+  }
+}

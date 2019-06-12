@@ -11,6 +11,8 @@ import { DeviceInstanceProperty } from "../comms/deviceInstanceProperty";
 import { DeviceInstanceCommands } from "../comms/deviceInstanceCommands"
 import { DeviceInstanceMethod } from "../comms/deviceInstanceMethod"
 
+const cx = classNames.bind(require('./deviceInstancePanel.scss'));
+
 class DeviceInstancePanel extends React.Component<any, any> {
 
     constructor(props: any) {
@@ -142,11 +144,6 @@ class DeviceInstancePanel extends React.Component<any, any> {
     }
 
     render() {
-        {/* <div className="device-instance-properties-toggler">
-        <a onClick={this.toggleAdvanced}>{this.props.display.advancedExpanded ? "hide advanced" : "show advanced"}</a>
-        <a onClick={this.toggleAll}>{this.props.display.propertyToggleAll ? "collapse all" : "expand all"}</a>
-        </div> */}
-
         let d = this.props.device.device;
 
         return <div className="device-instance-scroller">
@@ -169,16 +166,18 @@ class DeviceInstancePanel extends React.Component<any, any> {
                 </div>
             </div>
             <div className="device-instance-scroller-body">
+
+                <div className="device-instance-options">
+                    <div onClick={() => { this.props.dispatch(DisplayActions.CollapseAllProperties(this.props.device.device)); }}><b>collapse all</b></div>
+                    <div onClick={() => { this.toggleAdvanced() }}><b>edit</b> <span className={cx("fa", this.props.display.advancedExpanded ? "fa-chevron-down" : "fa-chevron-up")}></span></div>
+                </div>
+
                 {this.props.display.advancedExpanded ? <div className="device-instance-advanced">
                     <DeviceInstanceAdvanced
                         resx={this.props.resx}
                         device={this.props.device.device}
                         updateHandler={this.updateDevice} />
                 </div> : null}
-
-                <div style={{ cursor: "pointer" }} onClick={() => {
-                    this.props.dispatch(DisplayActions.CollapseAllProperties(this.props.device.device));
-                }}><b>collapse all</b></div>
 
                 <div className={classNames("device-instance-properties", this.props.display.advancedExpanded ? "device-instance-properties-advanced" : "")}>
                     {d.comms ?
