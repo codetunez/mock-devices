@@ -57,7 +57,7 @@ export class DeviceStore {
     public updateDevice = (id: string, payload: any) => {
 
         let d: Device = this.store.getItem(id);
-        let newId: string = Utils.getDeviceId(payload.connectionString);
+        let newId: string = Utils.getDeviceId(payload.connectionString) || payload.deviceId;
 
         this.stopDevice(d);
         delete this.runners[d._id];
