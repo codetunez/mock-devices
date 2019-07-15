@@ -110,7 +110,7 @@ export class DeviceInstanceMethod extends React.Component<any, any> {
             </div>
             <div className="p2-fields">
                 <div className="field field-xw"><label>{this.props.resx.FRM_LBL_AS_PROPERTY}</label><br />
-                    <Toggle name="include" defaultChecked={this.state.property.asProperty} icons={true} onChange={this.handleChange} />
+                    <Toggle name="include" defaultChecked={this.state.property.asProperty} checked={this.state.property.asProperty} icons={true} onChange={this.handleChange} />
                 </div>
             </div>
         </div>

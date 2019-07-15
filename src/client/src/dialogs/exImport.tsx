@@ -136,7 +136,7 @@ export class ExImport extends React.Component<any, any> {
                 {/* Panel 2 */}
                 {this.state.panel === 2 ? <div>
                     <div className="form-group">
-                        <textarea rows={24} className="form-control custom-textarea" name="exImport" onChange={this.handleChange} value={this.state.exImport}></textarea>
+                        <textarea rows={20} className="form-control custom-textarea" name="exImport" onChange={this.handleChange} value={this.state.exImport}></textarea>
                     </div>
                     <div className="form-group">
                         <span>{this.props.resx.TEXT_CTRLC_EXPORT}</span>

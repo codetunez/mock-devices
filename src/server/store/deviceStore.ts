@@ -260,6 +260,7 @@ export class DeviceStore {
 
             if (d.comms[index]._type === "property" && mockOnly) {
                 d.comms[index].type.mock = false;
+                d.comms[index].runloop.include = false;
                 delete d.comms[index].mock;
             } else {
                 d.comms.splice(index, 1);

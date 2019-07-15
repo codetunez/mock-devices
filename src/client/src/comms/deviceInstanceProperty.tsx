@@ -96,11 +96,11 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
         } else { alert(this.props.resx.TEXT_DIRTY_PROPERTY); }
     }
 
-    mockChangedHandler = () => {
-        if (this.state.property.type.mock) {
-            this.props.deleteMockHandler(this.state.property._id);
-        } else {
+    mockChangedHandler = (e: any) => {
+        if (e.target && e.target.checked) {
             this.props.addMockHandler(this.state.property);
+        } else {
+            this.props.deleteMockHandler(this.state.property._id);
         }
     }
 
@@ -248,14 +248,14 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
                         </div>
 
                         <div className="p2-fields">
-                            <div className="field"><label>Send Data Frequently</label><br /><div><Toggle name="include" defaultChecked={this.state.property.runloop.include} icons={false} onChange={this.runloopChangeHandler} /></div></div>
+                            <div className="field"><label>Send Data Frequently</label><br /><div><Toggle name="include" defaultChecked={this.state.property.runloop.include} checked={this.state.property.runloop.include} icons={false} onChange={this.runloopChangeHandler} /></div></div>
                             {this.state.property.runloop.include ? <div className="field"><label>{this.props.resx.FRM_LBL_TIME_PERIOD}</label><br /><Combo class="form-control-sm" collection={frequencyCombo} name="unit" onChange={this.runloopChangeHandler} value={this.props.property.runloop.unit} showSelect={false} /></div> : null}
                             {this.state.property.runloop.include ? <div className="field"><label>{this.props.resx.FRM_LBL_VALUE}</label><br /><input maxLength={2} name="value" className="form-control  form-control-sm" type="number" onChange={this.runloopChangeHandler} value={this.props.property.runloop.value} /></div> : null}
                         </div>
 
 
                         <div className="p2-fields">
-                            <div className="field"><label>Use a Mock Sensor</label><br /><div><Toggle defaultChecked={this.props.property.type.mock} onChange={this.mockChangedHandler} icons={false} /></div></div>
+                            <div className="field"><label>Use a Mock Sensor</label><br /><div><Toggle defaultChecked={this.props.property.type.mock} checked={this.props.property.type.mock} onChange={this.mockChangedHandler} icons={false} /></div></div>
                             {this.state.property.type.mock ?
                                 <div className="field">
                                     <label className="seperator-heading"><b>{this.props.resx.FRM_LBL_MOCK_SEN_CFG}</b></label>
