@@ -43,7 +43,15 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
         let s: any = this.state;
 
         if (this.isDirty(s.property)) {
-            s.property[e.target.name] = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+            let b: any;
+            if (e.target.type === "checkbox") {
+                b = e.target.checked;
+            } else if (e.target.name === "string") {
+                b = e.target.value === "true" ? true : false;
+            } else {
+                b = e.target.value;
+            }
+            s.property[e.target.name] = b;
             this.setState(s, () => {
                 this.props.dirtyHandler(s.property._id);
             });
