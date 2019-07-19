@@ -489,7 +489,7 @@ export class MockDevice {
                     switch (p.propertyObject.type) {
                         case 'templated':
                             try {
-                                remap[p.name] = JSON.parse(p.propertyObject.template.replace(/_VALUE_/, val));
+                                remap[p.name] = JSON.parse(p.propertyObject.template.replace(new RegExp(/_VALUE_/, 'g'), val));
                             } catch (ex) {
                                 remap[p.name] = { "error": "JSON parse error." + ex }
                             }
