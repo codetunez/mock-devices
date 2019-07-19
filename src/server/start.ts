@@ -39,7 +39,7 @@ class Server {
         this.app.use(cors({ exposedHeaders: ["Link"] }));
         if (Config.WEBAPI_LOGGING) { this.app.use(morgan('tiny')); }
         this.app.use(bodyParser.urlencoded({ extended: false }));
-        this.app.use(bodyParser.json({ limit: "100kb" }));
+        this.app.use(bodyParser.json({ limit: "2000kb" }));
 
         this.app.use(express.static(__dirname + '/../../src/client'));
         this.app.use('/_dist', express.static(__dirname + '/..'));
