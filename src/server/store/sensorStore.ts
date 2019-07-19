@@ -60,9 +60,11 @@ export class SensorStore {
             _hasState: false,
             _type: "random",
             _value: 0,
+            variance: 3,
             init: 0,
             _resx: {
-                init: "Initial"
+                init: "Initial",
+                variance: "Length"
             }
         },
         {

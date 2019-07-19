@@ -427,7 +427,7 @@ export class MockDevice {
         }
 
         if (p.mock._type === "random") {
-            p.mock._value = Math.floor(Math.random() * Math.floor(1000));
+            p.mock._value = Math.floor(Math.random() * Math.floor(Math.pow(10, p.mock.variance) + 1));
         }
 
         if (p.mock._type === "function") {
