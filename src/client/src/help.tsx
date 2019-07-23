@@ -127,9 +127,19 @@ export class Help extends React.Component<any, any> {
                 <p>The web hook call frequency is govern'd by the run loop. As this is an offbox call you should use a higher runloop value i.e. 60 - 120 seconds.
                 </p>
                 <b>Request/Response Payload</b>
-                <p>This is the expected payload for both read and writes</p>
+                <em>Request payload</em>
+                <p>The last value from the function is sent back to the function on next call</p>
                 <pre>
-                    {FormatJSON({ "value": 3754 })}
+                    {FormatJSON({ "parameter": 0 })}
+                </pre>
+                <em>Response payload</em>
+                <p>The response can be double or string. To send a double use the following response payload</p>
+                <pre>
+                    {FormatJSON({ "value": 0.0 })}
+                </pre>
+                <p>To make return type a string use the following response payload</p>
+                <pre>
+                    {FormatJSON({ "body": "MyString" })}
                 </pre>
                 <p>mock-devices expects an numeric coming back from the Function call. Anything else will not be processedd and the run loop will continue.</p>
             </div>
@@ -157,7 +167,7 @@ export class Help extends React.Component<any, any> {
             <div className="help-row">
                 <h4>Debug the server side twin for a mock-device</h4>
                 <p>
-                   If a device is added through an IoT Hub you will be able to debug the Device Twin. A debug button will appear in the top right if this is possible
+                    If a device is added through an IoT Hub you will be able to debug the Device Twin. A debug button will appear in the top right if this is possible
                 </p>
             </div>
         </div >

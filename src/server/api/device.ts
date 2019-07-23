@@ -170,10 +170,10 @@ export default function (deviceStore: DeviceStore) {
 
             if (updatePayload.capabilityModel && Object.keys(updatePayload.capabilityModel).length > 0) {
                 var dcm = JSON.parse(updatePayload.capabilityModel);
-                t.configuration.mockDeviceName = dcm.displayName;
+                t.configuration.mockDeviceName = dcm.displayName.en;
                 dcm.implements.forEach(element => {
-                    if (element.contents) {
-                        element.contents.forEach(item => {
+                    if (element.schema.contents) {
+                        element.schema.contents.forEach(item => {
 
                             if (item['@type'] === 'Command') {
                                 var o: any = {};

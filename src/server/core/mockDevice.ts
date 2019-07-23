@@ -391,7 +391,7 @@ export class MockDevice {
         return payload;
     }
 
-    updateSensorValue(p: Property, propertySensorTimers: any) {
+    async updateSensorValue(p: Property, propertySensorTimers: any) {
 
         let slice = 0;
         let randomFromRange = Utils.getRandomNumberBetweenRange(1, 10);
@@ -431,25 +431,33 @@ export class MockDevice {
         }
 
         if (p.mock._type === "function") {
+            const res: any = await this.getFunctionPost(p.mock.function, p.mock._value);
+            p.mock._value = res;
+        }
+    }
 
+    getFunctionPost(url: string, value: any) {
+        return new Promise((resolve, reject) => {
             try {
                 request.post({
                     headers: { 'content-type': 'application/json' },
-                    url: p.mock.function,
-                    body: JSON.stringify({ "value": p.mock._value })
+                    url: url,
+                    body: JSON.stringify({ "value": value })
                 }, function (error, response, body) {
                     if (error) {
                         this.liveUpdates.sendConsoleUpdate('[FUNCTION REQUEST][ERR] - ' + error)
+                        reject(error);
                     }
                     else {
-                        p.mock._value = parseInt(JSON.parse(body).value);
+                        let payload = JSON.parse(body);
+                        resolve(payload.value ? parseFloat(payload.value) : payload.body);
                     }
                 });
             }
             catch (err) {
                 this.liveUpdates.sendConsoleUpdate('[FUNCTION REQUEST][FAILED] - ' + err.message);
             }
-        }
+        })
     }
 
     processCountdown(p: Property, remainingTime) {
