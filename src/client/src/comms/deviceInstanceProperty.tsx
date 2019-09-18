@@ -64,6 +64,7 @@ export class DeviceInstanceProperty extends React.Component<any, any> {
 
         let s: any = this.state;
         if (this.isDirty(s.property)) {
+            if (value === "templated") { s.property.propertyObject.random = false; }
             s.property.propertyObject.type = value;
             this.setState(s, () => {
                 this.props.dirtyHandler(s.property._id);

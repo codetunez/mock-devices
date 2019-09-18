@@ -30,7 +30,7 @@ export interface Property {
     sdk: string;
     type: DeviceType;
     version: number;
-    propertyObject: PropertyObjectDefault | PropertyObjectTemplated
+    propertyObject: PropertyObjectDefault | PropertyObjectTemplated;
     runloop?: RunLoop;
     mock?: MockSensor;
 }
@@ -52,6 +52,7 @@ export interface PropertyObjectDefault {
 export interface PropertyObjectTemplated {
     type: "templated"
     template: any;
+    random: boolean;
 }
 
 export class Device {

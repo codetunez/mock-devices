@@ -202,7 +202,7 @@ export default function (deviceStore: DeviceStore) {
                             if (item.schema['@type'] === "Object") {
                                 var ct = {};
                                 buildComplexType(item, item.name, ct);
-                                o.propertyObject = { type: 'templated', template: JSON.stringify(ct, null, 2) }
+                                o.propertyObject = { type: 'templated', template: JSON.stringify(ct, null, 2), random: true }
                             }
 
                             // add the property
@@ -217,7 +217,7 @@ export default function (deviceStore: DeviceStore) {
                                 oP.name = item.name;
                                 oP.sdk = 'twin';
                                 oP.string = (item.schema != 'string' ? false : true);
-                                oP.propertyObject = { type: 'templated', template: "{\n\t\"value\" : _VALUE_,\n\t\"status\" : \"completed\",\n\t\"message\" : \"test message\",\n\t\"statusCode\" : 200,\n\t\"desiredVersion\" : 1\n}" }
+                                oP.propertyObject = { type: 'templated', template: "{\n\t\"value\" : _VALUE_,\n\t\"status\" : \"completed\",\n\t\"message\" : \"test message\",\n\t\"statusCode\" : 200,\n\t\"desiredVersion\" : 1\n}", random: false }
                                 deviceStore.addDeviceProperty(t._id, 'd2c', oP);
                             }
                         })

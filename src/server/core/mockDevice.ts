@@ -497,7 +497,13 @@ export class MockDevice {
                     switch (p.propertyObject.type) {
                         case 'templated':
                             try {
-                                remap[p.name] = JSON.parse(p.propertyObject.template.replace(new RegExp(/_VALUE_/, 'g'), val));
+                                if (p.propertyObject.random) {
+                                    var o = JSON.parse(p.propertyObject.template);
+                                    replaceRandom(o)
+                                    remap[p.name] = o;
+                                } else {
+                                    remap[p.name] = JSON.parse(p.propertyObject.template.replace(new RegExp(/_VALUE_/, 'g'), val));
+                                }
                             } catch (ex) {
                                 remap[p.name] = { "error": "JSON parse error." + ex }
                             }
@@ -513,5 +519,21 @@ export class MockDevice {
             }
         }
         return remap;
+    }
+}
+
+function replaceRandom(node) {
+    for (let key in node) {
+        if (typeof node[key] == 'object') {
+            replaceRandom(node[key])
+        } else {
+            if (node[key] === "RND_STRING") {
+                node[key] = "Lorem ...";
+            } else if (node[key] === "RND_BOOLEAN") {
+                node[key] = true;
+            } else {
+                node[key] = Math.random() * (10000 - 1) + 1;
+            }
+        }
     }
 }
