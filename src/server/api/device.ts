@@ -199,6 +199,12 @@ export default function (deviceStore: DeviceStore) {
                                 }
                             }
 
+                            if (item.schema['@type'] === "Object") {
+                                var ct = {};
+                                buildComplexType(item, item.name, ct);
+                                o.propertyObject = { type: 'templated', template: JSON.stringify(ct, null, 2) }
+                            }
+
                             // add the property
                             let propertyId = deviceStore.addDeviceProperty(t._id, (item['@type'] === 'Property' && item.writable ? 'c2d' : 'd2c'), o);
 
@@ -247,4 +253,23 @@ export default function (deviceStore: DeviceStore) {
     });
 
     return api;
+}
+
+function buildComplexType(node: any, nodeName: any, o: any) {
+
+    o[nodeName] = {};
+
+    if (node.schema.fields) {
+        for (let f of node.schema.fields) {
+            if (f.schema['@type'] && f.schema['@type'] === "Object") {
+                buildComplexType(f, f.name, o[nodeName]);
+            } else if (f.schema['@type'] && f.schema['@type'] === "Enum") {
+                o[nodeName][f.name] = "RND_ENUM_" + f.schema.valueSchema.toString().toUpperCase();
+            } else {
+                o[nodeName][f.name] = "RND_" + f.schema.toString().toUpperCase();
+            }
+        }
+    } else {
+        o[nodeName] = "RND_" + node.schema.toString().toUpperCase();
+    }
 }
