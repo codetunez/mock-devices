@@ -188,27 +188,44 @@ export default function (deviceStore: DeviceStore) {
                             o.name = item.name;
                             o.string = (item.schema != 'string' ? false : true);
 
+                            let addMock: boolean = false;
+                            let addRunLoop: boolean = false;
 
                             // if this is Telemetry set up a timer
                             if (item['@type'] === 'Telemetry') {
                                 o.sdk = 'msg';
-                                o.runloop = {
-                                    'include': true,
-                                    'unit': 'secs',
-                                    'value': Math.floor(Math.random() * (90 - 45)) + 45
-                                }
+                                addMock = true;
+                                addRunLoop = true;
+                            }
+
+                            if (item['@type'] === 'Property') {
+                                o.sdk = 'twin';
+                                addRunLoop = false;
+                            }
+
+                            if ((item.schema['@type'] === "Object") || (item.schema['@type'] === "Map")) {
+                                addMock = false;
+                                addRunLoop = false;
                             }
 
                             if (item.schema['@type'] === "Object") {
                                 var ct = {};
-                                buildComplexType(item, item.name, ct);
+                                buildComplexType(item, item.name, ct);                             
                                 o.propertyObject = { type: 'templated', template: JSON.stringify(ct, null, 2), random: true }
+                            }
+
+                            if (addRunLoop) {
+                                o.runloop = {
+                                    'include': true,
+                                    'unit': 'secs',
+                                    'value': Math.floor(Math.random() * (60 - 15)) + 15
+                                }
                             }
 
                             // add the property
                             let propertyId = deviceStore.addDeviceProperty(t._id, (item['@type'] === 'Property' && item.writable ? 'c2d' : 'd2c'), o);
 
-                            if (item['@type'] === 'Telemetry') { deviceStore.addDevicePropertyMock(t._id, propertyId, 'random'); }
+                            if (addMock && item['@type'] === 'Telemetry') { deviceStore.addDevicePropertyMock(t._id, propertyId, 'random'); }
 
                             // if this is a writable property create a D2C for settings
                             if (item['@type'] === 'Property' && item.writable) {
