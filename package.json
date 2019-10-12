@@ -46,6 +46,7 @@
     "jquery": "^3.1.1",
     "morgan": "^1.8.2",
     "popper.js": "^1.12.5",
+    "random-words": "^1.1.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-modal": "^2.2.2",

@@ -15,7 +15,7 @@ import { ValueByIdPayload } from '../interfaces/payload';
 import * as Utils from './utils';
 import { LiveUpdatesService } from './liveUpdatesService';
 import * as request from 'request';
-
+import * as rw from 'random-words';
 import * as Crypto from 'crypto';
 
 const MSG_HUB_EVENT = ">> [RUNNER]-[HUB] - ";
@@ -524,13 +524,13 @@ export class MockDevice {
 
 function replaceRandom(node) {
     for (let key in node) {
-        if (typeof node[key] == 'object') {
+        if (typeof node[key] == 'object' || node[key] == 'map') {
             replaceRandom(node[key])
         } else {
             if (node[key] === "RND_STRING") {
-                node[key] = "Lorem ...";
+                node[key] = rw();
             } else if (node[key] === "RND_BOOLEAN") {
-                node[key] = true;
+                node[key] = Math.random() >= 0.5;
             } else {
                 node[key] = Math.random() * (10000 - 1) + 1;
             }
