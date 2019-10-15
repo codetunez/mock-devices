@@ -45,6 +45,7 @@ textarea:read-only {
 .custom-textarea:focus {
   background-color: $app-clr-2;
   color: $app-white;
+  resize: none;
 }
 
 .custom-textarea-sm {
