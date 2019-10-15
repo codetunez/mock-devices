@@ -4,9 +4,10 @@ const cxM = classNames.bind(require('./modal.scss'));
 
 import * as React from 'react';
 import axios from 'axios';
+import { DeviceContext } from '../context/deviceContext';
 
 export const Save: React.FunctionComponent<any> = ({ handler }) => {
-
+    const deviceContext: any = React.useContext(DeviceContext);
     const [panel, setPanel] = React.useState(0);
     const [updatePayload, setPayload] = React.useState({
         state: ''
@@ -25,8 +26,8 @@ export const Save: React.FunctionComponent<any> = ({ handler }) => {
     const updateCurrentState = () => {
         axios.post('/api/state/', JSON.parse(updatePayload.state))
             .then(response => {
-                // force a reload of the application
-                window.location.reload(false);
+                deviceContext.refreshAllDevices();
+                handler();
             })
     }
 

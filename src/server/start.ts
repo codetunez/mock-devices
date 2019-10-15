@@ -16,6 +16,8 @@ import { Config } from './config';
 import { DeviceStore } from './store/deviceStore';
 import { SensorStore } from './store/sensorStore';
 
+import { LiveUpdatesService } from './core/liveUpdatesService';
+
 class Server {
 
     private expressServer: any = null;
@@ -49,7 +51,6 @@ class Server {
         this.expressServer.use('/api/server', server(this.deviceStore));
         this.expressServer.use('/api/sensors', sensors(this.sensorStore));
 
-        // when in this mode you can run F5 in vscode
         if (Config.NODE_MODE) {
             this.startService();
         }
@@ -71,7 +72,7 @@ class Server {
             }));
 
             app.on('will-quit', (() => {
-                console.log('quiting');
+                this.deviceStore.killSockets();
             }));
         }
     }

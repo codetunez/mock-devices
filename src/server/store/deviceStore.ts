@@ -25,6 +25,10 @@ export class DeviceStore {
         this.liveUpdatesService = new LiveUpdatesService();
     }
 
+    public killSockets = () => {
+        this.liveUpdatesService.killSockets();
+    }
+
     public deleteDevice = (d: Device) => {
         this.store.deleteItem(d._id);
     }

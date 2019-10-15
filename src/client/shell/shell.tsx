@@ -18,6 +18,10 @@ export const Shell: React.FunctionComponent = () => {
   const [lines, updateConsole] = React.useState([]);
   const [consoleModal, setConsole] = React.useState<any>({});
 
+  const propertyUpdate = (data: any) => {
+    console.log(data);
+  }
+
   const liveUpdate = (data: any) => {
     let payload = JSON.parse(data);
     let latest = lines.slice(0);
@@ -59,6 +63,7 @@ export const Shell: React.FunctionComponent = () => {
       </div>
 
       <div>
+        <Websocket url={'ws://127.0.0.1:24377'} onMessage={propertyUpdate} />
         <Websocket url={'ws://127.0.0.1:24387'} onMessage={liveUpdate} />
         {lines.length > 0 && lines.map((element, index) => {
           return <div className={cx('console-line', 'ellipsis')} onClick={() => { openConsole(element) }}>{element}</div>

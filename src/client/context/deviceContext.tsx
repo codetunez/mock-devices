@@ -51,7 +51,7 @@ export class DeviceProvider extends React.PureComponent<DeviceContextState> {
 
     getDevices = () => {
         axios.get('/api/devices').then((response: any) => {
-            this.setState({ devices: response.data });
+            this.setState({ devices: response.data, device: {} });
         })
     }
 
@@ -79,7 +79,7 @@ export class DeviceProvider extends React.PureComponent<DeviceContextState> {
     deleteDevice = () => {
         axios.post('/api/device/' + this.state.device._id + '/delete', null)
             .then((response: any) => {
-                this.setState({ devices: response.data });
+                this.setState({ devices: response.data, device: {}  });
             })
     }
 

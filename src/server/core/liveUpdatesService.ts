@@ -10,7 +10,7 @@ export class LiveUpdatesService {
 
     constructor() {
         var that = this;
-
+        
         this.propertyUpdatesWebSocket = new WebSocket.Server({ port: parseInt(Config.PROPERTY_WEBSOCKET_PORT) });
         this.consoleUpdatesWebSocket = new WebSocket.Server({ port: parseInt(Config.CONSOLE_WEBSOCKET_PORT) });
 
@@ -23,6 +23,11 @@ export class LiveUpdatesService {
                 });
             }
         }, 750)
+    }
+
+    killSockets() {
+        this.propertyUpdatesWebSocket.close();
+        this.consoleUpdatesWebSocket.close();
     }
 
     sendAsLiveUpdate(payload: any) {
