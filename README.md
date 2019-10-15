@@ -20,6 +20,7 @@ Help is available inside the application
 v4 is a complete re-write of the UX with focus on improving responsive design layout, property management and UI performance.
 
 _New UX_
+- **File system support for state persistance and DCM import**
 - Code base based on React Hooks
 - Scrolling and layout improvements (rewrite of UI)
 - Better arrangement of device property cards on small and large screens
