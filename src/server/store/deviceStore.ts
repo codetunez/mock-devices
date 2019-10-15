@@ -145,7 +145,7 @@ export class DeviceStore {
         }
 
         let d: Device = this.store.getItem(id);
-        property.name = property.name + '-' + crypto.randomBytes(2).toString('hex');
+        property.name = property.name + '_' + crypto.randomBytes(2).toString('hex');
         delete override._id;
         Object.assign(property, override);
         d.comms.push(property);
