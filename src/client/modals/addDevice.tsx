@@ -31,6 +31,17 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
         capabilityModel: ''
     });
 
+    React.useEffect(() => {
+        let list = [];
+        axios.get('/api/devices').then((response: any) => {
+            list.push({ name: '--Select', value: null });
+            response.data.map(function (ele: any) {
+                list.push({ name: ele.configuration.mockDeviceName, value: ele._id });
+            });
+            setDeviceList(list);
+        })
+    }, []);
+
     const clickAddDevice = (kind: string) => {
         updatePayload._kind = kind;
         axios.post('/api/device/new', updatePayload).then(res => {
@@ -54,16 +65,15 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
         });
     }
 
-    React.useEffect(() => {
-        let list = [];
-        axios.get('/api/devices').then((response: any) => {
-            list.push({ name: '--Select', value: null });
-            response.data.map(function (ele: any) {
-                list.push({ name: ele.configuration.mockDeviceName, value: ele._id });
-            });
-            setDeviceList(list);
-        })
-    }, []);
+    const loadFromDisk = () => {
+        axios.get('/api/openDialog')
+            .then(response => {
+                setPayload({
+                    ...updatePayload,
+                    capabilityModel: JSON.stringify(response.data, null, 1)
+                })
+            })
+    }
 
     return <div className='m-modal'>
         <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
@@ -81,7 +91,6 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                 <div className='m-tabbed-panel'>
                     {panel !== 0 ? null : <>
                         <div className='m-tabbed-panel-form'>
-
                             <div className='form-group' style={{ display: 'flex', alignContent: 'stretch' }}>
                                 <div className='form-group' style={{ paddingRight: '10px' }} >
                                     <label>DPS Scope ID</label>
@@ -92,7 +101,6 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                     <input className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={updatePayload.deviceId || ''} />
                                 </div>
                             </div>
-
                             <div className='form-group' style={{ display: 'flex', alignContent: 'stretch' }}>
                                 <div className='form-group' style={{ paddingRight: '10px' }} >
                                     <label>SaS Key</label>
@@ -104,12 +112,10 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                     <div><ReactToggleThemeProvider theme={toggleStyles}><Toggle name={'masterKey'} checked={updatePayload.isMasterKey} onToggle={() => { toggleMasterKey() }} /></ReactToggleThemeProvider></div>
                                 </div>
                             </div>
-
                             <div className='form-group'>
                                 <label>DPS Payload JSON (Optional)</label>
                                 <textarea className='custom-textarea form-control form-control-sm' name='dpsPayload' rows={3} onChange={updateField} value={updatePayload.dpsPayload || ''}></textarea>
                             </div>
-
                             <div className='form-group'>
                                 <h4>Mock Devices configuration</h4>
                                 <div className='form-group' style={{ display: 'flex', alignContent: 'stretch' }}>
@@ -139,14 +145,17 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                 <label>Paste in an IoT Hub Device Connection String</label>
                                 <textarea className='custom-textarea form-control form-control-sm' name='connectionString' rows={4} onChange={updateField} value={updatePayload.connectionString || ''}></textarea>
                             </div>
-                            <div className='form-group' style={{ display: 'flex', alignContent: 'stretch' }}>
-                                <div className='form-group' style={{ paddingRight: '10px' }} >
-                                    <label>Mock Device Name</label>
-                                    <input className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={updatePayload.mockDeviceName || ''} />
-                                </div>
-                                <div className='form-group'>
-                                    <label>Use Template</label><br />
-                                    <Combo items={deviceList} cls='custom-textarea-sm' name='mockDeviceCloneId' onChange={updateField} value={updatePayload.mockDeviceCloneId || ''} />
+                            <div className='form-group'>
+                                <h4>Mock Devices configuration</h4>
+                                <div className='form-group' style={{ display: 'flex', alignContent: 'stretch' }}>
+                                    <div className='form-group' style={{ paddingRight: '10px' }} >
+                                        <label>Mock Name</label>
+                                        <input className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={updatePayload.mockDeviceName || ''} />
+                                    </div>
+                                    <div className='form-group'>
+                                        <label>Use Template</label><br />
+                                        <Combo items={deviceList} cls='custom-textarea-sm' name='mockDeviceCloneId' onChange={updateField} value={updatePayload.mockDeviceCloneId || ''} />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -158,12 +167,15 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                     {panel != 2 ? null : <>
                         <div className='m-tabbed-panel-form'>
                             <div className='form-group'>
-                                <label>Enter Device Capability Model JSON here (DTDL)</label>
-                                <textarea className='custom-textarea form-control form-control-sm' name='capabilityModel' rows={18} onChange={updateField} value={updatePayload.capabilityModel || ''}></textarea>
+                                <label>Load or enter a Device Capability Model (DTDL)</label>
+                                <textarea className='custom-textarea form-control form-control-sm' style={{ overflow: 'scroll', whiteSpace: 'nowrap' }} name='capabilityModel' rows={19} onChange={updateField} value={updatePayload.capabilityModel || ''}></textarea>
                             </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
-                            <button className='btn btn-info' onClick={() => clickAddDevice('template')}>Create Template</button>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <button className='btn btn-success' onClick={() => loadFromDisk()}>Load from Disk</button>
+                                <button className='btn btn-info' onClick={() => clickAddDevice('template')}>Create Template</button>
+                            </div>
                         </div>
                     </>}
 

@@ -17,12 +17,12 @@ export const Save: React.FunctionComponent<any> = ({ handler }) => {
             .then((response: any) => {
                 setPayload({
                     ...updatePayload,
-                    state: JSON.stringify(response.data, null, 2)
+                    state: JSON.stringify(response.data, null, 1)
                 })
             })
     }, []);
 
-    const clickSaveState = () => {
+    const updateCurrentState = () => {
         axios.post('/api/state/', JSON.parse(updatePayload.state))
             .then(response => {
                 // force a reload of the application
@@ -37,16 +37,30 @@ export const Save: React.FunctionComponent<any> = ({ handler }) => {
         });
     }
 
+    const loadFromDisk = () => {
+        axios.get('/api/openDialog')
+            .then(response => {
+                setPayload({
+                    ...updatePayload,
+                    state: JSON.stringify(response.data, null, 1)
+                })
+            })
+    }
+
+    const saveToDisk = () => {
+        axios.post('/api/saveDialog', updatePayload.state, { headers: { 'Content-Type': 'application/json' } })
+    }
+
     return <div className='m-modal'>
         <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
         <div className='m-content'>
             <div className='save-device'>
                 <div className='m-tabbed-nav'>
                     <label>Manage State</label>
-                    <button onClick={() => setPanel(0)} className={cx('btn btn-outline-primary', panel === 0 ? 'active' : '')}>Copy/Paste State</button><br />
-                    <label>Local Storage</label>
-                    <button onClick={() => setPanel(1)} className={cx('btn btn-outline-primary', panel === 1 ? 'active' : '')}>Load a State</button><br />
-                    <button onClick={() => setPanel(2)} className={cx('btn btn-outline-primary', panel === 2 ? 'active' : '')}>Save Current State</button><br />
+                    <button onClick={() => setPanel(0)} className={cx('btn btn-outline-primary', panel === 0 ? 'active' : '')}>Copy/Paste state</button><br />
+                    <label>File System</label>
+                    <button onClick={() => loadFromDisk()} className={cx('btn btn-outline-primary')}>Load a state</button><br />
+                    <button onClick={() => saveToDisk()} className={cx('btn btn-outline-primary')}>Save current state</button><br />
                 </div>
 
                 <div className='m-tabbed-panel'>
@@ -58,26 +72,7 @@ export const Save: React.FunctionComponent<any> = ({ handler }) => {
                             </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
-                            <button className='btn btn-info' onClick={() => clickSaveState()}>Update current State</button>
-                        </div>
-                    </>}
-
-                    {panel !== 1 ? null : <>
-                        <div className='m-tabbed-panel-form'></div>
-                        <div className='m-tabbed-panel-footer'>
-                            <button className='btn btn-success' onClick={() => { alert('not implemented') }}>Load</button>
-                        </div>
-                    </>}
-                    
-                    {panel !== 2 ? null : <>
-                        <div className='m-tabbed-panel-form'>
-                            <div className='form-group'>
-                                <label>State Save Name</label>
-                                <input className='form-control form-control-sm' type='text' name='stateName' />
-                            </div>
-                        </div>
-                        <div className='m-tabbed-panel-footer'>
-                            <button className='btn btn-info' onClick={() => { alert('not implemented') }}>Save</button>
+                            <button className='btn btn-info' onClick={() => updateCurrentState()}>Update current State</button>
                         </div>
                     </>}
 
