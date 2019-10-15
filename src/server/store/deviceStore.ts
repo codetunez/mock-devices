@@ -106,6 +106,8 @@ export class DeviceStore {
                     "_id": _id,
                     "_type": "property",
                     "name": "d2cProperty",
+                    "enabled": false,
+                    "interface" : "(single interface only)",
                     "string": false,
                     "value": "0",
                     "sdk": "msg",
@@ -128,7 +130,9 @@ export class DeviceStore {
                 property = {
                     "_id": _id,
                     "_type": "property",
+                    "enabled": false,
                     "name": "c2dProperty",
+                    "interface" : "(single interface only)",
                     "string": false,
                     "value": "0",
                     "sdk": "twin",

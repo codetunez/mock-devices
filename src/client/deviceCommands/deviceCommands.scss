@@ -1,0 +1,9 @@
+@import "../const.scss";
+
+.device-commands-container {
+  display: flex;
+  flex-flow: nowrap;
+  justify-content: space-between;
+  padding: $xs-gutter $md-gutter;
+  padding-right: $forced-right-margin;
+}

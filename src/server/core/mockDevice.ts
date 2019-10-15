@@ -18,9 +18,9 @@ import * as request from 'request';
 import * as rw from 'random-words';
 import * as Crypto from 'crypto';
 
-const MSG_HUB_EVENT = ">> [RUNNER]-[HUB] - ";
-const MSG_DPS_EVENT = ">> [RUNNER]-[DPS] - ";
-const MSG_ENG_EVENT = ">> [RUNNER]-[DEV] - ";
+const MSG_HUB_EVENT = "[RUNNER]-[HUB] - ";
+const MSG_DPS_EVENT = "[RUNNER]-[DPS] - ";
+const MSG_ENG_EVENT = "[RUNNER]-[DEV] - ";
 
 export class MockDevice {
 
@@ -200,7 +200,7 @@ export class MockDevice {
                         // desired properties are cached
                         twin.on('properties.desired', ((delta) => {
                             if (!this.CONNECT_RESTART) { Object.assign(this.twinDesiredPayloadRead, delta); }
-                            this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][RECV] <- " + (this.CONNECT_RESTART ? "RESTART " : "STORED ") + JSON.stringify(delta));
+                            this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][RECV] <- " + JSON.stringify(delta));
                             this.CONNECT_RESTART = false;
                         }))
 
@@ -382,7 +382,7 @@ export class MockDevice {
                 this.updateSensorValue(p, propertySensorTimers);
             }
 
-            if (res.process === true) {
+            if (res.process && p.enabled) {
                 let o: ValueByIdPayload = <ValueByIdPayload>{};
                 o[p._id] = (p.mock ? p.mock._value : Utils.formatValue(p.string, p.value));
                 Object.assign(payload, o);
@@ -497,13 +497,10 @@ export class MockDevice {
                     switch (p.propertyObject.type) {
                         case 'templated':
                             try {
-                                if (p.propertyObject.random) {
-                                    var o = JSON.parse(p.propertyObject.template);
-                                    replaceRandom(o)
-                                    remap[p.name] = o;
-                                } else {
-                                    remap[p.name] = JSON.parse(p.propertyObject.template.replace(new RegExp(/_VALUE_/, 'g'), val));
-                                }
+                                var replacement = p.propertyObject.template.replace(new RegExp(/\"AUTO_VALUE\"/, 'g'), val);
+                                var object = JSON.parse(replacement);
+                                replaceRandom(object)
+                                remap[p.name] = object;
                             } catch (ex) {
                                 remap[p.name] = { "error": "JSON parse error." + ex }
                             }
@@ -524,15 +521,17 @@ export class MockDevice {
 
 function replaceRandom(node) {
     for (let key in node) {
-        if (typeof node[key] == 'object' || node[key] == 'map') {
+        if (typeof node[key] == 'object') {
             replaceRandom(node[key])
         } else {
-            if (node[key] === "RND_STRING") {
+            if (node[key] === "AUTO_STRING") {
                 node[key] = rw();
-            } else if (node[key] === "RND_BOOLEAN") {
+            } else if (node[key] === "AUTO_BOOLEAN") {
                 node[key] = Math.random() >= 0.5;
-            } else {
-                node[key] = Math.random() * (10000 - 1) + 1;
+            } else if (node[key] === "AUTO_INTEGER" || node[key] === "AUTO_LONG") {
+                node[key] = Math.floor(Math.random() * (5000 - 1) + 1);
+            } else if (node[key] === "AUTO_DOUBLE" || (node[key] === "AUTO_FLOAT")) {
+                node[key] = Math.random() * (5000 - 1) + 1;
             }
         }
     }

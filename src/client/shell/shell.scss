@@ -1,0 +1,59 @@
+@import "../const.scss";
+
+.shell {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.shell-console {
+  background-color: $app-black;
+  color: limegreen;
+  height: 1.2rem;
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  display: flex;
+  padding-left: 1.7rem;
+  .console-toggle {
+    position: fixed;
+    left: 0.75rem;
+    cursor: pointer;
+  }
+  .ellipsis {
+    width: calc(100vw - 3rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  overflow: hidden;
+}
+
+.shell-console-expanded {
+  height: calc(100vh - 30%);
+  overflow: auto;
+}
+
+.shell-content {
+  background-color: $app-clr-0;
+  color: $app-white;
+  flex-grow: 1;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+
+  display: flex;
+}
+
+.shell-content-selector {
+  border-right: $border-thicker solid $app-clr-3;
+}
+
+.console-line {
+  cursor: pointer;
+}
+
+.console-line:hover {
+  background-color: $app-clr-2;
+}

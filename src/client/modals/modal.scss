@@ -1,0 +1,82 @@
+@import "../const.scss";
+
+.m-modal {
+  height: 100%;
+}
+
+.m-close {
+  display: flex;
+  justify-content: flex-end;
+  margin: $md-gutter $lg-gutter 0 0;
+  i {
+    cursor: pointer;
+  }
+}
+
+.m-content {
+  height: calc(100% - 30px);
+  width: 100%;
+}
+
+.m-commands {
+  align-self: flex-end;
+}
+
+.m-tabbed-nav {
+  height: calc(100% - 25px);
+  width: 250px;
+  text-align: center;
+  padding: 0 $lg-gutter;
+  border-right: 1px solid $app-clr-4;
+  label {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    margin: 0 $sm-gutter $sm-gutter $sm-gutter;
+  }
+  label:not(:first-child) {
+    margin-top: $sm-gutter;
+  }
+  button {
+    width: 100%;
+    margin-bottom: $xs-gutter;
+    font-size: 0.7rem;
+  }
+}
+
+.m-tabbed-panel {
+  height: calc(100% - 25px);
+  width: calc(100% - 250px);
+  padding: 0 $lg-gutter $lg-gutter $lg-gutter;
+
+  display: flex;
+  flex-direction: column;
+
+  .m-tabbed-panel-form {
+    flex-grow: 1;
+    label {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin: 0 $xs-gutter $sm-gutter $sm-gutter;
+    }
+    .form-group {
+      width: 100%;
+      margin-bottom: 0.8rem;
+
+      h4 {
+        margin-top: 1.9rem;
+        font-size: 1.3rem;
+        margin-bottom: 1.2rem;
+      }
+    }
+    .input-wide {
+      padding-right: 0;
+    }
+  }
+
+  .m-tabbed-panel-footer {
+    flex-shrink: 0;
+    height: 1rem;
+    align-self: flex-end;
+  }
+}

@@ -1,0 +1,138 @@
+@import "../const.scss";
+
+$device-card-minimized: 140px;
+$device-card-button-width: 35px;
+$device-card-toggle-file: 100px;
+$device-card-input: 70px;
+$device-card-field-full: 345px;
+$device-card-field-half: 170px;
+$device-card-field-small: 140px;
+$device-card-title-width: 250px;
+$min-height-toggle-row: 55px;
+
+.device-field-card {
+  padding: $sm-gutter $sm-gutter 0 $sm-gutter;
+  overflow-wrap: break-word;
+  background-color: $app-clr-2;
+  color: $app-white;
+  border-radius: $border-radius;
+  min-width: $device-field-width;
+  max-width: $device-field-width;
+}
+
+.device-field-card {
+  overflow: hidden;
+  margin-bottom: $md-gutter;
+  margin-right: $md-gutter;
+}
+
+.device-field-card-small {
+  height: $device-card-minimized;
+}
+
+.df-card-header {
+  display: flex;
+  justify-content: space-between;
+
+  .df-card-menu {
+    width: 0;
+  }
+
+  .df-card-title {
+    display: flex;
+    width: $device-card-title-width;
+
+    .df-card-title-chveron {
+      margin-top: 1px;
+      width: $xl-gutter;
+      cursor: pointer;
+    }
+
+    .df-card-title-text {     
+      div:first-child {
+        color: $app-clr-4;
+        font-size: 0.7rem;
+        font-weight: 700;
+      }
+      div:nth-child(2) {
+        color: $app-clr-yellow-1;
+        font-size: 0.9rem;
+        
+        width: 220px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;        
+      }
+    }
+  }
+
+  .df-card-value {
+    text-align: center;
+    div:first-child {
+      color: $app-clr-4;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+    div:nth-child(2) {
+      font-size: 0.9rem;
+    }
+  }
+
+  .df-card-cmd {
+    padding-top: 2px;
+    padding-right: 2px;
+
+    button {
+      width: $device-card-button-width;
+    }
+  }
+}
+
+.df-card-row {
+  min-height: $min-height-toggle-row;
+  font-size: 0.8rem;
+  font-weight: 700;
+
+  display: flex;
+  margin-top: $md-gutter;
+  margin-bottom: $xl-gutter;
+  padding-left: $xl-gutter;
+
+  div:first-child {
+    width: $device-card-toggle-file;
+    div {
+      margin-left: -4px;
+    }
+  }
+
+  input[type="text"],
+  input[type="number"] {
+    width: $device-card-input;
+    margin-right: $xs-gutter;
+  }
+
+  .small-width {
+    width: $device-card-field-small !important;
+  }
+
+  .half-width {
+    width: $device-card-field-half !important;
+  }
+
+  .full-width {
+    width: $device-card-field-full !important;
+  }
+
+  textarea:focus {
+    margin-bottom: 0;
+  }
+
+  .single-item {
+    align-self: flex-end;
+  }
+
+  .custom-textarea-xsm {
+    width: $device-card-input;
+    margin-right: $xs-gutter;
+  }
+}

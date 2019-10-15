@@ -41,7 +41,7 @@ class Server {
         this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(bodyParser.json({ limit: "2000kb" }));
 
-        this.app.use(express.static(__dirname + '/../../src/client'));
+        this.app.use(express.static(__dirname + '/../../static'));
         this.app.use('/_dist', express.static(__dirname + '/..'));
         this.app.use('/node_modules', express.static(__dirname + '/../../node_modules'));
 

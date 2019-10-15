@@ -24,7 +24,7 @@ export default function (deviceStore) {
         try {
             let payload = req.body;
             deviceStore.stopAll();
-            deviceStore.createFromArray(payload.state.devices);
+            deviceStore.createFromArray(payload.devices);
             res.json(deviceStore.getListOfItems());
             res.end();
         }

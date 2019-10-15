@@ -25,6 +25,7 @@ export interface Property {
     _id: string;
     _type: "property";
     name: string;
+    interface: string;
     string: boolean;
     value: string;
     sdk: string;
@@ -33,6 +34,7 @@ export interface Property {
     propertyObject: PropertyObjectDefault | PropertyObjectTemplated;
     runloop?: RunLoop;
     mock?: MockSensor;
+    enabled: boolean;
 }
 
 export interface Method {
@@ -52,7 +54,6 @@ export interface PropertyObjectDefault {
 export interface PropertyObjectTemplated {
     type: "templated"
     template: any;
-    random: boolean;
 }
 
 export class Device {

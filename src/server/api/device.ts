@@ -5,7 +5,7 @@ import * as Utils from '../core/utils'
 import { ConnectionString } from 'azure-iot-common';
 import { IotHub } from '../core/iotHub';
 import uuid = require('uuid');
-import { Config } from '../config';
+import * as  Config from '../config';
 
 export default function (deviceStore: DeviceStore) {
     let api = Router();
@@ -115,12 +115,21 @@ export default function (deviceStore: DeviceStore) {
         res.end();
     });
 
+    api.post('/:id/property/:propertyId', function (req, res, next) {
+        var id = req.params.id;
+        var propertyId = req.params.propertyId;
+        var body = req.body;
+        deviceStore.updateDeviceProperty(id, propertyId, body, false);
+        res.json(deviceStore.exists(id));
+        res.end();
+    });
+
     api.post('/:id/property/:propertyId/value', function (req, res, next) {
         var id = req.params.id;
         var propertyId = req.params.propertyId;
         var body = req.body;
         deviceStore.updateDeviceProperty(id, propertyId, body, true);
-        // must return the device
+        // must return the device        
         res.json(deviceStore.exists(id));
         res.end();
     });
@@ -210,8 +219,8 @@ export default function (deviceStore: DeviceStore) {
 
                             if (item.schema['@type'] === "Object") {
                                 var ct = {};
-                                buildComplexType(item, item.name, ct);                             
-                                o.propertyObject = { type: 'templated', template: JSON.stringify(ct, null, 2), random: true }
+                                buildComplexType(item, item.name, ct);
+                                o.propertyObject = { type: 'templated', template: JSON.stringify(ct[item.name], null, 2) }
                             }
 
                             if (addRunLoop) {
@@ -244,14 +253,14 @@ export default function (deviceStore: DeviceStore) {
         } else {
 
             let items = deviceStore.getListOfItems();
-            let capacity = Config.MAX_NUM_DEVICES - items.length;
-            let maxCount = parseInt(updatePayload.mockCreateCount) > capacity ? Config.MAX_NUM_DEVICES - capacity : parseInt(updatePayload.mockCreateCount);
+            let capacity = Config.Config.MAX_NUM_DEVICES - items.length;
+            let maxCount = parseInt(updatePayload.mockDeviceCount) > capacity ? Config.Config.MAX_NUM_DEVICES - capacity : parseInt(updatePayload.mockDeviceCount);
 
             for (let i = 0; i < maxCount; i++) {
 
                 let d: Device = new Device();
                 let id = updatePayload._kind === 'dps' ? updatePayload.deviceId : Utils.getDeviceId(updatePayload.connectionString);
-                id = updatePayload.mockCreateCount > 1 ? id + "-" + (i + 1) : id;
+                id = updatePayload.mockDeviceCount > 1 ? id + "-" + (i + 1) : id;
                 if (deviceStore.exists(id)) {
                     res.status(500).json({ "message": "Device already added" });
                     res.end();
@@ -259,7 +268,7 @@ export default function (deviceStore: DeviceStore) {
                 }
                 d._id = id;
                 d.configuration = JSON.parse(JSON.stringify(updatePayload));
-                d.configuration.mockDeviceName = updatePayload.mockCreateCount > 1 ? d.configuration.mockDeviceName + "-" + (i + 1) : d.configuration.mockDeviceName;
+                d.configuration.mockDeviceName = updatePayload.mockDeviceCount > 1 ? d.configuration.mockDeviceName + "-" + (i + 1) : d.configuration.mockDeviceName;
                 d.configuration.deviceId = d._id;
                 deviceStore.addDevice(d);
             }
@@ -281,12 +290,12 @@ function buildComplexType(node: any, nodeName: any, o: any) {
             if (f.schema['@type'] && f.schema['@type'] === "Object") {
                 buildComplexType(f, f.name, o[nodeName]);
             } else if (f.schema['@type'] && f.schema['@type'] === "Enum") {
-                o[nodeName][f.name] = "RND_ENUM_" + f.schema.valueSchema.toString().toUpperCase();
+                o[nodeName][f.name] = "AUTO_ENUM_" + f.schema.valueSchema.toString().toUpperCase();
             } else {
-                o[nodeName][f.name] = "RND_" + f.schema.toString().toUpperCase();
+                o[nodeName][f.name] = "AUTO_" + f.schema.toString().toUpperCase();
             }
         }
     } else {
-        o[nodeName] = "RND_" + node.schema.toString().toUpperCase();
+        o[nodeName] = "AUTO_" + node.schema.toString().toUpperCase();
     }
 }

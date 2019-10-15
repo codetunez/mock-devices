@@ -1,0 +1,21 @@
+@import "../const.scss";
+
+.console-message {
+  height: 100%;
+  width: 100%;
+  padding: 1rem 1.2rem 3rem 1rem;  
+}
+
+.console-window {
+  padding: 0.5rem;
+  border: solid 1px $app-clr-4;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  overflow-wrap: break-word;
+  height: 100%;
+
+  pre {
+    color: $app-white;
+    font-size: 1.2rem;
+  }
+}

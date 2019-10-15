@@ -1,0 +1,45 @@
+@import "../const.scss";
+
+em {
+  font-weight: bolder;
+}
+
+.help {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.help-row {
+  h3,
+  h4,
+  h5 {
+    color: $app-clr-yellow-1;
+  }
+  margin-bottom: 2rem;
+  li {
+    margin-bottom: 0.8rem;
+  }
+  pre {
+    color: $app-white;
+    background-color: $app-black;
+    padding: 0.5rem;
+    font-size: 1.1rem;
+  }
+}
+
+.help-close {
+  margin: 0.1rem 0.25rem;
+  height: 1.4rem;
+  flex-shrink: 0;
+  align-self: flex-end;
+  cursor: pointer;
+}
+
+.help-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 0 $md-gutter;
+}
