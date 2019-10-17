@@ -6,12 +6,14 @@ import { Modal } from '../modals/modal';
 import { Help } from '../modals/help';
 import { AddDevice } from '../modals/addDevice';
 import { Save } from '../modals/save';
+import { Simulation } from '../modals/simulation';
 import { DeviceContext, DeviceContextState } from '../context/deviceContext';
 
 export const Nav: React.FunctionComponent = () => {
     const [showHelp, toggleHelp] = React.useState(false);
     const [showDevices, toggleDevices] = React.useState(false);
     const [showSave, toggleSave] = React.useState(false);
+    const [showSimulation, toggleSimulation] = React.useState(false);
 
     return <DeviceContext.Consumer>
         {(sharedState: any) => (
@@ -24,9 +26,12 @@ export const Nav: React.FunctionComponent = () => {
                 <button onClick={() => sharedState.startAllDevices()} className='btn btn-outline-primary'><span className='fas fa-play'></span></button>
                 <button onClick={() => sharedState.stopAllDevices()} className='btn btn-outline-primary'><span className='fas fa-stop'></span></button>
                 <button onClick={() => sharedState.refreshAllDevices()} className='btn btn-outline-primary'><span className='fas fa-sync'></span></button>
+                <hr />
+                <button onClick={() => toggleSimulation(!showSimulation)} className='btn btn-outline-primary'><span className='fas fa-flask'></span></button>
                 {showHelp ? <Modal><div className='blast-shield'></div><div className='app-modal context-modal'><Help handler={toggleHelp} /></div></Modal> : null}
                 {showDevices ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><AddDevice handler={toggleDevices} /></div></Modal> : null}
                 {showSave ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><Save handler={toggleSave} /></div></Modal> : null}
+                {showSimulation ? <Modal><div className='blast-shield'></div><div className='app-modal context-modal'><Simulation handler={toggleSimulation} /></div></Modal> : null}
             </div>
         )}
     </DeviceContext.Consumer>

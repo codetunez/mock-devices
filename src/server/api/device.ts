@@ -184,7 +184,7 @@ export default function (deviceStore: DeviceStore) {
                     if (element.schema.contents) {
                         element.schema.contents.forEach(item => {
 
-                            if (item['@type'] === 'Command') {
+                            if (isType(item['@type'], 'Command')) {
                                 var o: any = {};
                                 o._id = uuid();
                                 o.name = item.name;
@@ -201,13 +201,13 @@ export default function (deviceStore: DeviceStore) {
                             let addRunLoop: boolean = false;
 
                             // if this is Telemetry set up a timer
-                            if (item['@type'] === 'Telemetry') {
+                            if (isType(item['@type'], 'Telemetry')) {
                                 o.sdk = 'msg';
                                 addMock = true;
                                 addRunLoop = true;
                             }
 
-                            if (item['@type'] === 'Property') {
+                            if (isType(item['@type'], 'Property')) {
                                 o.sdk = 'twin';
                                 addRunLoop = false;
                             }
@@ -232,12 +232,12 @@ export default function (deviceStore: DeviceStore) {
                             }
 
                             // add the property
-                            let propertyId = deviceStore.addDeviceProperty(t._id, (item['@type'] === 'Property' && item.writable ? 'c2d' : 'd2c'), o);
+                            let propertyId = deviceStore.addDeviceProperty(t._id, ((isType(item['@type'], 'Property')) && item.writable ? 'c2d' : 'd2c'), o);
 
-                            if (addMock && item['@type'] === 'Telemetry') { deviceStore.addDevicePropertyMock(t._id, propertyId, 'random'); }
+                            if (addMock && (isType(item['@type'], 'Telemtry'))) { deviceStore.addDevicePropertyMock(t._id, propertyId, 'random'); }
 
                             // if this is a writable property create a D2C for settings
-                            if (item['@type'] === 'Property' && item.writable) {
+                            if ((isType(item['@type'], 'Property')) && item.writable) {
                                 var oP: any = {};
                                 oP._id = uuid();
                                 oP.name = item.name;
@@ -279,6 +279,14 @@ export default function (deviceStore: DeviceStore) {
     });
 
     return api;
+}
+
+function isType(node: any, type: string) {
+    if (Array.isArray(node)) {
+        return node.findIndex((x) => x = type);
+    } else {
+        return type === node ? 0 : 1;
+    }
 }
 
 function buildComplexType(node: any, nodeName: any, o: any) {

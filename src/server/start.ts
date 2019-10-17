@@ -1,4 +1,4 @@
-import { dialog, app, BrowserWindow } from 'electron';
+import { dialog, app, Menu, BrowserWindow } from 'electron';
 import * as http from 'http';
 import * as express from 'express';
 import * as morgan from 'morgan';
@@ -11,10 +11,12 @@ import devices from './api/devices';
 import state from './api/state';
 import server from './api/server';
 import sensors from './api/sensors';
+import semanctics from './api/simulation';
 
 import { Config } from './config';
 import { DeviceStore } from './store/deviceStore';
 import { SensorStore } from './store/sensorStore';
+import { SimulationStore } from './store/simulationStore';
 
 import { LiveUpdatesService } from './core/liveUpdatesService';
 
@@ -25,6 +27,7 @@ class Server {
 
     private deviceStore: DeviceStore;
     private sensorStore: SensorStore;
+    private simulationStore: SimulationStore;
 
     private mainWindow: any = null;
 
@@ -32,6 +35,7 @@ class Server {
 
         this.deviceStore = new DeviceStore();
         this.sensorStore = new SensorStore();
+        this.simulationStore = new SimulationStore();
 
         this.expressServer = express();
         this.expressServer.server = http.createServer(this.expressServer);
@@ -45,9 +49,10 @@ class Server {
         this.expressServer.use('/node_modules', express.static(__dirname + '/../../node_modules'));
 
         this.expressServer.use('/api', root(dialog, app));
+        this.expressServer.use('/api/simulation', semanctics(this.deviceStore, this.simulationStore));
         this.expressServer.use('/api/device', device(this.deviceStore));
         this.expressServer.use('/api/devices', devices(this.deviceStore));
-        this.expressServer.use('/api/state', state(this.deviceStore));
+        this.expressServer.use('/api/state', state(this.deviceStore, this.simulationStore));
         this.expressServer.use('/api/server', server(this.deviceStore));
         this.expressServer.use('/api/sensors', sensors(this.sensorStore));
 
@@ -91,7 +96,31 @@ class Server {
                 }
             });
 
-            this.mainWindow.setMenu(null);
+            const template: any = [{
+                label: 'File',
+                submenu: [
+                    process.platform === 'darwin' ? { role: 'close' } : { role: 'quit' }
+                ]
+            },
+            {
+                label: 'View',
+                submenu: [
+                    { role: 'reload' },
+                    { role: 'forcereload' },
+                    { role: 'toggledevtools' },
+                    { type: 'separator' },
+                    { role: 'resetzoom' },
+                    { role: 'zoomin' },
+                    { role: 'zoomout' },
+                    { type: 'separator' },
+                    { role: 'togglefullscreen' }
+                ]
+            }]
+
+            const menu = Menu.buildFromTemplate(template)
+
+            //this.mainWindow.webContents.openDevTools();
+            Menu.setApplicationMenu(menu);
             this.mainWindow.loadURL(Config.LOCALHOST + ':' + Config.APP_PORT);
 
             this.mainWindow.on('closed', (() => {

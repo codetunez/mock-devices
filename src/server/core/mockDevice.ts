@@ -1,6 +1,7 @@
 import { AssociativeStore } from '../framework/associativeStore'
 import { Device, Property, MockSensor, Method } from '../interfaces/device';
 
+import { SimulationStore } from '../store/simulationStore';
 
 import { Mqtt as M1, clientFromConnectionString } from 'azure-iot-device-mqtt';
 import { Client } from 'azure-iot-device';
@@ -529,6 +530,8 @@ function replaceRandom(node) {
             } else if (node[key] === "AUTO_BOOLEAN") {
                 node[key] = Math.random() >= 0.5;
             } else if (node[key] === "AUTO_INTEGER" || node[key] === "AUTO_LONG") {
+                //SimulationStore.Simulation
+
                 node[key] = Math.floor(Math.random() * (5000 - 1) + 1);
             } else if (node[key] === "AUTO_DOUBLE" || (node[key] === "AUTO_FLOAT")) {
                 node[key] = Math.random() * (5000 - 1) + 1;
