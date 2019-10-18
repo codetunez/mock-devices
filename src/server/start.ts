@@ -18,8 +18,6 @@ import { DeviceStore } from './store/deviceStore';
 import { SensorStore } from './store/sensorStore';
 import { SimulationStore } from './store/simulationStore';
 
-import { LiveUpdatesService } from './core/liveUpdatesService';
-
 class Server {
 
     private expressServer: any = null;
@@ -103,24 +101,19 @@ class Server {
                 ]
             },
             {
-                label: 'View',
+                label: 'Tool',
                 submenu: [
-                    { role: 'reload' },
                     { role: 'forcereload' },
                     { role: 'toggledevtools' },
                     { type: 'separator' },
-                    { role: 'resetzoom' },
-                    { role: 'zoomin' },
-                    { role: 'zoomout' },
-                    { type: 'separator' },
-                    { role: 'togglefullscreen' }
+                    process.platform === 'darwin' ? { role: 'close' } : { role: 'quit' }
                 ]
             }]
 
             const menu = Menu.buildFromTemplate(template)
-
-            //this.mainWindow.webContents.openDevTools();
-            Menu.setApplicationMenu(menu);
+            if (Config.DEV_TOOLS) { Menu.setApplicationMenu(menu); }
+            else { Menu.setApplicationMenu(null); }
+            
             this.mainWindow.loadURL(Config.LOCALHOST + ':' + Config.APP_PORT);
 
             this.mainWindow.on('closed', (() => {

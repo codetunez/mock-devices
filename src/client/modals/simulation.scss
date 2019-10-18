@@ -20,5 +20,9 @@
     flex-grow: 1;
     overflow-y: auto;
     padding: 0 $md-gutter;
+
+    textarea {
+      height: calc(100vh - 280px)
+    }
   }
   

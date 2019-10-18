@@ -34,18 +34,15 @@ export default function (dialog, app) {
 
     api.post('/saveDialog', function (req, res, next) {
         var body = JSON.stringify(req.body);
-        dialog.showSaveDialog(app.getPath("desktop"), (path: string) => {
+        dialog.showSaveDialog(app.getPath('desktop'), (path: string) => {
             if (path === "") {
                 res.status(400).end();
                 return;
             }
+            if (!path.toLocaleLowerCase().endsWith('.json')) { path += '.json'; }
             fs.writeFile(path, body, 'utf8', (error) => {
-                if (error) {
-                    res.status(500).end();
-                }
-                else {
-                    res.status(200).end();
-                }
+                if (error) { res.status(500).end(); }
+                else { res.status(200).end(); }
             })
         })
     });

@@ -2,6 +2,7 @@ export class Config {
     public static LOCALHOST: string = 'http://127.0.0.1';
     
     public static NODE_MODE: boolean = false;
+    public static DEV_TOOLS: boolean = false;
     public static WEBAPI_LOGGING: boolean = false;
     public static CONSOLE_LOGGING: boolean = false;
 

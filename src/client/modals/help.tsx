@@ -11,7 +11,7 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
             <div className='help-row'>
                 <h3>How to use mock-devices</h3>
                 <p>mock-devices is a dev tool that can be used to create simulated devices. Devices created in mock-devices
-                    connect to an Azure IoT Hub like a real device would by using the Azure IoT Device SDK.
+                    connect to an Azure IoT Hub like a real device would by using the non-PnP Azure IoT Device SDK.
                     </p>
                 <p>A device configuration (the things a device does) can be dynamically modelled based on abilities in the
                     SDK; Send <b>Telemetry</b> events, send/receive <b>Twin</b> desired/reported properties and receive <b>Commands</b>.
@@ -95,21 +95,26 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
             </div>
 
             <div className='help-row'>
-                <h4>Macros and Auto Values</h4>
+                <h4>Macros and AUTO values</h4>
                 <p>When using Complex payloads, its useful to send random data on the leaf nodes. As well as static data,
-                    mock-devices supports several macros that generate random data based on a type. See the following.</p>
+                    mock-devices supports several macros that generate random data based on a type.</p>
+                <p>Complex values must be authored using JSON. When using AUTOs, the property's type will be replaced.  See the following.</p>
                 <ul>
-                    <li>AUTO_STRING - Use a random word based of the random-words OSS library</li>
-                    <li>AUTO_INTEGER - Use a random number between 1 and 5000</li>
-                    <li>AUTO_LONG - Use a random number between 1 and 5000</li>
-                    <li>AUTO_DOUBLE - Use a random number between 1 and 5000</li>
-                    <li>AUTO_FLOAT - Use a random number between 1 and 5000</li>
-                    <li>AUTO_BOOLEAN - Use a random boolean</li>
-                    <li>AUTO_VALUE - Use the last user suppllied or mock sensor value. Honors String setting.</li>
+                    <li>"AUTO_STRING" - Use a random word from 'random-words' library</li>
+                    <li>"AUTO_INTEGER" - Use a random number</li>
+                    <li>"AUTO_LONG" - Use a random number </li>
+                    <li>"AUTO_DOUBLE" - Use a random number</li>
+                    <li>"AUTO_FLOAT" - Use a random number between 1 and 5000</li>
+                    <li>"AUTO_BOOLEAN" - Use a random boolean</li>
+                    <li>"AUTO_VALUE" - Use the last user suppllied or mock sensor value. Honors String setting.</li>
                 </ul>
+                <p>
+                    The default range for numbers is 1 to 5000. This can be changed from the Simulation menu
+                </p>
 
                 <h5>Complex Examples</h5>
-                <p>A JSON with Auto Values</p>
+
+                <p>A JSON with AUTO values and statics</p>
                 <pre>
                     {JSON.stringify({
                         'complexObject': {
@@ -167,12 +172,12 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
 
             <div className='help-row'>
                 <h3>Saving and Loading mock-devices devices</h3>
-                <p>mock-devices is a state machine and therefore its current running state can replaced with another snapshot of state. This captures 
+                <p>mock-devices is a state machine and therefore its current running state can replaced with another snapshot of state. This captures
                     all of the devices created and their cionfiguration. To get or replace the state, use the Save icon in the menu. These are the options.</p>
                 <ul>
                     <li>Copy/Paste State - CTRL+C to capture the current state. CTRL+V to replace the current state.</li>
-                    <li>Load State - Not supported!</li>
-                    <li>Save Current State - Not supported!</li>
+                    <li>Load State - Load a valid JSON file of a previous sate</li>
+                    <li>Save Current State - Save the current state including the simulation to a file</li>
                 </ul>
             </div>
 

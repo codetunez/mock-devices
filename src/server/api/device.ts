@@ -283,10 +283,11 @@ export default function (deviceStore: DeviceStore) {
 
 function isType(node: any, type: string) {
     if (Array.isArray(node)) {
-        return node.findIndex((x) => x = type);
+        if (node.findIndex((x) => x = type) > -1) { return true; }
     } else {
-        return type === node ? 0 : 1;
+        return type === node ? true : false;
     }
+    return false;
 }
 
 function buildComplexType(node: any, nodeName: any, o: any) {

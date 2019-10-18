@@ -29,6 +29,10 @@ export class MockDevice {
     private CONNECT_RESTART: boolean = false;
     private useSasMode = true;
 
+    private simulationStore = new SimulationStore();
+    private ranges: any = {};
+    private semantics: any = {};
+
     // device is not mutable
     private connectionDPSTimer = null;
     private connectionTimer = null;
@@ -62,6 +66,8 @@ export class MockDevice {
     constructor(device, liveUpdates: LiveUpdatesService) {
         this.updateDevice(device);
         this.liveUpdates = liveUpdates;
+        this.ranges = this.simulationStore.get()["ranges"];
+        this.semantics = this.simulationStore.get()["semantics"];
     }
 
     configure() {
@@ -500,7 +506,7 @@ export class MockDevice {
                             try {
                                 var replacement = p.propertyObject.template.replace(new RegExp(/\"AUTO_VALUE\"/, 'g'), val);
                                 var object = JSON.parse(replacement);
-                                replaceRandom(object)
+                                this.replaceRandom(object)
                                 remap[p.name] = object;
                             } catch (ex) {
                                 remap[p.name] = { "error": "JSON parse error." + ex }
@@ -518,24 +524,23 @@ export class MockDevice {
         }
         return remap;
     }
-}
 
-function replaceRandom(node) {
-    for (let key in node) {
-        if (typeof node[key] == 'object') {
-            replaceRandom(node[key])
-        } else {
-            if (node[key] === "AUTO_STRING") {
-                node[key] = rw();
-            } else if (node[key] === "AUTO_BOOLEAN") {
-                node[key] = Math.random() >= 0.5;
-            } else if (node[key] === "AUTO_INTEGER" || node[key] === "AUTO_LONG") {
-                //SimulationStore.Simulation
-
-                node[key] = Math.floor(Math.random() * (5000 - 1) + 1);
-            } else if (node[key] === "AUTO_DOUBLE" || (node[key] === "AUTO_FLOAT")) {
-                node[key] = Math.random() * (5000 - 1) + 1;
+    replaceRandom(node) {
+        for (let key in node) {
+            if (typeof node[key] == 'object') {
+                this.replaceRandom(node[key])
+            } else {
+                if (node[key] === "AUTO_STRING") {
+                    node[key] = rw();
+                } else if (node[key] === "AUTO_BOOLEAN") {
+                    node[key] = Math.random() >= 0.5;
+                } else if (node[key] === "AUTO_INTEGER" || node[key] === "AUTO_LONG") {
+                    node[key] = Math.floor(Math.random() * (this.ranges[node[key]]["max"] - this.ranges[node[key]]["min"]) + this.ranges[node[key]]["min"]);
+                } else if (node[key] === "AUTO_DOUBLE" || (node[key] === "AUTO_FLOAT")) {
+                    node[key] = Math.random() * (this.ranges[node[key]]["max"] - this.ranges[node[key]]["min"]) + this.ranges[node[key]]["min"];
+                }
             }
         }
     }
-}
+
+} 

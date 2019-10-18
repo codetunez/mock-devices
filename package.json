@@ -1,6 +1,6 @@
 {
-  "name": "mock-devices-3",
-  "version": "1.0.0",
+  "name": "mock-devices",
+  "version": "4.1.0",
   "description": "",
   "main": "./_dist/server/start.js",
   "scripts": {

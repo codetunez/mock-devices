@@ -5,15 +5,17 @@ export default function (deviceStore, simulationStore) {
     let api = Router();
 
     api.get('/', function (req, res) {
-        res.send(simulationStore.getSimulation());
+        res.send(simulationStore.get());
         res.end();
     });
 
     api.post('/', function (req, res) {
         try {
             let payload = req.body;
-            simulationStore.setSimulation(payload.simulation);
-            // return the list of devices.
+            deviceStore.stopAll();
+            simulationStore.set(JSON.parse(payload.simulation));
+            let d = JSON.parse(JSON.stringify(deviceStore.getListOfItems()));
+            deviceStore.createFromArray(d);
             res.json(deviceStore.getListOfItems());
             res.end();
         }

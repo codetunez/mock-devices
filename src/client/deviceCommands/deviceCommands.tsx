@@ -13,12 +13,11 @@ export const DeviceCommands: React.FunctionComponent<any> = () => {
                 <button className='btn btn-info' onClick={() => { sharedState.createCapability('property', 'c2d') }}><span className='fas fa-plus'></span> Desired</button>
                 <button className='btn btn-info' onClick={() => { sharedState.createCapability('method') }}><span className='fas fa-plus'></span> Method</button>
             </div>
-            {sharedState.device.configuration._kind != 'template' ?
-                <div className='btn-bar'>
-                    <button className='btn btn-success' onClick={() => { sharedState.startDevice() }}><span className='fas fa-play'></span></button>
-                    <button className='btn btn-secondary' onClick={() => { sharedState.stopDevice() }}><span className='fas fa-stop'></span></button>
-                    <button className='btn btn-danger' onClick={() => { sharedState.deleteDevice() }}><span className={'fas fa-lg fa-trash-alt'}></span></button>
-                </div> : null}
+            <div className='btn-bar'>
+                {sharedState.device.configuration._kind != 'template' ? <button className='btn btn-success' onClick={() => { sharedState.startDevice() }}><span className='fas fa-play'></span></button> : null}
+                {sharedState.device.configuration._kind != 'template' ? <button className='btn btn-secondary' onClick={() => { sharedState.stopDevice() }}><span className='fas fa-stop'></span></button> : null}
+                <button className='btn btn-danger' onClick={() => { sharedState.deleteDevice() }}><span className={'fas fa-lg fa-trash-alt'}></span></button>
+            </div>
         </div>
         )}
     </DeviceContext.Consumer>
