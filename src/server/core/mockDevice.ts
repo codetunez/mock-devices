@@ -31,7 +31,6 @@ export class MockDevice {
 
     private simulationStore = new SimulationStore();
     private ranges: any = {};
-    private semantics: any = {};
 
     // device is not mutable
     private connectionDPSTimer = null;
@@ -67,7 +66,6 @@ export class MockDevice {
         this.updateDevice(device);
         this.liveUpdates = liveUpdates;
         this.ranges = this.simulationStore.get()["ranges"];
-        this.semantics = this.simulationStore.get()["semantics"];
     }
 
     configure() {
@@ -401,7 +399,7 @@ export class MockDevice {
     async updateSensorValue(p: Property, propertySensorTimers: any) {
 
         let slice = 0;
-        let randomFromRange = Utils.getRandomNumberBetweenRange(1, 10);
+        let randomFromRange = Utils.getRandomNumberBetweenRange(1, 10, false);
 
         // this block deals with calculating the slice val to apply to the current sensor value
         if (propertySensorTimers[p._id]) {
@@ -533,11 +531,11 @@ export class MockDevice {
                 if (node[key] === "AUTO_STRING") {
                     node[key] = rw();
                 } else if (node[key] === "AUTO_BOOLEAN") {
-                    node[key] = Math.random() >= 0.5;
+                    node[key] = Utils.getRandomValue("boolean");
                 } else if (node[key] === "AUTO_INTEGER" || node[key] === "AUTO_LONG") {
-                    node[key] = Math.floor(Math.random() * (this.ranges[node[key]]["max"] - this.ranges[node[key]]["min"]) + this.ranges[node[key]]["min"]);
+                    node[key] = Utils.getRandomValue("integer", this.ranges[node[key]]["min"], this.ranges[node[key]]["max"]);
                 } else if (node[key] === "AUTO_DOUBLE" || (node[key] === "AUTO_FLOAT")) {
-                    node[key] = Math.random() * (this.ranges[node[key]]["max"] - this.ranges[node[key]]["min"]) + this.ranges[node[key]]["min"];
+                    node[key] = Utils.getRandomValue("double", this.ranges[node[key]]["min"], this.ranges[node[key]]["max"]);
                 }
             }
         }

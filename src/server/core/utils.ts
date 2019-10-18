@@ -1,3 +1,5 @@
+import * as rw from 'random-words';
+
 export function getDeviceId(connString: string) {
     var arr = /DeviceId=(.*);/g.exec(connString);
     if (arr && arr.length > 0) {
@@ -38,6 +40,20 @@ export function formatValue(asString: boolean, value: any) {
     }
 }
 
-export function getRandomNumberBetweenRange(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
+export function getRandomNumberBetweenRange(min: number, max: number, floor: boolean) {
+    const val = (Math.random() * (max - min)) + min;
+    return !floor ? Math.floor(val) : val;
+}
+
+export function getRandomValue(schema: string, min?: number, max?: number) {
+    if (schema === 'double') { return getRandomNumberBetweenRange(min, max, true); }
+    if (schema === 'float') { return getRandomNumberBetweenRange(min, max, true); }
+    if (schema === 'integer') { return getRandomNumberBetweenRange(min, max, false); }
+    if (schema === 'long') { return getRandomNumberBetweenRange(min, max, false); }
+    if (schema === 'boolean') { return Math.random() >= 0.5; }
+    if (schema === 'string') { return rw(); }
+    const dt = new Date();
+    if (schema === 'dateTime') { return dt.toISOString(); }
+    if (schema === 'date') { return dt.toISOString().substr(0, 10); }
+    if (schema === 'time') { return dt.toISOString().substr(11, 8); }
 }

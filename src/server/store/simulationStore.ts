@@ -26,6 +26,10 @@ export class SimulationStore {
                 "lon": "AUTO_INTEGER",
                 "alt": "AUTO_INTEGER",
             }
+        },
+        "runloop": {
+            "secs": { min: 20, max: 90 },
+            "mins": { min: 2, max: 10 }
         }
     }
 
