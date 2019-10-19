@@ -30,6 +30,7 @@
     "electron": "^6.0.12",
     "express": "^4.17.0",
     "morgan": "^1.9.1",
+    "random-location": "^1.1.2",
     "random-words": "^1.1.0",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",

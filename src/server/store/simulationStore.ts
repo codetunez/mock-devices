@@ -8,7 +8,8 @@ export class SimulationStore {
             "AUTO_INTEGER": { min: 1, max: 5000 },
             "AUTO_DOUBLE": { min: 1, max: 5000 },
             "AUTO_LONG": { min: 1, max: 5000 },
-            "AUTO_FLOAT": { min: 1, max: 5000 }
+            "AUTO_FLOAT": { min: 1, max: 5000 },
+            "AUTO_VECTOR": { min: 1, max: 500 }
         },
         "semantics": {
             "SemanticType/Velocity": {

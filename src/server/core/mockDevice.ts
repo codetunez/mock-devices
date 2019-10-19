@@ -390,6 +390,7 @@ export class MockDevice {
             if (res.process && p.enabled) {
                 let o: ValueByIdPayload = <ValueByIdPayload>{};
                 o[p._id] = (p.mock ? p.mock._value : Utils.formatValue(p.string, p.value));
+                //TODO: Should deal with p.value not being set as it could be a Complex
                 Object.assign(payload, o);
             }
         }
@@ -536,6 +537,25 @@ export class MockDevice {
                     node[key] = Utils.getRandomValue("integer", this.ranges[node[key]]["min"], this.ranges[node[key]]["max"]);
                 } else if (node[key] === "AUTO_DOUBLE" || (node[key] === "AUTO_FLOAT")) {
                     node[key] = Utils.getRandomValue("double", this.ranges[node[key]]["min"], this.ranges[node[key]]["max"]);
+                } else if (node[key] === "AUTO_DATE") {
+                    node[key] = Utils.getRandomValue("date")
+                } else if (node[key] === "AUTO_DATETIME") {
+                    node[key] = Utils.getRandomValue("dateTime")
+                } else if (node[key] === "AUTO_TIME" || node[key] === "AUTO_DURATION") {
+                    node[key] = Utils.getRandomValue("time")
+                } else if (node[key] === "AUTO_GEOPOINT") {
+                    node[key] = Utils.getRandomObject("geopoint")
+                } else if (node[key] === "AUTO_VECTOR") {
+                    node[key] = Utils.getRandomObject("vector", this.ranges[node[key]]["min"], this.ranges[node[key]]["max"]);
+                } else if (node[key] === "AUTO_MAP") {
+                    node[key] = Utils.getRandomObject("map")
+                } else {
+                    let parts = node[key].split('/');
+                    if (parts.length === 2 && parts[0] === "AUTO_ENUM") {
+                        let arr = JSON.parse(parts[1]);
+                        const index = Utils.getRandomNumberBetweenRange(0, arr.length, false)
+                        node[key] = arr[index];
+                    }
                 }
             }
         }

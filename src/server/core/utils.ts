@@ -1,4 +1,5 @@
 import * as rw from 'random-words';
+import * as randomLocation from 'random-location';
 
 export function getDeviceId(connString: string) {
     var arr = /DeviceId=(.*);/g.exec(connString);
@@ -28,11 +29,11 @@ export function isNumeric(n) {
 // create a string or non string value for a object property value
 export function formatValue(asString: boolean, value: any) {
     if (asString === false && (value.toString().toLowerCase() === "true" || value.toString().toLowerCase() === "false")) {
-        return (value.toLowerCase() === "true");
+        return (value.toString().toLowerCase() === "true");
     } else if (asString === true) {
         return value.toString();
     } else {
-        let res = parseInt(value);
+        let res = parseFloat(value);
         if (!isNumeric(res)) {
             res = value.toString();
         }
@@ -46,14 +47,33 @@ export function getRandomNumberBetweenRange(min: number, max: number, floor: boo
 }
 
 export function getRandomValue(schema: string, min?: number, max?: number) {
-    if (schema === 'double') { return getRandomNumberBetweenRange(min, max, true); }
-    if (schema === 'float') { return getRandomNumberBetweenRange(min, max, true); }
-    if (schema === 'integer') { return getRandomNumberBetweenRange(min, max, false); }
-    if (schema === 'long') { return getRandomNumberBetweenRange(min, max, false); }
+    if (schema === 'double') { return getRandomNumberBetweenRange(min, max, false); }
+    if (schema === 'float') { return getRandomNumberBetweenRange(min, max, false); }
+    if (schema === 'integer') { return getRandomNumberBetweenRange(min, max, true); }
+    if (schema === 'long') { return getRandomNumberBetweenRange(min, max, true); }
     if (schema === 'boolean') { return Math.random() >= 0.5; }
     if (schema === 'string') { return rw(); }
     const dt = new Date();
     if (schema === 'dateTime') { return dt.toISOString(); }
     if (schema === 'date') { return dt.toISOString().substr(0, 10); }
     if (schema === 'time') { return dt.toISOString().substr(11, 8); }
+    if (schema === 'duration') { return dt.toISOString().substr(11, 8); }
+}
+
+export function getRandomObject(schema: string, min?: number, max?: number) {
+    if (schema === 'map') { return {} }
+    if (schema === 'vector') {
+        return {
+            "x": getRandomNumberBetweenRange(min, max, false),
+            "y": getRandomNumberBetweenRange(min, max, false),
+            "z": getRandomNumberBetweenRange(min, max, false)
+        }
+    }
+    if (schema === 'geopoint') {
+        const randomPoint = randomLocation.randomCirclePoint({
+            latitude: 51.509865,
+            longitude: -0.118092
+        }, 5000)
+        return { "lat": randomPoint.latitude, "long": randomPoint.longitude }
+    }
 }

@@ -27,7 +27,7 @@ export interface Property {
     name: string;
     interface: string;
     string: boolean;
-    value: string;
+    value: any;
     sdk: string;
     type: DeviceType;
     version: number;

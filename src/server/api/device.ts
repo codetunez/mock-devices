@@ -197,18 +197,27 @@ export default function (deviceStore: DeviceStore) {
                                 return;
                             }
 
-                            var o: any = {};
-                            o._id = uuid();
-                            o.name = item.name;
-                            const value = Utils.getRandomValue(item.schema, 0, 100);
-                            o.string = Utils.isNumeric(value) ? false : true;
-                            o.value = value;
-
                             let addMock: boolean = false;
                             let addRunLoop: boolean = false;
                             let runLoopUnit: string = 'secs';
 
-                            // Telemetry is sent a normal device information
+                            var o: any = {};
+                            o._id = uuid();
+                            o.name = item.name;
+
+                            if (item.schema === "string" ||
+                                item.schema === "date" ||
+                                item.schema === "dateTime" ||
+                                item.schema === "time" ||
+                                item.schema === "duration") {
+                                o.string = true;
+                            }
+
+                            // This will set a primative value but nothing for complex
+                            const value = Utils.getRandomValue(item.schema, 0, 100);
+                            if (value) { o.value = value };
+
+                            // Telemetry is sent via Msg SDK API
                             if (isType(item['@type'], 'Telemetry')) {
                                 o.sdk = 'msg';
                                 addMock = true;
@@ -218,27 +227,44 @@ export default function (deviceStore: DeviceStore) {
                             // Twins live on a different SDK API
                             if (isType(item['@type'], 'Property')) {
                                 o.sdk = 'twin';
-                                addRunLoop = false;
                             }
 
-                            // Maps need key information so do not auto start
+                            // Maps need key information so do not auto start regardless of Type
                             if (item.schema['@type'] === "Map") {
                                 addMock = false;
                                 addRunLoop = false;
+                            }
+
+                            // This State will be dealt with differently to Object ones
+                            if (isType(item['@type'], "SemanticType/State")) {
+                                addMock = false;
+                                addRunLoop = false;
+                                o.string = item.schema.valueSchema === "string" ? true : false;
+                                const index = Utils.getRandomNumberBetweenRange(0, item.schema.enumValues.length - 1, false)
+                                o.value = item.schema.enumValues[index];
                             }
 
                             // Add the AUTO templates for semantics
                             for (let semantic in simSemantics) {
                                 if ((isType(item['@type'], semantic))) {
                                     o.propertyObject = { type: 'templated', template: JSON.stringify(simSemantics[semantic], null, 2) }
+                                    addMock = false;
                                 }
                             }
 
+                            if (isType(item['@type'], "SemanticType/Event")) {
+                                addMock = true;
+                                runLoopUnit = 'mins'
+                                addRunLoop = true;
+                            }
+
                             // Add the AUTO templates for Objects. If it is an semantic, this will overwrite the semantic
-                            if (item.schema['@type'] === "Object" || item.schema['@type'] === "Array") {
+                            if (item.schema['@type'] === "Object" || item.schema['@type'] === "Array" || item.schema['@type'] === "Enum") {
                                 var ct = {};
                                 buildComplexType(item, item.name, ct);
                                 o.propertyObject = { type: 'templated', template: JSON.stringify(ct[item.name], null, 2) }
+                                addMock = false;
+                                addRunLoop = true;
                             }
 
                             // If we are are not a writable property, report out by mins
@@ -252,7 +278,7 @@ export default function (deviceStore: DeviceStore) {
                                 o.runloop = {
                                     'include': true,
                                     'unit': runLoopUnit,
-                                    'value': Math.floor(Math.random() * (simRunloop[runLoopUnit]["max"] - simRunloop[runLoopUnit]["min"])) + simRunloop[runLoopUnit]["min"]
+                                    'value': Utils.getRandomNumberBetweenRange(simRunloop[runLoopUnit]["min"], simRunloop[runLoopUnit]["max"], false)
                                 }
                             }
 
@@ -260,7 +286,7 @@ export default function (deviceStore: DeviceStore) {
                             let propertyId = deviceStore.addDeviceProperty(t._id, ((isType(item['@type'], 'Property')) && item.writable ? 'c2d' : 'd2c'), o);
 
                             // Only for basic Telemetry we add a random number mock sensor
-                            if (addMock && !o.string && (isType(item['@type'], 'Telemetry'))) { deviceStore.addDevicePropertyMock(t._id, propertyId, 'random'); }
+                            if (addMock && !o.string && item.schema != 'boolean' && (isType(item['@type'], 'Telemetry'))) { deviceStore.addDevicePropertyMock(t._id, propertyId, 'random'); }
 
                             // if this is a writable property create a copy desired property to do settings
                             if ((isType(item['@type'], 'Property')) && item.writable) {
@@ -268,11 +294,11 @@ export default function (deviceStore: DeviceStore) {
                                 oW._id = uuid();
                                 oW.name = item.name;
                                 oW.sdk = 'twin';
-                                oW.string = (item.schema != 'string' ? false : true);
-                                oW.value = (item.schema === 'string' ? "Hello World" : 101);
+                                oW.string = o.string;
+                                oW.value = o.string ? "" : 0;
                                 oW.propertyObject = {
                                     "type": "templated", template: JSON.stringify({
-                                        "value": "AUTO_VALUE",
+                                        "value": "",
                                         "status": "completed",
                                         "message": "a test message",
                                         "statusCode": 200,
@@ -333,9 +359,13 @@ function buildComplexType(node: any, nodeName: any, o: any) {
             if (f.schema['@type'] && f.schema['@type'] === "Object") {
                 buildComplexType(f, f.name, o[nodeName]);
             } else if (f.schema['@type'] && f.schema['@type'] === "Enum") {
-                o[nodeName][f.name] = "AUTO_ENUM_" + f.schema.valueSchema.toString().toUpperCase();
+                let states = [];
+                f.schema.enumValues.forEach(ele => {
+                    states.push(ele.enumValue);
+                })
+                o[nodeName][f.name] = "AUTO_ENUM/" + JSON.stringify(states)
             } else {
-                o[nodeName][f.name] = "AUTO_" + f.schema.toString().toUpperCase();
+                o[nodeName][f.name] = "AUTO_" + (f.schema['@type'] === "Map" ? "MAP" : f.schema.toString().toUpperCase());
             }
         }
     } else {

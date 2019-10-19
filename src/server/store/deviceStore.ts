@@ -111,9 +111,9 @@ export class DeviceStore {
                     "_type": "property",
                     "name": "d2cProperty",
                     "enabled": false,
-                    "interface" : "(single interface only)",
+                    "interface": "(single interface only)",
                     "string": false,
-                    "value": "0",
+                    "value": 0,
                     "sdk": "msg",
                     "propertyObject": {
                         "type": "default"
@@ -136,9 +136,9 @@ export class DeviceStore {
                     "_type": "property",
                     "enabled": false,
                     "name": "c2dProperty",
-                    "interface" : "(single interface only)",
+                    "interface": "(single interface only)",
                     "string": false,
-                    "value": "0",
+                    "value": 0,
                     "sdk": "twin",
                     "propertyObject": {
                         "type": "default"
@@ -203,7 +203,7 @@ export class DeviceStore {
 
         if (index > -1) {
             // update the source of truth
-            let p = d.comms[index] = payload;
+            let p: any = d.comms[index] = payload;
             p.version = payload.version;
 
             this.store.setItem(d, d._id);
@@ -213,10 +213,10 @@ export class DeviceStore {
             rd.updateDevice(d);
 
             // build a reported payload and honor type
+            let json: ValueByIdPayload = <ValueByIdPayload>{};
             let converted = Utils.formatValue(p.string, p.value);
-            let json: ValueByIdPayload = <ValueByIdPayload>{
-                [p._id]: converted
-            };
+            //TODO: Should deal with p.value not being set as it could be a Complex
+            json[p._id] = converted
 
             // if this an immediate update, send to the runloop
             if (sendValue === true && p.sdk === "twin") { rd.updateTwin(json); }
