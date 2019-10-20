@@ -40,7 +40,7 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability }) 
 
     return <DeviceContext.Consumer>
         {(sharedState: any) => (
-            <div className={cx('device-field-card', expanded ? '' : 'device-field-card-small')}>
+            <div className={cx('device-field-card', expanded ? '' : 'device-field-card-small')} style={capability.color ? { backgroundColor: capability.color } : {}}>
 
                 <div className='df-card-header'>
                     <div className='df-card-title'>
@@ -52,7 +52,7 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability }) 
                     </div>
                     <div className='df-card-value'>
                         <div>Last Called</div>
-                        <div>n/a</div>
+                        <div>-</div>
                     </div>
                     <div className='df-card-cmd btn-bar'>
                         <button className={cx('btn btn-sm', dirty ? 'btn-warning' : 'btn-outline-warning')} onClick={() => { save(false) }}><span className='far fa-save'></span></button>
@@ -62,8 +62,8 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability }) 
 
                 <div className='df-card-row'>
                     <div><label>Enabled</label><div><ReactToggleThemeProvider theme={toggleStyles}><Toggle name={capability._id + '-enabled'} disabled={true} checked={true} /></ReactToggleThemeProvider></div></div>
-                    <div><label>Name</label><div><input type='text' className='form-control form-control-sm half-width' name='name' value={updatePayload.name} onChange={updateField} /></div></div>
-                    <div><label>Status</label><div><input type='number' max={3} className='form-control form-control-sm half-width' name='status' value={updatePayload.status} onChange={updateField} /></div></div>
+                    <div><label>Name</label><div><input type='text' className='form-control form-control-sm double-width' name='name' value={updatePayload.name} onChange={updateField} /></div></div>
+                    <div><label>Status</label><div><input type='number' max={3} className='form-control form-control-sm double-width' name='status' value={updatePayload.status} onChange={updateField} /></div></div>
                 </div>
 
                 <div className='df-card-row'>

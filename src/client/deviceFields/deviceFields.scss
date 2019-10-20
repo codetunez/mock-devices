@@ -3,11 +3,9 @@
 $device-card-minimized: 140px;
 $device-card-button-width: 35px;
 $device-card-toggle-file: 100px;
-$device-card-input: 70px;
-$device-card-field-full: 345px;
-$device-card-field-half: 170px;
-$device-card-field-small: 140px;
+$device-card-input: 73px;
 $device-card-title-width: 250px;
+$device-card-field: 73px;
 $min-height-toggle-row: 55px;
 
 .device-field-card {
@@ -111,16 +109,23 @@ $min-height-toggle-row: 55px;
     margin-right: $xs-gutter;
   }
 
-  .small-width {
-    width: $device-card-field-small !important;
+  .single-width {
+    width: $device-card-field !important;
+    margin-right: 5px;
   }
 
-  .half-width {
-    width: $device-card-field-half !important;
+  .double-width {
+    width: ($device-card-field * 2) !important;
+    margin-right: 5px;
+  }
+
+  .third-width {
+    width: ($device-card-field * 3) !important;
+    margin-right: 5px;
   }
 
   .full-width {
-    width: $device-card-field-full !important;
+    width: ($device-card-field * 4) !important;
   }
 
   textarea:focus {
@@ -132,7 +137,6 @@ $min-height-toggle-row: 55px;
   }
 
   .custom-textarea-xsm {
-    width: $device-card-input;
-    margin-right: $xs-gutter;
+    width: ($device-card-field * 4);
   }
 }

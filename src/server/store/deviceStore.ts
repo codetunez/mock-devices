@@ -8,6 +8,7 @@ import { ValueByIdPayload } from '../interfaces/payload';
 import * as uuidV4 from 'uuid/v4';
 import * as Utils from '../core/utils';
 import * as crypto from 'crypto';
+import { SimulationStore } from '../store/simulationStore';
 
 export class DeviceStore {
 
@@ -18,6 +19,9 @@ export class DeviceStore {
     private sensorStore: SensorStore;
 
     private liveUpdatesService: LiveUpdatesService = null;
+
+    private simulationStore = new SimulationStore();
+    private simColors = this.simulationStore.get()["colors"];
 
     constructor() {
         this.store = new AssociativeStore();
@@ -86,6 +90,7 @@ export class DeviceStore {
             "_id": uuidV4(),
             "_type": "method",
             "name": "method" + crypto.randomBytes(2).toString('hex'),
+            "color": this.simColors["Color1"],
             "status": 200,
             "receivedParams": null,
             "asProperty": false,
@@ -110,6 +115,7 @@ export class DeviceStore {
                     "_id": _id,
                     "_type": "property",
                     "name": "d2cProperty",
+                    "color": this.simColors["Default"],
                     "enabled": false,
                     "interface": "(single interface only)",
                     "string": false,
@@ -136,6 +142,7 @@ export class DeviceStore {
                     "_type": "property",
                     "enabled": false,
                     "name": "c2dProperty",
+                    "color": this.simColors["Color2"],
                     "interface": "(single interface only)",
                     "string": false,
                     "value": 0,

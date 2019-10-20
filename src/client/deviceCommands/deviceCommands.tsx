@@ -9,7 +9,7 @@ export const DeviceCommands: React.FunctionComponent<any> = () => {
     return <DeviceContext.Consumer>
         {(sharedState: any) => (<div className='device-commands-container'>
             <div className='btn-bar'>
-                <button className='btn btn-info' onClick={() => { sharedState.createCapability('property', 'd2c') }}><span className='fas fa-plus'></span> D2C</button>
+                <button className='btn btn-info' onClick={() => { sharedState.createCapability('property', 'd2c') }}><span className='fas fa-plus'></span> Reported</button>
                 <button className='btn btn-info' onClick={() => { sharedState.createCapability('property', 'c2d') }}><span className='fas fa-plus'></span> Desired</button>
                 <button className='btn btn-info' onClick={() => { sharedState.createCapability('method') }}><span className='fas fa-plus'></span> Method</button>
             </div>

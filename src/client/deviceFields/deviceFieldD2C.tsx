@@ -142,7 +142,7 @@ export const DeviceFieldD2C: React.FunctionComponent<any> = ({ capability, senso
     }
 
     const title = () => {
-        return <>D2C {updatePayload.runloop.include ? ' every ' + updatePayload.runloop.value + ' ' + updatePayload.runloop.unit : ''} {updatePayload.mock && updatePayload.type.mock ? ' (mock ' + updatePayload.mock._type + ')' : ''}</>
+        return <>Reported {updatePayload.runloop.include ? ' every ' + updatePayload.runloop.value + ' ' + updatePayload.runloop.unit : ''} {updatePayload.mock && updatePayload.type.mock ? ' (mock ' + updatePayload.mock._type + ')' : ''}</>
     }
 
     let fields = [];
@@ -161,7 +161,7 @@ export const DeviceFieldD2C: React.FunctionComponent<any> = ({ capability, senso
 
     return <DeviceContext.Consumer>
         {(sharedState: any) => (
-            <div className={cx('device-field-card', expanded ? '' : 'device-field-card-small')}>
+            <div className={cx('device-field-card', expanded ? '' : 'device-field-card-small')} style={capability.color ? { backgroundColor: capability.color } : {}}>
 
                 <div className='df-card-header'>
                     <div className='df-card-title'>
@@ -173,7 +173,7 @@ export const DeviceFieldD2C: React.FunctionComponent<any> = ({ capability, senso
                     </div>
                     <div className='df-card-value'>
                         <div>Last Sent</div>
-                        <div>n/a</div>
+                        <div>-</div>
                     </div>
                     <div className='df-card-cmd btn-bar'>
                         <button className={cx('btn btn-sm', dirty ? 'btn-warning' : 'btn-outline-warning')} onClick={() => { save(false) }}><span className='far fa-save'></span></button>
@@ -183,23 +183,23 @@ export const DeviceFieldD2C: React.FunctionComponent<any> = ({ capability, senso
 
                 <div className='df-card-row'>
                     <div><label>Enabled</label><div><ReactToggleThemeProvider theme={toggleStyles}><Toggle name={capability._id + '-enabled'} controlled={true} checked={updatePayload.enabled} onToggle={() => { toggleEnabled() }} /></ReactToggleThemeProvider></div></div>
-                    <div><label>Name</label><div><input type='text' className='form-control form-control-sm' name='name' value={updatePayload.name} onChange={updateField} /></div></div>
-                    <div><label>API</label><div><Combo items={[{ name: 'Msg', value: 'msg' }, { name: 'Twin', value: 'twin' }]} cls='custom-textarea-sm custom-textarea-xsm' name='sdk' onChange={updateField} value={updatePayload.sdk} /></div></div>
-                    <div><label>String</label><div><Combo items={[{ name: 'Yes', value: true }, { name: 'No', value: false }]} cls='custom-textarea-sm custom-textarea-xsm' name='string' onChange={updateField} value={updatePayload.string} /></div></div>
-                    <div><label>Enter Value</label><div><input type='text' className='form-control form-control-sm' name='value' value={updatePayload.value} onChange={updateField} /></div></div>
+                    <div><label>Name</label><div><input type='text' className='form-control form-control-sm single-width' name='name' value={updatePayload.name} onChange={updateField} /></div></div>                    
+                    <div><label>String</label><div><Combo items={[{ name: 'Yes', value: true }, { name: 'No', value: false }]} cls='custom-textarea-sm single-width' name='string' onChange={updateField} value={updatePayload.string} /></div></div>
+                    <div><label>Enter Value</label><div><input type='text' className='form-control form-control-sm double-width' name='value' value={updatePayload.value} onChange={updateField} /></div></div>
                     <div className='single-item'><button className='btn btn-sm btn-outline-primary' onClick={() => { save(true) }}>Send</button></div>
                 </div>
 
                 <div className='df-card-row'>
                     <div></div>
-                    <div><label>Interface Name</label><div><input type='text' className='form-control form-control-sm full-width' name='interface' value={updatePayload.interface} readOnly={true} /></div></div>
+                    <div><label>API</label><div><Combo items={[{ name: 'Msg', value: 'msg' }, { name: 'Twin', value: 'twin' }]} cls='custom-textarea-sm double-width' name='sdk' onChange={updateField} value={updatePayload.sdk} /></div></div>
+                    <div><label>Interface Name</label><div><input type='text' className='form-control form-control-sm double-width' name='interface' value={updatePayload.interface} readOnly={true} /></div></div>
                 </div>
 
                 <div className='df-card-row'>
                     <div><label>Looped</label><div><ReactToggleThemeProvider theme={toggleStyles}><Toggle name={capability._id + '-runloop'} controlled={true} checked={updatePayload.runloop.include} onToggle={() => { toggleRunloop() }} /></ReactToggleThemeProvider></div></div>
                     {updatePayload.runloop.include ? <>
-                        <div><label>Unit</label><div><Combo items={[{ name: 'Mins', value: 'mins' }, { name: 'Secs', value: 'secs' }]} cls='custom-textarea-sm custom-textarea-xsm' name='runloop.unit' onChange={updateField} value={updatePayload.runloop.unit} /></div></div>
-                        <div><label>Duration</label><div><input type='number' className='form-control form-control-sm' name='runloop.value' min={0} value={updatePayload.runloop.value} onChange={updateField} /></div></div>
+                        <div><label>Unit</label><div><Combo items={[{ name: 'Mins', value: 'mins' }, { name: 'Secs', value: 'secs' }]} cls='custom-textarea-sm  double-width' name='runloop.unit' onChange={updateField} value={updatePayload.runloop.unit} /></div></div>
+                        <div><label>Duration</label><div><input type='number' className='form-control form-control-sm double-width' name='runloop.value' min={0} value={updatePayload.runloop.value} onChange={updateField} /></div></div>
                     </> : <div style={{ height: '55px' }}></div>}
                 </div>
 
@@ -208,7 +208,7 @@ export const DeviceFieldD2C: React.FunctionComponent<any> = ({ capability, senso
                     {updatePayload.propertyObject.type === 'templated' ? <>
                         <div>
                             <label>See Help for full list of AUTO macros</label>
-                            <textarea className='form-control form-control-sm custom-textarea full-width' rows={5} name='propertyObject.template' onChange={updateField} >{capability.propertyObject.template || ''}</textarea>
+                            <textarea className='form-control form-control-sm custom-textarea full-width' rows={7} name='propertyObject.template' onChange={updateField} >{capability.propertyObject.template || ''}</textarea>
                         </div>
                     </> : <div style={{ height: '55px' }}></div>}
                 </div>

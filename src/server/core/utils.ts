@@ -43,7 +43,7 @@ export function formatValue(asString: boolean, value: any) {
 
 export function getRandomNumberBetweenRange(min: number, max: number, floor: boolean) {
     const val = (Math.random() * (max - min)) + min;
-    return !floor ? Math.floor(val) : val;
+    return floor ? Math.floor(val) : val;
 }
 
 export function getRandomValue(schema: string, min?: number, max?: number) {
@@ -60,20 +60,26 @@ export function getRandomValue(schema: string, min?: number, max?: number) {
     if (schema === 'duration') { return dt.toISOString().substr(11, 8); }
 }
 
-export function getRandomObject(schema: string, min?: number, max?: number) {
-    if (schema === 'map') { return {} }
-    if (schema === 'vector') {
-        return {
-            "x": getRandomNumberBetweenRange(min, max, false),
-            "y": getRandomNumberBetweenRange(min, max, false),
-            "z": getRandomNumberBetweenRange(min, max, false)
-        }
+export function getRandomMap() {
+    return {}
+}
+
+export function getRandomVector(min: number, max: number) {
+    return {
+        "x": getRandomNumberBetweenRange(min, max, true),
+        "y": getRandomNumberBetweenRange(min, max, true),
+        "z": getRandomNumberBetweenRange(min, max, true)
     }
-    if (schema === 'geopoint') {
-        const randomPoint = randomLocation.randomCirclePoint({
-            latitude: 51.509865,
-            longitude: -0.118092
-        }, 5000)
-        return { "lat": randomPoint.latitude, "long": randomPoint.longitude }
+}
+
+export function getRandomGeo(lat?: number, long?: number, alt?: number, radius?: number) {
+    const randomPoint = randomLocation.randomCirclePoint({
+        latitude: lat || 51.508009,
+        longitude: long || -0.128114
+    }, radius || 25000)
+    return {
+        "lat": randomPoint.latitude,
+        "lon": randomPoint.longitude,
+        "alt": alt || 100
     }
 }

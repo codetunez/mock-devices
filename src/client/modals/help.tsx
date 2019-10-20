@@ -43,9 +43,10 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
                 <p>To create a device from a Template (or another Device configuration) select 'Use Template' during the new device flow.</p>
 
                 <h5>Using a Plug and Play Device Capability Model for device configuration</h5>
-                <p>A DCM can be used to generate a best guess device configuration. Complex Types are modelled as JSON with random values
-                    used for leaf nodes. Object, Map and Arrays are fully supported as well as custom JSON to support IoT Central semantic
-                    types. To add a DCM (as a Template) use the new device flow and select 'Start with a DCM' and then create a new device.
+                <p>A DCM can be used to generate a best guess device configuration. Object, Map and Arrays are fully supported as well
+                    as custom JSON to support IoT Central semantic types. To add a DCM (as a Template) use the new device flow and
+                    select 'Start with a DCM' and then create a new device. Once the device configuration is created, the value/complex fields
+                    are populated with AUTO macros (see below) so devices can be started imediately.
                 </p>
             </div>
 
@@ -72,7 +73,7 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
                      a yellow save icon </p>
 
                 <h5>Telemetry and Twin Reported</h5>
-                <p>Use '+ D2C' to add a capability to send data. Complete the fields</p>
+                <p>Use '+ Reported' to add a capability to send data. Complete the fields</p>
                 <ul>
                     <li>Name - The name of the property</li>
                     <li>API - Msg for Telemetry and Twin for Twin Reported</li>
@@ -87,29 +88,56 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
 
                 <h5>Twin Desired</h5>
                 <p>Use '+ Desired' to add a capability to recieve data. Complete the fields</p>
-                <p>Full support coming ...</p>
+                <ul>
+                    <li>Name - The name of the property</li>
+                </ul>
+                <p>The only options here are to read the last value sent to this device from the cloud.</p>
 
                 <h5>Commands</h5>
                 <p>Use '+ Method' to add a capability to simulate a Command request/response. Complete the fields</p>
-                <p>Full support coming ...</p>
+                <ul>
+                    <li>Name - The name of the property</li>
+                    <li>Status - The http status sent with the reponse</li>
+                    <li>Reponse - The JSON or value payload sent back to the calling client</li>
+                </ul>
+                <p>The only options here are to read the last request parameters sent Parameters are not honored for reponses.</p>
             </div>
 
             <div className='help-row'>
                 <h4>Macros and AUTO values</h4>
-                <p>When using Complex payloads, its useful to send random data on the leaf nodes. As well as static data,
-                    mock-devices supports several macros that generate random data based on a type.</p>
-                <p>Complex values must be authored using JSON. When using AUTOs, the property's type will be replaced.  See the following.</p>
+                <p>AUTO values are macros that are replaced with real (random) values when the device sends its data. They can be used in
+                    value fields and complex payloads (for sending random data on the leaf nodes) Replace AUTO stringd with a static
+                    value if the feature is not required.</p>
+                <p>Complex values must be authored using JSON so use the macro as a string (see examples). When using AUTOs, the property's
+                    type will be replaced. See the following.</p>
                 <ul>
-                    <li>"AUTO_STRING" - Use a random word from 'random-words' library</li>
-                    <li>"AUTO_INTEGER" - Use a random number</li>
-                    <li>"AUTO_LONG" - Use a random number </li>
-                    <li>"AUTO_DOUBLE" - Use a random number</li>
-                    <li>"AUTO_FLOAT" - Use a random number between 1 and 5000</li>
-                    <li>"AUTO_BOOLEAN" - Use a random boolean</li>
-                    <li>"AUTO_VALUE" - Use the last user suppllied or mock sensor value. Honors String setting.</li>
+                    <li>AUTO_STRING - Use a random word from 'random-words' library</li>
+                    <li>AUTO_BOOLEAN - Use a random true or false</li>
+                    <li>AUTO_INTEGER - Use a random number</li>
+                    <li>AUTO_LONG - Use a random number</li>
+                    <li>AUTO_DOUBLE - Use a random number with precision</li>
+                    <li>AUTO_FLOAT - Use a random number with precision</li>
+                    <li>AUTO_DATE - Use now() ISO 8601 format</li>
+                    <li>AUTO_DATETIME - Use now() ISO 8601 format</li>
+                    <li>AUTO_TIME - Use now() ISO 8601 format</li>
+                    <li>AUTO_DURATION - Use now() ISO 8601 format</li>
+                    <li>AUTO_GEOPOINT - Use a random lat/long object</li>
+                    <li>AUTO_VECTOR - Use a random x,y,z</li>
+                    <li>AUTO_MAP - Use empty HashMap</li>
+                    <li>AUTO_ENUM/* - Use a random Enum value (See below)</li>
+                    <li>AUTO_VALUE - Use the last user suppllied or mock sensor value. Honors String setting.</li>
                 </ul>
+                <p>Enum support is possible by extending the macro to include the list of values. Values
+                    can only be integers or strings. Enums use the JavaScript style arrays i.e.
+                    [1,0] or ['foo','bar'] Append this to the end of an Enum Auto like ...</p>
+                <pre>
+                    AUTO_ENUM/['foo','bar']
+                    </pre>
                 <p>
                     The default range for numbers is 1 to 5000. This can be changed from the Simulation menu
+                </p>
+                <p>
+                    The default geo  location is London, UK. This can be changed from the Simulation menu
                 </p>
 
                 <h5>Complex Examples</h5>
@@ -181,6 +209,10 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
                 </ul>
             </div>
 
+            <div className='help-row'>
+                <h3>Changing the Simulation</h3>
+                <p>Some some parts of the simulation can be changed like the min/max ranges for number. Change with caution!</p>
+            </div>
         </div>
     </div >
 }

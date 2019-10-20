@@ -35,6 +35,7 @@ export interface Property {
     runloop?: RunLoop;
     mock?: MockSensor;
     enabled: boolean;
+    color?: string;
 }
 
 export interface Method {
@@ -45,6 +46,7 @@ export interface Method {
     receivedParams: string;
     asProperty: boolean;
     payload: any;
+    color?: string;
 }
 
 export interface PropertyObjectDefault {

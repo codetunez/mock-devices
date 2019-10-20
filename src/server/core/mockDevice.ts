@@ -31,6 +31,7 @@ export class MockDevice {
 
     private simulationStore = new SimulationStore();
     private ranges: any = {};
+    private geo: any = {};
 
     // device is not mutable
     private connectionDPSTimer = null;
@@ -66,6 +67,7 @@ export class MockDevice {
         this.updateDevice(device);
         this.liveUpdates = liveUpdates;
         this.ranges = this.simulationStore.get()["ranges"];
+        this.geo = this.simulationStore.get()["geo"];
     }
 
     configure() {
@@ -505,58 +507,63 @@ export class MockDevice {
                             try {
                                 var replacement = p.propertyObject.template.replace(new RegExp(/\"AUTO_VALUE\"/, 'g'), val);
                                 var object = JSON.parse(replacement);
-                                this.replaceRandom(object)
+                                this.resolveRandom(object)
                                 remap[p.name] = object;
                             } catch (ex) {
                                 remap[p.name] = { "error": "JSON parse error." + ex }
                             }
                             break;
                         default:
-                            remap[p.name] = payload[p._id]
+                            remap[p.name] = this.resolveAuto(payload[p._id]);
                             break;
                     }
 
                 } else {
-                    remap[p.name] = payload[p._id]
+                    remap[p.name] = this.resolveAuto(payload[p._id]);
                 }
             }
         }
         return remap;
     }
 
-    replaceRandom(node) {
+    resolveAuto(macro: string) {
+        if (macro === "AUTO_STRING") {
+            return rw();
+        } else if (macro === "AUTO_BOOLEAN") {
+            return Utils.getRandomValue("boolean");
+        } else if (macro === "AUTO_INTEGER" || macro === "AUTO_LONG") {
+            return Utils.getRandomValue("integer", this.ranges["AUTO_INTEGER"]["min"], this.ranges["AUTO_INTEGER"]["max"]);
+        } else if (macro === "AUTO_DOUBLE" || (macro === "AUTO_FLOAT")) {
+            return Utils.getRandomValue("double", this.ranges["AUTO_DOUBLE"]["min"], this.ranges["AUTO_DOUBLE"]["max"]);
+        } else if (macro === "AUTO_DATE") {
+            return Utils.getRandomValue("date")
+        } else if (macro === "AUTO_DATETIME") {
+            return Utils.getRandomValue("dateTime")
+        } else if (macro === "AUTO_TIME" || macro === "AUTO_DURATION") {
+            return Utils.getRandomValue("time")
+        } else if (macro === "AUTO_GEOPOINT") {
+            return Utils.getRandomGeo(this.geo["latitude"], this.geo["longitude"], this.geo["altitude"], this.geo["radius"])
+        } else if (macro === "AUTO_VECTOR") {
+            return Utils.getRandomVector(this.ranges["AUTO_VECTOR"]["min"], this.ranges["AUTO_VECTOR"]["max"]);
+        } else if (macro === "AUTO_MAP") {
+            return Utils.getRandomMap()
+        } else if (macro && macro.toString().startsWith("AUTO_ENUM")) {
+            let parts = macro.split('/');
+            if (parts.length === 2 && parts[0] === "AUTO_ENUM") {
+                let arr = JSON.parse(parts[1]);
+                const index = Utils.getRandomNumberBetweenRange(0, arr.length, true)
+                return arr[index];
+            }
+        }
+        return macro;
+    }
+
+    resolveRandom(node: any) {
         for (let key in node) {
             if (typeof node[key] == 'object') {
-                this.replaceRandom(node[key])
+                this.resolveRandom(node[key])
             } else {
-                if (node[key] === "AUTO_STRING") {
-                    node[key] = rw();
-                } else if (node[key] === "AUTO_BOOLEAN") {
-                    node[key] = Utils.getRandomValue("boolean");
-                } else if (node[key] === "AUTO_INTEGER" || node[key] === "AUTO_LONG") {
-                    node[key] = Utils.getRandomValue("integer", this.ranges[node[key]]["min"], this.ranges[node[key]]["max"]);
-                } else if (node[key] === "AUTO_DOUBLE" || (node[key] === "AUTO_FLOAT")) {
-                    node[key] = Utils.getRandomValue("double", this.ranges[node[key]]["min"], this.ranges[node[key]]["max"]);
-                } else if (node[key] === "AUTO_DATE") {
-                    node[key] = Utils.getRandomValue("date")
-                } else if (node[key] === "AUTO_DATETIME") {
-                    node[key] = Utils.getRandomValue("dateTime")
-                } else if (node[key] === "AUTO_TIME" || node[key] === "AUTO_DURATION") {
-                    node[key] = Utils.getRandomValue("time")
-                } else if (node[key] === "AUTO_GEOPOINT") {
-                    node[key] = Utils.getRandomObject("geopoint")
-                } else if (node[key] === "AUTO_VECTOR") {
-                    node[key] = Utils.getRandomObject("vector", this.ranges[node[key]]["min"], this.ranges[node[key]]["max"]);
-                } else if (node[key] === "AUTO_MAP") {
-                    node[key] = Utils.getRandomObject("map")
-                } else {
-                    let parts = node[key].split('/');
-                    if (parts.length === 2 && parts[0] === "AUTO_ENUM") {
-                        let arr = JSON.parse(parts[1]);
-                        const index = Utils.getRandomNumberBetweenRange(0, arr.length, false)
-                        node[key] = arr[index];
-                    }
-                }
+                node[key] = this.resolveAuto(node[key]);
             }
         }
     }

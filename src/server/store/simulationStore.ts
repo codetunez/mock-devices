@@ -11,26 +11,25 @@ export class SimulationStore {
             "AUTO_FLOAT": { min: 1, max: 5000 },
             "AUTO_VECTOR": { min: 1, max: 500 }
         },
-        "semantics": {
-            "SemanticType/Velocity": {
-                "x": "AUTO_INTEGER",
-                "y": "AUTO_INTEGER",
-                "z": "AUTO_INTEGER",
-            },
-            "SemanticType/Acceleration": {
-                "x": "AUTO_INTEGER",
-                "y": "AUTO_INTEGER",
-                "z": "AUTO_INTEGER",
-            },
-            "SemanticType/Location": {
-                "lat": "AUTO_INTEGER",
-                "lon": "AUTO_INTEGER",
-                "alt": "AUTO_INTEGER",
-            }
-        },
         "runloop": {
             "secs": { min: 20, max: 90 },
             "mins": { min: 2, max: 10 }
+        },
+        "geo": {
+            "latitude": 51.508009,
+            "longitude": -0.128114,
+            "altitude": 100,
+            "radius": 25000
+        },
+        "colors": {
+            "Default": "#333333",
+            "Color1": "#3a1e1e",
+            "Color2": "#383a1e",
+            "Color3": "#1e3a36",
+            "Color4": "#1e233a",
+            "Color5": "#3a1e29",
+            "Color6": "#3e3136",
+            "Color7": "#4c4c4c"
         }
     }
 
