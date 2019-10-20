@@ -214,9 +214,9 @@ export const DeviceFieldD2C: React.FunctionComponent<any> = ({ capability, senso
                 </div>
 
                 <div className='df-card-row'>
-                    <div><label>Auto Value</label><div><ReactToggleThemeProvider theme={toggleStyles}><Toggle name={capability._id + '-mock'} controlled={true} checked={updatePayload.type.mock} onToggle={() => { toggleMockDevice() }} /></ReactToggleThemeProvider></div></div>
+                    <div><label>Mock</label><div><ReactToggleThemeProvider theme={toggleStyles}><Toggle name={capability._id + '-mock'} controlled={true} checked={updatePayload.type.mock} onToggle={() => { toggleMockDevice() }} /></ReactToggleThemeProvider></div></div>
                     {updatePayload.type.mock ? <>
-                        <div><label>Mock Sensor</label><br />
+                        <div><label>Sensor</label><br />
                             <div className='btn-group' role='group' >
                                 {sensors.map((sensor: any) => {
                                     let active = updatePayload.mock && sensor._type === updatePayload.mock._type ? 'active' : '';

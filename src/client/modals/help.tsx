@@ -64,9 +64,9 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
                     <li>Enabled - When the device is running, this allows the capability to work</li>
                     <li>Looped - Repeatedly send this capability on a timer</li>
                     <li>Complex - Use JSON for the payload of this capability. Can be macro driven with auto/random values (see Macros)</li>
-                    <li>Auto Value - Generate a value based on a set of simulated sensors. Can be used without Complex</li>
-                    <li>Convert - Read the Twin desired value sent as a JSON</li>
-                    <li>Return - Send this JSON back as the reponse payload for a Command execute</li>
+                    <li>Mock - Use a simulated sensor to generate a realistic value and override any static, complex or AUTO values.</li>
+                    <li>Convert - (Desired only) Read the Twin desired value sent as a JSON</li>
+                    <li>Return - (Command only) Send this JSON back as the reponse payload for a Command execute</li>
                 </ul>
 
                 <p>When updating a device's capability, the capability must be saved to be go into affect. Unsaved changes are indicated by
@@ -78,12 +78,12 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
                     <li>Name - The name of the property</li>
                     <li>API - Msg for Telemetry and Twin for Twin Reported</li>
                     <li>String - Send the value as a string. Select no for numbers and booleans. Use Complex for JSON</li>
-                    <li>Enter Value - A user supplied primative value</li>
+                    <li>Enter Value - A user supplied primative value or an AUTO macro (see below)</li>
                     <li>Interface Name - Used by PnP Device SDK to group capabilty sending. Not supported.</li>
                     <li>Unit - Seconds or minutes time period when using a loop</li>
                     <li>Duration - Amount of units when using a loop</li>
                     <li>Complex - A Macro (see later) driven JSON payload. Used to send Objects, Maps and Arrays as payload</li>
-                    <li>Mock Sensor - Select a sensor profile to simluate values. Useful for loops</li>
+                    <li>Sensor - Select a sensor profile to simluate values. Useful for loops</li>
                 </ul>
 
                 <h5>Twin Desired</h5>
@@ -106,7 +106,7 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
             <div className='help-row'>
                 <h4>Macros and AUTO values</h4>
                 <p>AUTO values are macros that are replaced with real (random) values when the device sends its data. They can be used in
-                    value fields and complex payloads (for sending random data on the leaf nodes) Replace AUTO stringd with a static
+                    value fields and complex payloads (for sending random data on the leaf nodes) Replace AUTO string with a static
                     value if the feature is not required.</p>
                 <p>Complex values must be authored using JSON so use the macro as a string (see examples). When using AUTOs, the property's
                     type will be replaced. See the following.</p>
@@ -129,7 +129,7 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
                 </ul>
                 <p>Enum support is possible by extending the macro to include the list of values. Values
                     can only be integers or strings. Enums use the JavaScript style arrays i.e.
-                    [1,0] or ['foo','bar'] Append this to the end of an Enum Auto like ...</p>
+                    [1,0] or ['foo','bar'] Append this to the end of an Enum AUTO like ...</p>
                 <pre>
                     AUTO_ENUM/['foo','bar']
                     </pre>

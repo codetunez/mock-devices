@@ -46,7 +46,14 @@ $min-height-toggle-row: 55px;
       cursor: pointer;
     }
 
-    .df-card-title-text {     
+    .df-card-title-text {
+      * {
+        width: 220px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
       div:first-child {
         color: $app-clr-4;
         font-size: 0.7rem;
@@ -55,11 +62,6 @@ $min-height-toggle-row: 55px;
       div:nth-child(2) {
         color: $app-clr-yellow-1;
         font-size: 0.9rem;
-        
-        width: 220px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;        
       }
     }
   }
