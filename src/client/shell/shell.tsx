@@ -19,7 +19,7 @@ export const Shell: React.FunctionComponent = () => {
   const [consoleModal, setConsole] = React.useState<any>({});
 
   const propertyUpdate = (data: any) => {
-    console.log(data);
+    //console.log(data);
   }
 
   const liveUpdate = (data: any) => {
