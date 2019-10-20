@@ -274,7 +274,7 @@ export default function (deviceStore: DeviceStore) {
                                 o.runloop = {
                                     'include': true,
                                     'unit': runLoopUnit,
-                                    'value': Utils.getRandomNumberBetweenRange(simRunloop[runLoopUnit]["min"], simRunloop[runLoopUnit]["max"], false)
+                                    'value': Utils.getRandomNumberBetweenRange(simRunloop[runLoopUnit]["min"], simRunloop[runLoopUnit]["max"], true)
                                 }
                             }
 
