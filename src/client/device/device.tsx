@@ -32,6 +32,7 @@ export const Device: React.FunctionComponent = () => {
                                     {capability._type === 'method' ? <DeviceFieldMethod capability={capability} /> : null}
                                 </>
                             })}
+                            {sharedState && sharedState.device.comms && sharedState.device.comms.length === 0 ? 'Use + Reported/Desired/Method to send or receive data' : ''}
                         </div>
                     </div>
                 </div>
