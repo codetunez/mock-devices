@@ -15,6 +15,7 @@ import { Console } from '../modals/console';
 export const Shell: React.FunctionComponent = () => {
   const deviceContext: any = React.useContext(DeviceContext);
   const [expanded, setExpanded] = React.useState(false);
+  const [paused, setPause] = React.useState(false);
   const [lines, updateConsole] = React.useState([]);
   const [consoleModal, setConsole] = React.useState<any>({});
 
@@ -26,10 +27,10 @@ export const Shell: React.FunctionComponent = () => {
     let payload = JSON.parse(data);
     let latest = lines.slice(0);
     latest.unshift(payload.message);
-    if (latest.length > 500) {
+    if (latest.length > 750) {
       latest.pop();
     }
-    updateConsole(latest);
+    !paused && updateConsole(latest);
   }
 
   React.useEffect(() => {
@@ -43,10 +44,11 @@ export const Shell: React.FunctionComponent = () => {
       })
   }, []);
 
-  const openConsole = (message) => {
+  const openConsole = (lines, index) => {
     setConsole({
       showConsole: true,
-      message: message
+      lines: lines,
+      index: index
     })
   }
 
@@ -61,12 +63,15 @@ export const Shell: React.FunctionComponent = () => {
       <div className='console-toggle'>
         <a onClick={() => setExpanded(!expanded)}><span className={cx('fas', !expanded ? 'fa-chevron-up' : 'fa-chevron-down')}></span></a>
       </div>
+      <div className='console-pause'>
+        <a onClick={() => setPause(!paused)}><span className={cx('fas', paused ? 'fa-play' : 'fa-pause')}></span></a>
+      </div>
 
       <div>
         <Websocket url={'ws://127.0.0.1:24377'} onMessage={propertyUpdate} />
         <Websocket url={'ws://127.0.0.1:24387'} onMessage={liveUpdate} />
         {lines.length > 0 && lines.map((element, index) => {
-          return <div className={cx('console-line', 'ellipsis')} onClick={() => { openConsole(element) }}>{element}</div>
+          return <div className={cx('console-line', 'ellipsis')} onClick={() => { openConsole(lines, index) }}>{element}</div>
         })}
       </div>
 
@@ -77,7 +82,7 @@ export const Shell: React.FunctionComponent = () => {
       <div className={cx('shell-content')}><Device /></div>
     </div>
 
-    {consoleModal.showConsole ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><Console message={consoleModal.message} handler={closeConsole} /></div></Modal> : null}
+    {consoleModal.showConsole ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><Console lines={consoleModal.lines} index={consoleModal.index} handler={closeConsole} /></div></Modal> : null}
 
   </div>
 }

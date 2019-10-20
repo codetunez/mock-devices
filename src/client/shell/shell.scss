@@ -21,8 +21,13 @@
     left: 0.75rem;
     cursor: pointer;
   }
+  .console-pause {
+    position: fixed;
+    right: 1.4rem;
+    cursor: pointer;
+  }  
   .ellipsis {
-    width: calc(100vw - 3rem);
+    width: calc(100vw - 4.5rem);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -31,7 +36,8 @@
 }
 
 .shell-console-expanded {
-  height: calc(100vh - 30%);
+  height: calc(100vh - 410px);
+  max-height: calc(100vh - 410px);
   overflow: auto;
 }
 
