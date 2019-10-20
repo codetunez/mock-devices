@@ -185,7 +185,7 @@ export default function (deviceStore: DeviceStore) {
             if (updatePayload.capabilityModel && Object.keys(updatePayload.capabilityModel).length > 0) {
                 var dcm = JSON.parse(updatePayload.capabilityModel);
                 //TOOD: get this fixed
-                t.configuration.mockDeviceName = dcm.displayName ? (dcm.displayName.en || dcm.displayName) : 'DCM has no diaplay name';
+                t.configuration.mockDeviceName = dcm.displayName ? (dcm.displayName.en || dcm.displayName) : 'DCM has no display name';
                 dcm.implements.forEach(element => {
                     if (element.schema.contents) {
                         element.schema.contents.forEach(item => {
