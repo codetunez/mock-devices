@@ -23,7 +23,7 @@
   height: $title-height;
   flex-shrink: 0;
   border-bottom: 1px solid $app-clr-3;
-  box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 2px 3px 0px $app-shadow;
   min-width: $device-commands-width;
 }
 
