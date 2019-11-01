@@ -30,6 +30,16 @@ export class SimulationStore {
             "Color5": "#3a1e29",
             "Color6": "#3e3136",
             "Color7": "#4c4c4c"
+        },
+        "simulation": {
+            "firmware": 30000,
+            "connect": 2000,
+            "restart": 3300000
+        },
+        "commands": {
+            "reboot": "reboot",
+            "firmware": "firmware",
+            "shutdown": "shutdown"
         }
     }
 
