@@ -23,7 +23,7 @@ export class SensorStore {
                     init: 100,
                     running: 0,
                     variance: 0.1,
-                    timeToRunning: 10800,
+                    timeToRunning: 86400000,
                     _resx: {
                         init: "Start",
                         running: "End",
@@ -40,7 +40,7 @@ export class SensorStore {
                     init: 0,
                     running: 275,
                     variance: 0.1,
-                    timeToRunning: 520,
+                    timeToRunning: 28800000,
                     _resx: {
                         init: "Start",
                         running: "End",
