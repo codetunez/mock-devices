@@ -52,7 +52,7 @@ export class DeviceStore {
         }
 
         this.store.setItem(d, d._id);
-        let md = new MockDevice(d, this.liveUpdatesService);
+        let md = new MockDevice(d, this.liveUpdatesService, this);
         this.runners[d._id] = md;
     }
 
@@ -77,7 +77,7 @@ export class DeviceStore {
         Object.assign(d.configuration, payload);
         this.store.setItem(d, d._id);
 
-        let md = new MockDevice(d, this.liveUpdatesService);
+        let md = new MockDevice(d, this.liveUpdatesService, this);
         this.runners[d._id] = md;
     }
 
@@ -332,6 +332,8 @@ export class DeviceStore {
 
     public stopDevice = (device: Device) => {
 
+        if (device.configuration._kind === 'template') { return; }
+        
         try {
             let rd: MockDevice = this.runners[device._id];
             rd.end();
@@ -394,7 +396,7 @@ export class DeviceStore {
 
         // re-establish running store
         for (let i = 0; i < items.length; i++) {
-            let rd = new MockDevice(items[i], this.liveUpdatesService);
+            let rd = new MockDevice(items[i], this.liveUpdatesService, this);
             this.runners[items[i]._id] = rd;
         }
     }

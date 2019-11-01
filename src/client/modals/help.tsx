@@ -101,6 +101,16 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
                     <li>Reponse - The JSON or value payload sent back to the calling client</li>
                 </ul>
                 <p>The only options here are to read the last request parameters sent Parameters are not honored for reponses.</p>
+                <h5>mock-devices specific commands</h5>
+                <p>mock-devices can simulate common device commands; Firmware, Reboot and Shutdown. This is particularly useful when mock-devices
+                    is running for a long time and you want to reset any current state when using a mock sensor e.g. the battery mock sensor will reset
+                    to 100%. To utilize this feature create a Method and use the following for the method name.</p>
+                <ul>
+                    <li>reboot - The device will go through a shutdown and reconnect cycle.</li>
+                    <li>firmware - The device will go through a shutdown and reconnect cycle but the restart will be delayed by 30 seconds.</li>
+                    <li>shutdown - The device will shutdown and further interaction is not possible until the device is manually started again.</li>
+                </ul>
+                <p>The name for each of the methods (to be used by all the devices) can be changed in the Simulation menu.</p>
             </div>
 
             <div className='help-row'>

@@ -1,5 +1,4 @@
-import { AssociativeStore } from '../framework/associativeStore'
-import { Device, Property, MockSensor, Method } from '../interfaces/device';
+import { Device, Property, Method } from '../interfaces/device';
 
 import { SimulationStore } from '../store/simulationStore';
 
@@ -18,6 +17,7 @@ import { LiveUpdatesService } from './liveUpdatesService';
 import * as request from 'request';
 import * as rw from 'random-words';
 import * as Crypto from 'crypto';
+import { DeviceStore } from '../store/deviceStore'
 
 const MSG_HUB_EVENT = "[RUNNER]-[HUB] - ";
 const MSG_DPS_EVENT = "[RUNNER]-[DPS] - ";
@@ -25,7 +25,14 @@ const MSG_ENG_EVENT = "[RUNNER]-[DEV] - ";
 
 export class MockDevice {
 
-    private CONNECT_LOOP = 3000000;
+    private CMD_REBOOT: string;
+    private CMD_FIRMWARE: string;
+    private CMD_SHUTDOWN: string;
+
+    private FIRMWARE_LOOP: number;
+    private CONNECT_POLL: number;
+    private RESTART_LOOP: number;
+
     private CONNECT_RESTART: boolean = false;
     private useSasMode = true;
 
@@ -63,11 +70,25 @@ export class MockDevice {
 
     private registrationConnectionString: string = null;
 
-    constructor(device, liveUpdates: LiveUpdatesService) {
+    private deviceStore: DeviceStore = null;
+
+    constructor(device, liveUpdates: LiveUpdatesService, deviceStore: DeviceStore) {
         this.updateDevice(device);
         this.liveUpdates = liveUpdates;
+        this.deviceStore = deviceStore;
         this.ranges = this.simulationStore.get()["ranges"];
         this.geo = this.simulationStore.get()["geo"];
+
+        const simulation = this.simulationStore.get()["simulation"];
+        const commands = this.simulationStore.get()["commands"];
+
+        this.CMD_REBOOT = commands && commands["reboot"] ? commands["reboot"] : 'reboot';
+        this.CMD_FIRMWARE = commands && commands["firmware"] ? commands["firmware"] : 'firmware';
+        this.CMD_SHUTDOWN = commands && commands["shutdown"] ? commands["shutdown"] : 'shutdown';
+
+        this.FIRMWARE_LOOP = simulation && simulation["firmware"] ? simulation["firmware"] : 30000;
+        this.CONNECT_POLL = simulation && simulation["connect"] ? simulation["connect"] : 2000;
+        this.RESTART_LOOP = simulation && simulation["restart"] ? simulation["restart"] : 3300000;
     }
 
     configure() {
@@ -148,6 +169,30 @@ export class MockDevice {
     updateMsg(payload: ValueByIdPayload) {
         this.msgRLPayloadAdditions = payload;
     }
+    
+    processMockDevicesCMD(name: string) {
+
+        const methodName = name.toLocaleLowerCase();
+
+        if (methodName === this.CMD_SHUTDOWN || methodName === this.CMD_REBOOT || methodName === this.CMD_FIRMWARE) {
+            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] DEVICE METHOD SHUTDOWN ... STOPPING IMMEDIATELY");
+            this.deviceStore.stopDevice(this.device);
+            this.configure();
+        }
+
+        if (methodName === this.CMD_REBOOT) {
+            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] DEVICE METHOD REBOOT ... RESTARTING IMMEDIATELY");
+            this.deviceStore.startDevice(this.device);
+            return;
+        }
+
+        if (methodName === this.CMD_FIRMWARE) {
+            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] DEVICE METHOD FIRMWARE ... RESTARTING IN " + (this.FIRMWARE_LOOP / 1000) + " SECONDS");
+            setTimeout(() => {
+                this.deviceStore.startDevice(this.device);
+            }, this.FIRMWARE_LOOP)
+        }
+    }
 
     /// starts a device
     start() {
@@ -164,7 +209,7 @@ export class MockDevice {
                     return;
                 }
                 this.dpsRegistration();
-            }, 2000);
+            }, this.CONNECT_POLL);
         }
         else {
             this.connectLoop(this.device.configuration.connectionString);
@@ -181,7 +226,7 @@ export class MockDevice {
             this.cleanUp();
             this.connectClient(connectionString);
             this.mainLoop();
-        }, this.CONNECT_LOOP)
+        }, this.RESTART_LOOP)
     }
 
     end() {
@@ -272,7 +317,7 @@ export class MockDevice {
             const cn = ConnectionString.parse(connectionString);
             let sas: any = SharedAccessSignature.create(cn.HostName, cn.DeviceId, cn.SharedAccessKey, anHourFromNow());
             this.iotHubDevice.client = Client.fromSharedAccessSignature(sas, M1);
-            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CONNECTING VIA SAS CONNECTION STRING. RESTARTS AFTER " + (this.CONNECT_LOOP / 60000) + " MINUTES");
+            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CONNECTING VIA SAS CONNECTION STRING. RESTARTS AFTER " + (this.RESTART_LOOP / 60000) + " MINUTES");
         } else {
             this.iotHubDevice.client = clientFromConnectionString(connectionString);
             this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CONNECTING VIA CONN STRING API");
@@ -328,6 +373,7 @@ export class MockDevice {
                         if (m.asProperty) { this.methodReturnPayload = Object.assign({}, { [m.name]: m.payload }) }
                         this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][RESP] -> " + (err ? err.toString() : JSON.stringify(payload)));
                         this.liveUpdates.sendAsLiveUpdate({ [m._id]: new Date().toUTCString() });
+                        this.processMockDevicesCMD(m.name);
                     })
                 });
             }
