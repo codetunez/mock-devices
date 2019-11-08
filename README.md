@@ -57,4 +57,4 @@ _Engine tweaks_
 - AUTO_DOUBLE - Use a random number with precision between 1 and 5000
 - AUTO_FLOAT - Use a random number with precision between 1 and 5000
 - AUTO_BOOLEAN - Use a random boolean
-- AUTO_VALUE - Use the last user supplied or simulated sensor value.</li>
+- AUTO_VALUE - Use the last user supplied or simulated sensor value
