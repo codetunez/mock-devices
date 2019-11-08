@@ -70,14 +70,14 @@ export class DeviceProvider extends React.PureComponent<DeviceContextState> {
     }
 
     updateDevice = (updatePayload: any, send: boolean) => {
-        axios[send ? 'post' : 'put']('/api/device/' + this.state.device._id + '/property/' + updatePayload._id + (send ? '/value' : ''), updatePayload)
+        axios.put('/api/device/' + this.state.device._id + '/property/' + updatePayload._id + (send ? '/value' : ''), updatePayload)
             .then(response => {
                 this.setState({ device: response.data });
             })
     }
 
     deleteDevice = () => {
-        axios.post('/api/device/' + this.state.device._id + '/delete', null)
+        axios.delete('/api/device/' + this.state.device._id)
             .then((response: any) => {
                 this.setState({ devices: response.data, device: {}  });
             })

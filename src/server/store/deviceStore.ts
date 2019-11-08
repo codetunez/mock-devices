@@ -1,9 +1,9 @@
 import { Config } from '../config';
-import { AssociativeStore } from '../framework/associativeStore'
+import { AssociativeStore } from '../framework/AssociativeStore'
 import { SensorStore } from './sensorStore'
 import { Method, Device, Property, MockSensor } from '../interfaces/device';
 import { MockDevice } from '../core/mockDevice';
-import { LiveUpdatesService } from '../core/liveUpdatesService';
+import { MessageService } from '../interfaces/messageService';
 import { ValueByIdPayload } from '../interfaces/payload';
 import * as uuidV4 from 'uuid/v4';
 import * as Utils from '../core/utils';
@@ -18,19 +18,15 @@ export class DeviceStore {
 
     private sensorStore: SensorStore;
 
-    private liveUpdatesService: LiveUpdatesService = null;
+    private liveUpdatesService: MessageService = null;
 
     private simulationStore = new SimulationStore();
     private simColors = this.simulationStore.get()["colors"];
 
-    constructor() {
+    constructor(messageService: MessageService) {
         this.store = new AssociativeStore();
         this.sensorStore = new SensorStore();
-        this.liveUpdatesService = new LiveUpdatesService();
-    }
-
-    public killSockets = () => {
-        this.liveUpdatesService.killSockets();
+        this.liveUpdatesService = messageService;
     }
 
     public deleteDevice = (d: Device) => {
@@ -89,8 +85,10 @@ export class DeviceStore {
         let method: Method = {
             "_id": uuidV4(),
             "_type": "method",
+            "enabled": true,
             "name": "method" + crypto.randomBytes(2).toString('hex'),
             "color": this.simColors["Color1"],
+            "interface": "(single interface only)",
             "status": 200,
             "receivedParams": null,
             "asProperty": false,
@@ -140,7 +138,7 @@ export class DeviceStore {
                 property = {
                     "_id": _id,
                     "_type": "property",
-                    "enabled": false,
+                    "enabled": true,
                     "name": "c2dProperty",
                     "color": this.simColors["Color2"],
                     "interface": "(single interface only)",

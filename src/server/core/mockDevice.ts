@@ -13,7 +13,7 @@ import { ProvisioningDeviceClient } from 'azure-iot-provisioning-device';
 
 import { ValueByIdPayload } from '../interfaces/payload';
 import * as Utils from './utils';
-import { LiveUpdatesService } from './liveUpdatesService';
+import { MessageService } from '../interfaces/messageService';
 import * as request from 'request';
 import * as rw from 'random-words';
 import * as Crypto from 'crypto';
@@ -64,7 +64,7 @@ export class MockDevice {
     private msgRLMockSensorTimers = {};
     private running: boolean = false;
 
-    private liveUpdates: LiveUpdatesService = null;
+    private messageService: MessageService = null;
 
     private receivedMethodParams = {}
 
@@ -72,9 +72,9 @@ export class MockDevice {
 
     private deviceStore: DeviceStore = null;
 
-    constructor(device, liveUpdates: LiveUpdatesService, deviceStore: DeviceStore) {
+    constructor(device, messageService: MessageService, deviceStore: DeviceStore) {
         this.updateDevice(device);
-        this.liveUpdates = liveUpdates;
+        this.messageService = messageService;
         this.deviceStore = deviceStore;
         this.ranges = this.simulationStore.get()["ranges"];
         this.geo = this.simulationStore.get()["geo"];
@@ -147,7 +147,7 @@ export class MockDevice {
 
     updateDevice(device: Device) {
         if (this.device != null && this.device.configuration.connectionString != device.configuration.connectionString) {
-            this.liveUpdates.sendConsoleUpdate(MSG_ENG_EVENT + "[" + this.device._id + "] DEVICE UPDATE ERROR. CONNECTION STRING HAS CHANGED. DELETE DEVICE");
+            this.messageService.sendConsoleUpdate(MSG_ENG_EVENT + "[" + this.device._id + "] DEVICE UPDATE ERROR. CONNECTION STRING HAS CHANGED. DELETE DEVICE");
         } else {
             this.device = JSON.parse(JSON.stringify(device));
             this.configure();
@@ -175,19 +175,19 @@ export class MockDevice {
         const methodName = name.toLocaleLowerCase();
 
         if (methodName === this.CMD_SHUTDOWN || methodName === this.CMD_REBOOT || methodName === this.CMD_FIRMWARE) {
-            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] DEVICE METHOD SHUTDOWN ... STOPPING IMMEDIATELY");
+            this.messageService.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] DEVICE METHOD SHUTDOWN ... STOPPING IMMEDIATELY");
             this.deviceStore.stopDevice(this.device);
             this.configure();
         }
 
         if (methodName === this.CMD_REBOOT) {
-            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] DEVICE METHOD REBOOT ... RESTARTING IMMEDIATELY");
+            this.messageService.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] DEVICE METHOD REBOOT ... RESTARTING IMMEDIATELY");
             this.deviceStore.startDevice(this.device);
             return;
         }
 
         if (methodName === this.CMD_FIRMWARE) {
-            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] DEVICE METHOD FIRMWARE ... RESTARTING IN " + (this.FIRMWARE_LOOP / 1000) + " SECONDS");
+            this.messageService.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] DEVICE METHOD FIRMWARE ... RESTARTING IN " + (this.FIRMWARE_LOOP / 1000) + " SECONDS");
             setTimeout(() => {
                 this.deviceStore.startDevice(this.device);
             }, this.FIRMWARE_LOOP)
@@ -197,12 +197,12 @@ export class MockDevice {
     /// starts a device
     start() {
         if (this.device.configuration._kind === 'template') { return; }
-        this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT START");
+        this.messageService.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT START");
 
         if (this.device.configuration._kind === 'dps') {
             this.registrationConnectionString = null;
             this.connectionDPSTimer = setInterval(() => {
-                this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] WAITING FOR REGISTRATION");
+                this.messageService.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] WAITING FOR REGISTRATION");
                 if (this.registrationConnectionString != null && this.registrationConnectionString != 'init') {
                     clearInterval(this.connectionDPSTimer);
                     this.connectLoop(this.registrationConnectionString);
@@ -217,11 +217,11 @@ export class MockDevice {
     }
 
     connectLoop(connectionString?: string) {
-        this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT STARTING CONNECT LOOP");
+        this.messageService.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT STARTING CONNECT LOOP");
         this.connectClient(connectionString);
         this.mainLoop();
         this.connectionTimer = setInterval(() => {
-            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT READY");
+            this.messageService.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT READY");
             this.CONNECT_RESTART = true;
             this.cleanUp();
             this.connectClient(connectionString);
@@ -230,7 +230,7 @@ export class MockDevice {
     }
 
     end() {
-        this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] RUNLOOP ENDING");
+        this.messageService.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] RUNLOOP ENDING");
         clearInterval(this.connectionDPSTimer);
         if (this.running === true && this.iotHubDevice.client != null) {
             clearInterval(this.connectionTimer);
@@ -243,7 +243,7 @@ export class MockDevice {
             try {
                 this.iotHubDevice.client.open(() => {
                     this.running = true;
-                    this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT OPEN");
+                    this.messageService.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CLIENT OPEN");
 
                     this.setupCommands();
 
@@ -252,14 +252,14 @@ export class MockDevice {
                         // desired properties are cached
                         twin.on('properties.desired', ((delta) => {
                             if (!this.CONNECT_RESTART) { Object.assign(this.twinDesiredPayloadRead, delta); }
-                            this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][RECV] <- " + JSON.stringify(delta));
+                            this.messageService.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][RECV] <- " + JSON.stringify(delta));
                             this.CONNECT_RESTART = false;
                         }))
 
                         this.methodRLTimer = setInterval(() => {
                             if (this.methodReturnPayload != null) {
                                 twin.properties.reported.update(this.methodReturnPayload, ((err) => {
-                                    this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][M_TW] -> " + (err ? err.toString() : JSON.stringify(this.methodReturnPayload)));
+                                    this.messageService.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][M_TW] -> " + (err ? err.toString() : JSON.stringify(this.methodReturnPayload)));
                                     this.methodReturnPayload = null;
                                 }))
                             }
@@ -269,7 +269,7 @@ export class MockDevice {
                         this.twinRLTimer = setInterval(() => {
 
                             let payload: ValueByIdPayload = <ValueByIdPayload>this.calcPropertyValues(this.twinRLProps, this.twinRLReportedTimers, this.twinRLMockSensorTimers);
-                            this.liveUpdates.sendAsLiveUpdate(payload);
+                            this.messageService.sendAsLiveUpdate(payload);
                             this.runloopTwin(this.twinRLPayloadAdditions, payload, twin);
                             this.twinRLPayloadAdditions = <ValueByIdPayload>{};
                         }, 1000);
@@ -278,7 +278,7 @@ export class MockDevice {
                     this.msgRLTimer = setInterval(() => {
 
                         let payload: ValueByIdPayload = <ValueByIdPayload>this.calcPropertyValues(this.msgRLProps, this.msgRLReportedTimers, this.msgRLMockSensorTimers);
-                        this.liveUpdates.sendAsLiveUpdate(payload);
+                        this.messageService.sendAsLiveUpdate(payload);
 
                         this.runloopMsg(this.msgRLPayloadAdditions, payload);
                         this.msgRLPayloadAdditions = <ValueByIdPayload>{};
@@ -287,7 +287,7 @@ export class MockDevice {
                 })
             }
             catch (err) {
-                this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] OPEN ERROR: " + err.message);
+                this.messageService.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] OPEN ERROR: " + err.message);
             }
         }
     }
@@ -304,7 +304,7 @@ export class MockDevice {
                 this.iotHubDevice.client = null;
             }
         } catch (err) {
-            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] TEAR DOWN ERROR: " + err.message);
+            this.messageService.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] TEAR DOWN ERROR: " + err.message);
         } finally {
             this.running = false;
         }
@@ -317,10 +317,10 @@ export class MockDevice {
             const cn = ConnectionString.parse(connectionString);
             let sas: any = SharedAccessSignature.create(cn.HostName, cn.DeviceId, cn.SharedAccessKey, anHourFromNow());
             this.iotHubDevice.client = Client.fromSharedAccessSignature(sas, M1);
-            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CONNECTING VIA SAS CONNECTION STRING. RESTARTS AFTER " + (this.RESTART_LOOP / 60000) + " MINUTES");
+            this.messageService.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CONNECTING VIA SAS CONNECTION STRING. RESTARTS AFTER " + (this.RESTART_LOOP / 60000) + " MINUTES");
         } else {
             this.iotHubDevice.client = clientFromConnectionString(connectionString);
-            this.liveUpdates.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CONNECTING VIA CONN STRING API");
+            this.messageService.sendConsoleUpdate(MSG_HUB_EVENT + "[" + this.device._id + "] CONNECTING VIA CONN STRING API");
         }
     }
 
@@ -338,11 +338,11 @@ export class MockDevice {
         var provisioningClient = ProvisioningDeviceClient.create('global.azure-devices-provisioning.net', config.scopeId, new M2(), provisioningSecurityClient);
 
         provisioningClient.setProvisioningPayload(dpsPayload);
-        this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] REGISTERING ...");
+        this.messageService.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] REGISTERING ...");
         provisioningClient.register((err: any, result) => {
             if (err) {
                 let msg = err.result && err.result.registrationState && err.result.registrationState.errorMessage || err;
-                this.liveUpdates.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] REGISTERING ERROR " + msg);
+                this.messageService.sendConsoleUpdate(MSG_DPS_EVENT + "[" + this.device._id + "] REGISTERING ERROR " + msg);
                 this.registrationConnectionString = null;
                 return;
             }
@@ -367,12 +367,12 @@ export class MockDevice {
                 let payload = m.asProperty ? { result: m.payload } : JSON.parse(m.payload);
 
                 this.iotHubDevice.client.onDeviceMethod(m.name, (request, response) => {
-                    this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][METH] <- " + request.methodName + " " + JSON.stringify(request.payload));
+                    this.messageService.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][METH] <- " + request.methodName + " " + JSON.stringify(request.payload));
                     Object.assign(this.receivedMethodParams, { [m._id]: { date: new Date().toUTCString(), payload: JSON.stringify(request.payload) } });
                     response.send((m.status), payload, (err) => {
                         if (m.asProperty) { this.methodReturnPayload = Object.assign({}, { [m.name]: m.payload }) }
-                        this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][RESP] -> " + (err ? err.toString() : JSON.stringify(payload)));
-                        this.liveUpdates.sendAsLiveUpdate({ [m._id]: new Date().toUTCString() });
+                        this.messageService.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][RESP] -> " + (err ? err.toString() : JSON.stringify(payload)));
+                        this.messageService.sendAsLiveUpdate({ [m._id]: new Date().toUTCString() });
                         this.processMockDevicesCMD(m.name);
                     })
                 });
@@ -389,8 +389,8 @@ export class MockDevice {
             if (Object.keys(payload).length > 0) {
                 let wire = this.transformPayload(payload);
                 twin.properties.reported.update(wire, ((err) => {
-                    this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][TWIN] -> " + (err ? err.toString() : JSON.stringify(wire)));
-                    this.liveUpdates.sendAsLiveUpdate(payload);
+                    this.messageService.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][TWIN] -> " + (err ? err.toString() : JSON.stringify(wire)));
+                    this.messageService.sendAsLiveUpdate(payload);
                 }))
             }
         }
@@ -406,8 +406,8 @@ export class MockDevice {
                 let wire = this.transformPayload(payload);
                 let msg = new Message(JSON.stringify(wire));
                 this.iotHubDevice.client.sendEvent(msg, ((err) => {
-                    this.liveUpdates.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][MSG] -> " + (err ? err.toString() : JSON.stringify(wire)));
-                    this.liveUpdates.sendAsLiveUpdate(payload);
+                    this.messageService.sendConsoleUpdate("[" + new Date().toUTCString() + "][" + this.device._id + "][MSG] -> " + (err ? err.toString() : JSON.stringify(wire)));
+                    this.messageService.sendAsLiveUpdate(payload);
                 }))
             }
         }
@@ -499,7 +499,7 @@ export class MockDevice {
                     body: JSON.stringify({ "value": value })
                 }, function (error, response, body) {
                     if (error) {
-                        this.liveUpdates.sendConsoleUpdate('[FUNCTION REQUEST][ERR] - ' + error)
+                        this.messageService.sendConsoleUpdate('[FUNCTION REQUEST][ERR] - ' + error)
                         reject(error);
                     }
                     else {
@@ -509,7 +509,7 @@ export class MockDevice {
                 });
             }
             catch (err) {
-                this.liveUpdates.sendConsoleUpdate('[FUNCTION REQUEST][FAILED] - ' + err.message);
+                this.messageService.sendConsoleUpdate('[FUNCTION REQUEST][FAILED] - ' + err.message);
             }
         })
     }
