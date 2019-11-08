@@ -1,0 +1,51 @@
+@import "../const.scss";
+
+.expander {
+  cursor: pointer;
+  background-color: $app-clr-2;
+  border-left: 2px solid $app-clr-2;
+  border-top: 2px solid $app-clr-2;
+  border-right: 2px solid $app-clr-2;
+  color: $app-white;
+  border-radius: $border-radius $border-radius 0 0;  
+  margin: 0;
+  font-size: 0.4rem;
+  padding: 0.1rem;
+  line-height: 0.3rem;
+  i {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.selector-card {
+  text-align: center;
+  padding: $sm-gutter;
+  overflow-wrap: break-word;
+  border: 2px solid $app-clr-2;
+  color: $app-white;
+  border-radius: 0 0 $border-radius $border-radius;
+  margin-bottom: $md-gutter;
+  h4 {
+    font-size: 1.2rem;
+    color: $app-clr-yellow-1;
+    text-transform: uppercase;
+  }
+  h5 {
+    margin-bottom: 0;
+    font-size: 0.8rem;
+  }
+  i {
+    margin: $md-gutter 0;
+  }
+}
+
+.selector-card:hover {
+  cursor: pointer;
+  background-color: $app-clr-blue-1;
+  color: $app-white;
+}
+
+.selector-card-active {
+  background-color: $app-clr-2;  
+}

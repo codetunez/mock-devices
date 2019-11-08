@@ -1,0 +1,56 @@
+@import "../const.scss";
+
+.nav {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  align-content: center;
+  background-color: $app-clr-2;
+  height: 100%;
+  width: $width-nav;
+  overflow: hidden;
+  button {
+    margin: 0 $sm-gutter $sm-gutter $sm-gutter;
+  }
+
+  hr {
+    border: 1px solid $app-clr-blue-1;
+    margin: $xs-gutter $sm-gutter $md-gutter $sm-gutter;
+  }
+}
+
+.blast-shield {
+  z-index: $order-blastshield;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: $app-shield;
+  opacity: 0.85;
+}
+
+.app-modal {
+  z-index: $order-dialog;
+  position: absolute;
+  background-color: $app-clr-2;
+  color: $app-white;
+  overflow: hidden;
+}
+
+.context-modal {
+  top: 0;
+  right: 0;
+  width: calc(100vw - 50%);
+  height: 100%;
+  overflow-y: auto;
+}
+
+.center-modal {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 780px;
+  height: 520px;
+  border-radius: $xs-gutter;
+}

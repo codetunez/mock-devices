@@ -7,13 +7,17 @@
         "preserveConstEnums": true,
         "sourceMap": true,
         "outDir": "./_dist/server/",
-        "jsx": "react"
+        "jsx": "react",
+        "allowSyntheticDefaultImports": true
     },
     "include": [
         "src/server/**/*"
     ],
+    "types": [
+        "react",
+        "electron"
+    ],
     "exclude": [
-        "node_modules/**/*",
-        "**/*.spec.ts"
+        "node_modules/**/*"
     ]
 }

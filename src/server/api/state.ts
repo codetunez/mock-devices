@@ -1,11 +1,10 @@
 import { Router } from 'express';
 import * as Utils from '../core/utils';
 
-export default function (deviceStore) {
+export default function (deviceStore, simulationStore) {
     let api = Router();
 
     api.get('/', function (req, res) {
-
         // cloning here because we want to change the running state just for the export payload
         let changedDeviceState = JSON.parse(JSON.stringify(deviceStore.getListOfItems()));
         changedDeviceState.forEach(function (element) {
@@ -15,6 +14,7 @@ export default function (deviceStore) {
 
         let payload = {
             devices: changedDeviceState,
+            simulation: simulationStore.get()
         }
         res.send(payload);
         res.end();
@@ -24,7 +24,8 @@ export default function (deviceStore) {
         try {
             let payload = req.body;
             deviceStore.stopAll();
-            deviceStore.createFromArray(payload.state.devices);
+            if (payload.simulation) { simulationStore.set(payload.simulation); }
+            deviceStore.createFromArray(payload.devices);
             res.json(deviceStore.getListOfItems());
             res.end();
         }

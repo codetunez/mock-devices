@@ -1,0 +1,40 @@
+/* margin */
+$xs-gutter: 5px;
+$sm-gutter: 10px;
+$md-gutter: 15px;
+$lg-gutter: 20px;
+$xl-gutter: 25px;
+
+/* sizes */
+$width-nav: 60px;
+$width-selector: 240px;
+$width-content: 100%;
+$border-radius: 0.2rem;
+$device-field-width: 505px;
+$device-commands-width: 555px;
+$border-thicker: 2px;
+$title-height: 48px;
+$forced-right-margin: 35px;
+
+/* ordering */
+$order-base: 0;
+$order-level-1: 100;
+$order-level-1: 200;
+$order-floating: 500;
+$order-blastshield: 750;
+$order-dialog: 1000;
+
+/* color */
+$app-black: #000;
+$app-white: #fff;
+$app-shield: #111;
+$app-shadow: rgba(0, 0, 0, 0.75);
+
+$app-clr-0: #1e1e1e;
+$app-clr-1: #252526;
+$app-clr-2: #333333;
+$app-clr-3: #37373d;
+$app-clr-4: #888888;
+
+$app-clr-blue-1: #0275d8;
+$app-clr-yellow-1: #daba89;

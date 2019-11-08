@@ -1,0 +1,29 @@
+@import "../const.scss";
+
+.console-buttons {
+  display: flex;
+  padding: 0 1rem 1rem 1rem;
+  a {
+    cursor: pointer;
+    margin-right: 0.6rem;
+  }
+}
+
+.console-window {
+  padding: 0 1rem 1rem 1rem;
+  height: calc(100% - 3rem);
+}
+
+.console-message {
+  padding: 0.5rem;
+  border: solid 1px $app-clr-4;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  overflow-wrap: break-word;
+  height: 100%;
+
+  pre {
+    color: $app-white;
+    font-size: 1.2rem;
+  }
+}

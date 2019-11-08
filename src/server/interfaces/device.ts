@@ -25,24 +25,30 @@ export interface Property {
     _id: string;
     _type: "property";
     name: string;
+    interface: string;
     string: boolean;
-    value: string;
+    value: any;
     sdk: string;
     type: DeviceType;
     version: number;
     propertyObject: PropertyObjectDefault | PropertyObjectTemplated;
     runloop?: RunLoop;
     mock?: MockSensor;
+    enabled: boolean;
+    color?: string;
 }
 
 export interface Method {
     _id: string;
     _type: "method";
+    enabled?:boolean;
     name: string;
+    interface?: string;
     status: 200 | 404 | 500;
     receivedParams: string;
     asProperty: boolean;
     payload: any;
+    color?: string;
 }
 
 export interface PropertyObjectDefault {
@@ -52,7 +58,6 @@ export interface PropertyObjectDefault {
 export interface PropertyObjectTemplated {
     type: "templated"
     template: any;
-    random: boolean;
 }
 
 export class Device {
@@ -69,8 +74,8 @@ export class Device {
 
 export class DeviceConfiguration {
     public _kind: 'dps' | 'hub' | 'template';
-    public deviceId: string;
-    public mockDeviceName: string;
+    public deviceId?: string;
+    public mockDeviceName?: string;
     public mockDeviceCloneId?: string;
     public mockDeviceState?: any;
     public connectionString?: string;
@@ -79,5 +84,5 @@ export class DeviceConfiguration {
     public dpsPayload?: any;
     public sasKey?: string;
     public capabilityModel?: any;
-    public isMasterKey: boolean;
+    public isMasterKey?: boolean;
 }

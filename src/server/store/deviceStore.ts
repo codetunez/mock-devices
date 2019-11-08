@@ -1,13 +1,14 @@
 import { Config } from '../config';
-import { AssociativeStore } from '../framework/associativeStore'
+import { AssociativeStore } from '../framework/AssociativeStore'
 import { SensorStore } from './sensorStore'
 import { Method, Device, Property, MockSensor } from '../interfaces/device';
 import { MockDevice } from '../core/mockDevice';
-import { LiveUpdatesService } from '../core/liveUpdatesService';
+import { MessageService } from '../interfaces/messageService';
 import { ValueByIdPayload } from '../interfaces/payload';
 import * as uuidV4 from 'uuid/v4';
 import * as Utils from '../core/utils';
 import * as crypto from 'crypto';
+import { SimulationStore } from '../store/simulationStore';
 
 export class DeviceStore {
 
@@ -17,12 +18,15 @@ export class DeviceStore {
 
     private sensorStore: SensorStore;
 
-    private liveUpdatesService: LiveUpdatesService = null;
+    private liveUpdatesService: MessageService = null;
 
-    constructor() {
+    private simulationStore = new SimulationStore();
+    private simColors = this.simulationStore.get()["colors"];
+
+    constructor(messageService: MessageService) {
         this.store = new AssociativeStore();
         this.sensorStore = new SensorStore();
-        this.liveUpdatesService = new LiveUpdatesService();
+        this.liveUpdatesService = messageService;
     }
 
     public deleteDevice = (d: Device) => {
@@ -44,7 +48,7 @@ export class DeviceStore {
         }
 
         this.store.setItem(d, d._id);
-        let md = new MockDevice(d, this.liveUpdatesService);
+        let md = new MockDevice(d, this.liveUpdatesService, this);
         this.runners[d._id] = md;
     }
 
@@ -69,7 +73,7 @@ export class DeviceStore {
         Object.assign(d.configuration, payload);
         this.store.setItem(d, d._id);
 
-        let md = new MockDevice(d, this.liveUpdatesService);
+        let md = new MockDevice(d, this.liveUpdatesService, this);
         this.runners[d._id] = md;
     }
 
@@ -81,7 +85,10 @@ export class DeviceStore {
         let method: Method = {
             "_id": uuidV4(),
             "_type": "method",
+            "enabled": true,
             "name": "method" + crypto.randomBytes(2).toString('hex'),
+            "color": this.simColors["Color1"],
+            "interface": "(single interface only)",
             "status": 200,
             "receivedParams": null,
             "asProperty": false,
@@ -106,8 +113,11 @@ export class DeviceStore {
                     "_id": _id,
                     "_type": "property",
                     "name": "d2cProperty",
+                    "color": this.simColors["Default"],
+                    "enabled": false,
+                    "interface": "(single interface only)",
                     "string": false,
-                    "value": "0",
+                    "value": 0,
                     "sdk": "msg",
                     "propertyObject": {
                         "type": "default"
@@ -128,9 +138,12 @@ export class DeviceStore {
                 property = {
                     "_id": _id,
                     "_type": "property",
+                    "enabled": true,
                     "name": "c2dProperty",
+                    "color": this.simColors["Color2"],
+                    "interface": "(single interface only)",
                     "string": false,
-                    "value": "0",
+                    "value": 0,
                     "sdk": "twin",
                     "propertyObject": {
                         "type": "default"
@@ -145,7 +158,7 @@ export class DeviceStore {
         }
 
         let d: Device = this.store.getItem(id);
-        property.name = property.name + '-' + crypto.randomBytes(2).toString('hex');
+        property.name = property.name + '_' + crypto.randomBytes(2).toString('hex');
         delete override._id;
         Object.assign(property, override);
         d.comms.push(property);
@@ -195,7 +208,7 @@ export class DeviceStore {
 
         if (index > -1) {
             // update the source of truth
-            let p = d.comms[index] = payload;
+            let p: any = d.comms[index] = payload;
             p.version = payload.version;
 
             this.store.setItem(d, d._id);
@@ -205,10 +218,10 @@ export class DeviceStore {
             rd.updateDevice(d);
 
             // build a reported payload and honor type
+            let json: ValueByIdPayload = <ValueByIdPayload>{};
             let converted = Utils.formatValue(p.string, p.value);
-            let json: ValueByIdPayload = <ValueByIdPayload>{
-                [p._id]: converted
-            };
+            //TODO: Should deal with p.value not being set as it could be a Complex
+            json[p._id] = converted
 
             // if this an immediate update, send to the runloop
             if (sendValue === true && p.sdk === "twin") { rd.updateTwin(json); }
@@ -317,6 +330,8 @@ export class DeviceStore {
 
     public stopDevice = (device: Device) => {
 
+        if (device.configuration._kind === 'template') { return; }
+        
         try {
             let rd: MockDevice = this.runners[device._id];
             rd.end();
@@ -379,7 +394,7 @@ export class DeviceStore {
 
         // re-establish running store
         for (let i = 0; i < items.length; i++) {
-            let rd = new MockDevice(items[i], this.liveUpdatesService);
+            let rd = new MockDevice(items[i], this.liveUpdatesService, this);
             this.runners[items[i]._id] = rd;
         }
     }
