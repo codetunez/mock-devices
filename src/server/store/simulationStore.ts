@@ -4,6 +4,17 @@ import simulation from '../api/simulation';
 export class SimulationStore {
 
     static simulation = {
+        "bulk": {
+            "mode": "random",
+            "random": {
+                "min": 5000,
+                "max": 90000
+            },
+            "batch": {
+                "size": 10,
+                "delay": 5000
+            }
+        },
         "ranges": {
             "AUTO_INTEGER": { min: 1, max: 5000 },
             "AUTO_DOUBLE": { min: 1, max: 5000 },

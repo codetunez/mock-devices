@@ -25,6 +25,7 @@ export default function (deviceStore, simulationStore) {
             let payload = req.body;
             deviceStore.stopAll();
             if (payload.simulation) { simulationStore.set(payload.simulation); }
+            deviceStore.init();
             deviceStore.createFromArray(payload.devices);
             res.json(deviceStore.getListOfItems());
             res.end();
