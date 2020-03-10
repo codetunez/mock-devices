@@ -7,7 +7,7 @@
   border-top: 2px solid $app-clr-2;
   border-right: 2px solid $app-clr-2;
   color: $app-white;
-  border-radius: $border-radius $border-radius 0 0;  
+  border-radius: $border-radius $border-radius 0 0;
   margin: 0;
   font-size: 0.4rem;
   padding: 0.1rem;
@@ -19,25 +19,23 @@
 }
 
 .selector-card {
-  text-align: center;
-  padding: $sm-gutter;
   overflow-wrap: break-word;
   border: 2px solid $app-clr-2;
-  color: $app-white;
   border-radius: 0 0 $border-radius $border-radius;
   margin-bottom: $md-gutter;
-  h4 {
+  h4,
+  h5 {
     font-size: 1.2rem;
     color: $app-clr-yellow-1;
     text-transform: uppercase;
   }
   h5 {
-    margin-bottom: 0;
-    font-size: 0.8rem;
+    font-size: 1rem;
   }
-  i {
-    margin: $md-gutter 0;
-  }
+}
+
+.selector-card-spinner {
+  padding: $sm-gutter;
 }
 
 .selector-card:hover {
@@ -47,5 +45,30 @@
 }
 
 .selector-card-active {
-  background-color: $app-clr-2;  
+  background-color: $app-clr-2;
+}
+
+.selector-card-expanded {
+  text-align: center;
+  padding: $sm-gutter;
+  overflow: hidden;
+
+  strong {
+    font-weight: 400;
+  }
+}
+
+.selector-card-mini {
+  padding: $sm-gutter;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+
+  h5 {
+    margin: 0;
+    margin-left: $sm-gutter;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }

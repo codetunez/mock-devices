@@ -36,5 +36,24 @@ export default function (deviceStore, simulationStore) {
         }
     });
 
+    api.post('/merge', function (req, res) {
+        try {
+            let payload = req.body;
+            deviceStore.stopAll();
+            if (payload.simulation) { simulationStore.set(payload.simulation); }
+            let currentDevices = JSON.parse(JSON.stringify(deviceStore.getListOfItems()));
+            payload.devices = currentDevices.concat(payload.devices);
+            deviceStore.init();
+            deviceStore.createFromArray(payload.devices);
+            res.json(deviceStore.getListOfItems());
+            res.end();
+        }
+        catch (err) {
+            res.status(500).send({ "message": "Cannot import this data" })
+            res.end();
+        }
+    });
+
+
     return api;
 }

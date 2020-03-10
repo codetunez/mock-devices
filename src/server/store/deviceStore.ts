@@ -380,7 +380,7 @@ export class DeviceStore {
         let count = devices.length;
         let from: number = 0;
         let to: number = 10;
-        const batch = this.bulkRun["mode"] ? this.bulkRun["mode"]["batch"]["size"] : 10;
+        const batch = this.bulkRun != null && this.bulkRun["mode"] ? this.bulkRun["mode"]["batch"]["size"] : 10;
 
         this.startAllBatch(from, count > to ? to : count, devices)
         let timer = setInterval(() => {

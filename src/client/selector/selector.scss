@@ -11,7 +11,11 @@
 
 .selector-container-header {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   height: $title-height;
+  margin: 0 2rem 0 1rem;
 }
 
 .selector-container-body {
@@ -23,4 +27,15 @@
   height: 100%;
   overflow-y: auto;
   padding: 0 $md-gutter;
+}
+
+.selector-toggle {
+  display: flex;
+  i {
+    cursor: pointer;
+  }
+
+  i:first-child {
+    margin-right: 5px;
+  }
 }

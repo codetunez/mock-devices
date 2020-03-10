@@ -72,7 +72,7 @@ export const DeviceFieldC2D: React.FunctionComponent<any> = ({ capability }) => 
                 <div className='df-card-row'>
                     <div><label>Enabled</label><div><ReactToggleThemeProvider theme={toggleStyles}><Toggle name={capability._id + '-enabled'} disabled={true} checked={true} /></ReactToggleThemeProvider></div></div>
                     <div><label>Name</label><div><input type='text' className='form-control form-control-sm double-width' name='name' value={updatePayload.name} onChange={updateField} /></div></div>
-                    <div><label>API</label><div><Combo items={[{ name: 'Msg', value: 'msg' }, { name: 'Twin', value: 'twin' }]} cls='custom-textarea-sm single-width' name='sdk' onChange={updateField} value={updatePayload.sdk} /></div></div>
+                    <div><label>API</label><div><Combo items={[{ name: 'Twin', value: 'twin' }]} cls='custom-textarea-sm single-width' name='sdk' onChange={updateField} value={updatePayload.sdk} /></div></div>
                     <div><label>Version</label><div><input type='text' className='form-control form-control-sm single-width' value={updatePayload.version} /></div></div>
                     <div className='single-item'><button className='btn btn-sm btn-outline-primary' onClick={() => { read(capability._id) }}>Read</button></div>
                 </div>

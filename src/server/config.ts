@@ -11,7 +11,7 @@ export class Config {
     public static CONSOLE_WEBSOCKET_PORT: string = '24387';
 
     public static APP_HEIGHT: number = 700;
-    public static APP_WIDTH: number = 890;
+    public static APP_WIDTH: number = 990;
 
     public static MAX_NUM_DEVICES: number = 750;
 }
