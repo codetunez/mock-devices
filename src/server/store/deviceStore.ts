@@ -52,7 +52,13 @@ export class DeviceStore {
                 if (p.mock) { p.mock._id = uuidV4(); }
             }
             d.comms = origDevice.comms;
+            delete d.configuration._deviceList;
+            delete d.configuration.mockDeviceCount;
+            delete d.configuration.dpsPayload;
             delete d.configuration.mockDeviceCloneId;
+            delete d.configuration.machineState;
+            delete d.configuration.machineStateClipboard;
+            delete d.configuration.capabilityModel;
         }
 
         this.store.setItem(d, d._id);

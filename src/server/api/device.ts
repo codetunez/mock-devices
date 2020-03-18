@@ -182,13 +182,6 @@ export default function (deviceStore: DeviceStore) {
                 d.configuration = JSON.parse(JSON.stringify(updatePayload));
                 d.configuration.mockDeviceName = updatePayload.mockDeviceCount > 1 ? d.configuration.mockDeviceName + "-" + (i + 1) : d.configuration.mockDeviceName;
                 d.configuration.deviceId = d._id;
-                delete d.configuration._deviceList;
-                delete d.configuration.mockDeviceCount;
-                delete d.configuration.dpsPayload;
-                delete d.configuration.mockDeviceCloneId;
-                delete d.configuration.machineState;
-                delete d.configuration.machineStateClipboard;
-                delete d.configuration.capabilityModel;
                 deviceStore.addDevice(d);
             }
         }
