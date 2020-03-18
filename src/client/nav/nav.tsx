@@ -18,7 +18,7 @@ export const Nav: React.FunctionComponent = () => {
             <div className='nav'>
                 <div className='section-title section-title-nav'>v4.4</div>
                 <button onClick={() => toggleHelp(!showHelp)} className={'btn btn-outline-primary'}><span className='fas fa-question-circle'></span></button >
-                <button onClick={() => toggleDevices(!showDevices)} className={'btn btn-outline-primary'}><span className='fas fa-plus'></span></button >
+                <button onClick={() => toggleDevices(!showDevices)} className={'btn btn-outline-primary'}><span className='far fa-save'></span></button >
                 <hr />
                 <button onClick={() => sharedState.startAllDevices()} className='btn btn-outline-primary'><span className='fas fa-play'></span></button>
                 <button onClick={() => sharedState.stopAllDevices()} className='btn btn-outline-primary'><span className='fas fa-stop'></span></button>

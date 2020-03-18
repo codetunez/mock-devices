@@ -17,13 +17,10 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
         _kind: '',
         _deviceList: [],
         deviceId: '',
-        devices: [],
         mockDeviceName: '',
         mockDeviceCount: 1,
         mockDeviceCloneId: '',
-        mockDeviceState: '',
         connectionString: '',
-        hubConnectionString: '',
         scopeId: '',
         dpsPayload: '',
         sasKey: '',
@@ -31,7 +28,6 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
         capabilityModel: '',
         machineState: '',
         machineStateClipboard: ''
-
     });
     const [merge, setMerge] = React.useState(false);
 
