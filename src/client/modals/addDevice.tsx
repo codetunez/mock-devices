@@ -103,7 +103,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
     }
 
     const saveToDisk = () => {
-        axios.post('/api/saveDialog', state.machineState, { headers: { 'Content-Type': 'application/json' } })
+        axios.post('/api/saveDialog', state.machineStateClipboard, { headers: { 'Content-Type': 'application/json' } })
             .then(() => {
                 handler(false);
             })
