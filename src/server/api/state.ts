@@ -49,11 +49,29 @@ export default function (deviceStore, simulationStore) {
             res.end();
         }
         catch (err) {
-            res.status(500).send({ "message": "Cannot import this data" })
+            res.status(500).send({ "message": "Cannot merge this data" })
             res.end();
         }
     });
 
+    api.post('/reorder', function (req, res) {
+        try {
+            const { devices, current, next } = req.body;
+
+            const oldItem = devices[current];
+            devices.splice(current, 1);
+            devices.splice(next, 0, oldItem);
+            deviceStore.stopAll();
+            deviceStore.init();
+            deviceStore.createFromArray(devices);
+            res.json(deviceStore.getListOfItems());
+            res.end();
+        }
+        catch (err) {
+            res.status(500).send({ "message": "Cannot reorder this data" })
+            res.end();
+        }
+    });
 
     return api;
 }

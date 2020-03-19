@@ -7,16 +7,17 @@ import { toggleStyles } from '../ui/codeStyles';
 import { DeviceContext } from '../context/deviceContext';
 import { Combo } from '../ui/controls';
 
-export const DeviceFieldC2D: React.FunctionComponent<any> = ({ capability }) => {
+export const DeviceFieldC2D: React.FunctionComponent<any> = ({ capability, expand }) => {
 
-    const [expanded, setExpanded] = React.useState(false);
+    const [expanded, setExpanded] = React.useState(expand);
     const [updatePayload, setPayload] = React.useState(capability);
     const [dirty, setDirty] = React.useState(false);
     const deviceContext: any = React.useContext(DeviceContext);
 
     React.useEffect(() => {
         setPayload(capability);
-    }, [capability]);
+        setExpanded(expand);
+    }, [capability, expand]);
 
     const updateField = (e: any) => {
         let node = {}

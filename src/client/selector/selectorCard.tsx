@@ -3,7 +3,7 @@ const cx = classNames.bind(require('./selectorCard.scss'));
 
 import * as React from 'react';
 
-export const SelectorCard: React.FunctionComponent<any> = ({ configuration, handler, id, active, running, exp }) => {
+export const SelectorCard: React.FunctionComponent<any> = ({ configuration, handler, index, id, active, running, exp }) => {
 
   const [expanded, setExpanded] = React.useState(exp);
 
@@ -13,7 +13,7 @@ export const SelectorCard: React.FunctionComponent<any> = ({ configuration, hand
 
   return <>
     <div className='expander' onClick={() => setExpanded(!expanded)}><i className={cx(expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-up')}></i></div>
-    <div className={cx('selector-card', active ? 'selector-card-active' : '')} onClick={() => handler(id)}>
+    <div className={cx('selector-card', active ? 'selector-card-active' : '')} onClick={() => handler(id, index)}>
       {expanded ?
         <div className='selector-card-expanded'>
           <h4>{configuration.mockDeviceName || ''}</h4>

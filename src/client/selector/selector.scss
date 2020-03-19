@@ -28,14 +28,3 @@
   overflow-y: auto;
   padding: 0 $md-gutter;
 }
-
-.selector-toggle {
-  display: flex;
-  i {
-    cursor: pointer;
-  }
-
-  i:first-child {
-    margin-right: 5px;
-  }
-}

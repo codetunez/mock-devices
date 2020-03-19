@@ -8,16 +8,17 @@ import { toggleStyles } from '../ui/codeStyles';
 import { DeviceContext } from '../context/deviceContext';
 import { Combo } from '../ui/controls';
 
-export const DeviceFieldD2C: React.FunctionComponent<any> = ({ capability, sensors }) => {
+export const DeviceFieldD2C: React.FunctionComponent<any> = ({ capability, sensors, expand }) => {
 
-    const [expanded, setExpanded] = React.useState(capability.enabled);
+    const [expanded, setExpanded] = React.useState(expand);
     const [updatePayload, setPayload] = React.useState(capability);
     const [dirty, setDirty] = React.useState(false);
     const deviceContext: any = React.useContext(DeviceContext);
 
     React.useEffect(() => {
         setPayload(capability);
-    }, [capability]);
+        setExpanded(expand);
+    }, [capability, expand]);
 
     const updateField = (e: any) => {
         let node = {}
@@ -183,7 +184,7 @@ export const DeviceFieldD2C: React.FunctionComponent<any> = ({ capability, senso
 
                 <div className='df-card-row'>
                     <div><label>Enabled</label><div><ReactToggleThemeProvider theme={toggleStyles}><Toggle name={capability._id + '-enabled'} controlled={true} checked={updatePayload.enabled} onToggle={() => { toggleEnabled() }} /></ReactToggleThemeProvider></div></div>
-                    <div><label>Name</label><div><input type='text' className='form-control form-control-sm single-width' name='name' value={updatePayload.name} onChange={updateField} /></div></div>                    
+                    <div><label>Name</label><div><input type='text' className='form-control form-control-sm single-width' name='name' value={updatePayload.name} onChange={updateField} /></div></div>
                     <div><label>String</label><div><Combo items={[{ name: 'Yes', value: true }, { name: 'No', value: false }]} cls='custom-textarea-sm single-width' name='string' onChange={updateField} value={updatePayload.string} /></div></div>
                     <div><label>Enter Value</label><div><input type='text' className='form-control form-control-sm double-width' name='value' value={updatePayload.value} onChange={updateField} /></div></div>
                     <div className='single-item'><button className='btn btn-sm btn-outline-primary' onClick={() => { save(true) }}>Send</button></div>

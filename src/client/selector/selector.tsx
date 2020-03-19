@@ -11,8 +11,8 @@ export const Selector: React.FunctionComponent = () => {
   const deviceContext: any = React.useContext(DeviceContext);
   const [expand, setExpand] = React.useState(true);
 
-  const select = (id: string) => {
-    deviceContext.getDevice(id);
+  const select = (id: string, index: number) => {
+    deviceContext.getDevice(id, index);
   }
 
   return <DeviceContext.Consumer>
@@ -25,8 +25,8 @@ export const Selector: React.FunctionComponent = () => {
           </div>
         </div>
         <div className='selector-container-body'>
-          {sharedState && sharedState.devices && sharedState.devices.map((device: any) => {
-            return <SelectorCard exp={expand} configuration={device.configuration || {}} handler={select} id={device._id} active={deviceContext.device._id === device._id} running={device.running} />
+          {sharedState && sharedState.devices && sharedState.devices.map((device: any, index: number) => {
+            return <SelectorCard exp={expand} configuration={device.configuration || {}} handler={select} index={index} id={device._id} active={deviceContext.device._id === device._id} running={device.running} />
           })}
           {sharedState && sharedState.devices && sharedState.devices.length === 0 ? 'Use + to add a device, template or update the state' : ''}
         </div>
