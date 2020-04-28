@@ -1,4 +1,4 @@
-# mock-devices v4 (Desktop Edition)
+# mock-devices v4.4 (Desktop Edition)
 Use mock-devices to create fake/mock devices that connect to an Azure IoT Hub. The devices can send and receive data like a physical device would.
 
 This is the desktop edition of mock-devices which is a cross platform (Windows or OSX) Electron app. To use the Docker version, visit this repo [mock-devices DE](http://github.com/codetunez/mock-devices-de)
@@ -17,6 +17,35 @@ From a command prompt navigate to the folder where the repo was sync'd and perfo
 Help is available inside the application
 
 ---
+
+#### Features
+- Host up to 750 mock devices
+- Support for DPS or Connection String based devices
+- Use DPS group enrollment using root SaS key
+- Create devices in bulk (using -_n_ numbering scheme)
+- Create a device from a template or another modelled device
+- Built-in simulated sensors that behave like real devices i.e. battery drain and heating elements
+- Use a function/webhook to provide a value payload
+- Devices auto-restart after 55 minutes to provide continuous streams of data
+- State can be copied/replaced to allow sharing of simulation state
+
+#### Macro support for Complex value payloads
+
+- AUTO_STRING - Use a random word from 'random-words' library
+- AUTO_BOOLEAN - Use a random true or false
+- AUTO_INTEGER - Use a random number
+- AUTO_LONG - Use a random number
+- AUTO_DOUBLE - Use a random number with precision
+- AUTO_FLOAT - Use a random number with precision
+- AUTO_DATE - Use now() ISO 8601 format
+- AUTO_DATETIME - Use now() ISO 8601 format
+- AUTO_TIME - Use now() ISO 8601 format
+- AUTO_DURATION - Use now() ISO 8601 format
+- AUTO_GEOPOINT - Use a random lat/long object
+- AUTO_VECTOR - Use a random x,y,z
+- AUTO_MAP - Use empty HashMap
+- AUTO_ENUM/* - Use a random Enum value (See below)
+- AUTO_VALUE - Use the last user suppllied or mock sensor value. Honors String setting.
 
 ## v4 Features
 v4 is a complete re-write of the UX with focus on improving responsive design layout, property management and UI performance.
@@ -37,24 +66,3 @@ _Engine tweaks_
 - Auto Gen DTDL Complex Types; Objects/Maps/Arrays with random values from a DCM
 - Better random string data
 - Native support for Reboot, Shutdown and Firmware device commands
-
-#### Features
-- Supports up to 750 mock devices
-- Support for DPS or Connection String based devices
-- Use DPS group enrollment using root SaS key
-- Create devices in bulk (using -_n_ numbering scheme)
-- Create a device from a template or another modelled device
-- Built-in simulated sensors that behave like real devices i.e. battery drain and heating elements
-- Use a function/webhook to provide a value payload
-- Devices auto-restart after 55 minutes to provide continuous streams of data
-- State can be copied/replaced to allow sharing of simulation state
-
-#### Macro support for Complex value payloads
-
-- AUTO_STRING - Use a random word based of the random-words OSS library
-- AUTO_INTEGER - Use a random integer between 1 and 5000
-- AUTO_LONG - Use a random integer between 1 and 5000
-- AUTO_DOUBLE - Use a random number with precision between 1 and 5000
-- AUTO_FLOAT - Use a random number with precision between 1 and 5000
-- AUTO_BOOLEAN - Use a random boolean
-- AUTO_VALUE - Use the last user supplied or simulated sensor value
