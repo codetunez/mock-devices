@@ -73,7 +73,7 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
                      a yellow save icon </p>
 
                 <h5>Telemetry and Twin Reported</h5>
-                <p>Use '+ Reported' to add a capability to send data. Complete the fields</p>
+                <p>Use '+ Telemetry/Reported' to add a capability to send data. Complete the fields</p>
                 <ul>
                     <li>Name - The name of the property</li>
                     <li>API - Msg for Telemetry and Twin for Twin Reported</li>

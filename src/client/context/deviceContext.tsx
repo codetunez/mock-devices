@@ -3,6 +3,7 @@ import axios from 'axios';
 
 export interface DeviceContextState {
     device?: any,
+    deviceIndex?: any,
     devices?: Array<any>,
     requests?: any;
     startAllDevices?: any,
@@ -79,14 +80,14 @@ export class DeviceProvider extends React.PureComponent<DeviceContextState> {
     deleteDevice = () => {
         axios.delete('/api/device/' + this.state.device._id)
             .then((response: any) => {
-                this.setState({ devices: response.data, device: {}  });
+                this.setState({ devices: response.data, device: {} });
             })
     }
 
-    getDevice = (id: string) => {
+    getDevice = (id: string, index: number) => {
         axios.get('/api/device/' + id)
             .then((response: any) => {
-                this.setState({ device: response.data });
+                this.setState({ device: response.data, deviceIndex: index });
             })
     }
 

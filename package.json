@@ -1,10 +1,10 @@
 {
   "name": "mock-devices",
-  "version": "4.3.0",
+  "version": "4.4.0",
   "description": "",
   "main": "./_dist/server/start.js",
   "scripts": {
-    "build": "tsc && webpack",
+    "build": "webpack && tsc",
     "watchux": "webpack --progress --colors --watch",
     "watchsrv": "tsc -watch --pretty",
     "app": "electron ./_dist/server/start.js"

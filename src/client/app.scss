@@ -123,3 +123,14 @@ textarea:read-only {
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
 }
+
+.selector-toggle {
+  display: flex;
+  i {
+    cursor: pointer;
+  }
+
+  i:first-child {
+    margin-right: 5px;
+  }
+}

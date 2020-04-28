@@ -6,16 +6,17 @@ import { Toggle, ReactToggleThemeProvider } from 'react-toggle-component';
 import { toggleStyles } from '../ui/codeStyles';
 import { DeviceContext } from '../context/deviceContext';
 
-export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability }) => {
+export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, expand }) => {
 
-    const [expanded, setExpanded] = React.useState(false);
+    const [expanded, setExpanded] = React.useState(expand);
     const [updatePayload, setPayload] = React.useState(capability);
     const [dirty, setDirty] = React.useState(false);
     const deviceContext: any = React.useContext(DeviceContext);
 
     React.useEffect(() => {
         setPayload(capability);
-    }, [capability]);
+        setExpanded(expand);
+    }, [capability, expand]);
 
     const updateField = (e: any) => {
         setPayload({
