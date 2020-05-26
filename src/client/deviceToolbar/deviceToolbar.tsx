@@ -1,51 +1,33 @@
 var classNames = require('classnames');
 const cx = classNames.bind(require('./deviceToolbar.scss'));
 
-import axios from 'axios';
 import * as React from 'react';
-import { Combo } from '../ui/controls';
 import { DeviceContext } from '../context/deviceContext';
-import { Toggle, ReactToggleThemeProvider } from 'react-toggle-component';
-import { toggleStyles } from '../ui/codeStyles';
+import { RESX } from '../strings';
 
-export const DeviceToolbar: React.FunctionComponent<any> = ({ devices, index, handler }) => {
+export function DeviceToolbar() {
+
     const deviceContext: any = React.useContext(DeviceContext);
-    const [order, setOrder] = React.useState(index + 1);
-    const [toggle, setToggle] = React.useState(false);
-
-    const deviceIndexes = () => {
-        const items = [];
-        for (let i = 0; i < devices.length; i++) {
-            items.push({ name: i + 1, value: i + 1 })
-        }
-        return items
-    }
+    const [power, setPower] = React.useState<any>({});
 
     React.useEffect(() => {
-        setOrder(index + 1);
-    }, [index])
+        setPower({
+            label: deviceContext.device.running ? RESX.device.toolbar.powerOff_label : RESX.device.toolbar.powerOn_label,
+            title: deviceContext.device.running ? RESX.device.toolbar.powerOff_title : RESX.device.toolbar.powerOff_title,
+            style: deviceContext.device.running ? "btn-success" : "btn-outline-secondary",
+            handler: deviceContext.device.running ? deviceContext.stopDevice : deviceContext.startDevice
+        })
+    }, [deviceContext.device])
 
-    const updateField = e => {
-        const value = e.target.value;
-        axios.post('/api/state/reorder', { devices: devices, current: order - 1, next: parseInt(e.target.value) - 1 })
-            .then((res) => {
-                deviceContext.setDevices(res.data);
-                setOrder(value); // dangerous if BE doesn't succeeed
-            })
-    }
-
-    const updateToggle = e => {
-        setToggle(e.target.checked);
-        handler(e.target.checked);
-    }
+    const template = deviceContext.device.configuration._kind === 'template';
 
     return <div className='device-toolbar-container'>
-        <div className='order'>
-            <div>Position</div>
-            <div><Combo items={deviceIndexes()} cls='custom-textarea-sm' name='order' onChange={updateField} value={order} /></div>
+        <div className='power'>
+            <button title={template ? RESX.core.templateNoSupport : power.title} className={cx('btn', power.style)} disabled={deviceContext.device.configuration._kind === 'template'} onClick={() => { power.handler() }}><span className='fas fa-power-off'></span>{power.label}</button>
         </div>
-        <div className='selector-toggle'>
-            <label>Keep cards expanded </label> <ReactToggleThemeProvider theme={toggleStyles}><Toggle name='exp' controlled={true} checked={toggle} onToggle={updateToggle} /></ReactToggleThemeProvider>
+        <div className='type'>
+            {template ? RESX.device.toolbar.kindTemplate : RESX.device.toolbar.kindReal}
+            {deviceContext.device.configuration.pnpSdk ? RESX.device.toolbar.sdkPnp : RESX.device.toolbar.sdkLegacy}
         </div>
     </div >
 }

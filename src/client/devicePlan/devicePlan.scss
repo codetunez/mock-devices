@@ -1,0 +1,59 @@
+@import "../const.scss";
+
+.plan {
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.plan-card {
+    max-width: 620px;
+    padding: $sm-gutter;
+    background-color: $app-clr-2;
+    color: $app-white;
+    border-radius: $border-radius;
+    margin: 0 $md-gutter $md-gutter 0;
+    h5 {
+        color: $app-clr-4;
+        margin-bottom: $sm-gutter;
+    }
+}
+
+.mini-grid {
+    display: table;
+
+    .mini-grid-row-header {
+        display: table-row;
+        .mini-grid-header {
+            font-size: 0.9rem;
+            display: table-cell;
+            padding: 0 $xs-gutter $xs-gutter 0;
+        }
+    }
+
+    .mini-grid-row {
+        display: table-row;
+        .mini-grid-cell {
+            display: table-cell;
+            padding: 0 $xs-gutter $xs-gutter 0;
+        }
+        .mini-grid-cell:not(:last-child) {
+            margin-right: $sm-gutter;
+        }
+    }
+
+    .mini-grid-row:not(:last-child) {
+        margin-bottom: $sm-gutter;
+    }
+
+    .mini-grid-row-toolbar {
+        margin-top: $sm-gutter;
+    }
+}
+
+// -- HACK!
+.btn {
+    // need to debug why
+    margin-top: -3px;
+}

@@ -9,6 +9,11 @@ export interface RunLoop {
     value: number;
 }
 
+export interface PnpInterface {
+    name: string;
+    urn: string;
+}
+
 export interface MockSensor {
     _id: string;
     _hasState: boolean;
@@ -25,7 +30,7 @@ export interface Property {
     _id: string;
     _type: "property";
     name: string;
-    interface: string;
+    interface: PnpInterface;
     string: boolean;
     value: any;
     sdk: string;
@@ -41,9 +46,10 @@ export interface Property {
 export interface Method {
     _id: string;
     _type: "method";
+    execution: "direct" | "cloud";
     enabled?: boolean;
     name: string;
-    interface?: string;
+    interface: PnpInterface;
     status: 200 | 404 | 500;
     receivedParams: string;
     asProperty: boolean;
@@ -60,11 +66,20 @@ export interface PropertyObjectTemplated {
     template: any;
 }
 
+export interface Plan {
+    loop: boolean,
+    startup: Array<any>,
+    timeline: Array<any>,
+    random: Array<any>,
+    receive: Array<any>
+}
+
 export class Device {
     public _id: string;
     public configuration: DeviceConfiguration;
     public comms: Array<any>;
     public running: boolean;
+    public plan: Plan;
 
     constructor() {
         this.comms = new Array<any>();
@@ -78,7 +93,7 @@ export class DeviceConfiguration {
     public deviceId?: string;
     public devices?: [];
     public mockDeviceName?: string;
-    public mockDeviceCount: number;
+    public mockDeviceCount?: number;
     public mockDeviceCloneId?: string;
     public connectionString?: string;
     public scopeId?: string;
@@ -86,6 +101,9 @@ export class DeviceConfiguration {
     public sasKey?: string;
     public isMasterKey?: boolean;
     public capabilityModel?: string;
+    public capabilityUrn?: string;
     public machineState?: string;
     public machineStateClipboard?: string;
+    public pnpSdk?: boolean;
+    public planMode?: boolean;
 }

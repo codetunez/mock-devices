@@ -11,41 +11,30 @@
 .shell-console {
   background-color: $app-black;
   color: limegreen;
-  height: 1.2rem;
-  flex-shrink: 0;
+  height: 100%;
   font-size: 0.8rem;
   display: flex;
   padding-left: 1.7rem;
-  .console-toggle {
-    position: fixed;
-    left: 0.75rem;
-    cursor: pointer;
-  }
+  overflow-y: auto;
+
   .console-pause {
     position: fixed;
-    right: 1.4rem;
+    left: 0.6rem;
     cursor: pointer;
   }  
+
   .ellipsis {
-    width: calc(100vw - 4.5rem);
+    width: calc(100vw - 2.9rem);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  overflow: hidden;
-}
-
-.shell-console-expanded {
-  height: calc(100vh - 410px);
-  max-height: calc(100vh - 410px);
-  overflow: auto;
 }
 
 .shell-content {
   background-color: $app-clr-0;
   color: $app-white;
-  flex-grow: 1;
-  min-height: 0;
+  width: 100%;
   height: 100%;
   overflow: hidden;
 

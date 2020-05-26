@@ -1,79 +1,56 @@
 import * as React from 'react';
 import axios from 'axios';
 
-export interface DeviceContextState {
-    device?: any,
-    deviceIndex?: any,
-    devices?: Array<any>,
-    requests?: any;
-    startAllDevices?: any,
-    stopAllDevices?: any,
-    refreshAllDevices?: any,
-    startDevice?: any,
-    stopDevice?: any,
-    setDevice?: any,
-    getDevice?: any,
-    deleteDevice?: any,
-    updateDevice?: any,
-    getDevices?: any,
-    getCapability?: any;
-    createCapabilty?: any,
-    deleteCapability?: any,
-    getCapabilityMethodRequest?: any;
-    sensors?: Array<any>,
-    sensorSelected?: any
-}
-
 export const DeviceContext = React.createContext({});
 
-export class DeviceProvider extends React.PureComponent<DeviceContextState> {
+export class DeviceProvider extends React.PureComponent {
 
-    startAllDevices = () => {
-        axios.get('/api/devices/start')
-            .then((response: any) => {
-                this.setState({ devices: response.data });
-            })
-    }
-
-    stopAllDevices = () => {
-        axios.get('/api/devices/stop')
-            .then((response: any) => {
-                this.setState({ devices: response.data });
-            })
+    // group control plane
+    setDevices = (devices: any) => {
+        this.setState({ devices: devices });
     }
 
     refreshAllDevices = () => {
         this.getDevices();
     }
 
-    setDevices = (devices: any) => {
-        this.setState({ devices: devices });
+    startAllDevices = () => {
+        axios.get('/api/devices/start')
+            .then((response: any) => {
+                this.setState({ devices: response.data, device: {} });
+            })
     }
 
+    stopAllDevices = () => {
+        axios.get('/api/devices/stop')
+            .then((response: any) => {
+                this.setState({ devices: response.data, device: {} });
+            })
+    }
+
+    // data control plane
     getDevices = () => {
         axios.get('/api/devices').then((response: any) => {
             this.setState({ devices: response.data, device: {} });
         })
     }
 
+    // single device control plane
+    setDevice = (device: any) => {
+        this.setState({ device: device });
+    }
+
     startDevice = () => {
         axios.get('/api/device/' + this.state.device._id + '/start')
             .then((response: any) => {
-                this.setState({ devices: response.data });
+                this.setState({ device: response.data.device, devices: response.data.devices });
             })
     }
 
     stopDevice = () => {
         axios.get('/api/device/' + this.state.device._id + '/stop')
             .then((response: any) => {
-                this.setState({ devices: response.data });
-            })
-    }
-
-    updateDevice = (updatePayload: any, send: boolean) => {
-        axios.put('/api/device/' + this.state.device._id + '/property/' + updatePayload._id + (send ? '/value' : ''), updatePayload)
-            .then(response => {
-                this.setState({ device: response.data });
+                this.setState({ device: response.data.device, devices: response.data.devices });
             })
     }
 
@@ -84,6 +61,14 @@ export class DeviceProvider extends React.PureComponent<DeviceContextState> {
             })
     }
 
+    // single device data control plane 
+    updateDeviceConfiguration = (updatePayload: any) => {
+        axios.put(`/api/device/${this.state.device._id}/configuration`, { payload: updatePayload })
+            .then((response: any) => {
+                this.setState({ device: response.data.device, devices: response.data.devices });
+            })
+    }
+
     getDevice = (id: string, index: number) => {
         axios.get('/api/device/' + id)
             .then((response: any) => {
@@ -91,10 +76,26 @@ export class DeviceProvider extends React.PureComponent<DeviceContextState> {
             })
     }
 
-    createCapability = (type: string, direction?: string) => {
-        axios.post('/api/device/' + this.state.device._id + '/' + type + '/new', direction ? { type: direction } : null)
-            .then((response: any) => {
+    updateDeviceProperty = (updatePayload: any, send: boolean) => {
+        axios.put('/api/device/' + this.state.device._id + '/property/' + updatePayload._id + (send ? '/value' : ''), updatePayload)
+            .then(response => {
                 this.setState({ device: response.data });
+            })
+    }
+
+    updateDeviceMethod = (updatePayload: any, send: boolean) => {
+        axios.put('/api/device/' + this.state.device._id + '/method/' + updatePayload._id, updatePayload)
+            .then(response => {
+                this.setState({ device: response.data.device, devices: response.data.devices });
+            })
+    }
+
+
+    // this handles creating a method and twin and telemetry. need to always up the list
+    createCapability = (type: string, direction: string, pnpSdk: boolean) => {
+        axios.post('/api/device/' + this.state.device._id + '/' + type + '/new', { pnpSdk: pnpSdk, type: direction ? direction : undefined })
+            .then((response: any) => {
+                this.setState({ device: response.data.device, devices: response.data.devices });
             })
     }
 
@@ -116,6 +117,20 @@ export class DeviceProvider extends React.PureComponent<DeviceContextState> {
         axios.get('/api/device/' + this.state.device._id + '/method/' + id + '/params')
             .then((response: any) => {
                 this.setState({ requests: Object.assign({}, this.state.requests, response.data) });
+            })
+    }
+
+    planRestart = () => {
+        axios.get('/api/device/' + this.state.device._id + '/plan/restart')
+            .then((response: any) => {
+                this.setState({ device: response.data });
+            })
+    }
+
+    planSave = (updatePayload: any) => {
+        axios.put('/api/device/' + this.state.device._id + '/plan', { payload: updatePayload })
+            .then((response: any) => {
+                this.setState({ device: response.data });
             })
     }
 
@@ -143,15 +158,20 @@ export class DeviceProvider extends React.PureComponent<DeviceContextState> {
         startDevice: this.startDevice,
         stopDevice: this.stopDevice,
         deleteDevice: this.deleteDevice,
-        updateDevice: this.updateDevice,
+        updateDeviceProperty: this.updateDeviceProperty,
+        updateDeviceMethod: this.updateDeviceMethod,
         setDevices: this.setDevices,
+        setDevice: this.setDevice,
         getDevices: this.getDevices,
         getCapability: this.getCapability,
         createCapability: this.createCapability,
         deleteCapability: this.deleteCapability,
         getCapabilityMethodRequest: this.getCapabilityMethodRequest,
         setSensors: this.setSensors,
-        getSensor: this.getSensor
+        getSensor: this.getSensor,
+        planRestart: this.planRestart,
+        planSave: this.planSave,
+        updateDeviceConfiguration: this.updateDeviceConfiguration
     }
 
     render() {

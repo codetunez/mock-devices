@@ -3,6 +3,7 @@ import * as iothub from 'azure-iothub';
 import * as uuidV4 from 'uuid/v4';
 import * as crypto from 'crypto';
 
+/* - NOT USED FEATURE - LEAVE FOR FUTURE */
 export class IotHub {
 
     static CreateDevice(connectionString: string) {

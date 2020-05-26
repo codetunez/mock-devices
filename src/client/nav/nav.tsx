@@ -6,29 +6,29 @@ import { Modal } from '../modals/modal';
 import { Help } from '../modals/help';
 import { AddDevice } from '../modals/addDevice';
 import { Simulation } from '../modals/simulation';
-import { DeviceContext, DeviceContextState } from '../context/deviceContext';
+import { DeviceContext } from '../context/deviceContext';
+import { RESX } from '../strings';
 
-export const Nav: React.FunctionComponent = () => {
+export function Nav() {
+
+    const deviceContext: any = React.useContext(DeviceContext);
+
     const [showHelp, toggleHelp] = React.useState(false);
     const [showDevices, toggleDevices] = React.useState(false);
     const [showSimulation, toggleSimulation] = React.useState(false);
 
-    return <DeviceContext.Consumer>
-        {(sharedState: any) => (
-            <div className='nav'>
-                <div className='section-title section-title-nav'>v4.4</div>
-                <button onClick={() => toggleHelp(!showHelp)} className={'btn btn-outline-primary'}><span className='fas fa-question-circle'></span></button >
-                <button onClick={() => toggleDevices(!showDevices)} className={'btn btn-outline-primary'}><span className='far fa-save'></span></button >
-                <hr />
-                <button onClick={() => sharedState.startAllDevices()} className='btn btn-outline-primary'><span className='fas fa-play'></span></button>
-                <button onClick={() => sharedState.stopAllDevices()} className='btn btn-outline-primary'><span className='fas fa-stop'></span></button>
-                <button onClick={() => sharedState.refreshAllDevices()} className='btn btn-outline-primary'><span className='fas fa-sync'></span></button>
-                <hr />
-                <button onClick={() => toggleSimulation(!showSimulation)} className='btn btn-outline-primary'><span className='fas fa-flask'></span></button>
-                {showHelp ? <Modal><div className='blast-shield'></div><div className='app-modal context-modal'><Help handler={toggleHelp} /></div></Modal> : null}
-                {showDevices ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><AddDevice handler={toggleDevices} /></div></Modal> : null}
-                {showSimulation ? <Modal><div className='blast-shield'></div><div className='app-modal context-modal'><Simulation handler={toggleSimulation} /></div></Modal> : null}
-            </div>
-        )}
-    </DeviceContext.Consumer>
+    return <div className='nav'>
+        <div className='section-title section-title-nav'>v5.0</div>
+        <button title={RESX.nav.help} onClick={() => toggleHelp(!showHelp)} className={'btn btn-outline-primary'}><span className='fas fa-question-circle'></span></button >
+        <button title={RESX.nav.file} onClick={() => toggleDevices(!showDevices)} className={'btn btn-outline-primary'}><span className='far fa-save'></span></button >
+        <hr />
+        <button title={RESX.nav.power} onClick={() => deviceContext.startAllDevices()} className='btn btn-outline-primary'><span className='fas fa-power-off'></span></button>
+        <button title={RESX.nav.stop} onClick={() => deviceContext.stopAllDevices()} className='btn btn-outline-primary'><span className='fas fa-stop'></span></button>
+        <button title={RESX.nav.sync} onClick={() => deviceContext.refreshAllDevices()} className='btn btn-outline-primary'><span className='fas fa-sync'></span></button>
+        <hr />
+        <button title={RESX.nav.sim} onClick={() => toggleSimulation(!showSimulation)} className='btn btn-outline-primary'><span className='fas fa-flask'></span></button>
+        {showHelp ? <Modal><div className='blast-shield'></div><div className='app-modal context-modal'><Help handler={toggleHelp} /></div></Modal> : null}
+        {showDevices ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><AddDevice handler={toggleDevices} /></div></Modal> : null}
+        {showSimulation ? <Modal><div className='blast-shield'></div><div className='app-modal context-modal'><Simulation handler={toggleSimulation} /></div></Modal> : null}
+    </div>
 }
