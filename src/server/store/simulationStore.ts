@@ -101,8 +101,11 @@ export class SimulationStore {
                 "init": 0,
                 "variance": 3
             }
+        },
+        "plan": {
+            "startDelay": 3000,
+            "timelineDelay": 5000
         }
-
     }
 
     public get(): {} { return SimulationStore.simulation; }

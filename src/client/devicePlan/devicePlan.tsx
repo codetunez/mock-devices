@@ -177,10 +177,10 @@ export function DevicePlan({ device }) {
             const key: number = i;
             dom.push(<div key={i} className="mini-grid-row">
                 <div className='mini-grid-cell'>
-                    <Combo items={receiveComms} cls='custom-combo-sm' name='propertyIn' onChange={(e) => { dispatch({ type: 'edit-receive', payload: { index: key, field: 'propertyIn', value: e.target.value } }) }} value={ele.property} />
+                    <Combo items={receiveComms} cls='custom-combo-sm' name='propertyIn' onChange={(e) => { dispatch({ type: 'edit-receive', payload: { index: key, field: 'propertyIn', value: e.target.value } }) }} value={ele.propertyIn} />
                 </div>
                 <div className='mini-grid-cell'>
-                    <Combo items={sendComms} cls='custom-combo-sm' name='propertyOut' onChange={(e) => { dispatch({ type: 'edit-receive', payload: { index: key, field: 'propertyOut', value: e.target.value } }) }} value={ele.property} />
+                    <Combo items={sendComms} cls='custom-combo-sm' name='propertyOut' onChange={(e) => { dispatch({ type: 'edit-receive', payload: { index: key, field: 'propertyOut', value: e.target.value } }) }} value={ele.propertyOut} />
                 </div>
                 <div className='mini-grid-cell'>
                     <input type='text' className='form-control form-control-sm' value={ele.value} onChange={(e) => { dispatch({ type: 'edit-receive', payload: { index: key, field: 'value', value: e.target.value } }) }} />
@@ -252,7 +252,7 @@ export function DevicePlan({ device }) {
                 }
                 {state.data && state.data.random && random()}
                 <div className='mini-grid-row-toolbar'>
-                    <button className='btn btn-sm btn-info' onClick={() => { dispatch({ type: 'add-random', payload: null }) }}><i className="fas fa-plus"></i></button>
+                    <button className='btn btn-sm btn-info' disabled={true} onClick={() => { dispatch({ type: 'add-random', payload: null }) }}><i className="fas fa-plus"></i></button>
                 </div>
             </div>
         </div>

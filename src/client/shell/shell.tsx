@@ -64,7 +64,7 @@ export const Shell: React.FunctionComponent = () => {
     <Websocket url={'ws://127.0.0.1:24377'} onMessage={propertyUpdate} />
     <Websocket url={'ws://127.0.0.1:24387'} onMessage={liveUpdate} />
 
-    <SplitterLayout vertical={true} primaryMinSize={20} secondaryMinSize={46} secondaryInitialSize={740}>
+    <SplitterLayout vertical={true} primaryMinSize={20} secondaryMinSize={46} secondaryInitialSize={640}>
       <div className={cx('shell-console')}>
         <div className='console-pause'>
           <a onClick={() => setPause(!paused)}><span className={cx('fas', paused ? 'fa-play' : 'fa-pause')}></span></a>

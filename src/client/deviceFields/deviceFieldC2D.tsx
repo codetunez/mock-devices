@@ -15,8 +15,8 @@ export function DeviceFieldC2D({ capability, expand, pnp }) {
 
     React.useEffect(() => {
         setPayload(capability);
-        setExpanded(expand);
-    }, [capability, expand]);
+        //setExpanded(expand);
+    }, [capability, expand, deviceContext.device]);
 
     const updateField = (e: any) => {
         let node = {}

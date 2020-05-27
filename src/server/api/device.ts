@@ -114,7 +114,7 @@ export default function (deviceStore: DeviceStore) {
         var body = req.body;
         deviceStore.updateDeviceProperty(id, propertyId, body, false);
         // must return the device
-        res.json(deviceStore.exists(id));
+        res.json({ device: deviceStore.exists(id), devices: deviceStore.getListOfItems() });
         res.end();
     });
 
@@ -130,7 +130,7 @@ export default function (deviceStore: DeviceStore) {
     api.put('/:id/plan', function (req, res, next) {
         var id = req.params.id;
         deviceStore.updateDevice(id, req.body.payload, 'plan');
-        res.json(deviceStore.exists(id));
+        res.json({ device: deviceStore.exists(id), devices: deviceStore.getListOfItems() });
         res.end();
     });
 

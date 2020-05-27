@@ -18,8 +18,8 @@ export function DeviceFieldD2C({ capability, sensors, expand, pnp, template }) {
 
     React.useEffect(() => {
         setPayload(capability);
-        setExpanded(expand);
-    }, [capability, expand]);
+        //setExpanded(expand);
+    }, [capability, expand, deviceContext.device]);
 
     const updateField = (e: any) => {
         let node = {}

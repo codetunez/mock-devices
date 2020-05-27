@@ -70,12 +70,14 @@ export class MockDevice {
 
     private twinRLTimer = null;
     private twinRLProps: Array<Property> = [];
+    private twinRLPropsPlanValues: Array<Property> = [];
     private twinRLReportedTimers: Array<number> = [];
     private twinRLPayloadAdditions: ValueByIdPayload = <ValueByIdPayload>{};
     private twinDesiredPayloadRead = {};
 
     private msgRLTimer = null;
     private msgRLProps: Array<Property> = [];
+    private msgRLPropsPlanValues: Array<Property> = [];
     private msgRLReportedTimers: Array<number> = [];
     private msgRLPayloadAdditions: ValueByIdPayload = <ValueByIdPayload>{};
 
@@ -93,6 +95,14 @@ export class MockDevice {
 
     private pnpInterfaces = {};
     private pnpInterfaceCache = {};
+
+    private planModeLastEventTime = 0;
+
+    private nameIdResolvers = {
+        desiredToId: {},
+        methodToId: {},
+        deviceCommsIndex: {}
+    }
 
     constructor(device, messageService: MessageService, deviceStore: DeviceStore) {
         this.updateDevice(device);
@@ -116,6 +126,9 @@ export class MockDevice {
 
         this.RESTART_LOOP = (Utils.getRandomNumberBetweenRange(min, max, true) * 3600000);
         this.sasTokenExpiry = this.getSecondsFromHours(simulation["sasExpire"]);
+
+        this.buildIndexes(device);
+
     }
 
     getSecondsFromHours(hours: number) {
@@ -123,13 +136,70 @@ export class MockDevice {
         return Math.ceil(raw);
     }
 
+    buildIndexes(device: any) {
+        // build indexes
+        device.comms.forEach((comm, index) => {
+            this.nameIdResolvers.deviceCommsIndex[comm._id] = index;
+            if (comm._type === 'property' && comm.sdk === 'twin' && comm.type.direction === 'c2d') {
+                this.nameIdResolvers.desiredToId[comm.name] = comm._id;
+            }
+            if (comm._type === 'method') {
+                this.nameIdResolvers.methodToId[comm.name] = comm._id;
+            }
+        })
+    }
+
     reconfigDeviceDynamically() {
+
+        this.buildIndexes(this.device);
 
         this.pnpInterfaceCache = {};
 
         this.twinRLProps = [];
+        this.twinRLPropsPlanValues = [];
         this.twinRLReportedTimers = [];
         this.twinRLMockSensorTimers = {};
+
+        this.msgRLProps = [];
+        this.msgRLPropsPlanValues = [];
+        this.msgRLReportedTimers = [];
+        this.msgRLMockSensorTimers = {};
+
+        // for PM we are only interested in the list. the rest has been defined in IM mode
+        if (this.device.configuration.planMode) {
+
+            const config = this.simulationStore.get()["plan"];
+
+            this.device.plan.startup.forEach((item) => {
+                const comm = this.device.comms[this.nameIdResolvers.deviceCommsIndex[item.property]];
+                if (comm.sdk === "twin") {
+                    this.twinRLProps.push(comm);
+                    this.twinRLPropsPlanValues.push(item.value);
+                    this.twinRLReportedTimers.push(config["startDelay"]);
+                } else if (comm.sdk === "msg") {
+                    this.msgRLProps.push(comm);
+                    this.msgRLPropsPlanValues.push(item.value);
+                    this.msgRLReportedTimers.push(config["startDelay"]);
+                }
+            })
+
+            this.device.plan.timeline.forEach((item) => {
+                // find the last event
+                this.planModeLastEventTime = (item.time * 1000) + config["timelineDelay"];
+                const comm = this.device.comms[this.nameIdResolvers.deviceCommsIndex[item.property]];
+                if (comm.sdk === "twin") {
+                    this.twinRLProps.push(comm);
+                    this.twinRLPropsPlanValues.push(item.value);
+                    this.twinRLReportedTimers.push(this.planModeLastEventTime);
+                } else if (comm.sdk === "msg") {
+                    this.msgRLProps.push(comm);
+                    this.msgRLPropsPlanValues.push(item.value);
+                    this.msgRLReportedTimers.push(this.planModeLastEventTime);
+                }
+            })
+
+            return;
+        }
 
         this.msgRLProps = [];
         this.msgRLReportedTimers = [];
@@ -167,16 +237,16 @@ export class MockDevice {
                     let slice = 0;
                     let startValue = 0;
                     if (comm.mock._type != 'function') {
-                        // re-think this. init might be < 0
-                        startValue = comm.mock.init > 0 ? comm.mock.init : comm.mock.running;
+                        // if the sensor is a "active" sensor then us the running expected as the start value
+                        startValue = comm.mock.running && comm.mock.running > 0 ? comm.mock.running : comm.mock.init;
                     } else {
-                        // this is a little bit of a hack to wire a function
                         startValue = comm.mock.init
+                        // this is a little bit of a hack to wire a function
                         comm.mock.timeToRunning = 1;
                     }
 
-                    slice = startValue / comm.mock.timeToRunning;
-                    mockSensorTimerObject = { slice: slice, remaining: comm.mock.timeToRunning };
+                    slice = startValue / (comm.mock.timeToRunning / 1000);
+                    mockSensorTimerObject = { sliceMs: slice, remainingMs: comm.mock.timeToRunning };
                     comm.mock._value = comm.mock.init;
                 }
 
@@ -204,6 +274,7 @@ export class MockDevice {
         }
     }
 
+    // is this safe?
     updateTwin(payload: ValueByIdPayload) {
         this.twinRLPayloadAdditions = payload;
     }
@@ -318,7 +389,7 @@ export class MockDevice {
             // reported properties are cleared every runloop cycle
             this.twinRLTimer = setInterval(() => {
 
-                let payload: ValueByIdPayload = <ValueByIdPayload>this.calcPropertyValues(this.twinRLProps, this.twinRLReportedTimers, this.twinRLMockSensorTimers);
+                let payload: ValueByIdPayload = <ValueByIdPayload>this.calcPropertyValues(this.twinRLProps, this.twinRLReportedTimers, this.twinRLMockSensorTimers, this.twinRLPropsPlanValues);
                 this.messageService.sendAsLiveUpdate(payload);
                 this.runloopTwin(this.twinRLPayloadAdditions, payload);
                 this.twinRLPayloadAdditions = <ValueByIdPayload>{};
@@ -326,7 +397,7 @@ export class MockDevice {
 
             this.msgRLTimer = setInterval(() => {
 
-                let payload: ValueByIdPayload = <ValueByIdPayload>this.calcPropertyValues(this.msgRLProps, this.msgRLReportedTimers, this.msgRLMockSensorTimers);
+                let payload: ValueByIdPayload = <ValueByIdPayload>this.calcPropertyValues(this.msgRLProps, this.msgRLReportedTimers, this.msgRLMockSensorTimers, this.msgRLPropsPlanValues);
                 this.messageService.sendAsLiveUpdate(payload);
 
                 this.runloopMsg(this.msgRLPayloadAdditions, payload);
@@ -351,51 +422,44 @@ export class MockDevice {
 
                     // desired properties are cached
                     twin.on('properties.desired', ((delta) => {
+                        if (!this.CONNECT_RESTART) { Object.assign(this.twinDesiredPayloadRead, delta); }
+                        this.log(JSON.stringify(delta), MSG_HUB, MSG_TWIN, MSG_RECV);
+                        this.CONNECT_RESTART = false;
+
+                        // this deals with a full twin or a single desired
                         if (this.device.configuration.planMode) {
-                            // In a plan, the desired could send a property back
-                        } else {
-                            if (!this.CONNECT_RESTART) { Object.assign(this.twinDesiredPayloadRead, delta); }
-                            this.log(JSON.stringify(delta), MSG_HUB, MSG_TWIN, MSG_RECV);
-                            this.CONNECT_RESTART = false;
+                            for (let name in delta) {
+                                this.sendPlanResponse(this.nameIdResolvers.desiredToId, name);
+                            }
                         }
                     }))
 
+                    // this loop is a poller to check a payload the will be used to send the method response 
+                    // as a reported property with the same name. once it processes the payload it clears it.
                     this.methodRLTimer = setInterval(() => {
                         if (this.methodReturnPayload != null) {
-                            if (this.device.configuration.planMode) {
-                                // In a plan, the method could send a property back
-                            } else {
-                                twin.properties.reported.update(this.methodReturnPayload, ((err) => {
-                                    this.log(err ? err.toString() : JSON.stringify(this.methodReturnPayload), MSG_HUB, MSG_TWIN, MSG_SEND);
-                                    this.methodReturnPayload = null;
-                                }))
-                            }
+                            twin.properties.reported.update(this.methodReturnPayload, ((err) => {
+                                this.log(err ? err.toString() : JSON.stringify(this.methodReturnPayload), MSG_HUB, MSG_TWIN, MSG_SEND);
+                                this.methodReturnPayload = null;
+                            }))
                         }
                     }, 500);
 
                     // reported properties are cleared every runloop cycle
                     this.twinRLTimer = setInterval(() => {
-                        if (this.device.configuration.planMode) {
-                            // In a plan, this value will be sent at a specific time
-                        } else {
-                            let payload: ValueByIdPayload = <ValueByIdPayload>this.calcPropertyValues(this.twinRLProps, this.twinRLReportedTimers, this.twinRLMockSensorTimers);
-                            this.messageService.sendAsLiveUpdate(payload);
-                            this.runloopTwin(this.twinRLPayloadAdditions, payload, twin);
-                            this.twinRLPayloadAdditions = <ValueByIdPayload>{};
-                        }
+                        let payload: ValueByIdPayload = <ValueByIdPayload>this.calcPropertyValues(this.twinRLProps, this.twinRLReportedTimers, this.twinRLMockSensorTimers, this.twinRLPropsPlanValues);
+                        this.messageService.sendAsLiveUpdate(payload);
+                        this.runloopTwin(this.twinRLPayloadAdditions, payload, twin);
+                        this.twinRLPayloadAdditions = <ValueByIdPayload>{};
                     }, 1000);
                 })
 
                 this.msgRLTimer = setInterval(() => {
-                    if (this.device.configuration.planMode) {
-                        // In a plan, this value will be sent at a specific time
-                    } else {
-                        let payload: ValueByIdPayload = <ValueByIdPayload>this.calcPropertyValues(this.msgRLProps, this.msgRLReportedTimers, this.msgRLMockSensorTimers);
-                        this.messageService.sendAsLiveUpdate(payload);
-
-                        this.runloopMsg(this.msgRLPayloadAdditions, payload);
-                        this.msgRLPayloadAdditions = <ValueByIdPayload>{};
-                    }
+                    let payload: ValueByIdPayload = null;
+                    payload = <ValueByIdPayload>this.calcPropertyValues(this.msgRLProps, this.msgRLReportedTimers, this.msgRLMockSensorTimers, this.msgRLPropsPlanValues);
+                    this.messageService.sendAsLiveUpdate(payload);
+                    this.runloopMsg(this.msgRLPayloadAdditions, payload);
+                    this.msgRLPayloadAdditions = <ValueByIdPayload>{};
                 }, 1000);
 
             })
@@ -405,13 +469,23 @@ export class MockDevice {
         }
     }
 
+    sendPlanResponse(index, name) {
+        const propertyId = index[name];
+        const property = this.device.plan.receive.find((prop) => { return prop.propertyIn === propertyId });
+        if (property) {
+            const sdk = this.device.comms[this.nameIdResolvers.deviceCommsIndex[propertyId]].sdk;
+            const payload = <ValueByIdPayload>{ [property.propertyOut]: property.value }
+            if (sdk === 'twin') { this.updateTwin(payload); } else { this.updateMsg(payload); }
+        }
+    }
+
     regsisterC2D() {
         this.iotHubDevice.client.on('message', (msg) => {
             if (msg && msg.data) {
                 try {
                     const json = JSON.parse(msg.data.toString('utf8').replace(/\'/g, '"'));
 
-                    const cloudMethod = json.methodName;
+                    const cloudMethod = json.methodName || '';
                     const cloudMethodPayload = json.payload || {};
                     const connectTimeoutInSeconds = json.connectTimeoutInSeconds || 30;
                     const responseTimeoutInSeconds = json.responseTimeoutInSeconds || 30;
@@ -421,21 +495,17 @@ export class MockDevice {
                         let comm: any = this.device.comms[i];
 
                         if (comm.name === cloudMethod && comm._type === "method" && comm.execution === 'cloud') {
-                            let m: Method = comm;
-                            let payload = m.asProperty ? { result: m.payload } : JSON.parse(m.payload);
                             this.log(cloudMethod + " " + JSON.stringify(cloudMethodPayload), MSG_HUB, MSG_C2D, MSG_RECV);
+
+                            let m: Method = comm;
                             Object.assign(this.receivedMethodParams, { [m._id]: { date: new Date().toUTCString(), payload: JSON.stringify(cloudMethodPayload) } });
 
-                            if (m.asProperty && this.device.configuration.planMode) {
-                                // In a plan, a C2D method could return a value
-                            } else if (m.asProperty) {
+                            if (this.device.configuration.planMode) {
+                                this.sendPlanResponse(this.nameIdResolvers.methodToId, m.name);
+                            } else if (!this.device.configuration.planMode && m.asProperty) {
                                 this.methodReturnPayload = Object.assign({}, { [m.name]: m.payload })
                             }
 
-                            // TODO: fix the send payload
-                            this.log(JSON.stringify(payload), MSG_HUB, MSG_C2D, MSG_SEND);
-
-                            this.messageService.sendAsLiveUpdate({ [m._id]: new Date().toUTCString() });
                             this.processMockDevicesCMD(m.name);
                         }
                     }
@@ -445,7 +515,7 @@ export class MockDevice {
             }
 
             this.iotHubDevice.client.complete(msg, (err) => {
-                this.log(`C2D COMPLETE:  ${err ? err.toString() : msg.data.toString('utf8')}`, MSG_HUB, MSG_PROC);
+                this.log(`[C2D COMPLETE] ${err ? err.toString() : msg.data.toString('utf8')}`, MSG_HUB, MSG_PROC);
             });
         });
     }
@@ -462,13 +532,16 @@ export class MockDevice {
                 this.iotHubDevice.client.onDeviceMethod(m.name, (request, response) => {
                     this.log(request.methodName + " " + JSON.stringify(request.payload), MSG_HUB, MSG_METH, MSG_RECV);
                     Object.assign(this.receivedMethodParams, { [m._id]: { date: new Date().toUTCString(), payload: JSON.stringify(request.payload) } });
+
+                    // this response is the payload of the device
                     response.send((m.status), payload, (err) => {
-                        if (m.asProperty && this.device.configuration.planMode) {
-                            // In a plan, a method could return a value
-                        } else if (m.asProperty) {
-                            this.methodReturnPayload = Object.assign({}, { [m.name]: m.payload })
+                        if (this.device.configuration.planMode) {
+                            this.sendPlanResponse(this.nameIdResolvers.methodToId, m.name);
+                        } else if (!this.device.configuration.planMode && m.asProperty) {
+                            this.methodReturnPayload = Object.assign({}, { [m.name]: JSON.parse(m.payload) })
                         }
-                        this.log(err ? err.toString() : JSON.stringify(payload), MSG_HUB, MSG_METH, MSG_SEND);
+
+                        this.log(err ? err.toString() : `[DIRECT METHOD RESPONSE PAYLOAD] ${payload.result}`, MSG_HUB, MSG_METH, MSG_SEND);
                         this.messageService.sendAsLiveUpdate({ [m._id]: new Date().toUTCString() });
                         this.processMockDevicesCMD(m.name);
                     })
@@ -621,7 +694,7 @@ export class MockDevice {
         }
     }
 
-    calcPropertyValues(runloopProperties: any, runloopTimers: any, propertySensorTimers: any) {
+    calcPropertyValues(runloopProperties: any, runloopTimers: any, propertySensorTimers: any, runloopPropertiesValues: any) {
         if (this.iotHubDevice === null || this.iotHubDevice.client === null) {
             clearInterval(this.msgRLTimer);
             return null;
@@ -630,23 +703,17 @@ export class MockDevice {
         // first get all the values to report
         let payload = {};
         for (let i = 0; i < runloopProperties.length; i++) {
+
+            // this is a paired structure
             let p: Property = runloopProperties[i];
             let res = this.processCountdown(p, runloopTimers[i]);
             runloopTimers[i] = res.timeRemain;
 
-            // we need to adjust the mock sensor value regardless of runloop
-            // 2nd block appears to be required due to a typescript bug
-            if (p.mock && p.mock._type != "function") {
-                this.updateSensorValue(p, propertySensorTimers);
-            }
-            if (p.mock && p.mock._type === "function" && res.process === true) {
-                this.updateSensorValue(p, propertySensorTimers);
-            }
-
-            if (res.process && p.enabled) {
+            this.updateSensorValue(p, propertySensorTimers);
+            // for plan mode we send regardless of enabled or not
+            if (res.process && (this.device.configuration.planMode || p.enabled)) {
                 let o: ValueByIdPayload = <ValueByIdPayload>{};
-                o[p._id] = (p.mock ? p.mock._value : Utils.formatValue(p.string, p.value));
-                //TODO: Should deal with p.value not being set as it could be a Complex
+                o[p._id] = this.device.configuration.planMode ? Utils.formatValue(p.string, runloopPropertiesValues[i]) : (p.mock ? p.mock._value : Utils.formatValue(p.string, p.value));
                 Object.assign(payload, o);
             }
         }
@@ -660,8 +727,9 @@ export class MockDevice {
 
         // this block deals with calculating the slice val to apply to the current sensor value
         if (propertySensorTimers[p._id]) {
-            slice = propertySensorTimers[p._id].slice;
-            let sliceRemaining = propertySensorTimers[p._id].remaining - 1;
+            slice = propertySensorTimers[p._id].sliceMs;
+            let sliceRemaining = propertySensorTimers[p._id].remainingMs - 1000;
+
             if (sliceRemaining > 0) {
                 propertySensorTimers[p._id].remaining = sliceRemaining;
             } else {
@@ -679,7 +747,7 @@ export class MockDevice {
         }
 
         if (p.mock._type === "hotplate") {
-            var newCurrent = p.mock._value + (slice + (slice * p.mock.variance));
+            var newCurrent = p.mock._value + (slice - (slice * p.mock.variance));
             p.mock._value = newCurrent <= p.mock.running ? newCurrent : p.mock.running;
         }
 
@@ -705,7 +773,7 @@ export class MockDevice {
                     headers: { 'content-type': 'application/json' },
                     url: url,
                     body: JSON.stringify({ "value": value })
-                }, function (err, response, body) {
+                }, (err, response, body) => {
                     if (err) {
                         this.log(`FUNCTION ERROR: ${err.toString()}`, MSG_FNC, '', MSG_SEND);
                         reject(err);
@@ -723,10 +791,10 @@ export class MockDevice {
         })
     }
 
-    processCountdown(p: Property, remainingTime) {
+    processCountdown(p: Property, propertyRunloopTimes) {
 
         let res: any = {};
-        let timeRemain = remainingTime;
+        let timeRemain = propertyRunloopTimes;
 
         // countdown and go to next property
         if (timeRemain != 0) {
@@ -736,8 +804,12 @@ export class MockDevice {
 
         // reset and process
         if (timeRemain === 0) {
-            let mul = p.runloop.unit === "secs" ? 1000 : 60000
-            timeRemain = p.runloop.value * mul;
+            if (this.device.configuration.planMode) {
+                timeRemain = -1;
+            } else {
+                let mul = p.runloop.unit === "secs" ? 1000 : 60000
+                timeRemain = p.runloop.value * mul;
+            }
             res.process = true;
         }
 

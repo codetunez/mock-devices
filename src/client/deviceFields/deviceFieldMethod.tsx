@@ -11,12 +11,13 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, ex
     const [expanded, setExpanded] = React.useState(expand);
     const [updatePayload, setPayload] = React.useState(capability);
     const [dirty, setDirty] = React.useState(false);
+
     const deviceContext: any = React.useContext(DeviceContext);
 
     React.useEffect(() => {
         setPayload(capability);
-        setExpanded(expand);
-    }, [capability, expand]);
+        //setExpanded(expand);
+    }, [capability, expand, deviceContext.device]);
 
     const updateField = (e: any) => {
         let node = {}

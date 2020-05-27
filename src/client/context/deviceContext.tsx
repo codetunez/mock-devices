@@ -79,7 +79,7 @@ export class DeviceProvider extends React.PureComponent {
     updateDeviceProperty = (updatePayload: any, send: boolean) => {
         axios.put('/api/device/' + this.state.device._id + '/property/' + updatePayload._id + (send ? '/value' : ''), updatePayload)
             .then(response => {
-                this.setState({ device: response.data });
+                this.setState({ device: response.data.device, devices: response.data.devices });
             })
     }
 
@@ -130,7 +130,7 @@ export class DeviceProvider extends React.PureComponent {
     planSave = (updatePayload: any) => {
         axios.put('/api/device/' + this.state.device._id + '/plan', { payload: updatePayload })
             .then((response: any) => {
-                this.setState({ device: response.data });
+                this.setState({ device: response.data.device, devices: response.data.devices });
             })
     }
 
