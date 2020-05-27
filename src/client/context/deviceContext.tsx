@@ -102,7 +102,7 @@ export class DeviceProvider extends React.PureComponent {
     deleteCapability = (id: string, type: string) => {
         axios.delete('/api/device/' + this.state.device._id + '/' + type + '/' + id, null)
             .then((response: any) => {
-                this.setState({ device: response.data });
+                this.setState({ device: response.data.device, devices: response.data.devices });
             })
     }
 
@@ -123,7 +123,7 @@ export class DeviceProvider extends React.PureComponent {
     planRestart = () => {
         axios.get('/api/device/' + this.state.device._id + '/plan/restart')
             .then((response: any) => {
-                this.setState({ device: response.data });
+                this.setState({ device: response.data.device, devices: response.data.devices });
             })
     }
 

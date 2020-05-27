@@ -319,6 +319,9 @@ export class DeviceStore {
                 d.comms[index].runloop.include = false;
                 delete d.comms[index].mock;
             } else {
+                if (d.comms[index]._type === "method") {
+                    this.stopDevice(d);
+                }
                 d.comms.splice(index, 1);
             }
 

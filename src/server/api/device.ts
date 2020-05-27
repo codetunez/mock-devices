@@ -63,8 +63,7 @@ export default function (deviceStore: DeviceStore) {
         var propertyId = req.params.propertyId;
         var body = req.body;
         deviceStore.deleteDeviceProperty(id, propertyId);
-        // must return the device
-        res.json(deviceStore.exists(id));
+        res.json({ device: deviceStore.exists(id), devices: deviceStore.getListOfItems() });
         res.end();
     });
 
@@ -73,8 +72,7 @@ export default function (deviceStore: DeviceStore) {
         var id = req.params.id;
         var methodId = req.params.methodId;
         deviceStore.deleteDeviceProperty(id, methodId);
-        // must return the device
-        res.json(deviceStore.exists(id));
+        res.json({ device: deviceStore.exists(id), devices: deviceStore.getListOfItems() });
         res.end();
     });
 
@@ -103,7 +101,7 @@ export default function (deviceStore: DeviceStore) {
         var body = req.body;
         deviceStore.updateDeviceProperty(id, propertyId, body, true);
         // must return the device        
-        res.json(deviceStore.exists(id));
+        res.json({ device: deviceStore.exists(id), devices: deviceStore.getListOfItems() });
         res.end();
     });
 
@@ -122,7 +120,7 @@ export default function (deviceStore: DeviceStore) {
     api.get('/:id/plan/restart', function (req, res, next) {
         var id = req.params.id;
         deviceStore.startDevice(deviceStore.exists(id));
-        res.json(deviceStore.exists(id));
+        res.json({ device: deviceStore.exists(id), devices: deviceStore.getListOfItems() });
         res.end();
     });
 
