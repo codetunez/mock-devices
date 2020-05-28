@@ -8,6 +8,7 @@ import { AddDevice } from '../modals/addDevice';
 import { Simulation } from '../modals/simulation';
 import { DeviceContext } from '../context/deviceContext';
 import { RESX } from '../strings';
+import useAPIPolling, { APIPollingOptions } from 'use-api-polling'
 
 export function Nav() {
 
@@ -16,6 +17,10 @@ export function Nav() {
     const [showHelp, toggleHelp] = React.useState(false);
     const [showDevices, toggleDevices] = React.useState(false);
     const [showSimulation, toggleSimulation] = React.useState(false);
+
+    //TODO: refactor this to server side events
+    const fetchFunc = async () => { await deviceContext.getDevices(); }
+    useAPIPolling<any>({ fetchFunc, initialState: [], delay: 5000 })
 
     return <div className='nav'>
         <div className='section-title section-title-nav'>v5.0</div>

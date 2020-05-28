@@ -31,7 +31,7 @@ export class DeviceProvider extends React.PureComponent {
     // data control plane
     getDevices = () => {
         axios.get('/api/devices').then((response: any) => {
-            this.setState({ devices: response.data, device: {} });
+            this.setState({ devices: response.data });
         })
     }
 
