@@ -1,6 +1,7 @@
 @import "../const.scss";
 
 .plan {
+    width: 100%;
     height: 100%;
     overflow-y: auto;
     display: flex;
@@ -55,5 +56,17 @@
 // -- HACK!
 .btn {
     // need to debug why
-    margin-top: -3px;
+    margin-top: -4px;
+}
+
+.cell-width-2 {
+    width: 50%;
+}
+
+.cell-width-3 {
+    width: 33%;
+}
+
+.cell-width-4 {
+    width: 25%;
 }

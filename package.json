@@ -1,8 +1,12 @@
 {
   "name": "mock-devices",
   "version": "5.0.0",
-  "description": "",
+  "description": "mock-devices desktop edition",
   "main": "./_dist/server/start.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codetunez/mock-devices"
+  },
   "scripts": {
     "build": "webpack && tsc",
     "watchux": "webpack --progress --colors --watch",

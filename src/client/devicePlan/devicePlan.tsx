@@ -112,10 +112,10 @@ export function DevicePlan({ device }) {
         state.data.startup.map((ele, i: number) => {
             const key: number = i;
             dom.push(<div key={i} className="mini-grid-row">
-                <div className='mini-grid-cell'>
+                <div className='mini-grid-cell cell-width-2'>
                     <Combo items={sendComms} cls='custom-combo-sm' name='property' onChange={(e) => { dispatch({ type: 'edit-startup', payload: { index: key, field: 'property', value: e.target.value } }) }} value={ele.property} />
                 </div>
-                <div className='mini-grid-cell'>
+                <div className='mini-grid-cell cell-width-2'>
                     <input type='text' className='form-control form-control-sm' value={ele.value} onChange={(e) => { dispatch({ type: 'edit-startup', payload: { index: key, field: 'value', value: e.target.value } }) }} />
                 </div>
                 <div className='mini-grid-cell'>
@@ -131,13 +131,13 @@ export function DevicePlan({ device }) {
         state.data.timeline.map((ele, i) => {
             const key: number = i;
             dom.push(<div key={i} className="mini-grid-row">
-                <div className='mini-grid-cell'>
+                <div className='mini-grid-cell cell-width-3'>
                     <input type='number' className='form-control form-control-sm' value={ele.time} onChange={(e) => { dispatch({ type: 'edit-timeline', payload: { index: key, field: 'time', value: e.target.value } }) }} />
                 </div>
-                <div className='mini-grid-cell'>
+                <div className='mini-grid-cell cell-width-3'>
                     <Combo items={sendComms} cls='custom-combo-sm' name='property' onChange={(e) => { dispatch({ type: 'edit-timeline', payload: { index: key, field: 'property', value: e.target.value } }) }} value={ele.property} />
                 </div>
-                <div className='mini-grid-cell'>
+                <div className='mini-grid-cell cell-width-3'>
                     <input type='text' className='form-control form-control-sm' value={ele.value} onChange={(e) => { dispatch({ type: 'edit-timeline', payload: { index: key, field: 'value', value: e.target.value } }) }} />
                 </div>
                 <div className='mini-grid-cell'>
@@ -154,13 +154,13 @@ export function DevicePlan({ device }) {
         state.data.random.map((ele, i) => {
             const key: number = i;
             dom.push(<div key={i} className="mini-grid-row">
-                <div className='mini-grid-cell'>
+                <div className='mini-grid-cell cell-width-3'>
                     <Combo items={sendComms} cls='custom-combo-sm' name='property' onChange={(e) => { dispatch({ type: 'edit-random', payload: { index: key, field: 'property', value: e.target.value } }) }} value={ele.property} />
                 </div>
-                <div className='mini-grid-cell'>
+                <div className='mini-grid-cell cell-width-3'>
                     <input type='text' className='form-control form-control-sm' value={ele.before} onChange={(e) => { dispatch({ type: 'edit-random', payload: { index: key, field: 'before', value: e.target.value } }) }} />
                 </div>
-                <div className='mini-grid-cell'>
+                <div className='mini-grid-cell cell-width-3'>
                     <input type='text' className='form-control form-control-sm' value={ele.after} onChange={(e) => { dispatch({ type: 'edit-random', payload: { index: key, field: 'after', value: e.target.value } }) }} />
                 </div>
                 <div className='mini-grid-cell'>
@@ -261,8 +261,8 @@ export function DevicePlan({ device }) {
             <div className='mini-grid'>
                 {state.data && state.data.receive && state.data.timeline.length === 0 ? RESX.device.plan.empty.receive :
                     <div className='mini-grid-row-header'>
-                        <div className='mini-grid-header'>Property Receive</div>
-                        <div className='mini-grid-header'>Property Send</div>
+                        <div className='mini-grid-header'>Property In</div>
+                        <div className='mini-grid-header'>Property Out</div>
                         <div className='mini-grid-header'>Value</div>
                     </div>
                 }

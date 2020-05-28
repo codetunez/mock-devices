@@ -41,6 +41,11 @@ interface IoTHubDevice {
     digitalTwinClient: any;
 }
 
+interface Timers {
+    timeRemain: number,
+    originalTime: number
+}
+
 export class MockDevice {
 
     private CMD_REBOOT: string;
@@ -71,14 +76,14 @@ export class MockDevice {
     private twinRLTimer = null;
     private twinRLProps: Array<Property> = [];
     private twinRLPropsPlanValues: Array<Property> = [];
-    private twinRLReportedTimers: Array<number> = [];
+    private twinRLReportedTimers: Array<Timers> = [];
     private twinRLPayloadAdditions: ValueByIdPayload = <ValueByIdPayload>{};
     private twinDesiredPayloadRead = {};
 
     private msgRLTimer = null;
     private msgRLProps: Array<Property> = [];
     private msgRLPropsPlanValues: Array<Property> = [];
-    private msgRLReportedTimers: Array<number> = [];
+    private msgRLReportedTimers: Array<Timers> = [];
     private msgRLPayloadAdditions: ValueByIdPayload = <ValueByIdPayload>{};
 
     private twinRLMockSensorTimers = {};
@@ -136,7 +141,7 @@ export class MockDevice {
         return Math.ceil(raw);
     }
 
-    buildIndexes(device: any) {
+    buildIndexes(device: Device) {
         // build indexes
         device.comms.forEach((comm, index) => {
             this.nameIdResolvers.deviceCommsIndex[comm._id] = index;
@@ -183,18 +188,18 @@ export class MockDevice {
                 }
             })
 
-            this.device.plan.timeline.forEach((item) => {
+            this.device.plan.timeline.forEach((item, ) => {
                 // find the last event
                 this.planModeLastEventTime = (item.time * 1000) + config["timelineDelay"];
                 const comm = this.device.comms[this.nameIdResolvers.deviceCommsIndex[item.property]];
                 if (comm.sdk === "twin") {
                     this.twinRLProps.push(comm);
                     this.twinRLPropsPlanValues.push(item.value);
-                    this.twinRLReportedTimers.push(this.planModeLastEventTime);
+                    this.twinRLReportedTimers.push({ timeRemain: this.planModeLastEventTime, originalTime: this.planModeLastEventTime });
                 } else if (comm.sdk === "msg") {
                     this.msgRLProps.push(comm);
                     this.msgRLPropsPlanValues.push(item.value);
-                    this.msgRLReportedTimers.push(this.planModeLastEventTime);
+                    this.msgRLReportedTimers.push({ timeRemain: this.planModeLastEventTime, originalTime: this.planModeLastEventTime });
                 }
             })
 
@@ -252,13 +257,13 @@ export class MockDevice {
 
                 if (comm.sdk === "twin") {
                     this.twinRLProps.push(comm);
-                    this.twinRLReportedTimers.push(ms);
+                    this.twinRLReportedTimers.push({ timeRemain: ms, originalTime: ms });
                     if (mockSensorTimerObject != null) { this.twinRLMockSensorTimers[comm._id] = mockSensorTimerObject; }
                 }
 
                 if (comm.sdk === "msg") {
                     this.msgRLProps.push(comm);
-                    this.msgRLReportedTimers.push(ms);
+                    this.msgRLReportedTimers.push({ timeRemain: ms, originalTime: ms });
                     if (mockSensorTimerObject != null) { this.msgRLMockSensorTimers[comm._id] = mockSensorTimerObject; }
                 }
             }
@@ -706,8 +711,10 @@ export class MockDevice {
 
             // this is a paired structure
             let p: Property = runloopProperties[i];
-            let res = this.processCountdown(p, runloopTimers[i]);
-            runloopTimers[i] = res.timeRemain;
+            let { timeRemain, originalTime } = runloopTimers[i]
+            let possibleResetTime = runloopTimers[runloopTimers.length - 1].timeRemain + originalTime;
+            let res = this.processCountdown(p, timeRemain, possibleResetTime);
+            runloopTimers[i] = { 'timeRemain': res.timeRemain, originalTime };
 
             this.updateSensorValue(p, propertySensorTimers);
             // for plan mode we send regardless of enabled or not
@@ -791,10 +798,9 @@ export class MockDevice {
         })
     }
 
-    processCountdown(p: Property, propertyRunloopTimes) {
+    processCountdown(p: Property, timeRemain, originalPlanTime) {
 
         let res: any = {};
-        let timeRemain = propertyRunloopTimes;
 
         // countdown and go to next property
         if (timeRemain != 0) {
@@ -805,7 +811,7 @@ export class MockDevice {
         // reset and process
         if (timeRemain === 0) {
             if (this.device.configuration.planMode) {
-                timeRemain = -1;
+                timeRemain = this.device.plan.loop ? originalPlanTime : -1;
             } else {
                 let mul = p.runloop.unit === "secs" ? 1000 : 60000
                 timeRemain = p.runloop.value * mul;
