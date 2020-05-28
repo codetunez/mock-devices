@@ -62,8 +62,9 @@ export class DeviceStore {
                 if (p.mock) { p.mock._id = uuidV4(); }
             }
             d.comms = origDevice.comms;
-            d.plan = origDevice.plan;
-            d.configuration.planMode = origDevice.configuration.planMode;
+            // because every property id in mock-devices is unique, a plan cannot be copied without a refactor
+            // d.plan = origDevice.plan;
+            d.configuration.planMode = false;
             delete d.configuration._deviceList;
             delete d.configuration.mockDeviceCount;
             delete d.configuration.dpsPayload;
@@ -239,6 +240,12 @@ export class DeviceStore {
             }
             this.store.setItem(d, d._id);
         }
+    }
+
+    /* method !!! unsafe !!! */
+    public restartDevicePlan = (id: string) => {
+        let rd: MockDevice = this.runners[id];
+        rd.reconfigDeviceDynamically();
     }
 
     /* method !!! unsafe !!! */

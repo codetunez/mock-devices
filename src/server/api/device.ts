@@ -119,7 +119,7 @@ export default function (deviceStore: DeviceStore) {
     // restart the plan and send back just the device
     api.get('/:id/plan/restart', function (req, res, next) {
         var id = req.params.id;
-        deviceStore.startDevice(deviceStore.exists(id));
+        deviceStore.restartDevicePlan(id);
         res.json({ device: deviceStore.exists(id), devices: deviceStore.getListOfItems() });
         res.end();
     });

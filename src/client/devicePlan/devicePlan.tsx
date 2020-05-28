@@ -62,11 +62,11 @@ const reducer = (state: State, action: Action) => {
         case 'add-startup':
         case 'add-random':
         case 'add-receive':
-            newData[item].push({ property: '', value: '' })
+            newData[item].push({ property: action.payload.comms[0].value, value: 0 })
             return { ...state, form: { dirty: true }, data: newData };
         case 'add-timeline':
-            const newSeconds = newData.timeline.length === 0 ? 0 : newData.timeline[newData.timeline.length - 1].time + 1;
-            newData.timeline.push({ time: newSeconds, property: '', value: '' })
+            const newSeconds = newData.timeline.length === 0 ? 0 : parseInt(newData.timeline[newData.timeline.length - 1].time) + 1;
+            newData.timeline.push({ time: newSeconds, property: action.payload.comms[0].value, value: 0 })
             return { ...state, form: { dirty: true }, data: newData };
         case 'remove-startup':
         case 'remove-timeline':
@@ -101,7 +101,7 @@ export function DevicePlan({ device }) {
 
     device.comms.map((element: any) => {
         if (element._type === 'method' || element.type.direction === 'c2d') {
-            receiveComms.push({ name: element.name, value: element._id })
+            receiveComms.push({ name: element.name, value: element._id });
         } else {
             sendComms.push({ name: element.name, value: element._id });
         }
@@ -132,7 +132,7 @@ export function DevicePlan({ device }) {
             const key: number = i;
             dom.push(<div key={i} className="mini-grid-row">
                 <div className='mini-grid-cell'>
-                    <input type='text' className='form-control form-control-sm' value={ele.time} onChange={(e) => { dispatch({ type: 'edit-timeline', payload: { index: key, field: 'time', value: e.target.value } }) }} />
+                    <input type='number' className='form-control form-control-sm' value={ele.time} onChange={(e) => { dispatch({ type: 'edit-timeline', payload: { index: key, field: 'time', value: e.target.value } }) }} />
                 </div>
                 <div className='mini-grid-cell'>
                     <Combo items={sendComms} cls='custom-combo-sm' name='property' onChange={(e) => { dispatch({ type: 'edit-timeline', payload: { index: key, field: 'property', value: e.target.value } }) }} value={ele.property} />
@@ -220,7 +220,7 @@ export function DevicePlan({ device }) {
                 }
                 {state.data && state.data.startup && startUp()}
                 <div className='mini-grid-row-toolbar'>
-                    <button className='btn btn-sm btn-info' onClick={() => { dispatch({ type: 'add-startup', payload: null }) }}><i className="fas fa-plus"></i></button>
+                    <button className='btn btn-sm btn-info' onClick={() => { dispatch({ type: 'add-startup', payload: { comms: sendComms } }) }}><i className="fas fa-plus"></i></button>
                 </div>
             </div>
         </div>
@@ -236,7 +236,7 @@ export function DevicePlan({ device }) {
                 }
                 {state.data && state.data.timeline && timeline()}
                 <div className='mini-grid-row-toolbar'>
-                    <button className='btn btn-sm btn-info' onClick={() => { dispatch({ type: 'add-timeline', payload: null }) }}><i className="fas fa-plus"></i></button>
+                    <button className='btn btn-sm btn-info' onClick={() => { dispatch({ type: 'add-timeline', payload: { comms: sendComms } }) }}><i className="fas fa-plus"></i></button>
                 </div>
             </div>
         </div>
@@ -252,7 +252,7 @@ export function DevicePlan({ device }) {
                 }
                 {state.data && state.data.random && random()}
                 <div className='mini-grid-row-toolbar'>
-                    <button className='btn btn-sm btn-info' disabled={true} onClick={() => { dispatch({ type: 'add-random', payload: null }) }}><i className="fas fa-plus"></i></button>
+                    <button className='btn btn-sm btn-info' disabled={true} onClick={() => { dispatch({ type: 'add-random', payload: { comms: sendComms } }) }}><i className="fas fa-plus"></i></button>
                 </div>
             </div>
         </div>
@@ -268,7 +268,7 @@ export function DevicePlan({ device }) {
                 }
                 {state.data && state.data.receive && receive()}
                 <div className='mini-grid-row-toolbar'>
-                    <button className='btn btn-sm btn-info' onClick={() => { dispatch({ type: 'add-receive', payload: null }) }}><i className="fas fa-plus"></i></button>
+                    <button className='btn btn-sm btn-info' onClick={() => { dispatch({ type: 'add-receive', payload: { comms: receiveComms } }) }}><i className="fas fa-plus"></i></button>
                 </div>
             </div>
         </div>
