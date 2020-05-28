@@ -729,6 +729,9 @@ export class MockDevice {
 
     async updateSensorValue(p: Property, propertySensorTimers: any) {
 
+        // sensors are not supported in plan mode yet
+        if (p.mock === undefined) { return; }
+
         let slice = 0;
         let randomFromRange = Utils.getRandomNumberBetweenRange(1, 10, false);
 
