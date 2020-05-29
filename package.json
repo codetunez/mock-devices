@@ -8,7 +8,7 @@
     "url": "https://github.com/codetunez/mock-devices"
   },
   "scripts": {
-    "build": "webpack && tsc",
+    "build": "tsc && webpack",
     "watchux": "webpack --progress --colors --watch",
     "watchsrv": "tsc -watch --pretty",
     "app": "electron ./_dist/server/start.js"
