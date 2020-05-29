@@ -46,6 +46,10 @@
   overflow-y: auto;
 }
 
+.context-modal-wide {
+  width: calc(100vw - 20%);
+}
+
 .center-modal {
   top: 50%;
   left: 50%;

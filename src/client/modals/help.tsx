@@ -10,43 +10,36 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
         <div className='help-content'>
             <div className='help-row'>
                 <h3>How to use mock-devices</h3>
-                <p>mock-devices is a dev tool that can be used to create simulated devices. Devices created in mock-devices
-                connect to an Azure IoT Hub like a real device would by using the non-PnP Azure IoT Device SDK.
-                    </p>
-                <p>A device configuration (the things a device does) can be dynamically modelled based on abilities in the
-                    SDK; Send <b>Telemetry</b> events, send/receive <b>Twin</b> desired/reported properties and receive <b>Commands</b>.
-                    </p>
-                <p>A Device needs to be started to connect, send and receive data for a Hub. Devices automatically re-connect after
-                50 minutes to ensure continous running. This does not affect the state of the simulation.
-                    </p>
-                <p>mock-devices is a dev tool! Most instabilities can be fixed by restarting the app and reloading state.
-                    </p>
+                <p>mock-devices is a tool that can be used to quickly create multiple differnt devices that act and respond like real devices. It utilizes
+                    the <a href="https://github.com/Azure/azure-iot-sdk-node/tree/master/device">node.js</a> Azure IoT Hub device SDK to
+                    support real device behavour for C2D and D2C concepts. mock-device can be used to demostrate the following concepts ...</p>
+                <ul>
+                    <li>Connect a device to an Azure IoT Hub</li>
+                    <li>Connect a device to IoT Central</li>
+                    <li>Connect a device using DPS single and group enrollment including DPS payload and reconnection flows</li>
+                    <li>Connect a device using SaS token with expiration</li>
+                    <li>Connect a device connection string</li>
+                    <li>Create a device from a DCM available the Azure IoT Device Catalog website</li>
+                    <li>Create a device from a DCM exported from IoT Central</li>
+                    <li>Connect a device using Digital Twins 'pnp-refresh' SDK (limited features)</li>
+                    <li>Demonstrate send and receive concepts using Azure IoT Device SDKs</li>
+                </ul>
             </div>
 
             <div className='help-row'>
-                <h4>Adding a new mock device</h4>
-                Use the <span className='far fa-save'></span> button from menu. Devices can be added in the following way
-                <br /><br />
-                <ul>
-                    <li>DPS - Use individual or root keys to create a new device</li>
-                    <li>Device Connection String - Mock and use an already registered device on Azure IoT Hub</li>
-                </ul>
-                <p>mock-devices is agnostic to Hub or DPS and each device created has it's own connection profile. This is
-                    useful for running production and dev devices together.</p>
-                    
-                <h5>Using the PnP SDK</h5>
-                <p>To use the PnP device SDK, select this option when adding a new mock device.
-                </p>
+                <h4>Adding a new mock device</h4>                
+                <p>A device can be created with any combination of platform, SDK and connection identity</p>
+                <p>Use the <span className='far fa-save'></span> button from menu and follow the "ADD A MOCK DEVICE" menu options</p>
             </div>
 
             <div className='help-row'>
                 <h4>Templates and Cloning</h4>
-                <p>Templates allow you to create device configuration without the need of a connection string or DPS setting. New
-                devices can use a template to bootstrap their configuration. Templates are disconnected from their references.
+                <p>Templates allow you to create a device configuration without a connection profile. These can be used as a source to clone 
+                    other devices that use real connection profiles.Templates are disconnected from their references.
                 </p>
-                <p>To create a device from a Template (or another Device configuration) select 'Use Template' during the new device flow.</p>
+                <p>Use the <span className='far fa-save'></span> button from menu and follow the "ADD A TEMPLATE" menu options</p>
 
-                <h5>Using a Plug and Play Device Capability Model for device configuration</h5>
+                <h5>Create a template using a DCM</h5>
                 <p>A DCM can be used to generate a best guess device configuration. Object, Map and Arrays are fully supported as well
                 as custom JSON to support IoT Central semantic types. To add a DCM (as a Template) use the new device flow and
                 select 'Start with a DCM' and then create a new device. Once the device configuration is created, the value/complex fields
