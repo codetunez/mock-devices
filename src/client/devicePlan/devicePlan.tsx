@@ -268,7 +268,7 @@ export function DevicePlan({ device }) {
                 }
                 {state.data && state.data.receive && receive()}
                 <div className='mini-grid-row-toolbar'>
-                    <button className='btn btn-sm btn-info' onClick={() => { dispatch({ type: 'add-receive', payload: { comms: receiveComms } }) }}><i className="fas fa-plus"></i></button>
+                    <button className='btn btn-sm btn-info' disabled={deviceContext.device.configuration.pnpSdk} onClick={() => { dispatch({ type: 'add-receive', payload: { comms: receiveComms } }) }}><i className="fas fa-plus"></i></button>
                 </div>
             </div>
         </div>

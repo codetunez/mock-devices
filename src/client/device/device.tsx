@@ -36,8 +36,12 @@ export function Device() {
                             const isTemplate = deviceContext.device.configuration._kind === 'template';
                             return <>
                                 {capability.type && capability.type.direction === 'd2c' ? <DeviceFieldD2C capability={capability} expand={expand} sensors={deviceContext.sensors} pnp={deviceContext.device.configuration.pnpSdk} template={isTemplate} /> : null}
-                                {capability.type && capability.type.direction === 'c2d' ? <DeviceFieldC2D capability={capability} expand={false} pnp={deviceContext.device.configuration.pnpSdk} /> : null}
-                                {capability._type === 'method' ? <DeviceFieldMethod capability={capability} expand={false} pnp={deviceContext.device.configuration.pnpSdk} template={isTemplate} /> : null}
+                                {!deviceContext.device.configuration.pnpSdk ?
+                                    <>
+                                        {capability.type && capability.type.direction === 'c2d' ? <DeviceFieldC2D capability={capability} expand={false} pnp={deviceContext.device.configuration.pnpSdk} /> : null}
+                                        {capability._type === 'method' ? <DeviceFieldMethod capability={capability} expand={false} pnp={deviceContext.device.configuration.pnpSdk} template={isTemplate} /> : null}
+                                    </>
+                                    : null}
                             </>
                         })}
                         {deviceContext && deviceContext.device.comms && deviceContext.device.comms.length === 0 ? RESX.device.empty : ''}

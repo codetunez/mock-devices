@@ -19,15 +19,19 @@ export function DeviceCommands() {
     return <>{deviceContext.device.configuration.planMode ?
         <div className='device-commands-container'>
             <div className='btn-bar'>
-                <button title={template ? RESX.core.templateNoSupport : RESX.device.commands.restart_title}  className='btn btn-outline-primary' disabled={template} onClick={() => { deviceContext.planRestart() }}>{RESX.device.commands.restart_label}</button>
+                <button title={template ? RESX.core.templateNoSupport : RESX.device.commands.restart_title} className='btn btn-outline-primary' disabled={template} onClick={() => { deviceContext.planRestart() }}>{RESX.device.commands.restart_label}</button>
             </div>
         </div>
         :
         <div className='device-commands-container'>
             <div className='btn-bar'>
                 <button title={RESX.device.commands.sendData_title} className='btn btn-info' onClick={() => { deviceContext.createCapability('property', 'd2c', pnpSdk) }}><span className='fas fa-plus'></span>{RESX.device.commands.sendData_label}</button>
-                <button title={RESX.device.commands.receiveData_title} className='btn btn-info' onClick={() => { deviceContext.createCapability('property', 'c2d', pnpSdk) }}><span className='fas fa-plus'></span>{RESX.device.commands.receiveData_label}</button>
-                <button title={RESX.device.commands.method_title} className='btn btn-info' onClick={() => { deviceContext.createCapability('method', pnpSdk) }}><span className='fas fa-plus'></span>{RESX.device.commands.method_label}</button>
+                {!deviceContext.device.configuration.pnpSdk ?
+                    <>
+                        <button title={RESX.device.commands.receiveData_title} className='btn btn-info' onClick={() => { deviceContext.createCapability('property', 'c2d', pnpSdk) }}><span className='fas fa-plus'></span>{RESX.device.commands.receiveData_label}</button>
+                        <button title={RESX.device.commands.method_title} className='btn btn-info' onClick={() => { deviceContext.createCapability('method', pnpSdk) }}><span className='fas fa-plus'></span>{RESX.device.commands.method_label}</button>
+                    </>
+                    : null}
             </div>
             <div className='btn-bar'>
                 <button title={template ? RESX.core.templateNoSupport : RESX.device.commands.config_title} className='btn btn-warning' disabled={template} onClick={() => { toggleEdit(!showEdit) }}><span className='fas fa-wrench'></span></button>
