@@ -1,23 +1,18 @@
 @import "../const.scss";
 
 .device-toolbar-container {
-  padding: $sm-gutter $md-gutter;
+  padding: $md-gutter $md-gutter $sm-gutter $md-gutter;
   border-bottom: 1px solid $app-clr-3;
   box-shadow: 0px 2px 3px 0px $app-shadow;
+  overflow: hidden;
   display: flex;
+  flex-wrap: nowrap;
   justify-content: space-between;
   align-items: center;
 
-  .order {
-    display: flex;
-    align-items: center;
-
-    div:first-child {
-      padding-right: $sm-gutter;
-    }
-
-    div:last-child {
-      width: 80px;
-    }
+  .type {
+    font-size: 1.1rem;
+    font-weight: 100;
+    color: $app-clr-4;
   }
 }

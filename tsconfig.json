@@ -8,7 +8,8 @@
         "sourceMap": true,
         "outDir": "./_dist/server/",
         "jsx": "react",
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true
     },
     "include": [
         "src/server/**/*"

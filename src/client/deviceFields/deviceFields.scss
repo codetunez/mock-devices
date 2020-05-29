@@ -4,8 +4,8 @@ $device-card-minimized: 140px;
 $device-card-button-width: 35px;
 $device-card-toggle-file: 100px;
 $device-card-input: 73px;
-$device-card-title-width: 250px;
-$device-card-title-width-text: 220px;
+$device-card-title-width: 350px; //250px;
+$device-card-title-width-text: 320px; //220px;
 $device-card-field: 73px;
 $min-height-toggle-row: 55px;
 
@@ -99,13 +99,6 @@ $min-height-toggle-row: 55px;
   margin-bottom: $xl-gutter;
   padding-left: $xl-gutter;
 
-  div:first-child {
-    width: $device-card-toggle-file;
-    div {
-      margin-left: -4px;
-    }
-  }
-
   input[type="text"],
   input[type="number"] {
     width: $device-card-input;
@@ -142,4 +135,8 @@ $min-height-toggle-row: 55px;
   .custom-textarea-xsm {
     width: ($device-card-field * 4);
   }
+}
+
+.df-card-row > div:nth-child(1) {
+  width: $device-card-toggle-file;
 }

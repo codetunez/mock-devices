@@ -3,38 +3,24 @@ const cx = classNames.bind(require('./edit.scss'));
 const cxM = classNames.bind(require('./modal.scss'));
 
 import * as React from 'react';
-import axios from 'axios';
 import { DeviceContext } from '../context/deviceContext';
 
 export const Edit: React.FunctionComponent<any> = ({ handler }) => {
-    const deviceContext: any = React.useContext(DeviceContext);
-    const [updatePayload, setPayload] = React.useState<any>({
-        configuration: ''
-    });
 
-    React.useEffect(() => {
-        axios.get('/api/device/' + deviceContext.device.configuration.deviceId)
-            .then((response: any) => {
-                setPayload({
-                    ...updatePayload,
-                    configuration: JSON.stringify(response.data.configuration, null, 1)
-                })
-            })
-    }, []);
+    const deviceContext: any = React.useContext(DeviceContext);
+    const [updatePayload, setPayload] = React.useState<any>(JSON.stringify(deviceContext.device.configuration, null, 2) || '')
 
     const updateDeviceConfiguration = () => {
-        axios.put('/api/device/' + deviceContext.device.configuration.deviceId, JSON.parse(updatePayload.configuration))
-            .then((response: any) => {
-                deviceContext.refreshAllDevices();
-                handler();
-            })
+        deviceContext.updateDeviceConfiguration(JSON.parse(updatePayload));
+        handler();
     }
 
     const updateField = e => {
-        setPayload({
-            ...updatePayload,
-            [e.target.name]: e.target.value
-        });
+        setPayload(e.target.value);
+    }
+
+    const json = () => {
+        return JSON.stringify(updatePayload || {}, null, 2);
     }
 
     return <div className='m-modal'>
@@ -42,11 +28,49 @@ export const Edit: React.FunctionComponent<any> = ({ handler }) => {
         <div className='m-content'>
             <div className='edit-device'>
                 <div className='form-group'>
-                    <label>Update this device's connection details</label>
-                    <textarea className='custom-textarea form-control form-control-sm' name='configuration' rows={19} onChange={updateField} value={updatePayload.configuration || ''}></textarea>
+                    <label>Update this mock device's configuration. Bad settings will destabilize the app</label>
+                    <textarea className='custom-textarea form-control form-control-sm' name='configuration' rows={20} onChange={updateField} value={updatePayload}></textarea>
                 </div>
                 <button className='btn btn-info' onClick={() => updateDeviceConfiguration()}>Update</button>
             </div>
         </div>
     </div>
 }
+
+// .order {
+//     display: flex;
+//     align-items: center;
+
+//     div:first-child {
+//       padding-right: $sm-gutter;
+//       white-space: nowrap;
+//     }
+
+//     div:last-child {
+//       width: 80px;
+//     }
+//   }
+
+
+// const [order, setOrder] = React.useState(index + 1);
+
+// const deviceIndexes = () => {
+//     const items = [];
+//     for (let i = 0; i < devices.length; i++) {
+//         items.push({ name: i + 1, value: i + 1 })
+//     }
+//     return items
+// }
+
+// React.useEffect(() => {
+//     setOrder(index + 1);
+// }, [index])
+
+// const updateField = e => {
+//     const value = e.target.value;
+//     axios.post('/api/state/reorder', { devices: devices, current: order - 1, next: parseInt(e.target.value) - 1 })
+//         .then((res) => {
+//             deviceContext.setDevices(res.data);
+//             setOrder(value); // dangerous if BE doesn't succeeed
+//         })
+// }

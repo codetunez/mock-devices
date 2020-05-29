@@ -12,9 +12,11 @@ import { Device } from '../device/device';
 import { DeviceContext } from '../context/deviceContext';
 import { Console } from '../modals/console';
 
+import SplitterLayout from 'react-splitter-layout';
+import 'react-splitter-layout/lib/index.css';
+
 export const Shell: React.FunctionComponent = () => {
   const deviceContext: any = React.useContext(DeviceContext);
-  const [expanded, setExpanded] = React.useState(false);
   const [paused, setPause] = React.useState(false);
   const [lines, updateConsole] = React.useState([]);
   const [consoleModal, setConsole] = React.useState<any>({});
@@ -27,7 +29,7 @@ export const Shell: React.FunctionComponent = () => {
     let payload = JSON.parse(data);
     let latest = lines.slice(0);
     latest.unshift(payload.message);
-    if (latest.length > 750) {
+    if (latest.length > 2000) {
       latest.pop();
     }
     !paused && updateConsole(latest);
@@ -59,28 +61,26 @@ export const Shell: React.FunctionComponent = () => {
   }
 
   return <div className='shell'>
-    <div className={cx('shell-console', expanded ? 'shell-console-expanded' : '')}>
-      <div className='console-toggle'>
-        <a onClick={() => setExpanded(!expanded)}><span className={cx('fas', !expanded ? 'fa-chevron-up' : 'fa-chevron-down')}></span></a>
-      </div>
-      <div className='console-pause'>
-        <a onClick={() => setPause(!paused)}><span className={cx('fas', paused ? 'fa-play' : 'fa-pause')}></span></a>
-      </div>
+    <Websocket url={'ws://127.0.0.1:24377'} onMessage={propertyUpdate} />
+    <Websocket url={'ws://127.0.0.1:24387'} onMessage={liveUpdate} />
 
-      <div>
-        <Websocket url={'ws://127.0.0.1:24377'} onMessage={propertyUpdate} />
-        <Websocket url={'ws://127.0.0.1:24387'} onMessage={liveUpdate} />
-        {lines.length > 0 && lines.map((element, index) => {
-          return <div className={cx('console-line', 'ellipsis')} onClick={() => { openConsole(lines, index) }}>{element}</div>
-        })}
+    <SplitterLayout vertical={true} primaryMinSize={20} secondaryMinSize={46} secondaryInitialSize={640}>
+      <div className={cx('shell-console')}>
+        <div className='console-pause'>
+          <a onClick={() => setPause(!paused)}><span className={cx('fas', paused ? 'fa-play' : 'fa-pause')}></span></a>
+        </div>
+        <div>
+          {lines.length > 0 && lines.map((element, index) => {
+            return <div className={cx('console-line', 'ellipsis')} onClick={() => { openConsole(lines, index) }}>{element}</div>
+          })}
+        </div>
       </div>
-
-    </div>
-    <div className={cx('shell-content')}>
-      <div className={cx('shell-content-nav')}><Nav /></div>
-      <div className={cx('shell-content-selector')}><Selector /></div>
-      <div className={cx('shell-content')}><Device /></div>
-    </div>
+      <div className={cx('shell-content')}>
+        <div className={cx('shell-content-nav')}><Nav /></div>
+        <div className={cx('shell-content-selector')}><Selector /></div>
+        <div className={cx('shell-content')}><Device /></div>
+      </div>
+    </SplitterLayout>
 
     {consoleModal.showConsole ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><Console lines={consoleModal.lines} index={consoleModal.index} handler={closeConsole} /></div></Modal> : null}
 

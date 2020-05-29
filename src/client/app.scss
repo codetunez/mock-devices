@@ -30,6 +30,16 @@ body {
   }
 }
 
+.inline-label-field {
+  display: flex;
+  align-items: center;
+  flex-flow: nowrap;
+  label {
+    margin: 0 !important;
+    margin-right: $sm-gutter !important;
+  }
+}
+
 input[type="text"],
 input[type="number"],
 input[type="text"]:focus,
@@ -41,11 +51,21 @@ textarea:read-only {
   color: $app-white !important;
 }
 
+input[type="text"]:disabled,
+input[type="number"]:disabled {
+  cursor: not-allowed;
+  color: $app-clr-4 !important;
+}
+
 .custom-textarea,
 .custom-textarea:focus {
   background-color: $app-clr-2;
   color: $app-white;
   resize: none;
+}
+
+.custom-textarea:disabled {
+  cursor: not-allowed;
 }
 
 .custom-textarea-sm {
@@ -56,13 +76,20 @@ textarea:read-only {
   border-radius: 0.2rem;
 }
 
+.custom-combo-sm {
+  margin-top: -2px;
+  height: calc(1.5em + 0.5rem + 2px);
+  padding: 0.25rem 0.5rem;
+  padding-right: 1.6rem;
+  font-size: 0.875rem;
+}
+
 .custom-select,
 .custom-select:focus {
   background-color: $app-clr-2;
   color: $app-white;
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='white' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E");
 }
-
 
 .custom-checkbox {
   display: block;
@@ -133,4 +160,8 @@ textarea:read-only {
   i:first-child {
     margin-right: 5px;
   }
+}
+
+button:disabled {
+  cursor: not-allowed;
 }

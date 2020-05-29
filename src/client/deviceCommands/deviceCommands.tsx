@@ -2,31 +2,42 @@ var classNames = require('classnames');
 const cx = classNames.bind(require('./deviceCommands.scss'));
 
 import * as React from 'react';
-
 import { Modal } from '../modals/modal';
 import { Edit } from '../modals/edit';
+import { RESX } from '../strings';
 
 import { DeviceContext } from '../context/deviceContext';
 
-export const DeviceCommands: React.FunctionComponent<any> = () => {
+export function DeviceCommands() {
+
+    const deviceContext: any = React.useContext(DeviceContext);
     const [showEdit, toggleEdit] = React.useState(false);
 
-    return <DeviceContext.Consumer>
-        {(sharedState: any) => (<div className='device-commands-container'>
+    const template = deviceContext.device.configuration._kind === 'template';
+    const pnpSdk = deviceContext.device.configuration.pnpSdk;
+
+    return <>{deviceContext.device.configuration.planMode ?
+        <div className='device-commands-container'>
             <div className='btn-bar'>
-                <button className='btn btn-info' onClick={() => { sharedState.createCapability('property', 'd2c') }}><span className='fas fa-plus'></span> Telemetry/Reported</button>
-                <button className='btn btn-info' onClick={() => { sharedState.createCapability('property', 'c2d') }}><span className='fas fa-plus'></span> Desired</button>
-                <button className='btn btn-info' onClick={() => { sharedState.createCapability('method') }}><span className='fas fa-plus'></span> Method</button>
+                <button title={template ? RESX.core.templateNoSupport : RESX.device.commands.restart_title} className='btn btn-outline-primary' disabled={template} onClick={() => { deviceContext.planRestart() }}>{RESX.device.commands.restart_label}</button>
+            </div>
+        </div>
+        :
+        <div className='device-commands-container'>
+            <div className='btn-bar'>
+                <button title={RESX.device.commands.sendData_title} className='btn btn-info' onClick={() => { deviceContext.createCapability('property', 'd2c', pnpSdk) }}><span className='fas fa-plus'></span>{RESX.device.commands.sendData_label}</button>
+                {!deviceContext.device.configuration.pnpSdk ?
+                    <>
+                        <button title={RESX.device.commands.receiveData_title} className='btn btn-info' onClick={() => { deviceContext.createCapability('property', 'c2d', pnpSdk) }}><span className='fas fa-plus'></span>{RESX.device.commands.receiveData_label}</button>
+                        <button title={RESX.device.commands.method_title} className='btn btn-info' onClick={() => { deviceContext.createCapability('method', pnpSdk) }}><span className='fas fa-plus'></span>{RESX.device.commands.method_label}</button>
+                    </>
+                    : null}
             </div>
             <div className='btn-bar'>
-                {sharedState.device.configuration._kind != 'template' ? <button className='btn btn-warning' onClick={() => { toggleEdit(!showEdit) }}><span className='fas fa-edit'></span></button> : null}
-                {sharedState.device.configuration._kind != 'template' ? <button className='btn btn-success' onClick={() => { sharedState.startDevice() }}><span className='fas fa-play'></span></button> : null}
-                {sharedState.device.configuration._kind != 'template' ? <button className='btn btn-secondary' onClick={() => { sharedState.stopDevice() }}><span className='fas fa-stop'></span></button> : null}
-                <div style={{ width: "10px" }}></div>
-                <button className='btn btn-danger' onClick={() => { sharedState.deleteDevice() }}><span className={'fas fa-lg fa-trash-alt'}></span></button>
+                <button title={template ? RESX.core.templateNoSupport : RESX.device.commands.config_title} className='btn btn-warning' disabled={template} onClick={() => { toggleEdit(!showEdit) }}><span className='fas fa-wrench'></span></button>
+                <button title={RESX.device.commands.delete_title} className='btn btn-danger' onClick={() => { deviceContext.deleteDevice() }}><span className={'fas fa-lg fa-trash-alt'}></span></button>
             </div>
             {showEdit ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><Edit handler={toggleEdit} /></div></Modal> : null}
         </div>
-        )}
-    </DeviceContext.Consumer>
+    }</>
 }

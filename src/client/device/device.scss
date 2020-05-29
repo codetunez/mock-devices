@@ -9,7 +9,6 @@
 }
 
 .device-title {
-  height: $title-height;
   flex-shrink: 0;
   border-bottom: 1px solid $app-clr-3;
   padding: 1rem;
@@ -20,7 +19,6 @@
 }
 
 .device-commands {
-  height: $title-height;
   flex-shrink: 0;
   border-bottom: 1px solid $app-clr-3;
   box-shadow: 0px 2px 3px 0px $app-shadow;
@@ -34,7 +32,8 @@
   overflow-y: auto;
 }
 
-.device-fields-container {
+.device-capabilities,
+.device-plan {
   margin: $md-gutter 0 0 $md-gutter;
   display: flex;
   flex-wrap: wrap;

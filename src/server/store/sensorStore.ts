@@ -1,6 +1,9 @@
 import * as uuidV4 from 'uuid/v4';
+import { SimulationStore } from '../store/simulationStore';
 
 export class SensorStore {
+    private simulationStore = new SimulationStore();
+    private mocks = this.simulationStore.get()["mocks"];
 
     public getListOfItems = () => {
         return [
@@ -13,11 +16,10 @@ export class SensorStore {
     }
 
     public getNewSensor = (type: string) => {
+        let base = {}
         switch (type) {
             case 'battery':
-                return {
-                    _id: uuidV4(),
-                    _hasState: false,
+                base = {
                     _type: "battery",
                     _value: 0,
                     init: 100,
@@ -31,10 +33,9 @@ export class SensorStore {
                         timeToRunning: "End (ms)"
                     }
                 }
+                break;
             case 'hotplate':
-                return {
-                    _id: uuidV4(),
-                    _hasState: false,
+                base = {
                     _type: "hotplate",
                     _value: 0,
                     init: 0,
@@ -48,10 +49,9 @@ export class SensorStore {
                         timeToRunning: "End (ms)"
                     }
                 }
+                break;
             case 'fan':
-                return {
-                    _id: uuidV4(),
-                    _hasState: false,
+                base = {
                     _type: "fan",
                     _value: 0,
                     init: 0,
@@ -65,10 +65,9 @@ export class SensorStore {
                         timeToRunning: "Starts"
                     }
                 }
+                break;
             case 'random':
-                return {
-                    _id: uuidV4(),
-                    _hasState: false,
+                base = {
                     _type: "random",
                     _value: 0,
                     variance: 3,
@@ -78,10 +77,9 @@ export class SensorStore {
                         variance: "Length"
                     }
                 }
+                break;
             case 'function':
-                return {
-                    _id: uuidV4(),
-                    _hasState: false,
+                base = {
                     _type: "function",
                     _value: 0,
                     init: 0,
@@ -90,8 +88,10 @@ export class SensorStore {
                         init: "Initial",
                         function: "Url"
                     }
-
                 }
+                break;
         }
+        return Object.assign({ _id: uuidV4(), _hasState: false }, base, this.mocks[type])
     }
+
 }

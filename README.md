@@ -1,12 +1,14 @@
-# mock-devices v4.4 (Desktop Edition)
+# mock-devices v5 (Desktop Edition)
 Use mock-devices to create fake/mock devices that connect to an Azure IoT Hub. The devices can send and receive data like a physical device would.
 
 This is the desktop edition of mock-devices which is a cross platform (Windows or OSX) Electron app. To use the Docker version, visit this repo [mock-devices DE](http://github.com/codetunez/mock-devices-de)
 
 #### First time running the app - One Time Install and Build
-From a command prompt navigate to the folder where the repo was sync'd. Perform the following command. Do this everytime the code is sync'd from the repo i.e. getting a new version of the app
+(See pre-reqs) From a command prompt navigate to the folder where the repo was sync'd. Perform the following command. Do this everytime the code is sync'd from the repo i.e. getting a new version of the app
 
         npm install && npm run build
+
+_Some build errors can be ignored. If you encounter any, try the "Launching app" step anyway_
 
 #### Launching app (everyday use)
 From a command prompt navigate to the folder where the repo was sync'd and perform the following command
@@ -18,18 +20,23 @@ Help is available inside the application
 
 ---
 
+## v5 Features
+- Plan mode - Create a timed series of events
+- Create Azure IoT Digital Twins devices with limited support [see here](https://www.npmjs.com/package/azure-iot-digitaltwins-device/v/1.0.0-pnp-refresh.0)
+- Support for current SDK devices
+- Support for C2D command using cloud messages
+- App Updates - New UX for control. Previous state files not supported
+
 #### Features
 - Host up to 750 mock devices
-- Support for DPS or Connection String based devices
-- Use DPS group enrollment using root SaS key
-- Create devices in bulk (using -_n_ numbering scheme)
-- Create a device from a template or another modelled device
-- Built-in simulated sensors that behave like real devices i.e. battery drain and heating elements
-- Use a function/webhook to provide a value payload
-- Devices auto-restart after 55 minutes to provide continuous streams of data
-- State can be copied/replaced to allow sharing of simulation state
+- DPS single or group enrollment support 
+- SaS or Connection String support (72 hour SaS expiry)
+- Bulk/Clone/Templated device create operations
+- Auto Gen DTDL Complex Types; Objects/Maps/Arrays with random values from a DCM
+- Simulated versions of common device operations such as Reboot, Shutdown, Firmware and sensors like battery, heaters, fans
 
-#### Macro support for Complex value payloads
+#### Macro support for value payloads
+Use auto generated values to send as device data
 
 - AUTO_STRING - Use a random word from 'random-words' library
 - AUTO_BOOLEAN - Use a random true or false
@@ -47,22 +54,9 @@ Help is available inside the application
 - AUTO_ENUM/* - Use a random Enum value (See below)
 - AUTO_VALUE - Use the last user suppllied or mock sensor value. Honors String setting.
 
-## v4 Features
-v4 is a complete re-write of the UX with focus on improving responsive design layout, property management and UI performance.
+--- 
+### Pre-Reqs
+Ensure you have the following configured for your environment
 
-_New UX_
-- **File system support for state persistance and DCM import**
-- Code base based on React Hooks
-- Scrolling and layout improvements (rewrite of UI)
-- Better arrangement of device property cards on small and large screens
-- Larger console window with longer history and click through for full data payload inspection
-- Start a new device model from a blank template
-- Always available help
-
-_Engine tweaks_
-- Macro support of random data when sending complex value payloads
-- Switch on/off individual properties without stopping device
-- Future support for PnP Interfaces
-- Auto Gen DTDL Complex Types; Objects/Maps/Arrays with random values from a DCM
-- Better random string data
-- Native support for Reboot, Shutdown and Firmware device commands
+- Node LTS
+- git

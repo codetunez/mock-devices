@@ -16,15 +16,37 @@ export class SimulationStore {
             }
         },
         "ranges": {
-            "AUTO_INTEGER": { min: 1, max: 5000 },
-            "AUTO_DOUBLE": { min: 1, max: 5000 },
-            "AUTO_LONG": { min: 1, max: 5000 },
-            "AUTO_FLOAT": { min: 1, max: 5000 },
-            "AUTO_VECTOR": { min: 1, max: 500 }
+            "AUTO_INTEGER": {
+                "min": 1,
+                "max": 5000
+            },
+            "AUTO_DOUBLE": {
+                "min": 1,
+                "max": 5000
+            },
+            "AUTO_LONG": {
+                "min": 1,
+                "max":
+                    5000
+            },
+            "AUTO_FLOAT": {
+                "min": 1,
+                "max": 5000
+            },
+            "AUTO_VECTOR": {
+                "min": 1,
+                "max": 500
+            }
         },
         "runloop": {
-            "secs": { min: 20, max: 90 },
-            "mins": { min: 2, max: 10 }
+            "secs": {
+                "min": 90,
+                "max": 360
+            },
+            "mins": {
+                "min": 15,
+                "max": 60
+            }
         },
         "geo": {
             "latitude": 51.508009,
@@ -44,13 +66,45 @@ export class SimulationStore {
         },
         "simulation": {
             "firmware": 30000,
-            "connect": 2000,
-            "restart": 3300000
+            "connect": 5000,
+            "restart": {
+                min: 5,
+                max: 10
+            },
+            "sasExpire": 72
         },
         "commands": {
             "reboot": "reboot",
             "firmware": "firmware",
             "shutdown": "shutdown"
+        },
+        "mocks": {
+            "battery": {
+                "init": 100,
+                "running": 0,
+                "variance": 0.1,
+                "timeToRunning": 60400000
+            },
+            "hotplate": {
+                "init": 0,
+                "running": 275,
+                "variance": 0.1,
+                "timeToRunning": 28800000
+            },
+            "fan": {
+                "init": 0,
+                "variance": 2.5,
+                "running": 2000,
+                "timeToRunning": 1
+            },
+            "random": {
+                "init": 0,
+                "variance": 3
+            }
+        },
+        "plan": {
+            "startDelay": 3000,
+            "timelineDelay": 5000
         }
     }
 

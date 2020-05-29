@@ -10,43 +10,40 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
         <div className='help-content'>
             <div className='help-row'>
                 <h3>How to use mock-devices</h3>
-                <p>mock-devices is a dev tool that can be used to create simulated devices. Devices created in mock-devices
-                    connect to an Azure IoT Hub like a real device would by using the non-PnP Azure IoT Device SDK.
-                    </p>
-                <p>A device configuration (the things a device does) can be dynamically modelled based on abilities in the
-                    SDK; Send <b>Telemetry</b> events, send/receive <b>Twin</b> desired/reported properties and receive <b>Commands</b>.
-                    </p>
-                <p>A Device needs to be started to connect, send and receive data for a Hub. Devices automatically re-connect after
-                    50 minutes to ensure continous running. This does not affect the state of the simulation.
-                    </p>
-                <p>mock-devices is a dev tool! Most instabilities can be fixed by restarting the app and reloading state.
-                    </p>
+                <p>mock-devices is a tool that can be used to quickly create multiple differnt devices that act and respond like real devices. It utilizes
+                    the <a href="https://github.com/Azure/azure-iot-sdk-node/tree/master/device">node.js</a> Azure IoT Hub device SDK to
+                    support real device behavour for C2D and D2C concepts. mock-device can be used to demostrate the following concepts ...</p>
+                <ul>
+                    <li>Connect a device to an Azure IoT Hub</li>
+                    <li>Connect a device to IoT Central</li>
+                    <li>Connect a device using DPS single and group enrollment including DPS payload and reconnection flows</li>
+                    <li>Connect a device using SaS token with expiration</li>
+                    <li>Connect a device connection string</li>
+                    <li>Create a device from a DCM available the Azure IoT Device Catalog website</li>
+                    <li>Create a device from a DCM exported from IoT Central</li>
+                    <li>Connect a device using Digital Twins 'pnp-refresh' SDK (limited features)</li>
+                    <li>Demonstrate send and receive concepts using Azure IoT Device SDKs</li>
+                </ul>
             </div>
 
             <div className='help-row'>
-                <h4>Adding a new mock device</h4>
-                Use the + button from menu. Devices can be added in the following way
-                <br /><br />
-                <ul>
-                    <li>DPS - Use both the individual or root keys to create a new device</li>
-                    <li>Device Connection String - Mock and use an already registered device on Azure IoT Hub</li>
-                </ul>
-                <p>mock-devices is agnostic to Hub or DPS and each device created has it's own connection profile. This is
-                    useful for running production and dev devices together.</p>
+                <h4>Adding a new mock device</h4>                
+                <p>A device can be created with any combination of platform, SDK and connection identity</p>
+                <p>Use the <span className='far fa-save'></span> button from menu and follow the "ADD A MOCK DEVICE" menu options</p>
             </div>
 
             <div className='help-row'>
                 <h4>Templates and Cloning</h4>
-                <p>Templates allow you to create device configuration without the need of a connection string or DPS setting. New
-                    devices can use a template to bootstrap their configuration. Templates are disconnected from their references.
+                <p>Templates allow you to create a device configuration without a connection profile. These can be used as a source to clone 
+                    other devices that use real connection profiles.Templates are disconnected from their references.
                 </p>
-                <p>To create a device from a Template (or another Device configuration) select 'Use Template' during the new device flow.</p>
+                <p>Use the <span className='far fa-save'></span> button from menu and follow the "ADD A TEMPLATE" menu options</p>
 
-                <h5>Using a Plug and Play Device Capability Model for device configuration</h5>
+                <h5>Create a template using a DCM</h5>
                 <p>A DCM can be used to generate a best guess device configuration. Object, Map and Arrays are fully supported as well
-                    as custom JSON to support IoT Central semantic types. To add a DCM (as a Template) use the new device flow and
-                    select 'Start with a DCM' and then create a new device. Once the device configuration is created, the value/complex fields
-                    are populated with AUTO macros (see below) so devices can be started imediately.
+                as custom JSON to support IoT Central semantic types. To add a DCM (as a Template) use the new device flow and
+                select 'Start with a DCM' and then create a new device. Once the device configuration is created, the value/complex fields
+                are populated with AUTO macros (see below) so devices can be started imediately.
                 </p>
             </div>
 
@@ -73,7 +70,7 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
                      a yellow save icon </p>
 
                 <h5>Telemetry and Twin Reported</h5>
-                <p>Use '+ Telemetry/Reported' to add a capability to send data. Complete the fields</p>
+                <p>Use '+ Send Data' to add a capability to send data. Complete the fields</p>
                 <ul>
                     <li>Name - The name of the property</li>
                     <li>API - Msg for Telemetry and Twin for Twin Reported</li>
@@ -87,7 +84,7 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
                 </ul>
 
                 <h5>Twin Desired</h5>
-                <p>Use '+ Desired' to add a capability to recieve data. Complete the fields</p>
+                <p>Use '+ Receive Data' to add a capability to recieve data. Complete the fields</p>
                 <ul>
                     <li>Name - The name of the property</li>
                 </ul>
@@ -103,7 +100,7 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
                 <p>The only options here are to read the last request parameters sent Parameters are not honored for reponses.</p>
                 <h5>mock-devices specific commands</h5>
                 <p>mock-devices can simulate common device commands; Firmware, Reboot and Shutdown. This is particularly useful when mock-devices
-                    is running for a long time and you want to reset any current state when using a mock sensor e.g. the battery mock sensor will reset
+                is running for a long time and you want to reset any current state when using a mock sensor e.g. the battery mock sensor will reset
                     to 100%. To utilize this feature create a Method and use the following for the method name.</p>
                 <ul>
                     <li>reboot - The device will go through a shutdown and reconnect cycle.</li>
@@ -116,7 +113,7 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
             <div className='help-row'>
                 <h4>Macros and AUTO values</h4>
                 <p>AUTO values are macros that are replaced with real (random) values when the device sends its data. They can be used in
-                    value fields and complex payloads (for sending random data on the leaf nodes) Replace AUTO string with a static
+                value fields and complex payloads (for sending random data on the leaf nodes) Replace AUTO string with a static
                     value if the feature is not required.</p>
                 <p>Complex values must be authored using JSON so use the macro as a string (see examples). When using AUTOs, the property's
                     type will be replaced. See the following.</p>
@@ -138,7 +135,7 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
                     <li>AUTO_VALUE - Use the last user suppllied or mock sensor value. Honors String setting.</li>
                 </ul>
                 <p>Enum support is possible by extending the macro to include the list of values. Values
-                    can only be integers or strings. Enums use the JavaScript style arrays i.e.
+                can only be integers or strings. Enums use the JavaScript style arrays i.e.
                     [1,0] or ['foo','bar'] Append this to the end of an Enum AUTO like ...</p>
                 <pre>
                     AUTO_ENUM/['foo','bar']
@@ -193,7 +190,7 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
             <div className='help-row'>
                 <h4>Settings</h4>
                 <p>Settings are a matched pair of desired and reported capabilties where the report has a well defined Complex payload
-                    and the desired is required to send an ack back in a given format. See IoT Central documentation for more details.
+                and the desired is required to send an ack back in a given format. See IoT Central documentation for more details.
                 </p>
 
                 <p>Required JSON payload for reported Setting</p>

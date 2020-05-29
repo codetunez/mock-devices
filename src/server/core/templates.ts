@@ -1,5 +1,5 @@
 import { DeviceStore } from '../store/deviceStore'
-import { Device } from '../interfaces/device'
+import { Device, Property } from '../interfaces/device'
 import { SimulationStore } from '../store/simulationStore';
 import uuid = require('uuid');
 import * as Utils from '../core/utils'
@@ -19,25 +19,39 @@ export function DCMtoMockDevice(deviceConfiguration: any, deviceStore: DeviceSto
         var dcm = JSON.parse(deviceConfiguration.capabilityModel);
         //TOOD: get this fixed
         t.configuration.mockDeviceName = dcm.displayName ? (dcm.displayName.en || dcm.displayName) : 'DCM has no display name';
+        t.configuration.capabilityUrn = dcm['@id'];
         dcm.implements.forEach(element => {
+
+            const pnpInterface: any = {
+                name: element.schema.displayName ? (element.schema.displayName.en || element.schema.displayName) : 'Interface has no display name',
+                urn: element.schema['@id'],
+                instanceName: element.displayName ? (element.displayName.en || element.displayName) : 'Interface Instance has no display name',
+                instanceUrn: element['@id']
+            }
+
             if (element.schema.contents) {
                 element.schema.contents.forEach(item => {
-                    DCMCapabilityToComm(item, t._id, deviceStore, simRunloop, simColors);
+                    DCMCapabilityToComm(item, t._id, deviceStore, simRunloop, simColors, pnpInterface);
                 })
             }
         })
     }
 }
 
-function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceStore, simRunloop: any, simColors: any) {
+function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceStore, simRunloop: any, simColors: any, pnpInterface: any) {
 
     var o: any = {};
     o._id = uuid();
+    o._type = 'property';
     o.name = item.name;
+    o.interface = pnpInterface;
 
     if (isType(item['@type'], 'Command')) {
         o.name = item.name;
         o.color = simColors["Color1"];
+        o._type = 'method';
+        o.execution = !item.durable ? 'direct' : 'cloud';
+
         deviceStore.addDeviceMethod(deviceId, o);
         return;
     }
@@ -115,7 +129,7 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
     if (addRunLoop) {
         o.runloop = {
             'include': true,
-            'unit': runLoopUnit,
+            'unit': runLoopUnit === 'mins' ? 'mins' : 'secs',
             'value': Utils.getRandomNumberBetweenRange(simRunloop[runLoopUnit]["min"], simRunloop[runLoopUnit]["max"], true)
         }
     }
@@ -137,6 +151,7 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
         oW.sdk = 'twin';
         oW.string = o.string;
         oW.value = o.string ? "" : 0;
+        oW.interface = pnpInterface;
         oW.propertyObject = {
             "type": "templated", template: JSON.stringify({
                 "value": o.propertyObject && o.propertyObject.type === "templated" ? JSON.parse(o.propertyObject.template) : "",
