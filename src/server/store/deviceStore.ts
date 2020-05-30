@@ -320,7 +320,7 @@ export class DeviceStore {
         });
 
         if (index > -1) {
-
+            this.cleanPlan(d, d.comms[index]._id);
             if (d.comms[index]._type === "property" && mockOnly) {
                 d.comms[index].type.mock = false;
                 d.comms[index].runloop.include = false;
@@ -337,6 +337,15 @@ export class DeviceStore {
             let rd: MockDevice = this.runners[d._id];
             rd.updateDevice(d);
         }
+    }
+
+    public cleanPlan = (device: Device, propertyId: string) => {
+        const newPlan: any = {}
+        newPlan.startup = device.plan.startup.filter((p) => { return p.property != propertyId })
+        newPlan.timeline = device.plan.timeline.filter((p) => { return p.property != propertyId });
+        newPlan.receive = device.plan.receive.filter((p) => { return p.propertyOut != propertyId });
+        newPlan.random = device.plan.random.slice();
+        device.plan = newPlan;
     }
 
     public updateDeviceMethod = (id: string, propertyId: string, payload: Property) => {

@@ -188,7 +188,7 @@ export class MockDevice {
                 }
             })
 
-            this.device.plan.timeline.forEach((item, ) => {
+            this.device.plan.timeline.forEach((item) => {
                 // find the last event
                 this.planModeLastEventTime = (item.time * 1000) + config["timelineDelay"];
                 const comm = this.device.comms[this.nameIdResolvers.deviceCommsIndex[item.property]];
