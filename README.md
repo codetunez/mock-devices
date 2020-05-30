@@ -4,9 +4,11 @@ Use mock-devices to create fake/mock devices that connect to an Azure IoT Hub. T
 This is the desktop edition of mock-devices which is a cross platform (Windows or OSX) Electron app. To use the Docker version, visit this repo [mock-devices DE](http://github.com/codetunez/mock-devices-de)
 
 #### First time running the app - One Time Install and Build
-(See pre-reqs) From a command prompt navigate to the folder where the repo was sync'd. Perform the following command. Do this everytime the code is sync'd from the repo i.e. getting a new version of the app
+From a command prompt navigate to the folder where the repo was sync'd. Perform the following command.
 
-        npm install && npm run build
+        npm ci && npm run build
+
+Do this everytime the code is sync'd from the repo i.e. getting a new version of the app. If you are experiencing issues with this step see the _Pre-Reqs and build issues_ step below
 
 #### Launching app (everyday use)
 From a command prompt navigate to the folder where the repo was sync'd and perform the following command
@@ -53,8 +55,30 @@ Use auto generated values to send as device data
 - AUTO_VALUE - Use the last user suppllied or mock sensor value. Honors String setting.
 
 --- 
-### Pre-Reqs
+### Pre-Reqs and build issues
 Ensure you have the following configured for your environment
 
 - Node LTS
 - git
+
+_If you are experiencing multiple build issues, try the following steps ..._
+
+Clear NPM cache
+```
+npm cache clean --force
+```
+
+Do the install step separately
+```
+npm ci
+```
+
+Rebuild node-sass
+```
+rebuild node-sass --force
+```
+
+Do the build step separately
+```
+npm run build
+```
