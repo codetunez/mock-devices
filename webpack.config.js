@@ -16,8 +16,12 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/
+        loader: 'ts-loader',
+        exclude: /node_modules/,
+        options: {
+          instance: 'ux',
+          configFile: path.resolve(__dirname, 'tsconfig.client.json')
+        }
       },
       {
         test: /\.s?css$/,

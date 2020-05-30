@@ -6,18 +6,18 @@
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": true,
-        "outDir": "./_dist/server/",
+        "outDir": "./_dist/client/",
+        "jsx": "react",
         "allowSyntheticDefaultImports": true,
         "skipLibCheck": true
     },
     "include": [
-        "src/server/**/*"
+        "src/client/**/*"
     ],
     "types": [
-        "electron"
+        "react"
     ],
     "exclude": [
-        "node_modules/**/*",
-        "src/client/**/*"
+        "node_modules/**/*"
     ]
 }
