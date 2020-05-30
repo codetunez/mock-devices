@@ -131,5 +131,10 @@ class Server {
     }
 }
 
+// handle all uncaught client errors
+process.on('uncaughtException', ((err) => {
+    console.log(err);
+}));
+
 // start the expressServerlication
 new Server().start();
