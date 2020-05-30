@@ -8,8 +8,6 @@ This is the desktop edition of mock-devices which is a cross platform (Windows o
 
         npm install && npm run build
 
-_Some build errors can be ignored. If you encounter any, try the "Launching app" step anyway_
-
 #### Launching app (everyday use)
 From a command prompt navigate to the folder where the repo was sync'd and perform the following command
 
