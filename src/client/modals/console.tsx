@@ -12,12 +12,23 @@ export const Console: React.FunctionComponent<any> = ({ lines, index, handler })
     }, [index]);
 
     const display = () => {
-        let msg = lines[selectedIndex];
+        const DOM = [];
         try {
-            let split = msg.split(/->|<-/g)
-            msg = <><pre>{split[0]}<br /><br />{JSON.stringify(JSON.parse(split[1]), null, 2)}</pre></>
-        } catch (ex) { }
-        return msg
+            const regex = /(\[.*\])|(\{.*?\})$/g
+            const msg = lines[selectedIndex];
+
+            const matches = msg.matchAll(regex);
+            for (const match of matches) {
+                if (match[1] != undefined) {
+                    DOM.push(<div>{match[1]}</div>);
+                } else {
+                    DOM.push(<pre>{JSON.stringify(JSON.parse(match[0]), null, 2)}</pre>);
+                }
+            }
+        } catch (err) {
+            DOM.push(lines[selectedIndex]);
+        }
+        return DOM
     }
 
     const prev = () => {
