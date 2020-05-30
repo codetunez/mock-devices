@@ -180,11 +180,11 @@ export class MockDevice {
                 if (comm.sdk === "twin") {
                     this.twinRLProps.push(comm);
                     this.twinRLPropsPlanValues.push(item.value);
-                    this.twinRLReportedTimers.push(config["startDelay"]);
+                    this.twinRLReportedTimers.push({ timeRemain: config["startDelay"], originalTime: config["startDelay"] });
                 } else if (comm.sdk === "msg") {
                     this.msgRLProps.push(comm);
                     this.msgRLPropsPlanValues.push(item.value);
-                    this.msgRLReportedTimers.push(config["startDelay"]);
+                    this.twinRLReportedTimers.push({ timeRemain: config["startDelay"], originalTime: config["startDelay"] });
                 }
             })
 
