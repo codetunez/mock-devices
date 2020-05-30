@@ -259,7 +259,7 @@ export function DevicePlan({ device }) {
         <div className='plan-card'>
             <h5>{RESX.device.plan.core.receive_label}</h5>
             <div className='mini-grid'>
-                {state.data && state.data.receive && state.data.timeline.length === 0 ? RESX.device.plan.empty.receive :
+                {state.data && state.data.receive && state.data.receive.length === 0 ? RESX.device.plan.empty.receive :
                     <div className='mini-grid-row-header'>
                         <div className='mini-grid-header'>Property In</div>
                         <div className='mini-grid-header'>Property Out</div>

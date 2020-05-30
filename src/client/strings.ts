@@ -15,7 +15,7 @@ export const RESX = {
         "empty": ["Use ", " to add a device, template or update the state"],
     },
     "device": {
-        "empty": "Use + Reported/Desired/Method to send or receive data",
+        "empty": "Use + Reported/Desired/Method to send or receive data. Plan mode is disabled",
         "toolbar": {
             "powerOn_label": " Turn on power",
             "powerOn_tile": "The device will connect to the hub and will start sending and receiving events. If in plan mode, the start up properties will be sent",
@@ -36,11 +36,11 @@ export const RESX = {
             "sendData_label": " Send Data",
             "sendData_title": "Add a capability to send telemetry and twin reported values",
             "receiveData_label": " Receive Data",
-            "receiveData_title": "Add a capability to recieve a specific desired property in the device twin",
+            "receiveData_title": "Add a capability to receive a specific desired property in the device twin",
             "method_label": " Method",
             "method_title": "Add a direct or C2D method capability to the device",
             "config_title": "Change this device's configuration (advanced)",
-            "delete_title": "Delete this device or template including all its cabilities. Ensure you have save your state first",
+            "delete_title": "Delete this device or template including all its capabilities. Ensure you have save your state first",
         },
         "plan": {
             "empty": {

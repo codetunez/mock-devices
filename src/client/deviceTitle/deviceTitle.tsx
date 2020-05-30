@@ -15,7 +15,7 @@ export function DeviceTitle() {
         <div style={{ display: 'flex' }}>
             <div style={{ paddingRight: '8px' }}>{RESX.device.title.planMode}</div>
             <div title={RESX.device.title.planMode_title}>
-                <Toggle name={'plan-mode'} defaultChecked={false} checked={deviceContext.device.configuration.planMode} onChange={(e) => { deviceContext.updateDeviceConfiguration({ planMode: e.target.checked }) }} />
+                <Toggle name={'plan-mode'} disabled={deviceContext.device['comms'].length === 0} defaultChecked={false} checked={deviceContext.device.configuration.planMode} onChange={(e) => { deviceContext.updateDeviceConfiguration({ planMode: e.target.checked }) }} />
             </div>
         </div>
     </div>
