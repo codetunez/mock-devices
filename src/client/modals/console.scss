@@ -15,7 +15,7 @@
 }
 
 .console-message {
-  padding: 0.5rem;
+  padding: 1.2rem;
   border: solid 1px $app-clr-4;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -23,7 +23,8 @@
   height: 100%;
 
   pre {
+    margin-top: $lg-gutter;
     color: $app-white;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
   }
 }
