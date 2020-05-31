@@ -129,8 +129,8 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                     <button onClick={() => setPanel(2)} className={cx('btn btn-outline-primary', panel === 2 ? 'active' : '')}>Start with a DCM</button><br />
                     <button onClick={() => setPanel(3)} className={cx('btn btn-outline-primary', panel === 3 ? 'active' : '')}>Start new Template</button><br />
                     <label>State Machine</label>
-                    <button onClick={() => setPanel(4)} className={cx('btn btn-outline-primary')}>Load/Save from file system</button><br />
-                    <button onClick={() => setPanel(5)} className={cx('btn btn-outline-primary')}>Copy/Paste</button><br />
+                    <button onClick={() => setPanel(4)} className={cx('btn btn-outline-primary', panel === 4 ? 'active' : '')}>Load/Save from file system</button><br />
+                    <button onClick={() => setPanel(5)} className={cx('btn btn-outline-primary', panel === 5 ? 'active' : '')}>Copy/Paste</button><br />
                 </div>
 
                 <div className='m-tabbed-panel'>
