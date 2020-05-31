@@ -11,8 +11,8 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
             <div className='help-row'>
                 <h3>How to use mock-devices</h3>
                 <p>mock-devices is a tool that can be used to quickly create multiple devices with different configurations that act and respond
-                    like real devices. It utilizes the <a href="https://github.com/Azure/azure-iot-sdk-node/tree/master/device">node.js</a> Azure
-                    IoT Hub device SDK to support real device behavior for C2D and D2C concepts. mock-device can be used to demonstrate the
+                    like real devices. It utilizes the <a href="https://github.com/Azure/azure-iot-sdk-node/tree/master/device" target="_blank">node.js</a> Azure
+                    IoT Hub device SDK to support real device behavior for C2D and D2C concepts. mock-devices can be used to demonstrate the
                     following concepts ...</p>
                 <ul>
                     <li>Connect a device to an Azure IoT Hub</li>
@@ -20,67 +20,67 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
                     <li>Connect a device using DPS single and group enrollment including DPS payload and reconnection flows</li>
                     <li>Connect a device using SaS token with expiration</li>
                     <li>Connect a device connection string</li>
+                    <li>Connect a device using Digital Twins 'pnp-refresh' SDK (limited features)</li>
                     <li>Create a device from a DCM available the Azure IoT Device Catalog website</li>
                     <li>Create a device from a DCM exported from IoT Central</li>
-                    <li>Connect a device using Digital Twins 'pnp-refresh' SDK (limited features)</li>
                     <li>Demonstrate send and receive concepts using Azure IoT Device SDKs</li>
                 </ul>
             </div>
 
             <div className='help-row'>
                 <h4>Adding a new mock device</h4>
-                <p>A device can be created with any combination of platform, SDK and connection identity</p>
-                <p>Use the <span className='far fa-save'></span> button from menu and follow the "ADD A MOCK DEVICE" menu options</p>
+                <p>A device can be created with any combination of platform, SDK and connection identity.</p>
+                <p>Use the <span className='far fa-save'></span> button from menu and follow the "ADD A MOCK DEVICE" menu options. Once the device
+                is successfully created, it will be added to the "DEVICES" list. Selecting a card from the list will allow you to see how the device
+                is configured and allow the addition of capabilities to send and receive data.</p>
             </div>
 
             <div className='help-row'>
                 <h4>Templates and Cloning</h4>
                 <p>Templates allow you to create a device configuration without a connection profile. These can be used as a source to clone
-                other devices that use real connection profiles.Templates are disconnected from their references.
+                other devices that use real connection profiles. Devices are disconnected from the template they were created from.
                 </p>
-                <p>Use the <span className='far fa-save'></span> button from menu and follow the "ADD A TEMPLATE" menu options</p>
+                <p>Use the <span className='far fa-save'></span> button from menu and follow the "ADD A TEMPLATE" menu options.</p>
 
                 <h5>Create a template using a DCM</h5>
-                <p>A DCM can be used to generate a best guess device configuration. Object, Map and Arrays are fully supported as well
-                as custom JSON to support IoT Central semantic types. To add a DCM (as a Template) use the new device flow and
-                select 'Start with a DCM' and then create a new device. Once the device configuration is created, the value/complex fields
-                are populated with AUTO macros (see below) so devices can be started immediately.
-                </p>
-            </div>
-
-
-            <div>
-                <h4>Plan mode</h4>
-                <p>Plan mode allows you to send device data at specific times to create stream of events. You can also have the device 
-                    respond to C2D event and send an ack back.</p>
-            </div>
-
-            <div>
-                <h4>Starting a device</h4>
-                <p>Use the power button to start the device's connection cycle. Thee device does not need to have any properties modelled. The
-                the device needs to be on to send and receive data.
+                <p>A DCM can be used to generate a best guess device configuration. Objects, HashMaps and Arrays are fully supported as well
+                as custom JSON to support IoT Central semantic types. To add a DCM (as a Template) use the <span className='far fa-save'></span> button
+                from menu  and follow the "ADD A TEMPLATE -> Start with a DCM". The template configuration will be automatically be created with AUTO values
+                (see later) and run loops to help quickly configure any device cloned from the template.
                 </p>
             </div>
 
             <div className='help-row'>
-                <h4>Sending data</h4>
+                <h4>Plan mode</h4>
+                <p>Plan mode allows you to send device data at specific times to create stream of events. You can also have the device
+                respond to C2D event and send an ack back. To use plan mode, create a device per usual and select "Plan mode" in the
+                device configuration screen. You must have added capabilities to use Plan mode and it will not be enabled until.</p>
+                <p>Plans can not be cloned</p>
+            </div>
 
-                <h5>Device capabilities/properties</h5>
-                <p>Capabilities have the following options</p>
+            <div className='help-row'>
+                <h4>Starting a device</h4>
+                <p>Use the power button to start the device's connection cycle. The device does not need to have any capabilities added to start. This is
+                    useful if you are just testing connection success.</p>
+                <p>The device needs to be on to send and receive data. Some changes to the device like changes to methods and plans will automatically
+                    shut down the device however changes to values and loop times does not require a power off/on cycle.</p>
+            </div>
+
+            <div className='help-row'>
+                <h4>Sending and receiving data</h4>
+                <p>Once a device is created you can add capabilities to send data or respond to C2D events</p>
+
+                <h5>Sending data - Telemetry and Twin reported</h5>
+                <p>Use '+ Send Data' to add a capability to send data. Complete the following</p>
+
+                <p>Options</p>
                 <ul>
-                    <li>Enabled - When the device is running, this allows the capability to work</li>
+                    <li>Enabled - When the device is on, this allows the capability to send values when running a loop.</li>
                     <li>Looped - Repeatedly send this capability on a timer</li>
                     <li>Complex - Use JSON for the payload of this capability. Can be macro driven with auto/random values (see Macros)</li>
                     <li>Mock - Use a simulated sensor to generate a realistic value and override any static, complex or AUTO values.</li>
-                    <li>Convert - (Desired only) Read the Twin desired value sent as a JSON</li>
-                    <li>Return - (Command only) Send this JSON back as the response payload for a Command execute</li>
                 </ul>
-
-                <p>When updating a device's capability, the capability must be saved to be go into affect. Unsaved changes are indicated by
-                     a yellow save icon </p>
-
-                <h5>Telemetry and Twin Reported</h5>
-                <p>Use '+ Send Data' to add a capability to send data. Complete the fields</p>
+                <p>Fields</p>
                 <ul>
                     <li>Name - The name of the property</li>
                     <li>API - Msg for Telemetry and Twin for Twin Reported</li>
@@ -92,21 +92,37 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
                     <li>Sensor - Select a sensor profile to simulate values. Useful for loops</li>
                 </ul>
 
-                <h5>Twin Desired</h5>
-                <p>Use '+ Receive Data' to add a capability to receive data. Complete the fields</p>
-                <ul>
-                    <li>Name - The name of the property</li>
-                </ul>
-                <p>The only options here are to read the last value sent to this device from the cloud.</p>
+                <p>When updating a device's capability, the capability must be saved to be go into affect. Unsaved changes are indicated by
+                     a yellow save icon </p>
 
-                <h5>Commands</h5>
-                <p>Use '+ Method' to add a capability to simulate a Command request/response. Complete the fields</p>
+                <h5>Receiving data - Twin desired</h5>
+                <p>Use '+ Receive Data' to add a capability to receive data. Complete the fields</p>
+
+                <p>Options</p>
+                <ul>
+                    <li>Enabled - Always ons. Device are always ready to receive C2D events.</li>
+                </ul>
+                <p>Fields</p>
                 <ul>
                     <li>Name - The name of the property</li>
-                    <li>Status - The http status sent with the response</li>
-                    <li>Response - The JSON or value payload sent back to the calling client</li>
                 </ul>
-                <p>The only options here are to read the last request parameters sent Parameters are not honored for responses.</p>
+
+                <h5>Commands - Direct methods or C2D</h5>
+                <p>Use '+ Method' to add a capability to simulate a Command request/response. Complete the fields</p>
+
+                <p>Options</p>
+                <ul>
+                    <li>Enabled - When the device is on, this allows the capability to send values when running a loop.</li>
+                    <li>Read - When the device receive a method invoke, this allows the parameters to be viewed.</li>
+                </ul>
+                <p>Fields</p>
+                <ul>
+                    <li>Name - The name of the property</li>
+                    <li>Execution - When on, the method will use C2D messages instead of direct methods</li>
+                    <li>Response Status - The http status sent with the response</li>
+                    <li>Response JSON - The JSON or value payload sent back to the calling client</li>
+                </ul>
+
                 <h5>mock-devices specific commands</h5>
                 <p>mock-devices can simulate common device commands; Firmware, Reboot and Shutdown. This is particularly useful when mock-devices
                 is running for a long time and you want to reset any current state when using a mock sensor e.g. the battery mock sensor will reset
