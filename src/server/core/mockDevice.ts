@@ -716,7 +716,7 @@ export class MockDevice {
             let res = this.processCountdown(p, timeRemain, possibleResetTime);
             runloopTimers[i] = { 'timeRemain': res.timeRemain, originalTime };
 
-            this.updateSensorValue(p, propertySensorTimers);
+            this.updateSensorValue(p, propertySensorTimers, res.process);
             // for plan mode we send regardless of enabled or not
             if (res.process && (this.device.configuration.planMode || p.enabled)) {
                 let o: ValueByIdPayload = <ValueByIdPayload>{};
@@ -727,7 +727,7 @@ export class MockDevice {
         return payload;
     }
 
-    async updateSensorValue(p: Property, propertySensorTimers: any) {
+    async updateSensorValue(p: Property, propertySensorTimers: any, process: boolean) {
 
         // sensors are not supported in plan mode yet
         if (p.mock === undefined) { return; }
@@ -749,7 +749,7 @@ export class MockDevice {
             slice = p.mock._value;
         }
 
-        /* very simple calculations on line to give them some realistic behavoir */
+        /* very simple calculations on line to give them some realistic behavior */
 
         if (p.mock._type === "fan") {
             var variance = p.mock.variance / p.mock.running * 100;
@@ -770,7 +770,7 @@ export class MockDevice {
             p.mock._value = Math.floor(Math.random() * Math.floor(Math.pow(10, p.mock.variance) + 1));
         }
 
-        if (p.mock._type === "function") {
+        if (p.mock._type === "function" && process) {
             const res: any = await this.getFunctionPost(p.mock.function, p.mock._value);
             p.mock._value = res;
         }
