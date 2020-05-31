@@ -52,28 +52,30 @@ export class DeviceStore {
             receive: []
         }
 
-        if (d.configuration.mockDeviceCloneId && d.configuration.mockDeviceCloneId != null) {
-            let origDevice: Device = JSON.parse(JSON.stringify(this.store.getItem(d.configuration.mockDeviceCloneId)));
-            origDevice.running = false;
-            d.configuration.capabilityUrn = origDevice.configuration.capabilityUrn;
-            for (let i = 0; i < origDevice.comms.length; i++) {
-                let p = origDevice.comms[i];
-                p._id = uuidV4();
-                if (p.mock) { p.mock._id = uuidV4(); }
+        if (d.configuration.mockDeviceCloneId) {
+            const origDevice: Device = Object.assign({}, this.store.getItem(d.configuration.mockDeviceCloneId) || {});
+            if (Object.keys(origDevice).length != 0) {
+                origDevice.running = false;
+                d.configuration.capabilityUrn = origDevice.configuration.capabilityUrn;
+                for (let i = 0; i < origDevice.comms.length; i++) {
+                    let p = origDevice.comms[i];
+                    p._id = uuidV4();
+                    if (p.mock) { p.mock._id = uuidV4(); }
+                }
+                d.comms = origDevice.comms;
+                // because every property id in mock-devices is unique, a plan cannot be copied without a refactor
+                // d.plan = origDevice.plan;
+                d.configuration.planMode = false;
+                delete d.configuration._deviceList;
+                delete d.configuration.mockDeviceCount;
+                delete d.configuration.dpsPayload;
+                delete d.configuration.mockDeviceCloneId;
+                delete d.configuration.machineState;
+                delete d.configuration.machineStateClipboard;
+                delete d.configuration.capabilityModel;
             }
-            d.comms = origDevice.comms;
-            // because every property id in mock-devices is unique, a plan cannot be copied without a refactor
-            // d.plan = origDevice.plan;
-            d.configuration.planMode = false;
-            delete d.configuration._deviceList;
-            delete d.configuration.mockDeviceCount;
-            delete d.configuration.dpsPayload;
-            delete d.configuration.mockDeviceCloneId;
-            delete d.configuration.machineState;
-            delete d.configuration.machineStateClipboard;
-            delete d.configuration.capabilityModel;
         }
-
+        
         // TODO: need to refactor double device Id problem
         d.configuration.deviceId = d._id;
 
