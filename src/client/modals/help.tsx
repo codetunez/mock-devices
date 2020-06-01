@@ -45,7 +45,7 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
                 <h5>Create a template using a DCM</h5>
                 <p>A DCM can be used to generate a best guess device configuration. Objects, HashMaps and Arrays are fully supported as well
                 as custom JSON to support IoT Central semantic types. To add a DCM (as a Template) use the <span className='far fa-save'></span> button
-                from menu  and follow the "ADD A TEMPLATE -> Start with a DCM". The template configuration will be automatically be created with AUTO values
+                from menu  and follow the "ADD A TEMPLATE - &gt; Start with a DCM". The template configuration will be automatically be created with AUTO values
                 (see later) and run loops to help quickly configure any device cloned from the template.
                 </p>
             </div>
