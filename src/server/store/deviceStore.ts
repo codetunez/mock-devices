@@ -68,8 +68,6 @@ export class DeviceStore {
                 d.configuration.planMode = false;
                 delete d.configuration._deviceList;
                 delete d.configuration.mockDeviceCount;
-                delete d.configuration.dpsPayload;
-                delete d.configuration.mockDeviceCloneId;
                 delete d.configuration.machineState;
                 delete d.configuration.machineStateClipboard;
                 delete d.configuration.capabilityModel;
