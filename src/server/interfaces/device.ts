@@ -94,6 +94,7 @@ export class DeviceConfiguration {
     public devices?: [];
     public mockDeviceName?: string;
     public mockDeviceCount?: number;
+    public mockDeviceCountMax?: number;
     public mockDeviceCloneId?: string;
     public connectionString?: string;
     public scopeId?: string;
