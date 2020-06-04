@@ -4,3 +4,12 @@
   height: 100%;
   display: flex;
 }
+
+.menu-vertical button {
+  margin-bottom: $sm-gutter;
+}
+
+label {
+  margin-left: 0 !important;
+  color: $app-clr-yellow-1;
+}
