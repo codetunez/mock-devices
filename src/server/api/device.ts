@@ -197,7 +197,7 @@ export default function (deviceStore: DeviceStore) {
             for (let i = 0; i < maxCount; i++) {
                 let d: Device = new Device();
                 let id = updatePayload._kind === 'dps' ? updatePayload.deviceId : Utils.getDeviceId(updatePayload.connectionString);
-                id = updatePayload.mockDeviceCount > 1 ? id + "-" + from : id;
+                id = count > 1 ? id + "-" + from : id;
                 if (deviceStore.exists(id)) {
                     res.status(500).json({ "message": "Device already added" });
                     res.end();
@@ -205,7 +205,7 @@ export default function (deviceStore: DeviceStore) {
                 }
                 d._id = id;
                 d.configuration = JSON.parse(JSON.stringify(updatePayload));
-                d.configuration.mockDeviceName = updatePayload.mockDeviceCount > 1 ? d.configuration.mockDeviceName + "-" + from : d.configuration.mockDeviceName;
+                d.configuration.mockDeviceName = count > 1 ? d.configuration.mockDeviceName + "-" + from : d.configuration.mockDeviceName;
                 d.configuration.deviceId = d._id;
                 deviceStore.addDevice(d);
                 from++;
