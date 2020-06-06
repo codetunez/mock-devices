@@ -135,8 +135,8 @@ export default function (deviceStore: DeviceStore) {
     // update the device's configuration. will stop the device. send back state of all devices
     api.put('/:id/configuration', function (req, res, next) {
         var id = req.params.id;
-        deviceStore.updateDevice(id, req.body.payload, 'configuration');
-        res.json({ device: deviceStore.exists(id), devices: deviceStore.getListOfItems() });
+        const newId = deviceStore.updateDevice(id, req.body.payload, 'configuration');
+        res.json({ device: deviceStore.exists(newId), devices: deviceStore.getListOfItems() });
         res.end();
     });
 
