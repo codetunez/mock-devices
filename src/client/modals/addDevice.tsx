@@ -205,7 +205,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                     <input className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
                                 </div>
                                 <div className='form-group'>
-                                    <label>DPS bulk payload</label>
+                                    <label>DPS blob payload</label>
                                     <textarea className='custom-textarea form-control form-control-sm' name='dpsPayload' rows={3} onChange={updateField} value={state.dpsPayload || ''}></textarea>
                                 </div>
                             </div>
