@@ -260,7 +260,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
-                            <button className='btn btn-info' disabled={!state.connectionString || state.connectionString === ''} onClick={() => clickAddDevice('hub')}>Create this mock device</button>
+                            <button className='btn btn-info' disabled={!state.connectionString || state.connectionString === '' || state.mockDeviceName === ''} onClick={() => clickAddDevice('hub')}>Create this mock device</button>
                         </div>
                     </>}
 
@@ -309,7 +309,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                     </div>
                                 </div>
                                 <div>
-                                    <label>Save a state file</label><br/>
+                                    <label>Save a state file</label><br />
                                     <button className='btn btn-danger' onClick={() => saveToDisk()}>Browse folder</button>
                                 </div>
                             </div>

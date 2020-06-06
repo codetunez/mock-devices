@@ -63,5 +63,9 @@ export const RESX = {
                 "clearPlan_title": "Clear all the events in the plan",
             }
         }
+    },
+    "console": {
+        "pause_title": "Play/Pause the logging window",
+        "erase_title": "Clear the logging window"
     }
 }

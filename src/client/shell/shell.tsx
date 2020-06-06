@@ -11,6 +11,7 @@ import { Selector } from '../selector/selector';
 import { Device } from '../device/device';
 import { DeviceContext } from '../context/deviceContext';
 import { Console } from '../modals/console';
+import { RESX } from '../strings';
 
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
@@ -64,11 +65,10 @@ export const Shell: React.FunctionComponent = () => {
     <Websocket url={'ws://127.0.0.1:24377'} onMessage={propertyUpdate} />
     <Websocket url={'ws://127.0.0.1:24387'} onMessage={liveUpdate} />
 
-    <SplitterLayout vertical={true} primaryMinSize={20} secondaryMinSize={46} secondaryInitialSize={640}>
+    <SplitterLayout vertical={true} primaryMinSize={40} secondaryMinSize={46} secondaryInitialSize={580}>
       <div className={cx('shell-console')}>
-        <div className='console-pause'>
-          <a onClick={() => setPause(!paused)}><span className={cx('fas', paused ? 'fa-play' : 'fa-pause')}></span></a>
-        </div>
+        <a title={RESX.console.pause_title} className='console-pause' onClick={() => setPause(!paused)}><span className={cx('fas', paused ? 'fa-play' : 'fa-pause')}></span></a>
+        <a title={RESX.console.erase_title} className='console-erase' onClick={() => updateConsole([])}><span className={cx('fas', 'fa-times')}></span></a>
         <div>
           {lines.length > 0 && lines.map((element, index) => {
             return <div className={cx('console-line', 'ellipsis')} onClick={() => { openConsole(lines, index) }}>{element}</div>

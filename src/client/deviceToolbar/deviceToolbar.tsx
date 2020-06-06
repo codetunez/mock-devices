@@ -19,6 +19,19 @@ export function DeviceToolbar() {
         })
     }, [deviceContext.device])
 
+
+    React.useEffect(() => {
+        const p = deviceContext.powers[deviceContext.device._id];
+        if (p != null || p != undefined) {
+            setPower({
+                label: p ? RESX.device.toolbar.powerOff_label : RESX.device.toolbar.powerOn_label,
+                title: p ? RESX.device.toolbar.powerOff_title : RESX.device.toolbar.powerOff_title,
+                style: p ? "btn-success" : "btn-outline-secondary",
+                handler: p ? deviceContext.stopDevice : deviceContext.startDevice
+            })
+        }
+    }, [deviceContext.powers])
+
     const template = deviceContext.device.configuration._kind === 'template';
 
     return <div className='device-toolbar-container'>

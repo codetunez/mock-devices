@@ -59,21 +59,41 @@ export class DeviceStore {
                 d.configuration.capabilityUrn = origDevice.configuration.capabilityUrn;
                 for (let i = 0; i < origDevice.comms.length; i++) {
                     let p = origDevice.comms[i];
-                    p._id = uuidV4();
+                    const origPropertyId = p._id;
+                    const newPropertyId = uuidV4();
+                    p._id = newPropertyId;
                     if (p.mock) { p.mock._id = uuidV4(); }
+
+                    for (const property in origDevice.plan.startup) {
+                        if (origDevice.plan.startup[property].property === origPropertyId) { origDevice.plan.startup[property].property = newPropertyId };
+                    }
+
+                    for (const property in origDevice.plan.timeline) {
+                        if (origDevice.plan.timeline[property].property === origPropertyId) { origDevice.plan.timeline[property].property = newPropertyId };
+                    }
+
+                    for (const property in origDevice.plan.random) {
+                        if (origDevice.plan.random[property].property === origPropertyId) { origDevice.plan.random[property].property = newPropertyId };
+                    }
+
+                    for (const property in origDevice.plan.receive) {
+                        if (origDevice.plan.receive[property].propertyIn === origPropertyId) { origDevice.plan.receive[property].propertyIn = newPropertyId };
+                        if (origDevice.plan.receive[property].propertyOut === origPropertyId) { origDevice.plan.receive[property].propertyOut = newPropertyId };
+                    }
                 }
                 d.comms = origDevice.comms;
-                // because every property id in mock-devices is unique, a plan cannot be copied without a refactor
-                // d.plan = origDevice.plan;
-                d.configuration.planMode = false;
-                delete d.configuration._deviceList;
-                delete d.configuration.mockDeviceCount;
-                delete d.configuration.machineState;
-                delete d.configuration.machineStateClipboard;
-                delete d.configuration.capabilityModel;
+                d.plan = origDevice.plan;
+                d.configuration.planMode = origDevice.configuration.planMode;
             }
         }
-        
+
+        delete d.configuration._deviceList;
+        delete d.configuration.mockDeviceCount;
+        delete d.configuration.mockDeviceCountMax;
+        delete d.configuration.machineState;
+        delete d.configuration.machineStateClipboard;
+        delete d.configuration.capabilityModel;
+
         // TODO: need to refactor double device Id problem
         d.configuration.deviceId = d._id;
 
@@ -88,7 +108,7 @@ export class DeviceStore {
         this.store.setItem(d, d._id);
     }
 
-    public updateDevice = (id: string, payload: any, type?: any) => {
+    public updateDevice = (id: string, payload: any, type?: string) => {
 
         let d: Device = this.store.getItem(id);
         let newId: string = type === 'configuration' ? Utils.getDeviceId(payload.connectionString) || payload.deviceId || id : id;
@@ -98,6 +118,7 @@ export class DeviceStore {
 
         if (id != newId) {
             d._id = newId;
+            d.configuration.deviceId = newId;
             this.store.deleteItem(id);
         }
 
@@ -109,6 +130,8 @@ export class DeviceStore {
 
         let md = new MockDevice(d, this.liveUpdatesService, this);
         this.runners[d._id] = md;
+
+        return newId;
     }
 
     public addDeviceMethod = (id: string, override: any = {}) => {
@@ -474,7 +497,15 @@ export class DeviceStore {
     }
 
     public getListOfItems = () => {
-        return this.store.getAllItems();
+        let devices: Array<Device> = this.store.getAllItems();
+
+        for (const d in devices) {
+            //TODO: _id refactor into configuration
+            const rd: MockDevice = this.runners[devices[d]._id];
+            devices[d].running = rd && rd.getRunning() || false;
+        }
+
+        return devices;
     }
 
     public createFromArray = (items: Array<Device>) => {

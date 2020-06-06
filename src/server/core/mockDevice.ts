@@ -103,6 +103,8 @@ export class MockDevice {
 
     private planModeLastEventTime = 0;
 
+    private dpsRetires: number = 10;
+
     private nameIdResolvers = {
         desiredToId: {},
         methodToId: {},
@@ -134,6 +136,10 @@ export class MockDevice {
 
         this.buildIndexes(device);
 
+    }
+
+    getRunning() {
+        return this.running;
     }
 
     getSecondsFromHours(hours: number) {
@@ -327,18 +333,30 @@ export class MockDevice {
     /// starts a device
     start() {
         if (this.device.configuration._kind === 'template') { return; }
+        if (this.running) { return; }
 
         this.log('DEVICE IS SWITCHED ON', MSG_DPS, MSG_PROC);
+        this.running = true;
 
         if (this.device.configuration._kind === 'dps') {
+            const simulation = this.simulationStore.get()["simulation"];
+            this.dpsRetires = simulation["dpsRetries"] || 10;
             this.registrationConnectionString = null;
+
             this.connectionDPSTimer = setInterval(() => {
-                this.log('ATTEMPTING DEVICE REGISTRATION', MSG_DPS, MSG_PROC);
                 if (this.registrationConnectionString != null && this.registrationConnectionString != 'init') {
                     clearInterval(this.connectionDPSTimer);
                     this.connectLoop(this.registrationConnectionString);
                     return;
                 }
+
+                if (this.dpsRetires === 0) {
+                    clearInterval(this.connectionDPSTimer);
+                    this.end();
+                    return;
+                }
+
+                this.log('ATTEMPTING DEVICE REGISTRATION', MSG_DPS, MSG_PROC);
                 this.dpsRegistration();
             }, this.CONNECT_POLL);
         }
@@ -361,24 +379,21 @@ export class MockDevice {
     }
 
     end() {
-        if (this.running) {
-            this.log('DEVICE IS SWITCHED OFF', MSG_HUB, MSG_PROC);
-            clearInterval(this.connectionDPSTimer);
-            if (this.running === true && this.iotHubDevice.client != null) {
-                clearInterval(this.connectionTimer);
-                this.cleanUp();
-            }
-        }
+        if (!this.running) { return; }
+
+        this.dpsRetires = 0;
+        this.log('DEVICE IS SWITCHED OFF', MSG_HUB, MSG_PROC);
+        clearInterval(this.connectionTimer);
+        this.cleanUp();
     }
 
     mainLoop() {
-        if (!this.running) {
-            this.running = true;
-            if (this.device.configuration.pnpSdk) {
-                this.pnpMainLoop();
-            } else {
-                this.legacyMainLoop();
-            }
+        if (!this.running) { return; }
+
+        if (this.device.configuration.pnpSdk) {
+            this.pnpMainLoop();
+        } else {
+            this.legacyMainLoop();
         }
     }
 
@@ -555,7 +570,6 @@ export class MockDevice {
         }
     }
 
-
     cleanUp() {
         clearInterval(this.twinRLTimer);
         clearInterval(this.msgRLTimer);
@@ -607,6 +621,7 @@ export class MockDevice {
     dpsRegistration() {
 
         if (this.registrationConnectionString === 'init') { return; }
+        if (this.dpsRetires === 0) { return; }
 
         let config = this.device.configuration;
         this.iotHubDevice = { client: undefined, digitalTwinClient: undefined };
@@ -622,8 +637,9 @@ export class MockDevice {
         provisioningClient.register((err: any, result) => {
             if (err) {
                 let msg = err.result && err.result.registrationState && err.result.registrationState.errorMessage || err;
-                this.log(`REGISTRATION ERROR: ${err}`, MSG_DPS, MSG_PROC);
+                this.log(`REGISTRATION ERROR ${this.dpsRetires}: ${err}`, MSG_DPS, MSG_PROC);
                 this.registrationConnectionString = null;
+                this.dpsRetires--;
                 return;
             }
             this.registrationConnectionString = 'HostName=' + result.assignedHub + ';DeviceId=' + result.deviceId + ';SharedAccessKey=' + transformedSasKey;

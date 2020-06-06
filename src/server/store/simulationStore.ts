@@ -71,7 +71,8 @@ export class SimulationStore {
                 min: 5,
                 max: 10
             },
-            "sasExpire": 72
+            "sasExpire": 72,
+            "dpsRetires": 10
         },
         "commands": {
             "reboot": "reboot",

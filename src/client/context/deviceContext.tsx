@@ -28,10 +28,15 @@ export class DeviceProvider extends React.PureComponent {
             })
     }
 
-    // data control plane
+    // group data plane
     getDevices = () => {
-        axios.get('/api/devices').then((response: any) => {
-            this.setState({ devices: response.data });
+        const id = this.state.device ? `/${this.state.device._id}` : ''
+        axios.get(`/api/devices${id}`).then((response: any) => {
+            let p = {};
+            if (response.data.device) {
+                Object.assign(p, { [response.data.device._id]: response.data.device.running })
+            }
+            this.setState({ powers: p, devices: response.data.devices });
         })
     }
 
@@ -151,6 +156,7 @@ export class DeviceProvider extends React.PureComponent {
         device: {},
         devices: [],
         requests: {},
+        powers: {},
         startAllDevices: this.startAllDevices,
         stopAllDevices: this.stopAllDevices,
         refreshAllDevices: this.refreshAllDevices,
@@ -176,9 +182,9 @@ export class DeviceProvider extends React.PureComponent {
 
     render() {
         return (
-            <DeviceContext.Provider value={this.state}>
+            <DeviceContext.Provider value={this.state} >
                 {this.props.children}
-            </DeviceContext.Provider>
+            </DeviceContext.Provider >
         )
     }
 }
