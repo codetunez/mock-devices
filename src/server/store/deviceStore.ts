@@ -92,7 +92,6 @@ export class DeviceStore {
         delete d.configuration.mockDeviceCountMax;
         delete d.configuration.machineState;
         delete d.configuration.machineStateClipboard;
-        delete d.configuration.capabilityModel;
 
         // TODO: need to refactor double device Id problem
         d.configuration.deviceId = d._id;
