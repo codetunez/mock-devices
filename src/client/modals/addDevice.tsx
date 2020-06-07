@@ -1,10 +1,11 @@
 var classNames = require('classnames');
-const cxM = classNames.bind(require('./modal.scss'));
-const cx = classNames.bind(require('./addDevice.scss'));
 import "react-toggle/style.css"
 
+const cxM = classNames.bind(require('./modal.scss'));
+const cx = classNames.bind(require('./addDevice.scss'));
+
 import * as React from 'react';
-import { Combo } from '../ui/controls';
+import { Combo, Json } from '../ui/controls';
 import axios from 'axios';
 import Toggle from 'react-toggle';
 import { DeviceContext } from '../context/deviceContext';
@@ -34,6 +35,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
     const [panel, setPanel] = React.useState(0);
     const [state, setPayload] = React.useState(initialState);
     const [merge, setMerge] = React.useState(false);
+    const [jsons, setJsons] = React.useState<any>({})
 
     React.useEffect(() => {
         let list = [];
@@ -49,13 +51,16 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                 setPayload({
                     ...state,
                     _deviceList: list,
-                    machineStateClipboard: JSON.stringify(response.data, null, 1)
+                    machineStateClipboard: response.data
                 })
             })
     }, []);
 
     const clickAddDevice = (kind: string) => {
         state._kind = kind;
+        for (const j in jsons) {
+            state[j] = jsons[j]
+        }
         axios.post('/api/device/new', state).then(res => {
             deviceContext.setDevices(res.data);
             handler(false);
@@ -107,15 +112,9 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                 payload.mockDeviceCloneId = id
 
                 if (state.pnpSdk) {
-                    payload.dpsPayload = JSON.stringify({
-                        "__iot:interfaces": {
-                            "CapabilityModelId": json.configuration.capabilityUrn
-                        }
-                    }, null, 2)
+                    payload.dpsPayload = { "__iot:interfaces": { "CapabilityModelId": json.configuration.capabilityUrn } }
                 } else {
-                    payload.dpsPayload = JSON.stringify({
-                        "iotcModelId": json.configuration.capabilityUrn
-                    }, null, 2)
+                    payload.dpsPayload = { "iotcModelId": json.configuration.capabilityUrn }
                 }
 
                 if (json.configuration.isMasterKey) {
@@ -142,16 +141,23 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                 } else {
                     setPayload({
                         ...state,
-                        [file]: JSON.stringify(json, null, 1)
+                        [file]: json
                     })
                 }
             })
     }
 
+    const updateJson = (text: any, type: string) => {
+        setJsons({ ...jsons, [type]: text });
+    }
+
     /* State Machine */
 
     const updateCurrentState = (nextState) => {
-        axios.post('/api/state/' + (merge ? 'merge' : ''), JSON.parse(state[nextState]))
+        for (const j in jsons) {
+            state[j] = jsons[j]
+        }
+        axios.post('/api/state/' + (merge ? 'merge' : ''), state[nextState])
             .then(() => {
                 deviceContext.refreshAllDevices();
                 handler(false);
@@ -179,7 +185,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <button onClick={() => setPanel(3)} className={cx('btn btn-outline-primary', panel === 3 ? 'active' : '')}>Start new Template</button><br />
                         <label>State</label>
                         <button onClick={() => setPanel(4)} className={cx('btn btn-outline-primary', panel === 4 ? 'active' : '')}>Load/Save from file system</button><br />
-                        <button onClick={() => setPanel(5)} className={cx('btn btn-outline-primary', panel === 5 ? 'active' : '')}>Copy/Paste</button><br />
+                        <button onClick={() => setPanel(5)} className={cx('btn btn-outline-primary', panel === 5 ? 'active' : '')}>Editor</button><br />
                     </div>
                     <div className='form-group' >
                         <label>Use PnP SDK</label>
@@ -190,6 +196,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                 <div className='m-tabbed-panel'>
                     {panel !== 0 ? null : <>
                         <div className='m-tabbed-panel-form'>
+
                             <div className='form-group'>
                                 <label>Clone another mock device or use a template</label><br />
                                 <Combo items={state._deviceList} cls='custom-textarea-sm' name='mockDeviceCloneId' onChange={(e) => getTemplate(e.target.value)} value={state.mockDeviceCloneId || ''} />
@@ -200,35 +207,35 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             </div>
 
                             <div className='form-group' style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                <div className='form-group' style={{ paddingRight: '10px' }} >
-                                    <label>DPS scope ID</label>
-                                    <input className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
+                                <div className='form-group' style={{ paddingRight: '20px' }} >
+                                    <div className='form-group'>
+                                        <label>DPS scope ID</label>
+                                        <input className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
+                                    </div>
+                                    <div className='form-group'>
+                                        <label>SaS key</label>
+                                        <input className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
+                                    </div>
+                                    <div className='form-group'>
+                                        <label>Root key</label>
+                                        <div><Toggle name='masterKey' checked={state.isMasterKey} defaultChecked={false} onChange={() => { toggleMasterKey() }} /></div>
+                                    </div>
                                 </div>
                                 <div className='form-group'>
                                     <label>DPS blob payload</label>
-                                    <textarea className='custom-textarea form-control form-control-sm' name='dpsPayload' rows={3} onChange={updateField} value={state.dpsPayload || ''}></textarea>
-                                </div>
-                            </div>
-
-                            <div className='form-group' style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                <div className='form-group' style={{ paddingRight: '10px' }} >
-                                    <label>SaS key</label>
-                                    <input className='form-control form-control-sm' style={{ width: '400px' }} type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
-                                </div>
-
-                                <div className='form-group'>
-                                    <label>Root key</label>
-                                    <div><Toggle name='masterKey' checked={state.isMasterKey} defaultChecked={false} onChange={() => { toggleMasterKey() }} /></div>
+                                    <div className='form-group'>
+                                        <Json json={state.dpsPayload} cb={(text: any) => { updateJson(text, 'dpsPayload') }} />
+                                    </div>
                                 </div>
                             </div>
 
                             <div className='form-group' style={{ display: 'flex', alignContent: 'stretch' }}>
                                 <div className='form-group' style={{ paddingRight: '10px' }} >
-                                    <label>Bulk create from # (needs root key)</label><br />
+                                    <label>Bulk from # (needs root key)</label><br />
                                     <input className='form-control form-control-sm' type='number' name='mockDeviceCount' disabled={!state.isMasterKey} onChange={updateField} value={state.mockDeviceCount || ''} />
                                 </div>
                                 <div className='form-group'>
-                                    <label>Bulk create to # (needs root key)</label><br />
+                                    <label>Bulk to # (needs root key)</label><br />
                                     <input className='form-control form-control-sm' type='number' name='mockDeviceCountMax' disabled={!state.isMasterKey} onChange={updateField} value={state.mockDeviceCountMax || ''} />
                                 </div>
                             </div>
@@ -275,13 +282,13 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                 <button className='btn btn-success' onClick={() => loadFromDisk('capabilityModel')}>Browse disk for a DCM</button>
                             </div>
 
-                            <div className='form-group'>
-                                <textarea className='custom-textarea form-control form-control-sm' style={{ overflow: 'scroll', whiteSpace: 'nowrap' }} name='capabilityModel' rows={15} onChange={updateField} value={state.capabilityModel || ''}></textarea>
+                            <div className='form-group' style={{ height: "calc(100% - 150px)" }}>
+                                <Json json={state.capabilityModel} cb={(text: any) => { updateJson(text, 'capabilityModel') }} />
                             </div>
 
                         </div>
                         <div className='m-tabbed-panel-footer'>
-                            <button className='btn btn-info' disabled={!state.capabilityModel || state.capabilityModel === ''} onClick={() => clickAddDevice('template')}>Create template</button>
+                            <button className='btn btn-info' onClick={() => clickAddDevice('template')}>Create template</button>
                         </div>
                     </>}
 
@@ -319,12 +326,12 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                     {panel !== 5 ? null : <>
                         <div className='m-tabbed-panel-form'>
                             <div className='form-group'><label>Copy/Paste the State's JSON</label></div>
-                            <div className='form-group'>
-                                <textarea className='custom-textarea form-control form-control-sm' name='machineStateClipboard' rows={25} onChange={updateField} value={state.machineStateClipboard || ''}></textarea>
+                            <div className='form-group' style={{ height: "calc(100% - 60px)" }}>
+                                <Json json={state.machineStateClipboard} cb={(text: any) => { updateJson(text, 'machineStateClipboard') }} />
                             </div>
-                            <div className='m-tabbed-panel-footer'>
-                                <button className='btn btn-info' onClick={() => updateCurrentState('machineStateClipboard')}>Update current State</button>
-                            </div>
+                        </div>
+                        <div className='m-tabbed-panel-footer'>
+                            <button className='btn btn-info' onClick={() => updateCurrentState('machineStateClipboard')}>Update current State</button>
                         </div>
                     </>}
                 </div>

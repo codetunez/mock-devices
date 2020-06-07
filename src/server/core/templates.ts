@@ -16,8 +16,7 @@ export function DCMtoMockDevice(deviceConfiguration: any, deviceStore: DeviceSto
     deviceStore.addDevice(t);
 
     if (deviceConfiguration.capabilityModel && Object.keys(deviceConfiguration.capabilityModel).length > 0) {
-        var dcm = JSON.parse(deviceConfiguration.capabilityModel);
-        //TOOD: get this fixed
+        var dcm = deviceConfiguration.capabilityModel;
         t.configuration.mockDeviceName = dcm.displayName ? (dcm.displayName.en || dcm.displayName) : 'DCM has no display name';
         t.configuration.capabilityUrn = dcm['@id'];
         dcm.implements.forEach(element => {

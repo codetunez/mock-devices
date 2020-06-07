@@ -47,13 +47,15 @@
 .m-tabbed-panel {
   height: calc(100% - 25px);
   width: calc(100% - 250px);
-  padding: 0 $lg-gutter $lg-gutter $lg-gutter;
+  padding: 0 0 $lg-gutter $lg-gutter;
 
   display: flex;
   flex-direction: column;
 
   .m-tabbed-panel-form {
     flex-grow: 1;
+    overflow: auto;
+    padding-right: $lg-gutter;
     label {
       font-weight: 700;
       font-size: 0.9rem;
@@ -74,9 +76,14 @@
   }
 
   .m-tabbed-panel-footer {
+    padding-top: $sm-gutter;
     flex-shrink: 0;
-    height: 1rem;
+    height: 2rem;
     align-self: flex-end;
     width: 100%;
   }
+}
+
+.ace_content {
+  height: 400px;
 }
