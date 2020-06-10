@@ -373,6 +373,7 @@ export class MockDevice {
             this.log('IOT HUB CLIENT READY', MSG_HUB, MSG_PROC);
             this.CONNECT_RESTART = true;
             this.cleanUp();
+            this.running = true; // Quick fix to change restart behavior
             this.connectClient(connectionString);
             this.mainLoop();
         }, this.RESTART_LOOP)

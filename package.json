@@ -1,6 +1,6 @@
 {
   "name": "mock-devices",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "description": "mock-devices desktop edition",
   "main": "./_dist/server/start.js",
   "repository": {
