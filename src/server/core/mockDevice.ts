@@ -502,14 +502,13 @@ export class MockDevice {
 
     regsisterC2D() {
         this.iotHubDevice.client.on('message', (msg) => {
-            if (msg && msg.data) {
+            let error = false;
+            if (msg) {
                 try {
-                    const json = JSON.parse(msg.data.toString('utf8').replace(/\'/g, '"'));
-
-                    const cloudMethod = json.methodName || '';
-                    const cloudMethodPayload = json.payload || {};
-                    const connectTimeoutInSeconds = json.connectTimeoutInSeconds || 30;
-                    const responseTimeoutInSeconds = json.responseTimeoutInSeconds || 30;
+                    const cloudName = msg.properties.getValue('method-name');
+                    const cloudNameParts = cloudName.split(':');
+                    const cloudMethod = cloudNameParts.length === 2 ? cloudNameParts[1] : cloudNameParts[0]
+                    const cloudMethodPayload = msg.data.toString();
 
                     //TODO: make this performant!
                     for (let i = 0; i < this.device.comms.length; i++) {
@@ -531,12 +530,13 @@ export class MockDevice {
                         }
                     }
                 } catch (err) {
-                    this.log(err.toString(), MSG_HUB, MSG_C2D, MSG_SEND);
+                    error = true;
+                    this.log(`[C2D ERROR PARSING MESSAGE BODY] ${err.toString()}`, MSG_HUB, MSG_C2D, MSG_SEND);
                 }
             }
 
             this.iotHubDevice.client.complete(msg, (err) => {
-                this.log(`[C2D COMPLETE] ${err ? err.toString() : msg.data.toString('utf8')}`, MSG_HUB, MSG_PROC);
+                this.log(`[C2D COMPLETE STATUS] ${err ? err.toString() : error ? 'FAILED' : 'SUCCESS'}`, MSG_HUB, MSG_PROC);
             });
         });
     }
@@ -548,21 +548,21 @@ export class MockDevice {
             if (comm._type === "method" && comm.execution === 'direct') {
 
                 let m: Method = comm;
-                let payload = m.asProperty ? { result: m.payload } : JSON.parse(m.payload);
+                let responsePayload = JSON.parse(m.payload);
 
                 this.iotHubDevice.client.onDeviceMethod(m.name, (request, response) => {
-                    this.log(request.methodName + " " + JSON.stringify(request.payload), MSG_HUB, MSG_METH, MSG_RECV);
+                    this.log(`[${request.methodName}][DIRECT METHOD REQUEST PAYLOAD] ${JSON.stringify(request.payload)}`, MSG_HUB, MSG_METH, MSG_RECV);
                     Object.assign(this.receivedMethodParams, { [m._id]: { date: new Date().toUTCString(), payload: JSON.stringify(request.payload) } });
 
                     // this response is the payload of the device
-                    response.send((m.status), payload, (err) => {
+                    response.send((m.status), responsePayload, (err) => {
                         if (this.device.configuration.planMode) {
                             this.sendPlanResponse(this.nameIdResolvers.methodToId, m.name);
                         } else if (!this.device.configuration.planMode && m.asProperty) {
-                            this.methodReturnPayload = Object.assign({}, { [m.name]: JSON.parse(m.payload) })
+                            this.methodReturnPayload = Object.assign({}, { [m.name]: responsePayload })
                         }
 
-                        this.log(err ? err.toString() : `[DIRECT METHOD RESPONSE PAYLOAD] ${payload.result}`, MSG_HUB, MSG_METH, MSG_SEND);
+                        this.log(err ? err.toString() : `[${m.name}][DIRECT METHOD RESPONSE PAYLOAD] ${JSON.stringify(responsePayload)}`, MSG_HUB, MSG_METH, MSG_SEND);
                         this.messageService.sendAsLiveUpdate({ [m._id]: new Date().toUTCString() });
                         this.processMockDevicesCMD(m.name);
                     })
@@ -610,7 +610,7 @@ export class MockDevice {
 
             }
             const trueHours = Math.ceil((this.sasTokenExpiry - Math.round(Date.now() / 1000)) / 3600);
-            this.log(`CONNECTING VIA SAS. TOKEN EXPIRES AFTER ${trueHours} HOURS`, MSG_HUB, MSG_PROC);
+            this.log(`CONNECTING VIA SAS.TOKEN EXPIRES AFTER ${trueHours} HOURS`, MSG_HUB, MSG_PROC);
         } else {
             // get a connection string from the RP in the Portal            
             this.iotHubDevice.client = clientFromConnectionString(connectionString);
@@ -679,10 +679,10 @@ export class MockDevice {
                         try {
                             const twin = { [data.name]: data.value };
                             await this.iotHubDevice.digitalTwinClient.report(this.pnpInterfaceCache[this.pnpInterfaces[data.id]], twin);
-                            this.log(`[INTERFACE:${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}] ${JSON.stringify(twin)}`, MSG_HUB, MSG_TWIN, MSG_SEND);
+                            this.log(`[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]${JSON.stringify(twin)}`, MSG_HUB, MSG_TWIN, MSG_SEND);
                             this.messageService.sendAsLiveUpdate(payload);
                         } catch (err) {
-                            this.log(`[INTERFACE:${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}] ${err.toString()}`, MSG_HUB, MSG_TWIN, MSG_SEND);
+                            this.log(`[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]${err.toString()}`, MSG_HUB, MSG_TWIN, MSG_SEND);
                         }
                     }
                 } else {
@@ -709,10 +709,10 @@ export class MockDevice {
                         try {
                             const msg = { [data.name]: data.value };
                             await this.iotHubDevice.digitalTwinClient.sendTelemetry(this.pnpInterfaceCache[this.pnpInterfaces[data.id]], msg);
-                            this.log(`[INTERFACE:${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}] ${JSON.stringify(msg)}`, MSG_HUB, MSG_MSG, MSG_SEND);
+                            this.log(`[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]${JSON.stringify(msg)}`, MSG_HUB, MSG_MSG, MSG_SEND);
                             this.messageService.sendAsLiveUpdate(payload);
                         } catch (err) {
-                            this.log(`[INTERFACE:${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}] ${err.toString()}`, MSG_HUB, MSG_MSG, MSG_SEND);
+                            this.log(`[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]${err.toString()}`, MSG_HUB, MSG_MSG, MSG_SEND);
                         }
                     }
                 } else {
