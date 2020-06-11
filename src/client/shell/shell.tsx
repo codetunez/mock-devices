@@ -10,6 +10,8 @@ import { Modal } from '../modals/modal';
 import { Selector } from '../selector/selector';
 import { Device } from '../device/device';
 import { DeviceContext } from '../context/deviceContext';
+import { AppProvider } from '../context/uxContext';
+
 import { Console } from '../modals/console';
 import { RESX } from '../strings';
 
@@ -78,7 +80,9 @@ export const Shell: React.FunctionComponent = () => {
       <div className={cx('shell-content')}>
         <div className={cx('shell-content-nav')}><Nav /></div>
         <div className={cx('shell-content-selector')}><Selector /></div>
-        <div className={cx('shell-content')}><Device /></div>
+        <AppProvider>
+          <div className={cx('shell-content')}><Device /></div>
+        </AppProvider>
       </div>
     </SplitterLayout>
 
