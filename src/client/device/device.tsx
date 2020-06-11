@@ -13,10 +13,12 @@ import { DevicePlan } from '../devicePlan/devicePlan';
 import { RESX } from '../strings';
 
 import { DeviceContext } from '../context/deviceContext';
+import { AppContext } from '../context/uxContext';
 
 export function Device() {
 
     const deviceContext: any = React.useContext(DeviceContext);
+    const uxContext: any = React.useContext(AppContext);
 
     return <>{Object.keys(deviceContext.device).length > 0 ?
         <div className='device'>
@@ -32,10 +34,10 @@ export function Device() {
                     :
                     <div className='device-capabilities'>
                         {deviceContext.device && deviceContext.device.comms && deviceContext.device.comms.map((capability: any) => {
-                            const expand = capability.enabled;
+                            const expand = uxContext.property[capability._id] || false;
                             const isTemplate = deviceContext.device.configuration._kind === 'template';
                             return <>
-                                {capability.type && capability.type.direction === 'd2c' ? <DeviceFieldD2C capability={capability} expand={expand} sensors={deviceContext.sensors} pnp={deviceContext.device.configuration.pnpSdk} template={isTemplate} /> : null}
+                                {capability.type && capability.type.direction === 'd2c' ? <DeviceFieldD2C capability={capability} shouldExpand={expand} sensors={deviceContext.sensors} pnp={deviceContext.device.configuration.pnpSdk} template={isTemplate} /> : null}
                                 {!deviceContext.device.configuration.pnpSdk ?
                                     <>
                                         {capability.type && capability.type.direction === 'c2d' ? <DeviceFieldC2D capability={capability} expand={false} pnp={deviceContext.device.configuration.pnpSdk} /> : null}
