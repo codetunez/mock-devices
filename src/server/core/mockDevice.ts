@@ -515,7 +515,7 @@ export class MockDevice {
                         let comm: any = this.device.comms[i];
 
                         if (comm.name === cloudMethod && comm._type === "method" && comm.execution === 'cloud') {
-                            this.log(cloudMethod + " " + JSON.stringify(cloudMethodPayload), MSG_HUB, MSG_C2D, MSG_RECV);
+                            this.log(cloudMethod + " " + JSON.stringify(cloudMethodPayload), MSG_HUB, MSG_C2D, MSG_RECV, 'C2D ERROR PARSING MESSAGE BODY');
 
                             let m: Method = comm;
                             Object.assign(this.receivedMethodParams, { [m._id]: { date: new Date().toUTCString(), payload: JSON.stringify(cloudMethodPayload) } });
@@ -531,12 +531,12 @@ export class MockDevice {
                     }
                 } catch (err) {
                     error = true;
-                    this.log(`[C2D ERROR PARSING MESSAGE BODY] ${err.toString()}`, MSG_HUB, MSG_C2D, MSG_SEND);
+                    this.log(`${err.toString()}`, MSG_HUB, MSG_C2D, MSG_SEND, 'C2D ERROR PARSING MESSAGE BODY');
                 }
             }
 
             this.iotHubDevice.client.complete(msg, (err) => {
-                this.log(`[C2D COMPLETE STATUS] ${err ? err.toString() : error ? 'FAILED' : 'SUCCESS'}`, MSG_HUB, MSG_PROC);
+                this.log(`${err ? err.toString() : error ? 'FAILED' : 'SUCCESS'}`, MSG_HUB, MSG_PROC, null, 'C2D COMPLETE STATUS');
             });
         });
     }
@@ -551,7 +551,7 @@ export class MockDevice {
                 let responsePayload = JSON.parse(m.payload);
 
                 this.iotHubDevice.client.onDeviceMethod(m.name, (request, response) => {
-                    this.log(`[${request.methodName}][DIRECT METHOD REQUEST PAYLOAD] ${JSON.stringify(request.payload)}`, MSG_HUB, MSG_METH, MSG_RECV);
+                    this.log(`${request.methodName} : ${JSON.stringify(request.payload)}`, MSG_HUB, MSG_METH, MSG_RECV, 'DIRECT METHOD REQUEST PAYLOAD');
                     Object.assign(this.receivedMethodParams, { [m._id]: { date: new Date().toUTCString(), payload: JSON.stringify(request.payload) } });
 
                     // this response is the payload of the device
@@ -562,7 +562,7 @@ export class MockDevice {
                             this.methodReturnPayload = Object.assign({}, { [m.name]: responsePayload })
                         }
 
-                        this.log(err ? err.toString() : `[${m.name}][DIRECT METHOD RESPONSE PAYLOAD] ${JSON.stringify(responsePayload)}`, MSG_HUB, MSG_METH, MSG_SEND);
+                        this.log(err ? err.toString() : `${m.name} : ${JSON.stringify(responsePayload)}`, MSG_HUB, MSG_METH, MSG_SEND, 'DIRECT METHOD RESPONSE PAYLOAD');
                         this.messageService.sendAsLiveUpdate({ [m._id]: new Date().toUTCString() });
                         this.processMockDevicesCMD(m.name);
                     })
@@ -679,10 +679,10 @@ export class MockDevice {
                         try {
                             const twin = { [data.name]: data.value };
                             await this.iotHubDevice.digitalTwinClient.report(this.pnpInterfaceCache[this.pnpInterfaces[data.id]], twin);
-                            this.log(`[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]${JSON.stringify(twin)}`, MSG_HUB, MSG_TWIN, MSG_SEND);
+                            this.log(`${JSON.stringify(twin)}`, MSG_HUB, MSG_TWIN, MSG_SEND, `[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]`);
                             this.messageService.sendAsLiveUpdate(payload);
                         } catch (err) {
-                            this.log(`[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]${err.toString()}`, MSG_HUB, MSG_TWIN, MSG_SEND);
+                            this.log(`${err.toString()}`, MSG_HUB, MSG_TWIN, MSG_SEND, `[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]`);
                         }
                     }
                 } else {
@@ -709,10 +709,10 @@ export class MockDevice {
                         try {
                             const msg = { [data.name]: data.value };
                             await this.iotHubDevice.digitalTwinClient.sendTelemetry(this.pnpInterfaceCache[this.pnpInterfaces[data.id]], msg);
-                            this.log(`[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]${JSON.stringify(msg)}`, MSG_HUB, MSG_MSG, MSG_SEND);
+                            this.log(`${JSON.stringify(msg)}`, MSG_HUB, MSG_MSG, MSG_SEND, `[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]`);
                             this.messageService.sendAsLiveUpdate(payload);
                         } catch (err) {
-                            this.log(`[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]${err.toString()}`, MSG_HUB, MSG_MSG, MSG_SEND);
+                            this.log(`${err.toString()}`, MSG_HUB, MSG_MSG, MSG_SEND, `[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]`);
                         }
                     }
                 } else {
@@ -935,9 +935,10 @@ export class MockDevice {
         }
     }
 
-    log(message, type, operation, direction?) {
+    log(message, type, operation, direction?, submsg?) {
         let msg = `[${new Date().toISOString()}][${type}][${operation}][${this.device._id}]`;
         if (direction) { msg += `[${direction}]` }
+        if (submsg) { msg += `[${submsg}]` }
         this.messageService.sendConsoleUpdate(`${msg} ${message}`)
     }
 

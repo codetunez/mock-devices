@@ -175,7 +175,7 @@ export class DeviceStore {
                     "_type": "property",
                     "name": "d2cProperty",
                     "color": this.simColors["Default"],
-                    "enabled": false,
+                    "enabled": true,
                     "interface": {
                         "name": "Interface 1",
                         "urn": "urn:interface:device:1"
