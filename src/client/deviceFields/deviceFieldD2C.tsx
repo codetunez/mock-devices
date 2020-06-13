@@ -86,7 +86,7 @@ const reducer = (state: State, action: Action) => {
         case "load-capability":
             return { ...state, form: { dirty: false, expanded: state.form.expanded }, data: action.payload.capability };
         case "save-capability":
-            action.payload.context.updateDeviceProperty(state.data, action.payload.save);
+            action.payload.context.updateDeviceProperty(state.data, action.payload.send);
             return { ...state, form: { dirty: false, expanded: state.form.expanded }, data: newData };
         default:
             return state;
