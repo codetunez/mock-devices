@@ -16,6 +16,10 @@ export const RESX = {
     "selector": {
         "title": "DEVICES",
         "empty": ["Use ", " to add a device, template or update the state"],
+        "card": {
+            "device_title": "Select this mock device",
+            "template_title": "Select this template"
+        }
     },
     "device": {
         "empty": "Use + Reported/Desired/Method to send or receive data. Plan mode is disabled",
@@ -52,20 +56,19 @@ export const RESX = {
             "save_title": "Save changes to this capability",
             "delete_label": "Delete",
             "delete_title": "Delete this capability",
-            "send" : {
+            "send": {
                 "property_label": "Capability name",
-                "property_title": "The property name sent down the wire",  
+                "property_title": "The property name sent down the wire",
                 "value_label": "Enter value",
                 "value_title": "This is the value sent down the wire",
                 "value_override_label": "Override complex value",
-    
             },
             "method": {
                 "title": "Method / Command",
                 "property_label": "Method name",
                 "property_title": "The name that",
             },
-            "receive" : {
+            "receive": {
                 "property_label": "Capability name",
                 "property_title": "The property name received down the wire",
                 "title": "Receive Twin (Desired)"

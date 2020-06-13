@@ -3,6 +3,7 @@ const cx = classNames.bind(require('./selectorCard.scss'));
 
 import * as React from 'react';
 import { DeviceContext } from '../context/deviceContext';
+import { RESX } from '../strings';
 
 export const SelectorCard: React.FunctionComponent<any> = ({ exp, index, active, device }) => {
 
@@ -15,7 +16,7 @@ export const SelectorCard: React.FunctionComponent<any> = ({ exp, index, active,
 
   return <>
     <div className='expander' onClick={() => setExpanded(!expanded)}><i className={cx(expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-up')}></i></div>
-    <div className={cx('selector-card', active ? 'selector-card-active' : '')} onClick={() => deviceContext.setDevice(device)}>
+    <div title={device.configuration._kind === 'template' ? RESX.selector.card.template_title : RESX.selector.card.device_title} className={cx('selector-card', active ? 'selector-card-active' : '')} onClick={() => deviceContext.setDevice(device)}>
       {expanded ?
         <div className='selector-card-expanded'>
           <h4>{device.configuration.mockDeviceName || ''}</h4>
