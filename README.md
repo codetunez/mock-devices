@@ -28,7 +28,7 @@ Help is available inside the application
 - App Updates - New UX for control. Previous state files not supported
 
 #### Features
-- Host up to 750 mock devices
+- Host up to 1,000 mock devices
 - DPS single or group enrollment support 
 - SaS or Connection String support (72 hour SaS expiry)
 - Bulk/Clone/Templated device create operations
