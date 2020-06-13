@@ -53,7 +53,7 @@ export class DeviceStore {
         }
 
         if (d.configuration.mockDeviceCloneId) {
-            const origDevice: Device = Object.assign({}, this.store.getItem(d.configuration.mockDeviceCloneId) || {});
+            const origDevice: Device = JSON.parse(JSON.stringify(this.store.getItem(d.configuration.mockDeviceCloneId)));
             if (Object.keys(origDevice).length != 0) {
                 origDevice.running = false;
                 d.configuration.capabilityUrn = origDevice.configuration.capabilityUrn;

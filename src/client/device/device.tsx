@@ -22,7 +22,7 @@ export function Device() {
 
     return <>{Object.keys(deviceContext.device).length > 0 ?
         <div className='device'>
-            <div className='device-toobar'><DeviceToolbar /></div>
+            <div className='device-toolbar'><DeviceToolbar /></div>
             <div className='device-title'><DeviceTitle /></div>
             <div className='device-commands'><DeviceCommands /></div>
 
@@ -40,8 +40,8 @@ export function Device() {
                                 {capability.type && capability.type.direction === 'd2c' ? <DeviceFieldD2C capability={capability} shouldExpand={expand} sensors={deviceContext.sensors} pnp={deviceContext.device.configuration.pnpSdk} template={isTemplate} /> : null}
                                 {!deviceContext.device.configuration.pnpSdk ?
                                     <>
-                                        {capability.type && capability.type.direction === 'c2d' ? <DeviceFieldC2D capability={capability} expand={false} pnp={deviceContext.device.configuration.pnpSdk} /> : null}
-                                        {capability._type === 'method' ? <DeviceFieldMethod capability={capability} expand={false} pnp={deviceContext.device.configuration.pnpSdk} template={isTemplate} /> : null}
+                                        {capability.type && capability.type.direction === 'c2d' ? <DeviceFieldC2D capability={capability} shouldExpand={expand} pnp={deviceContext.device.configuration.pnpSdk} /> : null}
+                                        {capability._type === 'method' ? <DeviceFieldMethod capability={capability} shouldExpand={expand} pnp={deviceContext.device.configuration.pnpSdk} template={isTemplate} /> : null}
                                     </>
                                     : null}
                             </>
