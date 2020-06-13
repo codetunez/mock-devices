@@ -23,7 +23,7 @@ export function Nav() {
     useAPIPolling<any>({ fetchFunc, initialState: [], delay: 5000 })
 
     return <div className='nav'>
-        <div className='section-title section-title-nav'>v5.1</div>
+        <div className='section-title section-title-nav'>{RESX.app.version}</div>
         <button title={RESX.nav.help} onClick={() => toggleHelp(!showHelp)} className={'btn btn-outline-primary'}><span className='fas fa-question-circle'></span></button >
         <button title={RESX.nav.file} onClick={() => toggleDevices(!showDevices)} className={'btn btn-outline-primary'}><span className='far fa-save'></span></button >
         <hr />

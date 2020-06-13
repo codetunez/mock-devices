@@ -1,4 +1,7 @@
 export const RESX = {
+    "app": {
+        "version": "v5.2"
+    },
     "core": {
         "templateNoSupport": "This is not supported for templates. Create a device from this template to use this feature",
     },
