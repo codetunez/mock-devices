@@ -6,6 +6,7 @@ $device-card-field: 6rem;
 $device-card-input: 6rem;
 $device-card-minimized: 9rem;
 $device-card-button-size: 2.5rem;
+$device-card-field-label-height: 1.7rem;
 
 $device-card-title-width: 350px; //250px;
 $device-card-title-width-text: 320px; //220px;
@@ -78,8 +79,6 @@ $device-card-title-width-text: 320px; //220px;
   }
 
   .df-card-cmd {
-
-
     button {
       width: $device-card-button-size;
       height: $device-card-button-size;
@@ -90,11 +89,14 @@ $device-card-title-width-text: 320px; //220px;
 .df-card-row {
   font-size: 0.8rem;
   font-weight: 700;
-
   display: flex;
   margin-top: $md-gutter;
   margin-bottom: $xl-gutter;
   padding-left: $xl-gutter;
+
+  .card-field-label-height {
+    min-height: $device-card-field-label-height;
+  }
 
   input[type="text"],
   input[type="number"] {
@@ -119,6 +121,7 @@ $device-card-title-width-text: 320px; //220px;
 
   .full-width {
     width: ($device-card-field * 4) !important;
+    margin-right: 0.3rem;
   }
 
   textarea:focus {
@@ -130,7 +133,7 @@ $device-card-title-width-text: 320px; //220px;
   }
 
   .custom-textarea-xsm {
-    width: ($device-card-field * 4);
+    width: ($device-card-field * 4);    
   }
 }
 

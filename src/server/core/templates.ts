@@ -114,7 +114,7 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
     if (item.schema['@type'] === "Object") {
         var ct = {};
         buildComplexType(item, item.name, ct);
-        o.value = "COMPLEX"
+        o.value = ""
         o.propertyObject = { type: 'templated', template: JSON.stringify(ct[item.name], null, 2) };
         addRunLoop = true;
     }

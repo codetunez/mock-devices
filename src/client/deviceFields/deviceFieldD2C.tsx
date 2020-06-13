@@ -201,34 +201,36 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
             </div>
 
             <div className='df-card-row'>
-                <div><label>{RESX.device.card.enabled_label}</label><div><Toggle name={capability._id + '-enabled'} disabled={true} checked={true} onChange={() => { }} /></div></div>
+                <div><label>{RESX.device.card.toggle.enabled_label}</label><div title={RESX.device.card.toggle.enabled_title}><Toggle name={capability._id + '-enabled'} disabled={true} checked={true} onChange={() => { }} /></div></div>
                 <div><label>{RESX.device.card.send.property_label}</label><div><input type='text' className='form-control form-control-sm double-width' name='name' value={state.data.name} onChange={updateField} /></div></div>
                 <div><label>{RESX.device.card.send.value_label}</label><div><input type='text' className='form-control form-control-sm double-width' name='value' value={state.data.value} onChange={updateField} /></div></div>
-                {!template ? <div className='single-item'><button className='btn btn-sm btn-outline-primary' onClick={() => { save(true) }}>Send</button></div> : null}
+                <div>
+                    <div className="card-field-label-height"></div>
+                    <div>{!template ? <div className='single-item'><button className='btn btn-sm btn-outline-primary' onClick={() => { save(true) }}>Send</button></div> : null}</div>
+                </div>
             </div>
 
             <div className='df-card-row'>
-                <div><label>Complex Value</label><div><Toggle name={capability._id + '-json'} defaultChecked={false} checked={state.data.propertyObject.type === 'templated'} onChange={() => dispatch({ type: 'toggle-complex', payload: null })} /></div></div>
+                <div><label>{RESX.device.card.toggle.complex_label}</label><div title={RESX.device.card.toggle.complex_title}><Toggle name={capability._id + '-json'} defaultChecked={false} checked={state.data.propertyObject.type === 'templated'} onChange={() => dispatch({ type: 'toggle-complex', payload: null })} /></div></div>
                 {state.data.propertyObject.type === 'templated' ? <>
                     <div>
-                        <label>See Help for full list of AUTO macros</label>
+                        <label>{RESX.device.card.send.complex_label}</label>
                         <textarea className='form-control form-control-sm custom-textarea full-width' rows={7} name='propertyObject.template' onChange={updateField} >{capability.propertyObject.template || ''}</textarea>
                     </div>
                 </> : <div style={{ height: '55px' }}></div>}
             </div>
 
-            {pnp ?
-                <>
-                    <div className='df-card-row'>
-                        <div>Interface</div>
-                        <div><label>Name</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.name' value={state.data.interface.name || 'Not supported'} onChange={updateField} /></div></div>
+            {pnp ? <>
+                <div className='df-card-row'>
+                    <div>{RESX.device.card.toggle.interface_label}</div>
+                    <div><label>{RESX.device.card.send.int_name_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.name' value={state.data.interface.name || 'Not supported'} onChange={updateField} /></div></div>
 
-                    </div>
-                    <div className='df-card-row'>
-                        <div></div>
-                        <div><label>URN</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.urn' value={state.data.interface.urn || 'Not supported'} onChange={updateField} /></div></div>
-                    </div>
-                </>
+                </div>
+                <div className='df-card-row'>
+                    <div></div>
+                    <div><label>{RESX.device.card.send.int_urn_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.urn' value={state.data.interface.urn || 'Not supported'} onChange={updateField} /></div></div>
+                </div>
+            </>
                 : null}
 
             <div className='df-card-row'>

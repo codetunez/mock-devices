@@ -143,55 +143,58 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
         </div>
 
         <div className='df-card-row'>
-            <div><label>{RESX.device.card.enabled_label}</label><div><Toggle name={capability._id + '-enabled'} disabled={true} defaultChecked={true} checked={true} onChange={() => { }} /></div></div>
+            <div><label>{RESX.device.card.toggle.enabled_label}</label><div title={RESX.device.card.toggle.enabled_title}><Toggle name={capability._id + '-enabled'} disabled={true} defaultChecked={true} checked={true} onChange={() => { }} /></div></div>
             <div><label>{RESX.device.card.method.property_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='name' value={state.data.name} onChange={updateField} /></div></div>
         </div>
 
         <div className='df-card-row'>
-            <div><label>Execution</label><div></div></div>
-            <div><label>Make C2D Command (off is Direct Method)</label>
+            <div><label></label><div></div></div>
+            <div><label>{RESX.device.card.method.c2d_label}</label>
                 <div>
                     <Toggle name={capability._id + '-execution'} defaultChecked={false} checked={state.data.execution === 'cloud' ? true : false} onChange={(e) => { dispatch({ type: 'toggle-execution', payload: { property: e.target.checked } }) }} />
                 </div>
             </div>
         </div>
 
-        {pnp ?
-            <>
-                <div className='df-card-row'>
-                    <div>Interface</div>
-                    <div><label>Name</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.name' value={state.data.interface.name || 'Not supported'} onChange={updateField} /></div></div>
+        <div className='df-card-row'>
+            <div></div>
+            <div><label>{RESX.device.card.method.twin_rpt_label}</label>
+                <div><Toggle name={capability._id + '-sendtwin'} defaultChecked={false} checked={state.data.asProperty} onChange={() => { dispatch({ type: 'toggle-property', payload: null }) }} /></div>
+            </div>
+        </div>
 
+        {pnp ? <>
+            <div className='df-card-row'>
+                <div>{RESX.device.card.toggle.interface_label}</div>
+                <div><label>{RESX.device.card.method.int_name_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.name' value={state.data.interface.name || 'Not supported'} onChange={updateField} /></div></div>
+
+            </div>
+            <div className='df-card-row'>
+                <div></div>
+                <div><label>{RESX.device.card.method.int_urn_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.urn' value={state.data.interface.urn || 'Not supported'} onChange={updateField} /></div></div>
+            </div>
+        </>
+            : null}
+
+        {!template ?
+            <div className='df-card-row'>
+                <div></div>
+                <div><label>{RESX.device.card.method.request_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={3} readOnly={true} value={request()} placeholder={RESX.device.card.waiting_placeholder}></textarea></div></div>
+                <div>
+                    <div className="card-field-label-height"></div>
+                    {!template ? <button title={RESX.device.card.read_param_title} className='btn btn-sm btn-outline-primary' onClick={() => { deviceContext.getCapabilityMethodRequest(capability._id) }}><span className='fa fa-read'></span>{RESX.device.card.read_param_label}</button> : null}
                 </div>
-                <div className='df-card-row'>
-                    <div></div>
-                    <div><label>URN</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.urn' value={state.data.interface.urn || 'Not supported'} onChange={updateField} /></div></div>
-                </div>
-            </>
+            </div>
             : null}
 
         <div className='df-card-row'>
-            <div><label>Parameters</label><div>
-                {!template ? <button className='btn btn-sm btn-outline-success' onClick={() => { deviceContext.getCapabilityMethodRequest(capability._id) }}><span className='fa fa-read'></span>Read</button> : null}
-            </div></div>
-            <div><label>Request - {requestDate() || 'Not Called'}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={3} readOnly={true} value={request()}></textarea></div></div>
-        </div>
-
-        <div className='df-card-row'>
-            <div>Response</div>
-            <div><label>Status</label><div><input type='number' max={3} className='form-control form-control-sm full-width' name='status' value={state.data.status} onChange={updateField} /></div></div>
+            <div></div>
+            <div><label>{RESX.device.card.method.response_label}</label><div><input type='number' max={3} className='form-control form-control-sm full-width' name='status' value={state.data.status} onChange={updateField} /></div></div>
         </div>
 
         <div className='df-card-row'>
             <div></div>
-            <div><label>Response JSON</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={6} name='payload' onChange={updateField} >{capability.payload || ''}</textarea></div></div>
-        </div>
-
-        <div className='df-card-row'>
-            <div></div>
-            <div><label>Send response as Twin reported using same name</label>
-                <div><Toggle name={capability._id + '-sendtwin'} defaultChecked={false} checked={state.data.asProperty} onChange={() => { dispatch({ type: 'toggle-property', payload: null }) }} /></div>
-            </div>
+            <div><label>{RESX.device.card.method.response_payload_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={6} name='payload' onChange={updateField} >{capability.payload || ''}</textarea></div></div>
         </div>
 
     </div>

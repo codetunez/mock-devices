@@ -40,7 +40,7 @@ export function Device() {
                                 {capability.type && capability.type.direction === 'd2c' ? <DeviceFieldD2C capability={capability} shouldExpand={expand} sensors={deviceContext.sensors} pnp={deviceContext.device.configuration.pnpSdk} template={isTemplate} /> : null}
                                 {!deviceContext.device.configuration.pnpSdk ?
                                     <>
-                                        {capability.type && capability.type.direction === 'c2d' ? <DeviceFieldC2D capability={capability} shouldExpand={expand} pnp={deviceContext.device.configuration.pnpSdk} /> : null}
+                                        {capability.type && capability.type.direction === 'c2d' ? <DeviceFieldC2D capability={capability} shouldExpand={expand} pnp={deviceContext.device.configuration.pnpSdk} template={isTemplate} /> : null}
                                         {capability._type === 'method' ? <DeviceFieldMethod capability={capability} shouldExpand={expand} pnp={deviceContext.device.configuration.pnpSdk} template={isTemplate} /> : null}
                                     </>
                                     : null}

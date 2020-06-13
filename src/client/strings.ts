@@ -18,24 +18,24 @@ export const RESX = {
         "empty": ["Use ", " to add a device, template or update the state"],
         "card": {
             "device_title": "Select this mock device",
-            "template_title": "Select this template"
+            "template_title": "Select this template",
         }
     },
     "device": {
         "empty": "Use + Reported/Desired/Method to send or receive data. Plan mode is disabled",
         "toolbar": {
             "powerOn_label": " Turn on power",
-            "powerOn_tile": "The device will connect to the hub and will start sending and receiving events. If in plan mode, the start up properties will be sent",
+            "powerOn_title": "Connect this mock device to the hub and start sending and receiving events",
             "powerOff_label": " Turn off power",
-            "powerOff_title": "The device will disconnect from the hub and stop sending data",
+            "powerOff_title": "Disconnect this mock device from the hub and stop sending data",
             "kindTemplate": "Template for ",
             "kindReal": "Real device using ",
             "sdkLegacy": "current SDK",
-            "sdkPnp": "PnP SDK (Digital Twins)"
+            "sdkPnp": "PnP SDK (Digital Twins)",
         },
         "title": {
             "planMode": "Plan mode",
-            "planMode_title": "Use plan mode create a series of timed send and receive events. Switching modes stops the device"
+            "planMode_title": "Use plan mode create a series of timed send and receive events. Switching modes stops the device",
         },
         "commands": {
             "restart_label": "Restart plan",
@@ -50,28 +50,69 @@ export const RESX = {
             "delete_title": "Delete this device or template including all its capabilities. Ensure you have save your state first",
         },
         "card": {
-            "enabled_label": "Enabled",
-            "enabled_title": "Enable this capability in the simulation (always enabled)",
             "save_label": "Save",
             "save_title": "Save changes to this capability",
             "delete_label": "Delete",
             "delete_title": "Delete this capability",
+            "read_label": "Read",
+            "read_title": "Read the last known twin value for this capability",
+            "send_title": "Send",
+            "send_label": "Send this value immediately",
+            "read_param_label": "Read",
+            "read_param_title": "Read the last known set of parameters sent for this method capability",
+            "waiting_placeholder": "Waiting ...",
+            "toggle": {
+                "enabled_label": "Enabled",
+                "enabled_title": "Enable this capability in the simulation (always enabled)",
+                "complex_label": "Complex value",
+                "complex_title": "Enable this to use a JSON value instead of a primitive",
+                "interface_label": "Interface",
+                "interface_title": "",
+            },
             "send": {
                 "property_label": "Capability name",
                 "property_title": "The property name sent down the wire",
                 "value_label": "Enter value",
                 "value_title": "This is the value sent down the wire",
                 "value_override_label": "Override complex value",
+                "complex_label": "See Help for full ist of AUTO macros available",
+                "complex_title": "Use a JSON value",
+                "int_name_label": "Name",
+                "int_name_title": "The PnP interface instance name. Can be duplicated across capabilities",
+                "int_urn_label": "URN",
+                "int_urn_title": "The PnP interface unique ID. Can be duplicated across capabilities",
             },
             "method": {
                 "title": "Method / Command",
                 "property_label": "Method name",
                 "property_title": "The name that",
+                "int_name_label": "Name",
+                "int_name_title": "The PnP interface instance name. Can be duplicated across capabilities",
+                "int_urn_label": "URN",
+                "int_urn_title": "The PnP interface unique ID. Can be duplicated across capabilities",
+                "c2d_label": "Make C2D Command (off is Direct Method)",
+                "c2d_title": "C2D commands are fire and forget from the server side. The mock-device will not send a response",
+                "request_label": "Request parameter",
+                "request_title": "The last known set of parameters received for this method",
+                "response_label": "Response status (not for C2D)",
+                "response_title": "The response status returned if this method if called (not C2D)",
+                "response_payload_label": "Response payload (C2D uses this if send property is enabled",
+                "response_payload_title": "The response payload returned if this method called (not C2D)",
+                "twin_rpt_label": "Send additional twin reported property using response payload",
+                "twin_rpt_title": "A reported twin will be sent using the same name as the method",
             },
             "receive": {
+                "title": "Receive twin (Desired)",
                 "property_label": "Capability name",
                 "property_title": "The property name received down the wire",
-                "title": "Receive Twin (Desired)"
+                "int_name_label": "Name",
+                "int_name_title": "The PnP interface instance name. Can be duplicated across capabilities",
+                "int_urn_label": "URN",
+                "int_urn_title": "The PnP interface unique ID. Can be duplicated across capabilities",
+                "version_label": "Last known Twin version",
+                "version_title": "The $version number of the twin associated with this capability",
+                "value_label": "Last known Twin value",
+                "value_title": "The actual value of the twin",
             }
         },
         "plan": {
@@ -98,6 +139,6 @@ export const RESX = {
     },
     "console": {
         "pause_title": "Play/Pause the logging window",
-        "erase_title": "Clear the logging window"
+        "erase_title": "Clear the logging window",
     }
 }
