@@ -206,6 +206,16 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
                 {!template ? <div className='single-item'><button className='btn btn-sm btn-outline-primary' onClick={() => { save(true) }}>Send</button></div> : null}
             </div>
 
+            <div className='df-card-row'>
+                <div><label>Complex Value</label><div><Toggle name={capability._id + '-json'} defaultChecked={false} checked={state.data.propertyObject.type === 'templated'} onChange={() => dispatch({ type: 'toggle-complex', payload: null })} /></div></div>
+                {state.data.propertyObject.type === 'templated' ? <>
+                    <div>
+                        <label>See Help for full list of AUTO macros</label>
+                        <textarea className='form-control form-control-sm custom-textarea full-width' rows={7} name='propertyObject.template' onChange={updateField} >{capability.propertyObject.template || ''}</textarea>
+                    </div>
+                </> : <div style={{ height: '55px' }}></div>}
+            </div>
+
             {pnp ?
                 <>
                     <div className='df-card-row'>
@@ -224,16 +234,6 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
                 <div>Device SDK</div>
                 <div><label>API</label><div><Combo items={[{ name: 'Msg/Telemetry', value: 'msg' }, { name: 'Twin', value: 'twin' }]} cls='custom-textarea-sm double-width' name='sdk' onChange={updateField} value={state.data.sdk} /></div></div>
                 <div><label>String</label><div><Combo items={[{ name: 'Yes', value: true }, { name: 'No', value: false }]} cls='custom-textarea-sm single-width' name='string' onChange={updateField} value={state.data.string} /></div></div>
-            </div>
-
-            <div className='df-card-row'>
-                <div><label>Complex</label><div><Toggle name={capability._id + '-json'} defaultChecked={false} checked={state.data.propertyObject.type === 'templated'} onChange={() => dispatch({ type: 'toggle-complex', payload: null })} /></div></div>
-                {state.data.propertyObject.type === 'templated' ? <>
-                    <div>
-                        <label>See Help for full list of AUTO macros</label>
-                        <textarea className='form-control form-control-sm custom-textarea full-width' rows={7} name='propertyObject.template' onChange={updateField} >{capability.propertyObject.template || ''}</textarea>
-                    </div>
-                </> : <div style={{ height: '55px' }}></div>}
             </div>
 
             <div className='df-card-row'>

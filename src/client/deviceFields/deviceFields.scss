@@ -1,14 +1,14 @@
 @import "../const.scss";
 
-$device-card-minimized: 140px;
-$device-card-button-width: 35px;
-$device-card-toggle-file: 100px;
-$device-card-input: 73px;
+$device-field-width: 42rem;
+$device-field-width-1st-col: 9rem;
+$device-card-field: 6rem;
+$device-card-input: 6rem;
+$device-card-minimized: 9rem;
+$device-card-button-size: 2.5rem;
+
 $device-card-title-width: 350px; //250px;
 $device-card-title-width-text: 320px; //220px;
-$device-card-field: 73px;
-$min-height-toggle-row: 55px;
-
 .device-field-card {
   padding: $sm-gutter $sm-gutter 0 $sm-gutter;
   overflow-wrap: break-word;
@@ -17,9 +17,6 @@ $min-height-toggle-row: 55px;
   border-radius: $border-radius;
   min-width: $device-field-width;
   max-width: $device-field-width;
-}
-
-.device-field-card {
   overflow: hidden;
   margin-bottom: $md-gutter;
   margin-right: $md-gutter;
@@ -81,17 +78,16 @@ $min-height-toggle-row: 55px;
   }
 
   .df-card-cmd {
-    padding-top: 2px;
-    padding-right: 2px;
+
 
     button {
-      width: $device-card-button-width;
+      width: $device-card-button-size;
+      height: $device-card-button-size;
     }
   }
 }
 
 .df-card-row {
-  min-height: $min-height-toggle-row;
   font-size: 0.8rem;
   font-weight: 700;
 
@@ -139,6 +135,6 @@ $min-height-toggle-row: 55px;
 }
 
 .df-card-row > div:nth-child(1) {
-  width: $device-card-toggle-file;
+  width: $device-field-width-1st-col;
   color: $app-clr-yellow-1;
 }
