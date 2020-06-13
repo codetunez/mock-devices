@@ -190,7 +190,7 @@ export class MockDevice {
                 } else if (comm.sdk === "msg") {
                     this.msgRLProps.push(comm);
                     this.msgRLPropsPlanValues.push(item.value);
-                    this.twinRLReportedTimers.push({ timeRemain: config["startDelay"], originalTime: config["startDelay"] });
+                    this.msgRLReportedTimers.push({ timeRemain: config["startDelay"], originalTime: config["startDelay"] });
                 }
             })
 
