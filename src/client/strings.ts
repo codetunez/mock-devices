@@ -57,7 +57,7 @@ export const RESX = {
             "read_label": "Read",
             "read_title": "Read the last known twin value for this capability",
             "send_title": "Send",
-            "send_label": "Send this value immediately",
+            "send_label": "Send this value immediately (bypass the runloop)",
             "read_param_label": "Read",
             "read_param_title": "Read the last known set of parameters sent for this method capability",
             "waiting_placeholder": "Waiting ...",
