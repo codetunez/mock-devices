@@ -55,14 +55,25 @@ const reducer = (state: State, action: Action) => {
         case "update-interface":
             newData.interface[action.payload.name] = action.payload.value;
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
+        case "toggle-complex":
+            newData.enabled = true;
+            newData.propertyObject.type = newData.propertyObject.type === 'templated' ? 'default' : 'templated';
+            return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "toggle-runloop":
+            newData.enabled = true;
+            if (newData.type.mock) { newData.type.mock = false; }
             newData.runloop.include = !newData.runloop.include;
+            return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
+        case "toggle-mock":
+            newData.enabled = true;
+            newData.runloop.include = !newData.type.mock;
+            newData.type.mock = !newData.type.mock;
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "update-runloop":
             newData.runloop[action.payload.name] = action.payload.value;
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
-        case "toggle-mock":
-            newData.type.mock = !newData.type.mock;
+        case "update-complex":
+            newData.propertyObject[action.payload.name] = action.payload.value;
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "update-mock":
             newData.mock[action.payload.name] = action.payload.value;
@@ -70,12 +81,6 @@ const reducer = (state: State, action: Action) => {
         case "update-sensor":
             newData.type.mock = true;
             newData.mock = action.payload.mock;
-            return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
-        case "toggle-complex":
-            newData.propertyObject.type = newData.propertyObject.type === 'templated' ? 'default' : 'templated';
-            return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
-        case "update-complex":
-            newData.propertyObject[action.payload.name] = action.payload.value;
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "load-capability":
             return { ...state, form: { dirty: false, expanded: state.form.expanded }, data: action.payload.capability };
@@ -195,7 +200,7 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
             </div>
 
             <div className='df-card-row'>
-                <div><label>Enabled</label><div><Toggle name={capability._id + '-enabled'} defaultChecked={false} checked={state.data.enabled} onChange={() => dispatch({ type: "toggle-enabled", payload: { name: "enabled", value: !state.data.enabled } })} /></div></div>
+                <div><label>Enabled</label><div><Toggle name={capability._id + '-enabled'} disabled={true} checked={true} onChange={() => { }} /></div></div>
                 <div><label>Property Name</label><div><input type='text' className='form-control form-control-sm double-width' name='name' value={state.data.name} onChange={updateField} /></div></div>
                 <div><label>Enter Value</label><div><input type='text' className='form-control form-control-sm double-width' name='value' value={state.data.value} onChange={updateField} /></div></div>
                 {!template ? <div className='single-item'><button className='btn btn-sm btn-outline-primary' onClick={() => { save(true) }}>Send</button></div> : null}
@@ -222,20 +227,20 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
             </div>
 
             <div className='df-card-row'>
-                <div><label>Looped</label><div><Toggle name={capability._id + '-runloop'} defaultChecked={false} checked={state.data.runloop.include} onChange={() => dispatch({ type: 'toggle-runloop', payload: null })} /></div></div>
-                {state.data.runloop.include ? <>
-                    <div><label>Unit</label><div><Combo items={[{ name: 'Mins', value: 'mins' }, { name: 'Secs', value: 'secs' }]} cls='custom-textarea-sm  double-width' name='runloop.unit' onChange={updateField} value={state.data.runloop.unit} /></div></div>
-                    <div><label>Duration</label><div><input type='number' className='form-control form-control-sm double-width' name='runloop.value' min={0} value={state.data.runloop.value} onChange={updateField} /></div></div>
-                </> : <div style={{ height: '55px' }}></div>}
-            </div>
-
-            <div className='df-card-row'>
                 <div><label>Complex</label><div><Toggle name={capability._id + '-json'} defaultChecked={false} checked={state.data.propertyObject.type === 'templated'} onChange={() => dispatch({ type: 'toggle-complex', payload: null })} /></div></div>
                 {state.data.propertyObject.type === 'templated' ? <>
                     <div>
                         <label>See Help for full list of AUTO macros</label>
                         <textarea className='form-control form-control-sm custom-textarea full-width' rows={7} name='propertyObject.template' onChange={updateField} >{capability.propertyObject.template || ''}</textarea>
                     </div>
+                </> : <div style={{ height: '55px' }}></div>}
+            </div>
+
+            <div className='df-card-row'>
+                <div><label>Looped</label><div><Toggle name={capability._id + '-runloop'} defaultChecked={false} checked={state.data.runloop.include} onChange={() => dispatch({ type: 'toggle-runloop', payload: null })} /></div></div>
+                {state.data.runloop.include ? <>
+                    <div><label>Unit</label><div><Combo items={[{ name: 'Mins', value: 'mins' }, { name: 'Secs', value: 'secs' }]} cls='custom-textarea-sm  double-width' name='runloop.unit' onChange={updateField} value={state.data.runloop.unit} /></div></div>
+                    <div><label>Duration</label><div><input type='number' className='form-control form-control-sm double-width' name='runloop.value' min={0} value={state.data.runloop.value} onChange={updateField} /></div></div>
                 </> : <div style={{ height: '55px' }}></div>}
             </div>
 
