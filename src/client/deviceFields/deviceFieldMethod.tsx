@@ -42,6 +42,7 @@ const reducer = (state: State, action: Action) => {
             return { ...state, form: { dirty: state.form.dirty, expanded: action.payload.expand } };
         case "toggle-enabled":
         case "update-capability":
+            //refactor
             if (action.payload.name === 'string') {
                 newData[action.payload.name] = (action.payload.value === 'true' ? true : false);
             }
@@ -105,22 +106,6 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
                 break
         }
     }
-
-    // const toggleSendTwin = () => {
-    //     setPayload({
-    //         ...updatePayload,
-    //         asProperty: !updatePayload.asProperty
-    //     });
-    //     setDirty(true);
-    // }
-
-    // const toggleExecution = (e: any) => {
-    //     setPayload({
-    //         ...updatePayload,
-    //         execution: e.target.checked ? 'cloud' : 'direct'
-    //     });
-    //     setDirty(true);
-    // }
 
     const save = (send: boolean) => {
         dispatch({ type: 'save-capability', payload: { context: deviceContext, send: send } })
