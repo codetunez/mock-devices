@@ -6,6 +6,7 @@ import * as React from 'react';
 import Toggle from 'react-toggle';
 import { DeviceContext } from '../context/deviceContext';
 import { AppContext } from '../context/uxContext';
+import { RESX } from '../strings';
 
 interface Form {
     dirty: boolean;
@@ -111,7 +112,7 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp }) {
                     <i className={cx(state.form.expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-up')}></i>
                 </div>
                 <div className='df-card-title-text'>
-                    <div>Receive Twin (Desired)</div>
+                    <div>{RESX.device.card.receive.title}</div>
                     <div>{capability.name}</div>
                 </div>
             </div>
@@ -120,14 +121,14 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp }) {
                         <div>-</div>
                     </div> */}
             <div className='df-card-cmd btn-bar'>
-                <button className={cx('btn btn-sm', state.data.form ? 'btn-warning' : 'btn-outline-warning')} onClick={() => { save(false) }}><span className='far fa-save'></span></button>
-                <button className='btn btn-sm btn-outline-danger' onClick={() => { deviceContext.deleteCapability(capability._id, capability._type === 'method' ? 'method' : 'property') }}><span className='fa fa-times'></span></button>
+                <button title={RESX.device.card.save_title} className={cx('btn btn-sm', state.data.form ? 'btn-warning' : 'btn-outline-warning')} onClick={() => { save(false) }}><span className='far fa-save'></span></button>
+                <button title={RESX.device.card.delete_title} className='btn btn-sm btn-outline-danger' onClick={() => { deviceContext.deleteCapability(capability._id, capability._type === 'method' ? 'method' : 'property') }}><span className='fa fa-times'></span></button>
             </div>
         </div>
 
         <div className='df-card-row'>
-            <div><label>Enabled</label><div><Toggle name={capability._id + '-enabled'} disabled={true} checked={true} onChange={() => { }} /></div></div>
-            <div><label>Property Name</label><div><input type='text' className='form-control form-control-sm full-width' name='name' value={state.data.name} onChange={updateField} /></div></div>
+            <div><label>{RESX.device.card.enabled_label}</label><div><Toggle name={capability._id + '-enabled'} disabled={true} checked={true} onChange={() => { }} /></div></div>
+            <div><label>{RESX.device.card.receive.property_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='name' value={state.data.name} onChange={updateField} /></div></div>
             <div className='single-item'><button className='btn btn-sm btn-outline-primary' onClick={() => { dispatch({ type: 'read-parameters', payload: { context: deviceContext } }) }}>Read</button></div>
         </div>
 

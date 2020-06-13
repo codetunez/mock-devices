@@ -45,6 +45,32 @@ export const RESX = {
             "config_title": "Change this device's configuration (advanced)",
             "delete_title": "Delete this device or template including all its capabilities. Ensure you have save your state first",
         },
+        "card": {
+            "enabled_label": "Enabled",
+            "enabled_title": "Enable this capability in the simulation (always enabled)",
+            "save_label": "Save",
+            "save_title": "Save changes to this capability",
+            "delete_label": "Delete",
+            "delete_title": "Delete this capability",
+            "send" : {
+                "property_label": "Capability name",
+                "property_title": "The property name sent down the wire",  
+                "value_label": "Enter value",
+                "value_title": "This is the value sent down the wire",
+                "value_override_label": "Override complex value",
+    
+            },
+            "method": {
+                "title": "Method / Command",
+                "property_label": "Method name",
+                "property_title": "The name that",
+            },
+            "receive" : {
+                "property_label": "Capability name",
+                "property_title": "The property name received down the wire",
+                "title": "Receive Twin (Desired)"
+            }
+        },
         "plan": {
             "empty": {
                 "startUp": "Click + to send a property at device startup",

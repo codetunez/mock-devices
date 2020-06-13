@@ -7,6 +7,7 @@ import * as React from 'react';
 import Toggle from 'react-toggle';
 import { DeviceContext } from '../context/deviceContext';
 import { AppContext, AppProvider } from '../context/uxContext';
+import { RESX } from '../strings';
 
 import { Combo } from '../ui/controls';
 
@@ -194,15 +195,15 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
                         <div>-</div>
                     </div> */}
                 <div className='df-card-cmd btn-bar'>
-                    <button className={cx('btn btn-sm', state.form.dirty ? 'btn-warning' : 'btn-outline-warning')} onClick={() => { save(false) }}><span className='far fa-save'></span></button>
-                    <button className='btn btn-sm btn-outline-danger' onClick={() => { deviceContext.deleteCapability(capability._id, capability._type === 'method' ? 'method' : 'property') }}><span className='fa fa-times'></span></button>
+                    <button title={RESX.device.card.save_title} className={cx('btn btn-sm', state.form.dirty ? 'btn-warning' : 'btn-outline-warning')} onClick={() => { save(false) }}><span className='far fa-save'></span></button>
+                    <button title={RESX.device.card.delete_title} className='btn btn-sm btn-outline-danger' onClick={() => { deviceContext.deleteCapability(capability._id, capability._type === 'method' ? 'method' : 'property') }}><span className='fa fa-times'></span></button>
                 </div>
             </div>
 
             <div className='df-card-row'>
-                <div><label>Enabled</label><div><Toggle name={capability._id + '-enabled'} disabled={true} checked={true} onChange={() => { }} /></div></div>
-                <div><label>Property Name</label><div><input type='text' className='form-control form-control-sm double-width' name='name' value={state.data.name} onChange={updateField} /></div></div>
-                <div><label>Enter Value</label><div><input type='text' className='form-control form-control-sm double-width' name='value' value={state.data.value} onChange={updateField} /></div></div>
+                <div><label>{RESX.device.card.enabled_label}</label><div><Toggle name={capability._id + '-enabled'} disabled={true} checked={true} onChange={() => { }} /></div></div>
+                <div><label>{RESX.device.card.send.property_label}</label><div><input type='text' className='form-control form-control-sm double-width' name='name' value={state.data.name} onChange={updateField} /></div></div>
+                <div><label>{RESX.device.card.send.value_label}</label><div><input type='text' className='form-control form-control-sm double-width' name='value' value={state.data.value} onChange={updateField} /></div></div>
                 {!template ? <div className='single-item'><button className='btn btn-sm btn-outline-primary' onClick={() => { save(true) }}>Send</button></div> : null}
             </div>
 
