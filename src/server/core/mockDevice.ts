@@ -494,6 +494,8 @@ export class MockDevice {
         const propertyId = index[name];
         const property = this.device.plan.receive.find((prop) => { return prop.propertyIn === propertyId });
         if (property) {
+            const outboundProperty = this.device.comms[this.nameIdResolvers.deviceCommsIndex[property.propertyOut]];
+            if (!outboundProperty) { return; }
             const sdk = this.device.comms[this.nameIdResolvers.deviceCommsIndex[propertyId]].sdk;
             const payload = <ValueByIdPayload>{ [property.propertyOut]: property.value }
             if (sdk === 'twin') { this.updateTwin(payload); } else { this.updateMsg(payload); }
@@ -556,15 +558,20 @@ export class MockDevice {
 
                     // this response is the payload of the device
                     response.send((m.status), responsePayload, (err) => {
+                        this.log(err ? err.toString() : `${m.name} : ${JSON.stringify(responsePayload)}`, MSG_HUB, MSG_METH, MSG_SEND, 'DIRECT METHOD RESPONSE PAYLOAD');
+                        this.messageService.sendAsLiveUpdate({ [m._id]: new Date().toUTCString() });
+
                         if (this.device.configuration.planMode) {
                             this.sendPlanResponse(this.nameIdResolvers.methodToId, m.name);
                         } else if (!this.device.configuration.planMode && m.asProperty) {
                             this.methodReturnPayload = Object.assign({}, { [m.name]: responsePayload })
                         }
 
-                        this.log(err ? err.toString() : `${m.name} : ${JSON.stringify(responsePayload)}`, MSG_HUB, MSG_METH, MSG_SEND, 'DIRECT METHOD RESPONSE PAYLOAD');
-                        this.messageService.sendAsLiveUpdate({ [m._id]: new Date().toUTCString() });
-                        this.processMockDevicesCMD(m.name);
+                        // intentional delay to allow any properties to be sent
+                        setTimeout(() => {
+                            this.processMockDevicesCMD(m.name);
+                        }, 3000);
+
                     })
                 });
             }
