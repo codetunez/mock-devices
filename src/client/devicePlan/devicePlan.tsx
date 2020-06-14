@@ -62,11 +62,11 @@ const reducer = (state: State, action: Action) => {
         case 'add-startup':
         case 'add-random':
         case 'add-receive':
-            newData[item].push({ property: action.payload.comms[0].value, value: 0 })
+            newData[item].push({ property: action.payload.comms[0].value, value: '' })
             return { ...state, form: { dirty: true }, data: newData };
         case 'add-timeline':
             const newSeconds = newData.timeline.length === 0 ? 0 : parseInt(newData.timeline[newData.timeline.length - 1].time) + 1;
-            newData.timeline.push({ time: newSeconds, property: action.payload.comms[0].value, value: 0 })
+            newData.timeline.push({ time: newSeconds, property: action.payload.comms[0].value, value: '' })
             return { ...state, form: { dirty: true }, data: newData };
         case 'remove-startup':
         case 'remove-timeline':
@@ -116,10 +116,10 @@ export function DevicePlan({ device }) {
                     <Combo items={sendComms} cls='custom-combo-sm' name='property' onChange={(e) => { dispatch({ type: 'edit-startup', payload: { index: key, field: 'property', value: e.target.value } }) }} value={ele.property} />
                 </div>
                 <div className='mini-grid-cell cell-width-2'>
-                    <input type='text' className='form-control form-control-sm' value={ele.value} onChange={(e) => { dispatch({ type: 'edit-startup', payload: { index: key, field: 'value', value: e.target.value } }) }} />
+                    <input type='text' className='form-control form-control-sm' value={ele.value} onChange={(e) => { dispatch({ type: 'edit-startup', payload: { index: key, field: 'value', value: e.target.value } }) }} placeholder={RESX.device.plan.core.value_placeholder} />
                 </div>
                 <div className='mini-grid-cell'>
-                    <button className='btn btn-sm btn-outline-danger' onClick={() => { dispatch({ type: 'remove-startup', payload: { index: key } }) }}><i className="fas fa-times"></i></button>
+                    <button title={RESX.device.plan.core.remove_title} className='btn btn-sm btn-outline-danger' onClick={() => { dispatch({ type: 'remove-startup', payload: { index: key } }) }}><i className="fas fa-times"></i></button>
                 </div>
             </div>)
         })
@@ -132,16 +132,16 @@ export function DevicePlan({ device }) {
             const key: number = i;
             dom.push(<div key={i} className="mini-grid-row">
                 <div className='mini-grid-cell cell-width-3'>
-                    <input type='number' className='form-control form-control-sm' value={ele.time} onChange={(e) => { dispatch({ type: 'edit-timeline', payload: { index: key, field: 'time', value: e.target.value } }) }} />
+                    <input type='number' className='form-control form-control-sm' value={ele.time} onChange={(e) => { dispatch({ type: 'edit-timeline', payload: { index: key, field: 'time', value: e.target.value } }) }} placeholder={RESX.device.plan.core.value_placeholder} />
                 </div>
                 <div className='mini-grid-cell cell-width-3'>
                     <Combo items={sendComms} cls='custom-combo-sm' name='property' onChange={(e) => { dispatch({ type: 'edit-timeline', payload: { index: key, field: 'property', value: e.target.value } }) }} value={ele.property} />
                 </div>
                 <div className='mini-grid-cell cell-width-3'>
-                    <input type='text' className='form-control form-control-sm' value={ele.value} onChange={(e) => { dispatch({ type: 'edit-timeline', payload: { index: key, field: 'value', value: e.target.value } }) }} />
+                    <input type='text' className='form-control form-control-sm' value={ele.value} onChange={(e) => { dispatch({ type: 'edit-timeline', payload: { index: key, field: 'value', value: e.target.value } }) }} placeholder={RESX.device.plan.core.value_placeholder} />
                 </div>
                 <div className='mini-grid-cell'>
-                    <button className='btn btn-sm btn-outline-danger' onClick={() => { dispatch({ type: 'remove-timeline', payload: { index: key } }) }}><i className="fas fa-times"></i></button>
+                    <button title={RESX.device.plan.core.remove_title} className='btn btn-sm btn-outline-danger' onClick={() => { dispatch({ type: 'remove-timeline', payload: { index: key } }) }}><i className="fas fa-times"></i></button>
                 </div>
             </div>
             )
@@ -158,13 +158,13 @@ export function DevicePlan({ device }) {
                     <Combo items={sendComms} cls='custom-combo-sm' name='property' onChange={(e) => { dispatch({ type: 'edit-random', payload: { index: key, field: 'property', value: e.target.value } }) }} value={ele.property} />
                 </div>
                 <div className='mini-grid-cell cell-width-3'>
-                    <input type='text' className='form-control form-control-sm' value={ele.before} onChange={(e) => { dispatch({ type: 'edit-random', payload: { index: key, field: 'before', value: e.target.value } }) }} />
+                    <input type='text' className='form-control form-control-sm' value={ele.before} onChange={(e) => { dispatch({ type: 'edit-random', payload: { index: key, field: 'before', value: e.target.value } }) }} placeholder={RESX.device.plan.core.value_placeholder} />
                 </div>
                 <div className='mini-grid-cell cell-width-3'>
-                    <input type='text' className='form-control form-control-sm' value={ele.after} onChange={(e) => { dispatch({ type: 'edit-random', payload: { index: key, field: 'after', value: e.target.value } }) }} />
+                    <input type='text' className='form-control form-control-sm' value={ele.after} onChange={(e) => { dispatch({ type: 'edit-random', payload: { index: key, field: 'after', value: e.target.value } }) }} placeholder={RESX.device.plan.core.value_placeholder} />
                 </div>
                 <div className='mini-grid-cell'>
-                    <button className='btn btn-sm btn-outline-danger' onClick={() => { dispatch({ type: 'remove-random', payload: { index: key } }) }}><i className="fas fa-times"></i></button>
+                    <button title={RESX.device.plan.core.remove_title} className='btn btn-sm btn-outline-danger' onClick={() => { dispatch({ type: 'remove-random', payload: { index: key } }) }}><i className="fas fa-times"></i></button>
                 </div>
             </div>)
         })
@@ -173,20 +173,23 @@ export function DevicePlan({ device }) {
 
     const receive = () => {
         const dom = [];
+
+        const newComms = sendComms.slice();
+        newComms.unshift({ name: '--No send property', value: '_NULL_' });
         state.data.receive.map((ele, i) => {
             const key: number = i;
             dom.push(<div key={i} className="mini-grid-row">
-                <div className='mini-grid-cell'>
+                <div className='mini-grid-cell cell-width-3'>
                     <Combo items={receiveComms} cls='custom-combo-sm' name='propertyIn' onChange={(e) => { dispatch({ type: 'edit-receive', payload: { index: key, field: 'propertyIn', value: e.target.value } }) }} value={ele.propertyIn} />
                 </div>
-                <div className='mini-grid-cell'>
-                    <Combo items={sendComms} cls='custom-combo-sm' name='propertyOut' onChange={(e) => { dispatch({ type: 'edit-receive', payload: { index: key, field: 'propertyOut', value: e.target.value } }) }} value={ele.propertyOut} />
+                <div className='mini-grid-cell cell-width-3'>
+                    <Combo items={newComms} cls='custom-combo-sm' name='propertyOut' onChange={(e) => { dispatch({ type: 'edit-receive', payload: { index: key, field: 'propertyOut', value: e.target.value } }) }} value={ele.propertyOut} />
+                </div>
+                <div className='mini-grid-cell cell-width-3'>
+                    <input type='text' className='form-control form-control-sm' value={ele.value} onChange={(e) => { dispatch({ type: 'edit-receive', payload: { index: key, field: 'value', value: e.target.value } }) }} placeholder={RESX.device.plan.core.value_placeholder} />
                 </div>
                 <div className='mini-grid-cell'>
-                    <input type='text' className='form-control form-control-sm' value={ele.value} onChange={(e) => { dispatch({ type: 'edit-receive', payload: { index: key, field: 'value', value: e.target.value } }) }} />
-                </div>
-                <div className='mini-grid-cell'>
-                    <button className='btn btn-sm btn-outline-danger' onClick={() => { dispatch({ type: 'remove-receive', payload: { index: key } }) }}><i className="fas fa-times"></i></button>
+                    <button title={RESX.device.plan.core.remove_title} className='btn btn-sm btn-outline-danger' onClick={() => { dispatch({ type: 'remove-receive', payload: { index: key } }) }}><i className="fas fa-times"></i></button>
                 </div>
             </div>)
         })
@@ -194,11 +197,13 @@ export function DevicePlan({ device }) {
     }
 
     return <div className="plan">
+        <div className='plan-title'>
+            {RESX.device.plan.empty.plan_label}
+        </div>
         <div className='plan-card'>
             <h5>{RESX.device.plan.core.plan_label}</h5>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div className="inline-label-field">
-                    <label>{RESX.device.plan.core.loop_label}</label>
                     <div title={RESX.device.plan.core.loop_title}>
                         <Toggle name={'plan-mode'} defaultChecked={false} checked={state.data.loop} onChange={(e: any) => { dispatch({ type: 'loop-plan', payload: { loop: e.target.checked } }) }} />
                     </div>
@@ -212,63 +217,63 @@ export function DevicePlan({ device }) {
         <div className='plan-card'>
             <h5>{RESX.device.plan.core.startup_label}</h5>
             <div className='mini-grid'>
-                {state.data && state.data.startup && state.data.startup.length === 0 ? RESX.device.plan.empty.startUp :
+                {state.data && state.data.startup && state.data.startup.length === 0 ? RESX.device.plan.empty.startup_label :
                     <div className='mini-grid-row-header'>
-                        <div className='mini-grid-header'>Property</div>
-                        <div className='mini-grid-header'>Value</div>
+                        <div className='mini-grid-header'><label title={RESX.device.plan.headers.property_title}>{RESX.device.plan.headers.property_label}</label></div>
+                        <div className='mini-grid-header'><label title={RESX.device.plan.headers.value_title}>{RESX.device.plan.headers.value_label}</label></div>
                     </div>
                 }
                 {state.data && state.data.startup && startUp()}
                 <div className='mini-grid-row-toolbar'>
-                    <button className='btn btn-sm btn-info' onClick={() => { dispatch({ type: 'add-startup', payload: { comms: sendComms } }) }}><i className="fas fa-plus"></i></button>
+                    <button disabled={sendComms.length === 0} title={RESX.device.plan.core.startup_title} className='btn btn-sm btn-info' onClick={() => { dispatch({ type: 'add-startup', payload: { comms: sendComms } }) }}><i className="fas fa-plus"></i></button>
                 </div>
             </div>
         </div>
         <div className='plan-card'>
             <h5>{RESX.device.plan.core.timeline_label}</h5>
             <div className='mini-grid'>
-                {state.data && state.data.timeline && state.data.timeline.length === 0 ? RESX.device.plan.empty.timeline :
+                {state.data && state.data.timeline && state.data.timeline.length === 0 ? RESX.device.plan.empty.timeline_label :
                     <div className='mini-grid-row-header'>
-                        <div className='mini-grid-header'>Time start</div>
-                        <div className='mini-grid-header'>Property</div>
-                        <div className='mini-grid-header'>Value</div>
+                        <div className='mini-grid-header'><label title={RESX.device.plan.headers.time_start_title}>{RESX.device.plan.headers.time_start_label}</label></div>
+                        <div className='mini-grid-header'><label title={RESX.device.plan.headers.property_title}>{RESX.device.plan.headers.property_label}</label></div>
+                        <div className='mini-grid-header'><label title={RESX.device.plan.headers.value_title}>{RESX.device.plan.headers.value_label}</label></div>
                     </div>
                 }
                 {state.data && state.data.timeline && timeline()}
                 <div className='mini-grid-row-toolbar'>
-                    <button className='btn btn-sm btn-info' onClick={() => { dispatch({ type: 'add-timeline', payload: { comms: sendComms } }) }}><i className="fas fa-plus"></i></button>
+                    <button disabled={sendComms.length === 0} title={RESX.device.plan.core.timeline_title} className='btn btn-sm btn-info' onClick={() => { dispatch({ type: 'add-timeline', payload: { comms: sendComms } }) }}><i className="fas fa-plus"></i></button>
                 </div>
             </div>
         </div>
         <div className='plan-card'>
             <h5>{RESX.device.plan.core.random_label}</h5>
             <div className='mini-grid'>
-                {state.data && state.data.random && state.data.random.length === 0 ? RESX.device.plan.empty.random :
+                {state.data && state.data.random && state.data.random.length === 0 ? RESX.device.plan.empty.random_label :
                     <div className='mini-grid-row-header'>
-                        <div className='mini-grid-header'>Property</div>
-                        <div className='mini-grid-header'>Between (From)</div>
-                        <div className='mini-grid-header'>Between (To)</div>
+                        <div className='mini-grid-header'><label title={RESX.device.plan.headers.property_title}>{RESX.device.plan.headers.property_label}</label></div>
+                        <div className='mini-grid-header'><label title={RESX.device.plan.headers.from_title}>{RESX.device.plan.headers.from_label}</label></div>
+                        <div className='mini-grid-header'><label title={RESX.device.plan.headers.to_title}>{RESX.device.plan.headers.to_label}</label></div>
                     </div>
                 }
                 {state.data && state.data.random && random()}
                 <div className='mini-grid-row-toolbar'>
-                    <button className='btn btn-sm btn-info' disabled={true} onClick={() => { dispatch({ type: 'add-random', payload: { comms: sendComms } }) }}><i className="fas fa-plus"></i></button>
+                    <button disabled={true} title='Not implemented' className='btn btn-sm btn-info' onClick={() => { dispatch({ type: 'add-random', payload: { comms: sendComms } }) }}><i className="fas fa-plus"></i></button>
                 </div>
             </div>
         </div>
         <div className='plan-card'>
             <h5>{RESX.device.plan.core.receive_label}</h5>
             <div className='mini-grid'>
-                {state.data && state.data.receive && state.data.receive.length === 0 ? RESX.device.plan.empty.receive :
+                {state.data && state.data.receive && state.data.receive.length === 0 ? RESX.device.plan.empty.receive_label :
                     <div className='mini-grid-row-header'>
-                        <div className='mini-grid-header'>Property In</div>
-                        <div className='mini-grid-header'>Property Out</div>
-                        <div className='mini-grid-header'>Value</div>
+                        <div className='mini-grid-header'><label title={RESX.device.plan.headers.property_in_title}>{RESX.device.plan.headers.property_in_label}</label></div>
+                        <div className='mini-grid-header'><label title={RESX.device.plan.headers.property_title}>{RESX.device.plan.headers.property_out_label}</label></div>
+                        <div className='mini-grid-header'><label title={RESX.device.plan.headers.value_title}>{RESX.device.plan.headers.value_label}</label></div>
                     </div>
                 }
                 {state.data && state.data.receive && receive()}
                 <div className='mini-grid-row-toolbar'>
-                    <button className='btn btn-sm btn-info' disabled={deviceContext.device.configuration.pnpSdk} onClick={() => { dispatch({ type: 'add-receive', payload: { comms: receiveComms } }) }}><i className="fas fa-plus"></i></button>
+                    <button disabled={receiveComms.length === 0 || deviceContext.device.configuration.pnpSdk} title={RESX.device.plan.core.receive_title} className='btn btn-sm btn-info' onClick={() => { dispatch({ type: 'add-receive', payload: { comms: receiveComms } }) }}><i className="fas fa-plus"></i></button>
                 </div>
             </div>
         </div>

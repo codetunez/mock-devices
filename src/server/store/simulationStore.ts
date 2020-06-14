@@ -104,7 +104,7 @@ export class SimulationStore {
             }
         },
         "plan": {
-            "startDelay": 3000,
+            "startDelay": 2000,
             "timelineDelay": 5000
         }
     }

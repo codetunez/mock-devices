@@ -7,16 +7,12 @@ export class WebSocketMessageService implements MessageService {
     private propertyUpdatesWebSocket = null;
     private consoleUpdatesWebSocket = null;
     private propertyUpdatePayload = {};
-    private showConsole: boolean;
-    private showLiveUpdate: boolean;
     private timer: any = null;
 
-    constructor(showConsole: boolean, showLiveUpdate: boolean) {
+    constructor() {
         this.propertyUpdatesWebSocket = new WebSocket.Server({ port: parseInt(Config.PROPERTY_WEBSOCKET_PORT) });
         this.consoleUpdatesWebSocket = new WebSocket.Server({ port: parseInt(Config.CONSOLE_WEBSOCKET_PORT) });
         this.liveUpdateTimer();
-        this.showConsole = showConsole;
-        this.showLiveUpdate = showLiveUpdate;       
     }
 
     end() {
@@ -26,7 +22,7 @@ export class WebSocketMessageService implements MessageService {
     }
 
     sendConsoleUpdate(message: string) {
-        if (!this.showConsole) { return; }
+        if (!Config.CONSOLE_LOGGING) { return; }
         this.consoleUpdatesWebSocket.clients.forEach(function each(client) {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(JSON.stringify({ message: message }));
@@ -39,7 +35,7 @@ export class WebSocketMessageService implements MessageService {
     }
 
     liveUpdateTimer = () => {
-        if (!this.showLiveUpdate) { return; }
+        if (!Config.PROPERTY_LOGGING) { return; }
         var that = this;
         this.timer = setInterval(() => {
             if (Object.keys(this.propertyUpdatePayload).length > 0) {

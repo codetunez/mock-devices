@@ -13,7 +13,7 @@ export function DeviceToolbar() {
     React.useEffect(() => {
         setPower({
             label: deviceContext.device.running ? RESX.device.toolbar.powerOff_label : RESX.device.toolbar.powerOn_label,
-            title: deviceContext.device.running ? RESX.device.toolbar.powerOff_title : RESX.device.toolbar.powerOff_title,
+            title: deviceContext.device.running ? RESX.device.toolbar.powerOff_title : RESX.device.toolbar.powerOn_title,
             style: deviceContext.device.running ? "btn-success" : "btn-outline-secondary",
             handler: deviceContext.device.running ? deviceContext.stopDevice : deviceContext.startDevice
         })
@@ -25,7 +25,7 @@ export function DeviceToolbar() {
         if (p != null || p != undefined) {
             setPower({
                 label: p ? RESX.device.toolbar.powerOff_label : RESX.device.toolbar.powerOn_label,
-                title: p ? RESX.device.toolbar.powerOff_title : RESX.device.toolbar.powerOff_title,
+                title: p ? RESX.device.toolbar.powerOff_title : RESX.device.toolbar.powerOn_title,
                 style: p ? "btn-success" : "btn-outline-secondary",
                 handler: p ? deviceContext.stopDevice : deviceContext.startDevice
             })

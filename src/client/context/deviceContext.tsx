@@ -28,6 +28,13 @@ export class DeviceProvider extends React.PureComponent {
             })
     }
 
+    reset = () => {
+        axios.get('/api/devices/reset')
+            .then((response: any) => {
+                this.setState({ devices: response.data, device: {} });
+            })
+    }
+
     // group data plane
     getDevices = () => {
         const id = this.state.device ? `/${this.state.device._id}` : ''
@@ -160,6 +167,7 @@ export class DeviceProvider extends React.PureComponent {
         startAllDevices: this.startAllDevices,
         stopAllDevices: this.stopAllDevices,
         refreshAllDevices: this.refreshAllDevices,
+        reset: this.reset,
         getDevice: this.getDevice,
         startDevice: this.startDevice,
         stopDevice: this.stopDevice,

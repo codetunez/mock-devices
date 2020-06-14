@@ -32,8 +32,7 @@ class Server {
 
     public start = () => {
 
-        const ms = new WebSocketMessageService(true, false);
-
+        const ms = new WebSocketMessageService();
         this.deviceStore = new DeviceStore(ms);
         this.sensorStore = new SensorStore();
         this.simulationStore = new SimulationStore();
@@ -124,7 +123,7 @@ class Server {
             this.mainWindow.on('closed', (() => {
                 this.mainWindow = null;
             }));
-            console.log("mock-devices is getting ready to launch. Once expressServer has loaded, close expressServer to end this console session.");
+            console.log("Launching mock-devices. Keep window active to keep app running");
         } else {
             console.log("mock-devices for NodeJS started on: : " + this.expressServer.server.address().port);
         }

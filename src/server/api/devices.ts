@@ -19,6 +19,11 @@ export default function (deviceStore: DeviceStore) {
         res.json(deviceStore.getListOfItems());
     });
 
+    api.get('/reset', function (req, res, next) { 
+        deviceStore.reset();
+        res.json(deviceStore.getListOfItems());
+    });
+
     api.get('/:id', function (req, res, next) {
         var id = req.params.id;
         res.json({ device: deviceStore.exists(id), devices: deviceStore.getListOfItems() });

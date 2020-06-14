@@ -14,7 +14,7 @@ export class DeviceStore {
 
     private store: AssociativeStore<Device>;
 
-    private runners: any = {};
+    private runners: any = null;
 
     private sensorStore: SensorStore;
 
@@ -33,8 +33,15 @@ export class DeviceStore {
         this.simulationStore = new SimulationStore();
         this.store = new AssociativeStore();
         this.sensorStore = new SensorStore();
+        this.runners = {};
+
         this.simColors = this.simulationStore.get()["colors"];
         this.bulkRun = this.simulationStore.get()["bulk"];
+    }
+
+    public reset() {
+        this.stopAll();
+        this.init();
     }
 
     public deleteDevice = (d: Device) => {
@@ -53,7 +60,7 @@ export class DeviceStore {
         }
 
         if (d.configuration.mockDeviceCloneId) {
-            const origDevice: Device = Object.assign({}, this.store.getItem(d.configuration.mockDeviceCloneId) || {});
+            const origDevice: Device = JSON.parse(JSON.stringify(this.store.getItem(d.configuration.mockDeviceCloneId)));
             if (Object.keys(origDevice).length != 0) {
                 origDevice.running = false;
                 d.configuration.capabilityUrn = origDevice.configuration.capabilityUrn;
@@ -175,7 +182,7 @@ export class DeviceStore {
                     "_type": "property",
                     "name": "d2cProperty",
                     "color": this.simColors["Default"],
-                    "enabled": false,
+                    "enabled": true,
                     "interface": {
                         "name": "Interface 1",
                         "urn": "urn:interface:device:1"

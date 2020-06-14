@@ -32,9 +32,9 @@ const MSG_RECV = 'RECV';
 const MSG_SEND = 'SEND';
 const MSG_PROC = 'PROC';
 const MSG_METH = 'METH';
-const MSG_C2D = '.C2D';
+const MSG_C2D = 'C2D';
 const MSG_TWIN = 'TWIN';
-const MSG_MSG = '.MSG';
+const MSG_MSG = 'MSG';
 
 interface IoTHubDevice {
     client: any;
@@ -190,7 +190,7 @@ export class MockDevice {
                 } else if (comm.sdk === "msg") {
                     this.msgRLProps.push(comm);
                     this.msgRLPropsPlanValues.push(item.value);
-                    this.twinRLReportedTimers.push({ timeRemain: config["startDelay"], originalTime: config["startDelay"] });
+                    this.msgRLReportedTimers.push({ timeRemain: config["startDelay"], originalTime: config["startDelay"] });
                 }
             })
 
@@ -494,6 +494,8 @@ export class MockDevice {
         const propertyId = index[name];
         const property = this.device.plan.receive.find((prop) => { return prop.propertyIn === propertyId });
         if (property) {
+            const outboundProperty = this.device.comms[this.nameIdResolvers.deviceCommsIndex[property.propertyOut]];
+            if (!outboundProperty) { return; }
             const sdk = this.device.comms[this.nameIdResolvers.deviceCommsIndex[propertyId]].sdk;
             const payload = <ValueByIdPayload>{ [property.propertyOut]: property.value }
             if (sdk === 'twin') { this.updateTwin(payload); } else { this.updateMsg(payload); }
@@ -515,7 +517,7 @@ export class MockDevice {
                         let comm: any = this.device.comms[i];
 
                         if (comm.name === cloudMethod && comm._type === "method" && comm.execution === 'cloud') {
-                            this.log(cloudMethod + " " + JSON.stringify(cloudMethodPayload), MSG_HUB, MSG_C2D, MSG_RECV);
+                            this.log(cloudMethod + " " + JSON.stringify(cloudMethodPayload), MSG_HUB, MSG_C2D, MSG_RECV, 'C2D ERROR PARSING MESSAGE BODY');
 
                             let m: Method = comm;
                             Object.assign(this.receivedMethodParams, { [m._id]: { date: new Date().toUTCString(), payload: JSON.stringify(cloudMethodPayload) } });
@@ -531,12 +533,12 @@ export class MockDevice {
                     }
                 } catch (err) {
                     error = true;
-                    this.log(`[C2D ERROR PARSING MESSAGE BODY] ${err.toString()}`, MSG_HUB, MSG_C2D, MSG_SEND);
+                    this.log(`${err.toString()}`, MSG_HUB, MSG_C2D, MSG_SEND, 'C2D ERROR PARSING MESSAGE BODY');
                 }
             }
 
             this.iotHubDevice.client.complete(msg, (err) => {
-                this.log(`[C2D COMPLETE STATUS] ${err ? err.toString() : error ? 'FAILED' : 'SUCCESS'}`, MSG_HUB, MSG_PROC);
+                this.log(`${err ? err.toString() : error ? 'FAILED' : 'SUCCESS'}`, MSG_HUB, MSG_PROC, null, 'C2D COMPLETE STATUS');
             });
         });
     }
@@ -551,20 +553,25 @@ export class MockDevice {
                 let responsePayload = JSON.parse(m.payload);
 
                 this.iotHubDevice.client.onDeviceMethod(m.name, (request, response) => {
-                    this.log(`[${request.methodName}][DIRECT METHOD REQUEST PAYLOAD] ${JSON.stringify(request.payload)}`, MSG_HUB, MSG_METH, MSG_RECV);
+                    this.log(`${request.methodName} : ${JSON.stringify(request.payload)}`, MSG_HUB, MSG_METH, MSG_RECV, 'DIRECT METHOD REQUEST PAYLOAD');
                     Object.assign(this.receivedMethodParams, { [m._id]: { date: new Date().toUTCString(), payload: JSON.stringify(request.payload) } });
 
                     // this response is the payload of the device
                     response.send((m.status), responsePayload, (err) => {
+                        this.log(err ? err.toString() : `${m.name} : ${JSON.stringify(responsePayload)}`, MSG_HUB, MSG_METH, MSG_SEND, 'DIRECT METHOD RESPONSE PAYLOAD');
+                        this.messageService.sendAsLiveUpdate({ [m._id]: new Date().toUTCString() });
+
                         if (this.device.configuration.planMode) {
                             this.sendPlanResponse(this.nameIdResolvers.methodToId, m.name);
                         } else if (!this.device.configuration.planMode && m.asProperty) {
                             this.methodReturnPayload = Object.assign({}, { [m.name]: responsePayload })
                         }
 
-                        this.log(err ? err.toString() : `[${m.name}][DIRECT METHOD RESPONSE PAYLOAD] ${JSON.stringify(responsePayload)}`, MSG_HUB, MSG_METH, MSG_SEND);
-                        this.messageService.sendAsLiveUpdate({ [m._id]: new Date().toUTCString() });
-                        this.processMockDevicesCMD(m.name);
+                        // intentional delay to allow any properties to be sent
+                        setTimeout(() => {
+                            this.processMockDevicesCMD(m.name);
+                        }, 3000);
+
                     })
                 });
             }
@@ -673,23 +680,23 @@ export class MockDevice {
             Object.assign(payload, additions);
 
             if (Object.keys(payload).length > 0) {
+                const transformed = this.transformPayload(payload);
+
                 if (this.device.configuration.pnpSdk) {
-                    let wire = this.transformPayload(payload).pnp;
-                    for (const data of wire) {
+                    for (const data of transformed.pnp) {
                         try {
                             const twin = { [data.name]: data.value };
                             await this.iotHubDevice.digitalTwinClient.report(this.pnpInterfaceCache[this.pnpInterfaces[data.id]], twin);
-                            this.log(`[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]${JSON.stringify(twin)}`, MSG_HUB, MSG_TWIN, MSG_SEND);
+                            this.log(`${JSON.stringify(twin)}`, MSG_HUB, MSG_TWIN, MSG_SEND, `[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]`);
                             this.messageService.sendAsLiveUpdate(payload);
                         } catch (err) {
-                            this.log(`[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]${err.toString()}`, MSG_HUB, MSG_TWIN, MSG_SEND);
+                            this.log(`${err.toString()}`, MSG_HUB, MSG_TWIN, MSG_SEND, `[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]`);
                         }
                     }
                 } else {
-                    let wire = this.transformPayload(payload).legacy;
-                    twin.properties.reported.update(wire, ((err) => {
-                        this.log(JSON.stringify(wire), MSG_HUB, MSG_TWIN, MSG_SEND);
-                        this.messageService.sendAsLiveUpdate(payload);
+                    twin.properties.reported.update(transformed.legacy, ((err) => {
+                        this.log(JSON.stringify(transformed.legacy), MSG_HUB, MSG_TWIN, MSG_SEND);
+                        this.messageService.sendAsLiveUpdate(transformed.live);
                     }))
                 }
             }
@@ -703,24 +710,23 @@ export class MockDevice {
             Object.assign(payload, additions);
 
             if (Object.keys(payload).length > 0) {
+                const transformed = this.transformPayload(payload);
                 if (this.device.configuration.pnpSdk) {
-                    let wire = this.transformPayload(payload).pnp;
-                    for (const data of wire) {
+                    for (const data of transformed.pnp) {
                         try {
                             const msg = { [data.name]: data.value };
                             await this.iotHubDevice.digitalTwinClient.sendTelemetry(this.pnpInterfaceCache[this.pnpInterfaces[data.id]], msg);
-                            this.log(`[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]${JSON.stringify(msg)}`, MSG_HUB, MSG_MSG, MSG_SEND);
+                            this.log(`${JSON.stringify(msg)}`, MSG_HUB, MSG_MSG, MSG_SEND, `[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]`);
                             this.messageService.sendAsLiveUpdate(payload);
                         } catch (err) {
-                            this.log(`[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]${err.toString()}`, MSG_HUB, MSG_MSG, MSG_SEND);
+                            this.log(`${err.toString()}`, MSG_HUB, MSG_MSG, MSG_SEND, `[INTERFACE: ${this.pnpInterfaceCache[this.pnpInterfaces[data.id]].componentName}]`);
                         }
                     }
                 } else {
-                    let wire = this.transformPayload(payload).legacy;
-                    let msg = new Message(JSON.stringify(wire));
+                    let msg = new Message(JSON.stringify(transformed.legacy));
                     this.iotHubDevice.client.sendEvent(msg, ((err) => {
-                        this.log(JSON.stringify(wire), MSG_HUB, MSG_MSG, MSG_SEND);
-                        this.messageService.sendAsLiveUpdate(payload);
+                        this.log(JSON.stringify(transformed.legacy), MSG_HUB, MSG_MSG, MSG_SEND);
+                        this.messageService.sendAsLiveUpdate(transformed.live);
                     }))
                 }
             }
@@ -858,7 +864,7 @@ export class MockDevice {
         // this converts an id based json array to a name based array
         // if the name is duped then last one wins. this is ok for now
         // but a better solution is required.
-        let remap = { pnp: [], legacy: {} };
+        let remap = { pnp: [], legacy: {}, live: {} };
         for (let i = 0; i < this.device.comms.length; i++) {
             if (this.device.comms[i]._type != "property") { continue; }
 
@@ -873,20 +879,27 @@ export class MockDevice {
                                 var object = JSON.parse(replacement);
                                 this.resolveRandom(object)
                                 remap.legacy[p.name] = object;
+                                remap.live[p._id] = object;
                                 remap.pnp.push({ id: p._id, name: p.name, value: object })
                             } catch (ex) {
-                                remap.legacy[p.name] = "ERR - transformPayload: " + ex;
-                                remap.pnp.push({ id: p._id, name: p.name, value: object })
+                                const err = "ERR - transformPayload: " + ex;
+                                remap.legacy[p.name] = err;
+                                remap.live[p._id] = err;
+                                remap.pnp.push({ id: p._id, name: p.name, value: err })
                             }
                             break;
                         default:
-                            remap.legacy[p.name] = this.resolveAuto(payload[p._id]);
-                            remap.pnp.push({ id: p._id, name: p.name, value: this.resolveAuto(payload[p._id]) })
+                            const resolve = this.resolveAuto(payload[p._id]);;
+                            remap.legacy[p.name] = resolve;
+                            remap.live[p._id] = resolve;
+                            remap.pnp.push({ id: p._id, name: p.name, value: resolve })
                             break;
                     }
                 } else {
-                    remap.legacy[p.name] = this.resolveAuto(payload[p._id]);
-                    remap.pnp.push({ id: p._id, name: p.name, value: this.resolveAuto(payload[p._id]) })
+                    const resolve = this.resolveAuto(payload[p._id]);;
+                    remap.legacy[p.name] = resolve;
+                    remap.live[p._id] = resolve;
+                    remap.pnp.push({ id: p._id, name: p.name, value: resolve })
                 }
             }
         }
@@ -935,9 +948,10 @@ export class MockDevice {
         }
     }
 
-    log(message, type, operation, direction?) {
+    log(message, type, operation, direction?, submsg?) {
         let msg = `[${new Date().toISOString()}][${type}][${operation}][${this.device._id}]`;
         if (direction) { msg += `[${direction}]` }
+        if (submsg) { msg += `[${submsg}]` }
         this.messageService.sendConsoleUpdate(`${msg} ${message}`)
     }
 

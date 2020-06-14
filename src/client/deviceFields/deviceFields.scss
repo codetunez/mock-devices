@@ -1,14 +1,15 @@
 @import "../const.scss";
 
-$device-card-minimized: 140px;
-$device-card-button-width: 35px;
-$device-card-toggle-file: 100px;
-$device-card-input: 73px;
+$device-field-width: 42rem;
+$device-field-width-1st-col: 9rem;
+$device-card-field: 6rem;
+$device-card-input: 6rem;
+$device-card-minimized: 9rem;
+$device-card-button-size: 2.5rem;
+$device-card-field-label-height: 1.7rem;
+
 $device-card-title-width: 350px; //250px;
 $device-card-title-width-text: 320px; //220px;
-$device-card-field: 73px;
-$min-height-toggle-row: 55px;
-
 .device-field-card {
   padding: $sm-gutter $sm-gutter 0 $sm-gutter;
   overflow-wrap: break-word;
@@ -17,9 +18,6 @@ $min-height-toggle-row: 55px;
   border-radius: $border-radius;
   min-width: $device-field-width;
   max-width: $device-field-width;
-}
-
-.device-field-card {
   overflow: hidden;
   margin-bottom: $md-gutter;
   margin-right: $md-gutter;
@@ -41,7 +39,7 @@ $min-height-toggle-row: 55px;
     display: flex;
     width: $device-card-title-width;
 
-    .df-card-title-chveron {
+    .df-card-title-chevron {
       margin-top: 1px;
       width: $xl-gutter;
       cursor: pointer;
@@ -61,8 +59,9 @@ $min-height-toggle-row: 55px;
         font-weight: 700;
       }
       div:nth-child(2) {
-        color: $app-clr-yellow-1;
-        font-size: 0.9rem;
+        color: $app-white;
+        font-weight: 600;
+        font-size: 0.95rem;
       }
     }
   }
@@ -80,24 +79,24 @@ $min-height-toggle-row: 55px;
   }
 
   .df-card-cmd {
-    padding-top: 2px;
-    padding-right: 2px;
-
     button {
-      width: $device-card-button-width;
+      width: $device-card-button-size;
+      height: $device-card-button-size;
     }
   }
 }
 
 .df-card-row {
-  min-height: $min-height-toggle-row;
   font-size: 0.8rem;
   font-weight: 700;
-
   display: flex;
   margin-top: $md-gutter;
   margin-bottom: $xl-gutter;
   padding-left: $xl-gutter;
+
+  .card-field-label-height {
+    min-height: $device-card-field-label-height;
+  }
 
   input[type="text"],
   input[type="number"] {
@@ -122,6 +121,7 @@ $min-height-toggle-row: 55px;
 
   .full-width {
     width: ($device-card-field * 4) !important;
+    margin-right: 0.3rem;
   }
 
   textarea:focus {
@@ -133,10 +133,11 @@ $min-height-toggle-row: 55px;
   }
 
   .custom-textarea-xsm {
-    width: ($device-card-field * 4);
+    width: ($device-card-field * 4);    
   }
 }
 
 .df-card-row > div:nth-child(1) {
-  width: $device-card-toggle-file;
+  width: $device-field-width-1st-col;
+  color: $app-clr-yellow-1;
 }

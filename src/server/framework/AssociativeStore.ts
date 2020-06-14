@@ -11,7 +11,7 @@ export class AssociativeStore<T> {
     }
 
     public deleteStore = () => {
-        this.store = null;
+        this.initStore();
     }
 
     public count = (): number => {
