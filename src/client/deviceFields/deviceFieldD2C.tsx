@@ -6,7 +6,7 @@ import axios from 'axios';
 import * as React from 'react';
 import Toggle from 'react-toggle';
 import { DeviceContext } from '../context/deviceContext';
-import { AppContext, AppProvider } from '../context/uxContext';
+import { AppContext, AppProvider } from '../context/appContext';
 import { RESX } from '../strings';
 
 import { Combo } from '../ui/controls';

@@ -13,7 +13,7 @@ export class AppProvider extends React.PureComponent {
 
     state: any = {
         property: {},
-        setExpand: this.setExpand
+        setExpand: this.setExpand,
     }
 
     render() {

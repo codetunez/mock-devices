@@ -10,7 +10,7 @@ import { Modal } from '../modals/modal';
 import { Selector } from '../selector/selector';
 import { Device } from '../device/device';
 import { DeviceContext } from '../context/deviceContext';
-import { AppProvider } from '../context/uxContext';
+import { AppProvider } from '../context/appContext';
 
 import { Console } from '../modals/console';
 import { RESX } from '../strings';

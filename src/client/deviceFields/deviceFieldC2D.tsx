@@ -5,7 +5,7 @@ import "react-toggle/style.css"
 import * as React from 'react';
 import Toggle from 'react-toggle';
 import { DeviceContext } from '../context/deviceContext';
-import { AppContext } from '../context/uxContext';
+import { AppContext } from '../context/appContext';
 import { RESX } from '../strings';
 
 interface Form {

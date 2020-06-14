@@ -13,12 +13,12 @@ import { DevicePlan } from '../devicePlan/devicePlan';
 import { RESX } from '../strings';
 
 import { DeviceContext } from '../context/deviceContext';
-import { AppContext } from '../context/uxContext';
+import { AppContext } from '../context/appContext';
 
 export function Device() {
 
     const deviceContext: any = React.useContext(DeviceContext);
-    const uxContext: any = React.useContext(AppContext);
+    const appContext: any = React.useContext(AppContext);
 
     return <>{Object.keys(deviceContext.device).length > 0 ?
         <div className='device'>
@@ -34,7 +34,7 @@ export function Device() {
                     :
                     <div className='device-capabilities'>
                         {deviceContext.device && deviceContext.device.comms && deviceContext.device.comms.map((capability: any) => {
-                            const expand = uxContext.property[capability._id] || false;
+                            const expand = appContext.property[capability._id] || false;
                             const isTemplate = deviceContext.device.configuration._kind === 'template';
                             return <>
                                 {capability.type && capability.type.direction === 'd2c' ? <DeviceFieldD2C capability={capability} shouldExpand={expand} sensors={deviceContext.sensors} pnp={deviceContext.device.configuration.pnpSdk} template={isTemplate} /> : null}
