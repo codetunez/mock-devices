@@ -8,6 +8,12 @@
     flex-direction: column;
 }
 
+.plan-title {
+    max-width: 620px;
+    margin-bottom: $md-gutter;
+    text-align: center;
+}
+
 .plan-card {
     max-width: 620px;
     padding: $sm-gutter;
@@ -41,6 +47,11 @@
         }
         .mini-grid-cell:not(:last-child) {
             margin-right: $sm-gutter;
+        }
+        .mini-grid-header {
+            label : {
+                color: $app-clr-yellow-1;
+            }
         }
     }
 
