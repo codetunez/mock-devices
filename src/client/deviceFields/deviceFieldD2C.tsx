@@ -70,7 +70,10 @@ const reducer = (state: State, action: Action) => {
             newData.enabled = true;
             newData.type.mock = !newData.type.mock;
             if (newData.type.mock && !newData.runloop.include) { newData.runloop.include = true; }
-            if (newData.type.mock) { newData.propertyObject.type = 'default'; }
+            if (newData.type.mock) {
+                newData.propertyObject.type = 'default';
+                newData.value = '';
+            }
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "update-runloop":
             newData.runloop[action.payload.name] = action.payload.value;
@@ -180,19 +183,16 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
     }
 
     let valueLabel = RESX.device.card.send.value_label;
-    let valuePlaceholder = '';
-    let valueOverride = false;
+    let valuePlaceholder = RESX.device.card.send.value_placeholder;
     let valueSend = state.data.value;
 
     if (state.data.propertyObject.type === 'templated') {
         valueLabel = RESX.device.card.send.value_complex_label;
         valuePlaceholder = RESX.device.card.send.value_complex_placeholder;
-        valueOverride = true;
         valueSend = ''
     } else if (state.data.type.mock) {
         valueLabel = RESX.device.card.send.value_mock_label;
         valuePlaceholder = RESX.device.card.send.value_mock_placeholder;
-        valueOverride = true;
     }
 
     return <AppProvider>
