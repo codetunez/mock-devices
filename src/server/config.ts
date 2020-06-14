@@ -4,7 +4,8 @@ export class Config {
     public static NODE_MODE: boolean = false;
     public static DEV_TOOLS: boolean = false;
     public static WEBAPI_LOGGING: boolean = false;
-    public static CONSOLE_LOGGING: boolean = false;
+    public static CONSOLE_LOGGING: boolean = true;
+    public static PROPERTY_LOGGING: boolean = true;
 
     public static APP_PORT: string = '18922';
     public static PROPERTY_WEBSOCKET_PORT: string = '24377';

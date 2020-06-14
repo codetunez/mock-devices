@@ -32,8 +32,7 @@ class Server {
 
     public start = () => {
 
-        const ms = new WebSocketMessageService(true, false);
-
+        const ms = new WebSocketMessageService();
         this.deviceStore = new DeviceStore(ms);
         this.sensorStore = new SensorStore();
         this.simulationStore = new SimulationStore();
