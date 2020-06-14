@@ -14,7 +14,7 @@ export class DeviceStore {
 
     private store: AssociativeStore<Device>;
 
-    private runners: any = {};
+    private runners: any = null;
 
     private sensorStore: SensorStore;
 
@@ -33,8 +33,15 @@ export class DeviceStore {
         this.simulationStore = new SimulationStore();
         this.store = new AssociativeStore();
         this.sensorStore = new SensorStore();
+        this.runners = {};
+
         this.simColors = this.simulationStore.get()["colors"];
         this.bulkRun = this.simulationStore.get()["bulk"];
+    }
+
+    public reset() {
+        this.stopAll();
+        this.init();
     }
 
     public deleteDevice = (d: Device) => {

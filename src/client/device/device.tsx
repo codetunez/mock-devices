@@ -46,7 +46,9 @@ export function Device() {
                                     : null}
                             </>
                         })}
-                        {deviceContext && deviceContext.device.comms && deviceContext.device.comms.length === 0 ? RESX.device.empty : ''}
+                        <div className='device-capabilities-empty'>
+                            {deviceContext && deviceContext.device.comms && deviceContext.device.comms.length === 0 ? RESX.device.empty : ''}
+                        </div>
                     </div>
                 }
             </div>

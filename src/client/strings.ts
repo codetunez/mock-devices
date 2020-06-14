@@ -3,26 +3,27 @@ export const RESX = {
         "version": "v5.2"
     },
     "core": {
-        "templateNoSupport": "This is not supported for templates. Create a device from this template to use this feature",
+        "templateNoSupport": "This is not supported for templates. Create a mock device from this template to use this feature",
     },
     "nav": {
         "help": "Find out how to use mock-devices",
-        "file": "Use a combination of templates, DCMs, SDKs and connectivity to create devices",
-        "power": "Power up all devices that are currently off",
-        "stop": "Stop any devices that are currently on",
-        "sync": "Refresh the device engine and UX if out of sync",
+        "file": "Create or clone a new mock device or template utilizing DCMs, SDKs, DPS and Connection strings",
+        "power": "Power up all devices that are currently off using randomized start times",
+        "stop": "Power down all devices that are currently on",
+        "sync": "Refresh the UX if out of sync with the device engine",
         "sim": "Reset the current configuration for the simulation (advanced)",
+        "reset":"WARNING! Remove all mock devices and templates. Keeps the simulation configuration",
     },
     "selector": {
         "title": "DEVICES",
-        "empty": ["Use ", " to add a device, template or update the state"],
+        "empty": ["Use ", " to add a new mock device, template or load/save/edit the state"],
         "card": {
             "device_title": "Select this mock device",
             "template_title": "Select this template",
         }
     },
     "device": {
-        "empty": "Use + Reported/Desired/Method to send or receive data. Plan mode is disabled",
+        "empty": "Use + to add new capabilities such as sending telemetry or reporting/receiving twin data. Methods can be configured to send back a payload. Plan mode is disabled until capabilities are added",
         "toolbar": {
             "powerOn_label": " Turn on power",
             "powerOn_title": "Connect this mock device to the hub and start sending and receiving events",
