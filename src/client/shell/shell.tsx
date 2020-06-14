@@ -18,11 +18,14 @@ import { RESX } from '../strings';
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
 
+const LCL_HEIGHT_KEY = 'shell-content-height';
+
 export const Shell: React.FunctionComponent = () => {
   const deviceContext: any = React.useContext(DeviceContext);
   const [paused, setPause] = React.useState(false);
   const [lines, updateConsole] = React.useState([]);
   const [consoleModal, setConsole] = React.useState<any>({});
+  const height = window.localStorage.getItem(LCL_HEIGHT_KEY) || 580;
 
   const propertyUpdate = (data: any) => {
     //console.log(data);
@@ -63,11 +66,20 @@ export const Shell: React.FunctionComponent = () => {
     })
   }
 
+  const sizeHandler = (height: number) => {
+    this.height = height;
+  }
+
+  // this doesn't need a re-render cycle
+  setInterval(() => {
+    window.localStorage.setItem(LCL_HEIGHT_KEY, this.height);
+  }, 5000);
+
   return <div className='shell'>
     <Websocket url={'ws://127.0.0.1:24377'} onMessage={propertyUpdate} />
     <Websocket url={'ws://127.0.0.1:24387'} onMessage={liveUpdate} />
 
-    <SplitterLayout vertical={true} primaryMinSize={40} secondaryMinSize={46} secondaryInitialSize={580}>
+    <SplitterLayout vertical={true} primaryMinSize={40} secondaryMinSize={46} secondaryInitialSize={height} onSecondaryPaneSizeChange={sizeHandler}>
       <div className={cx('shell-console')}>
         <a title={RESX.console.pause_title} className='console-pause' onClick={() => setPause(!paused)}><span className={cx('fas', paused ? 'fa-play' : 'fa-pause')}></span></a>
         <a title={RESX.console.erase_title} className='console-erase' onClick={() => updateConsole([])}><span className={cx('fas', 'fa-times')}></span></a>
