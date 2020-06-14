@@ -93,7 +93,7 @@ export const RESX = {
                 "int_urn_label": "URN",
                 "int_urn_title": "The PnP interface unique ID. Can be duplicated across capabilities",
                 "api_label": "API",
-                "api_title": "",
+                "api_title": "Choose between the Msg/Event API or the Twin API of the device SDK",
                 "string_label": "Send as value string",
                 "string_title": "Set to false for JSON, booleans, arrays",
                 "unit_label": "Time unit",
@@ -102,6 +102,7 @@ export const RESX = {
                 "duration_title": "The length of the time duration",
                 "sensor_label": "Sensor",
                 "sensor_title": "Select a simulated sensor that will be used as the value of this capability",
+                "sensor_generic_title": "Click to configure the sensor",
             },
             "method": {
                 "title": "Method / Command",

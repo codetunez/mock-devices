@@ -41,7 +41,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
         let list = [];
         axios.get('/api/devices')
             .then((response: any) => {
-                list.push({ name: '--Do not clone', value: null });
+                list.push({ name: '--Do not clone. Create device with no capabilities', value: null });
                 response.data.map(function (ele: any) {
                     list.push({ name: ele.configuration.mockDeviceName, value: ele._id });
                 });
@@ -282,7 +282,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                 <button className='btn btn-success' onClick={() => loadFromDisk('capabilityModel')}>Browse disk for a DCM</button>
                             </div>
 
-                            <div className='form-group' style={{ height: "calc(100% - 150px)" }}>
+                            <div className='form-group' style={{ height: "calc(100% - 160px)" }}>
                                 <Json json={state.capabilityModel} cb={(text: any) => { updateJson(text, 'capabilityModel') }} />
                             </div>
 
