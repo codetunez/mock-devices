@@ -12,7 +12,7 @@ export const RESX = {
         "stop": "Power down all devices that are currently on",
         "sync": "Refresh the UX if out of sync with the device engine",
         "sim": "Reset the current configuration for the simulation (advanced)",
-        "reset":"WARNING! Remove all mock devices and templates. Keeps the simulation configuration",
+        "reset": "WARNING! Remove all mock devices and templates. Keeps the simulation configuration",
     },
     "selector": {
         "title": "DEVICES",
@@ -130,10 +130,10 @@ export const RESX = {
                 "int_name_title": "The PnP interface instance name. Can be duplicated across capabilities",
                 "int_urn_label": "URN",
                 "int_urn_title": "The PnP interface unique ID. Can be duplicated across capabilities",
-                "version_label": "Last known Twin version",
-                "version_title": "The $version number of the twin associated with this capability",
-                "value_label": "Last known Twin value",
-                "value_title": "The actual value of the twin",
+                "version_label": "Last known twin version",
+                "version_title": "The properties/desired/$version of the twin associated with this device",
+                "value_label": "Last known twin value",
+                "value_title": "The value at the properties/desired/<name> of the twin associated with this device",
             }
         },
         "plan": {

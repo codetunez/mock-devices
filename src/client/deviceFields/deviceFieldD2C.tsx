@@ -200,7 +200,7 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
 
             <div className='df-card-header'>
                 <div className='df-card-title'>
-                    <div className='df-card-title-chveron' onClick={() => { dispatch({ type: 'toggle-expand', payload: { expand: !state.form.expanded, context: appContext } }) }}>
+                    <div className='df-card-title-chevron' onClick={() => { dispatch({ type: 'toggle-expand', payload: { expand: !state.form.expanded, context: appContext } }) }}>
                         <i className={cx(state.form.expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-up')}></i>
                     </div>
                     <div className='df-card-title-text'>
