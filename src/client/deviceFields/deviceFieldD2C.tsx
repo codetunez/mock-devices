@@ -152,7 +152,7 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
 
     const save = (send: boolean) => {
         if (state.data.type.mock && (!state.data.mock || state.data.mock === undefined)) {
-            alert('You must select a Sensor to update this property (or remove Mock)');
+            alert(RESX.device.card.save_pre_error);
             return;
         }
 
@@ -186,12 +186,12 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
 
     if (state.data.propertyObject.type === 'templated') {
         valueLabel = RESX.device.card.send.value_complex_label;
-        valuePlaceholder = 'Using complex value';
+        valuePlaceholder = RESX.device.card.send.value_complex_placeholder;
         valueOverride = true;
         valueSend = ''
     } else if (state.data.type.mock) {
         valueLabel = RESX.device.card.send.value_mock_label;
-        valuePlaceholder = 'Using mock value';
+        valuePlaceholder = RESX.device.card.send.value_mock_placeholder;
         valueOverride = true;
     }
 
@@ -227,7 +227,7 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
                 </div>
                 <div>
                     <div className="card-field-label-height"></div>
-                    <div>{!template ? <div className='single-item'><button className='btn btn-sm btn-outline-primary' onClick={() => { save(true) }}>Send</button></div> : null}</div>
+                    <div>{!template ? <div className='single-item'><button title={RESX.device.card.send_title} className='btn btn-sm btn-outline-primary' onClick={() => { save(true) }}>{RESX.device.card.send_label}</button></div> : null}</div>
                 </div>
             </div>
 
@@ -255,23 +255,23 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
                 : null}
 
             <div className='df-card-row'>
-                <div>Device SDK</div>
-                <div><label>API</label><div><Combo items={[{ name: 'Msg/Telemetry', value: 'msg' }, { name: 'Twin', value: 'twin' }]} cls='custom-textarea-sm double-width' name='sdk' onChange={updateField} value={state.data.sdk} /></div></div>
-                <div><label>String</label><div><Combo items={[{ name: 'Yes', value: true }, { name: 'No', value: false }]} cls='custom-textarea-sm single-width' name='string' onChange={updateField} value={state.data.string} /></div></div>
+                <div>{RESX.device.card.toggle.device_sdk_label}</div>
+                <div><label>{RESX.device.card.send.api_label}</label><div><Combo items={[{ name: 'Msg/Telemetry', value: 'msg' }, { name: 'Twin', value: 'twin' }]} cls='custom-textarea-sm double-width' name='sdk' onChange={updateField} value={state.data.sdk} /></div></div>
+                <div><label>{RESX.device.card.send.string_label}</label><div><Combo items={[{ name: 'Yes', value: true }, { name: 'No', value: false }]} cls='custom-textarea-sm single-width' name='string' onChange={updateField} value={state.data.string} /></div></div>
             </div>
 
             <div className='df-card-row'>
-                <div><label>Looped</label><div><Toggle name={capability._id + '-runloop'} defaultChecked={false} checked={state.data.runloop.include} onChange={() => dispatch({ type: 'toggle-runloop', payload: null })} /></div></div>
+                <div><label>{RESX.device.card.toggle.runloop_label}</label><div title={RESX.device.card.toggle.runloop_title}><Toggle name={capability._id + '-runloop'} defaultChecked={false} checked={state.data.runloop.include} onChange={() => dispatch({ type: 'toggle-runloop', payload: null })} /></div></div>
                 {state.data.runloop.include ? <>
-                    <div><label>Unit</label><div><Combo items={[{ name: 'Mins', value: 'mins' }, { name: 'Secs', value: 'secs' }]} cls='custom-textarea-sm  double-width' name='runloop.unit' onChange={updateField} value={state.data.runloop.unit} /></div></div>
-                    <div><label>Duration</label><div><input type='number' className='form-control form-control-sm double-width' name='runloop.value' min={0} value={state.data.runloop.value} onChange={updateField} /></div></div>
+                    <div><label>{RESX.device.card.send.unit_label}</label><div><Combo items={[{ name: 'Mins', value: 'mins' }, { name: 'Secs', value: 'secs' }]} cls='custom-textarea-sm  double-width' name='runloop.unit' onChange={updateField} value={state.data.runloop.unit} /></div></div>
+                    <div><label>{RESX.device.card.send.duration_label}</label><div><input type='number' className='form-control form-control-sm double-width' name='runloop.value' min={0} value={state.data.runloop.value} onChange={updateField} /></div></div>
                 </> : <div style={{ height: '55px' }}></div>}
             </div>
 
             <div className='df-card-row'>
-                <div><label>Mock</label><div><Toggle name={capability._id + '-mock'} defaultChecked={false} checked={state.data.type.mock} onChange={() => dispatch({ type: 'toggle-mock', payload: null })} /></div></div>
+                <div><label>{RESX.device.card.toggle.mock_label}</label><div title={RESX.device.card.toggle.mock_title}><Toggle name={capability._id + '-mock'} defaultChecked={false} checked={state.data.type.mock} onChange={() => dispatch({ type: 'toggle-mock', payload: null })} /></div></div>
                 {state.data.type.mock ? <>
-                    <div><label>Sensor</label><br />
+                    <div><label>{RESX.device.card.send.sensor_label}</label><br />
                         <div className='btn-group' role='group' >
                             {sensors.map((sensor: any) => {
                                 let active = state.data.mock && sensor._type === state.data.mock._type ? 'active' : '';
