@@ -106,7 +106,7 @@ export const RESX = {
             "method": {
                 "title": "Method / Command",
                 "property_label": "Method name",
-                "property_title": "The name that",
+                "property_title": "The name that is used to invoke the method remotely",
                 "int_name_label": "Name",
                 "int_name_title": "The PnP interface instance name. Can be duplicated across capabilities",
                 "int_urn_label": "URN",
