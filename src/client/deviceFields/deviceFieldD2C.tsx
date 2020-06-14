@@ -58,6 +58,7 @@ const reducer = (state: State, action: Action) => {
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "toggle-complex":
             newData.enabled = true;
+            newData.type.mock = false;
             newData.propertyObject.type = newData.propertyObject.type === 'templated' ? 'default' : 'templated';
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "toggle-runloop":
@@ -67,8 +68,9 @@ const reducer = (state: State, action: Action) => {
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "toggle-mock":
             newData.enabled = true;
-            newData.runloop.include = !newData.type.mock;
             newData.type.mock = !newData.type.mock;
+            if (newData.type.mock && !newData.runloop.include) { newData.runloop.include = true; }
+            if (newData.type.mock) { newData.propertyObject.type = 'default'; }
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "update-runloop":
             newData.runloop[action.payload.name] = action.payload.value;
@@ -177,6 +179,22 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
         }
     }
 
+    let valueLabel = RESX.device.card.send.value_label;
+    let valuePlaceholder = '';
+    let valueOverride = false;
+    let valueSend = state.data.value;
+
+    if (state.data.propertyObject.type === 'templated') {
+        valueLabel = RESX.device.card.send.value_complex_label;
+        valuePlaceholder = 'Using complex value';
+        valueOverride = true;
+        valueSend = ''
+    } else if (state.data.type.mock) {
+        valueLabel = RESX.device.card.send.value_mock_label;
+        valuePlaceholder = 'Using mock value';
+        valueOverride = true;
+    }
+
     return <AppProvider>
         <div className={cx('device-field-card', state.form.expanded ? '' : 'device-field-card-small')} style={capability.color ? { backgroundColor: capability.color } : {}}>
 
@@ -203,7 +221,10 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
             <div className='df-card-row'>
                 <div><label>{RESX.device.card.toggle.enabled_label}</label><div title={RESX.device.card.toggle.enabled_title}><Toggle name={capability._id + '-enabled'} disabled={true} checked={true} onChange={() => { }} /></div></div>
                 <div><label>{RESX.device.card.send.property_label}</label><div><input type='text' className='form-control form-control-sm double-width' name='name' value={state.data.name} onChange={updateField} /></div></div>
-                <div><label>{RESX.device.card.send.value_label}</label><div><input type='text' className='form-control form-control-sm double-width' name='value' value={state.data.value} onChange={updateField} /></div></div>
+                <div>
+                    <label>{valueLabel} </label>
+                    <div><input type='text' className='form-control form-control-sm double-width' name='value' value={valueSend} placeholder={valuePlaceholder} onChange={updateField} /></div>
+                </div>
                 <div>
                     <div className="card-field-label-height"></div>
                     <div>{!template ? <div className='single-item'><button className='btn btn-sm btn-outline-primary' onClick={() => { save(true) }}>Send</button></div> : null}</div>
@@ -215,7 +236,7 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
                 {state.data.propertyObject.type === 'templated' ? <>
                     <div>
                         <label>{RESX.device.card.send.complex_label}</label>
-                        <textarea className='form-control form-control-sm custom-textarea full-width' rows={7} name='propertyObject.template' onChange={updateField} >{capability.propertyObject.template || ''}</textarea>
+                        <textarea className='form-control form-control-sm custom-textarea full-width' rows={7} name='propertyObject.template' onChange={updateField} >{state.data.propertyObject.template || ''}</textarea>
                     </div>
                 </> : <div style={{ height: '55px' }}></div>}
             </div>
