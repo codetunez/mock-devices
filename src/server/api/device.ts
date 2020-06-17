@@ -142,14 +142,14 @@ export default function (deviceStore: DeviceStore) {
         res.json(deviceStore.exists(id));
     });
 
-    // required?
-    // api.get('/:id/property/:propertyId/value', function (req, res, next) {
-    //     var id = req.params.id;
-    //     var propertyId = req.params.propertyId;
-    //     deviceStore.refreshDeviceProperty(id, propertyId);
-    //     // must return the device
-    //     res.json(deviceStore.exists(id));
-    // });
+    // twin read cache
+    api.get('/:id/property/:propertyId/value', function (req, res, next) {
+        var id = req.params.id;
+        var propertyId = req.params.propertyId;
+        deviceStore.refreshDeviceProperty(id, propertyId);
+        // must return the device
+        res.json(deviceStore.exists(id));
+    });
 
     // create a new device, template or bulk devices
     api.post('/new', function (req, res, next) {
