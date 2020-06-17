@@ -11,7 +11,7 @@ import devices from './api/devices';
 import state from './api/state';
 import server from './api/server';
 import sensors from './api/sensors';
-import semanctics from './api/simulation';
+import semantics from './api/simulation';
 import template from './api/template';
 
 import { Config } from './config';
@@ -48,7 +48,7 @@ class Server {
         this.expressServer.use('/_dist', express.static(__dirname + '/..'));
         this.expressServer.use('/node_modules', express.static(__dirname + '/../../node_modules'));
 
-        this.expressServer.use('/api/simulation', semanctics(this.deviceStore, this.simulationStore));
+        this.expressServer.use('/api/simulation', semantics(this.deviceStore, this.simulationStore));
         this.expressServer.use('/api/device', device(this.deviceStore));
         this.expressServer.use('/api/devices', devices(this.deviceStore));
         this.expressServer.use('/api/state', state(this.deviceStore, this.simulationStore));
@@ -101,16 +101,9 @@ class Server {
             const template: any = [{
                 label: 'File',
                 submenu: [
-                    process.platform === 'darwin' ? { role: 'close' } : { role: 'quit' }
-                ]
-            },
-            {
-                label: 'Tool',
-                submenu: [
+                    process.platform === 'darwin' ? { role: 'close' } : { role: 'quit' },
                     { role: 'forcereload' },
-                    { role: 'toggledevtools' },
-                    { type: 'separator' },
-                    process.platform === 'darwin' ? { role: 'close' } : { role: 'quit' }
+                    { role: 'toggledevtools' }
                 ]
             }]
 
