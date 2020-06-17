@@ -287,9 +287,7 @@ export class DeviceStore {
 
         if (index > -1) {
             // update the source of truth
-            let p: any = d.comms[index] = payload;
-            p.version = payload.version;
-
+            d.comms[index] = payload;
             this.store.setItem(d, d._id);
 
             // update the copy of the running instance
@@ -298,13 +296,13 @@ export class DeviceStore {
 
             // build a reported payload and honor type
             let json: ValueByIdPayload = <ValueByIdPayload>{};
-            let converted = Utils.formatValue(p.string, p.value);
+            let converted = Utils.formatValue(d.comms[index].string, d.comms[index].value);
             //TODO: Should deal with p.value not being set as it could be a Complex
-            json[p._id] = converted
+            json[d.comms[index]._id] = converted
 
             // if this an immediate update, send to the runloop
-            if (sendValue === true && p.sdk === "twin") { rd.updateTwin(json); }
-            if (sendValue === true && p.sdk === "msg") { rd.updateMsg(json); }
+            if (sendValue === true && d.comms[index].sdk === "twin") { rd.updateTwin(json); }
+            if (sendValue === true && d.comms[index].sdk === "msg") { rd.updateMsg(json); }
         }
     }
 

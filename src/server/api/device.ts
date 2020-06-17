@@ -55,7 +55,6 @@ export default function (deviceStore: DeviceStore) {
     api.delete('/:id/property/:propertyId', function (req, res, next) {
         var id = req.params.id;
         var propertyId = req.params.propertyId;
-        var body = req.body;
         deviceStore.deleteDeviceProperty(id, propertyId);
         res.json({ device: deviceStore.exists(id), devices: deviceStore.getListOfItems() });
     });
@@ -144,13 +143,13 @@ export default function (deviceStore: DeviceStore) {
     });
 
     // required?
-    api.get('/:id/property/:propertyId/value', function (req, res, next) {
-        var id = req.params.id;
-        var propertyId = req.params.propertyId;
-        deviceStore.refreshDeviceProperty(id, propertyId);
-        // must return the device
-        res.json(deviceStore.exists(id));
-    });
+    // api.get('/:id/property/:propertyId/value', function (req, res, next) {
+    //     var id = req.params.id;
+    //     var propertyId = req.params.propertyId;
+    //     deviceStore.refreshDeviceProperty(id, propertyId);
+    //     // must return the device
+    //     res.json(deviceStore.exists(id));
+    // });
 
     // create a new device, template or bulk devices
     api.post('/new', function (req, res, next) {

@@ -79,7 +79,8 @@ const reducer = (state: State, action: Action) => {
             newData.runloop[action.payload.name] = action.payload.value;
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "update-complex":
-            newData.propertyObject[action.payload.name] = action.payload.value;
+            newData.propertyObject.type = 'templated';
+            newData.propertyObject.template = action.payload.value;
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "update-mock":
             newData.mock[action.payload.name] = action.payload.value;
@@ -91,7 +92,7 @@ const reducer = (state: State, action: Action) => {
         case "load-capability":
             return { ...state, form: { dirty: false, expanded: state.form.expanded }, data: action.payload.capability };
         case "save-capability":
-            action.payload.context.updateDeviceProperty(state.data, action.payload.send);
+            action.payload.context.updateDeviceProperty(newData, action.payload.send);
             return { ...state, form: { dirty: false, expanded: state.form.expanded }, data: newData };
         default:
             return state;
