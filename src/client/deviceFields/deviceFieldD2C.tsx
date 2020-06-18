@@ -166,7 +166,7 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
     const title = () => {
         const loop = state.data.runloop.include ? ' every ' + state.data.runloop.value + ' ' + state.data.runloop.unit : '';
         const mock = state.data.mock && state.data.type.mock ? ' (mock ' + state.data.mock._type + ')' : '';
-        return `Send ${state.data.sdk} ${loop} ${mock}`
+        return `Send ${state.data.sdk === "msg" ? "telemetry" : state.data.sdk + " (Reported)"} ${loop} ${mock}`
     }
 
     let fields = [];
@@ -258,7 +258,9 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
             <div className='df-card-row'>
                 <div>{RESX.device.card.toggle.device_sdk_label}</div>
                 <div><label title={RESX.device.card.send.api_title}>{RESX.device.card.send.api_label}</label><div><Combo items={[{ name: 'Msg/Telemetry', value: 'msg' }, { name: 'Twin', value: 'twin' }]} cls='custom-textarea-sm double-width' name='sdk' onChange={updateField} value={state.data.sdk} /></div></div>
-                <div><label title={RESX.device.card.send.string_title}>{RESX.device.card.send.string_label}</label><div><Combo items={[{ name: 'Yes', value: true }, { name: 'No', value: false }]} cls='custom-textarea-sm single-width' name='string' onChange={updateField} value={state.data.string} /></div></div>
+                {state.data.propertyObject.type === 'templated' ? null :
+                    <div><label title={RESX.device.card.send.string_title}>{RESX.device.card.send.string_label}</label><div><Combo items={[{ name: 'Yes', value: true }, { name: 'No', value: false }]} cls='custom-textarea-sm single-width' name='string' onChange={updateField} value={state.data.string} /></div></div>
+                }
             </div>
 
             <div className='df-card-row'>

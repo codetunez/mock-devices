@@ -108,9 +108,13 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
 
         <div className='df-card-header'>
             <div className='df-card-title'>
-                <div className='df-card-title-chevron' onClick={() => { dispatch({ type: 'toggle-expand', payload: { expand: !state.form.expanded, context: appContext } }) }}>
-                    <i className={cx(state.form.expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-up')}></i>
-                </div>
+                {!template ?
+                    <div className='df-card-title-chevron' onClick={() => { dispatch({ type: 'toggle-expand', payload: { expand: !state.form.expanded, context: appContext } }) }}>
+                        <i className={cx(state.form.expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-up')}></i>
+                    </div>
+                    :
+                    <div className='df-card-title-chevron-spacer'></div>
+                }
                 <div className='df-card-title-text'>
                     <div>{RESX.device.card.receive.title}</div>
                     <div>{state.data.name}</div>

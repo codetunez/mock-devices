@@ -45,6 +45,10 @@ $device-card-title-width-text: 320px; //220px;
       cursor: pointer;
     }
 
+    .df-card-title-chevron-spacer {
+      width: $xl-gutter;
+    }
+
     .df-card-title-text {
       * {
         width: $device-card-title-width-text;
@@ -133,7 +137,7 @@ $device-card-title-width-text: 320px; //220px;
   }
 
   .custom-textarea-xsm {
-    width: ($device-card-field * 4);    
+    width: ($device-card-field * 4);
   }
 }
 
