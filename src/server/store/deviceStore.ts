@@ -261,9 +261,9 @@ export class DeviceStore {
             for (let key in p) {
                 if (d.comms[index].name === key) {
                     if (d.comms[index].propertyObject.type === "templated") {
-                        d.comms[index].propertyObject["template"] = JSON.stringify(p[key], null, 2);
+                        d.comms[index].propertyObject["template"] = p[key] ? JSON.stringify(p[key], null, 2) : p[key];
                     }
-                    d.comms[index].value = JSON.stringify(p[key]);
+                    d.comms[index].value = p[key] ? JSON.stringify(p[key], null, 2) : p[key];
                     d.comms[index].version = parseInt(p["$version"]);
                 }
             }
@@ -293,6 +293,8 @@ export class DeviceStore {
             // update the copy of the running instance
             let rd: MockDevice = this.runners[d._id];
             rd.updateDevice(d);
+
+            if (d.comms[index]._type != 'property') { return; }
 
             // build a reported payload and honor type
             let json: ValueByIdPayload = <ValueByIdPayload>{};
@@ -376,25 +378,11 @@ export class DeviceStore {
     }
 
     public updateDeviceMethod = (id: string, propertyId: string, payload: Property) => {
-
-        let d: Device = this.store.getItem(id);
-        this.stopDevice(d);
-
-        var index = d.comms.findIndex(function (item: Property, i: number) {
-            return item._id === propertyId;
-        });
-
-        if (index > -1) {
-            // update the source of truth
-            let p = d.comms[index] = payload;
-            this.store.setItem(d, d._id);
-
-            // update the copy of the running instance
-            let rd: MockDevice = this.runners[d._id];
-            rd.updateDevice(d);
-        }
+        this.stopDevice(this.store.getItem(id));
+        this.updateDeviceProperty(id, propertyId, payload, false);
     }
 
+    //TODO: this needs to be refactored to work like the twin version
     public getDeviceMethodParams = (id: string, methodId: string) => {
         let rd: MockDevice = this.runners[id];
         return rd.readMethodParams();

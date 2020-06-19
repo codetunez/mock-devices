@@ -1,6 +1,6 @@
 export const RESX = {
     "app": {
-        "version": "v5.3"
+        "version": "v5.4"
     },
     "core": {
         "templateNoSupport": "This is not supported for templates. Create a mock device from this template to use this feature",
@@ -108,21 +108,24 @@ export const RESX = {
             "method": {
                 "title": "Method / Command",
                 "property_label": "Method name",
-                "property_title": "The name that is used to invoke the method remotely",
+                "property_restart_label": "Method name (restart required on change)",
+                "property_title": "The name that is used to invoke the method remotely. Changing the name of a direct method will require a device restart",
                 "int_name_label": "Name",
                 "int_name_title": "The PnP interface instance name. Can be duplicated across capabilities",
                 "int_urn_label": "URN",
                 "int_urn_title": "The PnP interface unique ID. Can be duplicated across capabilities",
                 "c2d_label": "Make C2D Command (off is Direct Method)",
                 "c2d_title": "C2D commands are fire and forget from the server side. The mock-device will not send a response",
-                "request_label": "Request parameter",
+                "request_label": "Last known request parameter",
                 "request_title": "The last known set of parameters received for this method",
                 "response_label": "Response status to send (not for C2D)",
                 "response_title": "The response status sent if this method is invoked (not C2D)",
                 "response_payload_label": "Response payload to send",
                 "response_payload_title": "The response payload returned if this method is invoked. C2D will use this if reporting via property too",
-                "twin_rpt_label": "Send additional twin reported property using response payload",
-                "twin_rpt_title": "A reported twin will be sent using the same name as the method",
+                "twin_rpt_label": "Use a capability to send a response",
+                "twin_rpt_title": "The capability will be sent after the method request has been processed",
+                "property_report_label": "Select capability",
+                "property_report_title": "Both telemetry and twin send data can be used as the response"
             },
             "receive": {
                 "title": "Receive twin (Desired)",
