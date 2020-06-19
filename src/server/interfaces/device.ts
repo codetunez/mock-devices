@@ -55,6 +55,7 @@ export interface Method {
     asProperty: boolean;
     payload: any;
     color?: string;
+    asPropertyId?: string;
 }
 
 export interface PropertyObjectDefault {

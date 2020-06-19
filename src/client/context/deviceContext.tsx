@@ -95,7 +95,7 @@ export class DeviceProvider extends React.PureComponent {
             })
     }
 
-    updateDeviceMethod = (updatePayload: any, send: boolean) => {
+    updateDeviceMethod = (updatePayload: any) => {
         axios.put('/api/device/' + this.state.device._id + '/method/' + updatePayload._id, updatePayload)
             .then(response => {
                 this.setState({ device: response.data.device, devices: response.data.devices });

@@ -4,6 +4,7 @@ import "react-toggle/style.css"
 
 import * as React from 'react';
 import Toggle from 'react-toggle';
+import { Combo } from '../ui/controls';
 import { DeviceContext } from '../context/deviceContext';
 import { AppContext } from '../context/appContext';
 import { RESX } from '../strings';
@@ -63,7 +64,11 @@ const reducer = (state: State, action: Action) => {
         case "load-capability":
             return { ...state, form: { dirty: false, expanded: state.form.expanded }, data: action.payload.capability };
         case "save-capability":
-            action.payload.context.updateDeviceProperty(state.data, action.payload.save);
+            if (newData.execution != 'cloud' && newData.name != action.payload.originalName) {
+                action.payload.context.updateDeviceMethod(state.data);
+            } else {
+                action.payload.context.updateDeviceProperty(state.data, action.payload.save);
+            }
             return { ...state, form: { dirty: false, expanded: state.form.expanded }, data: newData };
         case "read-parameters":
             action.payload.context.getCapability(state.data._id);
@@ -74,12 +79,13 @@ const reducer = (state: State, action: Action) => {
 }
 
 
-export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, shouldExpand, pnp, template }) => {
+export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, shouldExpand, pnp, template, originalName }) => {
 
     const [state, dispatch] = React.useReducer(reducer, { form: { dirty: false, expanded: shouldExpand }, data: capability });
 
     const deviceContext: any = React.useContext(DeviceContext);
     const appContext: any = React.useContext(AppContext);
+    const sendComms = [{ name: '--select', value: null }];
 
     React.useEffect(() => {
         dispatch({ type: 'init-expand', payload: { expand: shouldExpand, context: appContext } })
@@ -92,6 +98,12 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
     React.useEffect(() => {
         dispatch({ type: 'load-device', payload: { device: deviceContext.device } })
     }, [deviceContext.device]);
+
+    deviceContext.device.comms.map((element: any) => {
+        if (element._type !== 'method' && element.type.direction === 'd2c') {
+            sendComms.push({ name: element.name, value: element._id });
+        }
+    });
 
     const updateField = (e: any) => {
 
@@ -109,7 +121,7 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
     }
 
     const save = (send: boolean) => {
-        dispatch({ type: 'save-capability', payload: { context: deviceContext, send: send } })
+        dispatch({ type: 'save-capability', payload: { context: deviceContext, send: send, originalName: originalName } })
     }
 
     const request = () => {
@@ -144,7 +156,7 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
 
         <div className='df-card-row'>
             <div><label>{RESX.device.card.toggle.enabled_label}</label><div title={RESX.device.card.toggle.enabled_title}><Toggle name={state.data._id + '-enabled'} disabled={true} defaultChecked={true} checked={true} onChange={() => { }} /></div></div>
-            <div><label title={RESX.device.card.method.property_title}>{RESX.device.card.method.property_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='name' value={state.data.name} onChange={updateField} /></div></div>
+            <div><label title={RESX.device.card.method.property_title}>{state.data.execution === 'cloud' ? RESX.device.card.method.property_label : RESX.device.card.method.property_restart_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='name' value={state.data.name} onChange={updateField} /></div></div>
         </div>
 
         <div className='df-card-row'>
@@ -156,27 +168,21 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
             </div>
         </div>
 
-        <div className='df-card-row'>
-            <div></div>
-            <div title={RESX.device.card.method.twin_rpt_title}><label>{RESX.device.card.method.twin_rpt_label}</label>
-                <div title={RESX.device.card.method.twin_rpt_title}><Toggle name={state.data._id + '-sendtwin'} defaultChecked={false} checked={state.data.asProperty} onChange={() => { dispatch({ type: 'toggle-property', payload: null }) }} /></div>
-            </div>
-        </div>
+        {!pnp ? null :
+            <>
+                <div className='df-card-row'>
+                    <div>{RESX.device.card.toggle.interface_label}</div>
+                    <div><label>{RESX.device.card.method.int_name_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.name' value={state.data.interface.name || 'Not supported'} onChange={updateField} /></div></div>
 
-        {pnp ? <>
-            <div className='df-card-row'>
-                <div>{RESX.device.card.toggle.interface_label}</div>
-                <div><label>{RESX.device.card.method.int_name_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.name' value={state.data.interface.name || 'Not supported'} onChange={updateField} /></div></div>
+                </div>
+                <div className='df-card-row'>
+                    <div></div>
+                    <div><label>{RESX.device.card.method.int_urn_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.urn' value={state.data.interface.urn || 'Not supported'} onChange={updateField} /></div></div>
+                </div>
+            </>
+        }
 
-            </div>
-            <div className='df-card-row'>
-                <div></div>
-                <div><label>{RESX.device.card.method.int_urn_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.urn' value={state.data.interface.urn || 'Not supported'} onChange={updateField} /></div></div>
-            </div>
-        </>
-            : null}
-
-        {!template ?
+        {template ? null :
             <div className='df-card-row'>
                 <div></div>
                 <div><label title={RESX.device.card.method.request_title}>{RESX.device.card.method.request_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={3} readOnly={true} value={request()} placeholder={RESX.device.card.waiting_placeholder}></textarea></div></div>
@@ -185,17 +191,39 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
                     {!template ? <button title={RESX.device.card.read_param_title} className='btn btn-sm btn-outline-primary' onClick={() => { deviceContext.getCapabilityMethodRequest(state.data._id) }}><span className='fa fa-read'></span>{RESX.device.card.read_param_label}</button> : null}
                 </div>
             </div>
-            : null}
+        }
+
+        {state.data.execution === 'cloud' ? null :
+            <>
+                <div className='df-card-row'>
+                    <div></div>
+                    <div><label title={RESX.device.card.method.response_title} >{RESX.device.card.method.response_label}</label><div><input type='number' max={3} className='form-control form-control-sm full-width' name='status' value={state.data.status} onChange={updateField} /></div></div>
+                </div>
+
+                <div className='df-card-row'>
+                    <div></div>
+                    <div><label title={RESX.device.card.method.response_payload_title}>{RESX.device.card.method.response_payload_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={6} name='payload' onChange={updateField} >{state.data.payload || ''}</textarea></div></div>
+                </div>
+            </>
+        }
 
         <div className='df-card-row'>
             <div></div>
-            <div><label title={RESX.device.card.method.response_title} >{RESX.device.card.method.response_label}</label><div><input type='number' max={3} className='form-control form-control-sm full-width' name='status' value={state.data.status} onChange={updateField} /></div></div>
+            <div><label>{RESX.device.card.method.twin_rpt_label}</label>
+                <div title={RESX.device.card.method.twin_rpt_title}><Toggle name={state.data._id + '-sendtwin'} defaultChecked={false} checked={state.data.asProperty} onChange={() => { dispatch({ type: 'toggle-property', payload: null }) }} /></div>
+            </div>
         </div>
 
-        <div className='df-card-row'>
-            <div></div>
-            <div><label title={RESX.device.card.method.response_payload_title}>{RESX.device.card.method.response_payload_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={6} name='payload' onChange={updateField} >{state.data.payload || ''}</textarea></div></div>
-        </div>
+        {!state.data.asProperty ? null :
+            < div className='df-card-row'>
+                <div><label></label><div></div></div>
+                <div><label title={RESX.device.card.method.property_report_title}>{RESX.device.card.method.property_report_label}</label>
+                    <div>
+                        <Combo items={sendComms} cls='full-width' name='asPropertyId' onChange={updateField} value={state.data.asPropertyId || ''} />
+                    </div>
+                </div>
+            </div>
+        }
 
-    </div>
+    </div >
 }

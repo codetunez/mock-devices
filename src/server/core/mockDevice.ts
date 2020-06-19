@@ -108,7 +108,9 @@ export class MockDevice {
     private nameIdResolvers = {
         desiredToId: {},
         methodToId: {},
-        deviceCommsIndex: {}
+        deviceCommsIndex: {},
+        c2dIndex: {},
+        directMethodIndex: {}
     }
 
     constructor(device, messageService: MessageService, deviceStore: DeviceStore) {
@@ -156,13 +158,25 @@ export class MockDevice {
             }
             if (comm._type === 'method') {
                 this.nameIdResolvers.methodToId[comm.name] = comm._id;
+                if (comm.execution === 'cloud') {
+                    this.nameIdResolvers.c2dIndex[comm.name] = index;
+                }
+                if (comm.execution === 'direct') {
+                    this.nameIdResolvers.directMethodIndex[comm.name] = index;
+                }
             }
         })
     }
 
     reconfigDeviceDynamically() {
 
-        this.buildIndexes(this.device);
+        this.nameIdResolvers = {
+            desiredToId: {},
+            methodToId: {},
+            deviceCommsIndex: {},
+            c2dIndex: {},
+            directMethodIndex: {}
+        }
 
         this.pnpInterfaceCache = {};
 
@@ -175,6 +189,8 @@ export class MockDevice {
         this.msgRLPropsPlanValues = [];
         this.msgRLReportedTimers = [];
         this.msgRLMockSensorTimers = {};
+
+        this.buildIndexes(this.device);
 
         // for PM we are only interested in the list. the rest has been defined in IM mode
         if (this.device.configuration.planMode) {
@@ -504,77 +520,93 @@ export class MockDevice {
 
     regsisterC2D() {
         this.iotHubDevice.client.on('message', (msg) => {
+            if (msg === undefined || msg === null) { return; }
+
             let error = false;
-            if (msg) {
+            try {
+                const cloudName = msg.properties.getValue('method-name');
+                const cloudNameParts = cloudName.split(':');
+                const cloudMethod = cloudNameParts.length === 2 ? cloudNameParts[1] : cloudNameParts[0]
+                let cloudMethodPayload = msg.data.toString();
                 try {
-                    const cloudName = msg.properties.getValue('method-name');
-                    const cloudNameParts = cloudName.split(':');
-                    const cloudMethod = cloudNameParts.length === 2 ? cloudNameParts[1] : cloudNameParts[0]
-                    const cloudMethodPayload = msg.data.toString();
+                    cloudMethodPayload = JSON.parse(cloudMethodPayload);
+                } catch (err) { }
 
-                    //TODO: make this performant!
-                    for (let i = 0; i < this.device.comms.length; i++) {
-                        let comm: any = this.device.comms[i];
+                if (this.nameIdResolvers.c2dIndex[cloudMethod]) {
+                    const method: Method = this.device.comms[this.nameIdResolvers.c2dIndex[cloudMethod]];
+                    this.log(cloudMethod + " " + JSON.stringify(cloudMethodPayload), MSG_HUB, MSG_C2D, MSG_RECV, 'C2D REQUEST AND PAYLOAD');
+                    Object.assign(this.receivedMethodParams, { [method._id]: { date: new Date().toUTCString(), payload: JSON.stringify(cloudMethodPayload, null, 2) } });
 
-                        if (comm.name === cloudMethod && comm._type === "method" && comm.execution === 'cloud') {
-                            this.log(cloudMethod + " " + JSON.stringify(cloudMethodPayload), MSG_HUB, MSG_C2D, MSG_RECV, 'C2D ERROR PARSING MESSAGE BODY');
+                    if (this.device.configuration.planMode) {
+                        this.sendPlanResponse(this.nameIdResolvers.methodToId, method.name);
+                    } else if (!this.device.configuration.planMode && method.asProperty && method.asPropertyId) {
+                        const p = this.device.comms.filter((x) => { return x._id === method.asPropertyId })
+                        for (const send in p) {
+                            let json: ValueByIdPayload = <ValueByIdPayload>{};
+                            let converted = Utils.formatValue(p[send].string, p[send].value);
+                            json[p[send]._id] = converted
 
-                            let m: Method = comm;
-                            Object.assign(this.receivedMethodParams, { [m._id]: { date: new Date().toUTCString(), payload: JSON.stringify(cloudMethodPayload) } });
-
-                            if (this.device.configuration.planMode) {
-                                this.sendPlanResponse(this.nameIdResolvers.methodToId, m.name);
-                            } else if (!this.device.configuration.planMode && m.asProperty) {
-                                this.methodReturnPayload = Object.assign({}, { [m.name]: m.payload })
-                            }
-
-                            this.processMockDevicesCMD(m.name);
+                            // if this an immediate update, send to the runloop
+                            if (p[send].sdk === "twin") { this.updateTwin(json); }
+                            if (p[send].sdk === "msg") { this.updateMsg(json); }
                         }
+                    } else if (!this.device.configuration.planMode && method.asProperty) {
+                        this.methodReturnPayload = Object.assign({}, { [method.name]: method.payload })
                     }
-                } catch (err) {
-                    error = true;
-                    this.log(`${err.toString()}`, MSG_HUB, MSG_C2D, MSG_SEND, 'C2D ERROR PARSING MESSAGE BODY');
+
+                    this.processMockDevicesCMD(method.name);
                 }
+            }
+            catch (err) {
+                error = true;
+                this.log(`${err.toString()}`, MSG_HUB, MSG_C2D, MSG_SEND, 'C2D ERROR PARSING MESSAGE BODY');
             }
 
             this.iotHubDevice.client.complete(msg, (err) => {
-                this.log(`${err ? err.toString() : error ? 'FAILED' : 'SUCCESS'}`, MSG_HUB, MSG_PROC, null, 'C2D COMPLETE STATUS');
+                this.log(`${err ? err.toString() : error ? 'FAILED' : 'SUCCESS'}`, MSG_HUB, MSG_PROC, null, 'C2D COMPLETE');
             });
         });
     }
 
     registerDirectMethods() {
-        // this block needs a refactor
-        for (let i = 0; i < this.device.comms.length; i++) {
-            let comm: any = this.device.comms[i];
-            if (comm._type === "method" && comm.execution === 'direct') {
 
-                let m: Method = comm;
-                let responsePayload = JSON.parse(m.payload);
+        for (const key in this.nameIdResolvers.directMethodIndex) {
+            this.iotHubDevice.client.onDeviceMethod(key, (request, response) => {
 
-                this.iotHubDevice.client.onDeviceMethod(m.name, (request, response) => {
-                    this.log(`${request.methodName} : ${JSON.stringify(request.payload)}`, MSG_HUB, MSG_METH, MSG_RECV, 'DIRECT METHOD REQUEST PAYLOAD');
-                    Object.assign(this.receivedMethodParams, { [m._id]: { date: new Date().toUTCString(), payload: JSON.stringify(request.payload) } });
+                const method: Method = this.device.comms[this.nameIdResolvers.directMethodIndex[key]];
 
-                    // this response is the payload of the device
-                    response.send((m.status), responsePayload, (err) => {
-                        this.log(err ? err.toString() : `${m.name} : ${JSON.stringify(responsePayload)}`, MSG_HUB, MSG_METH, MSG_SEND, 'DIRECT METHOD RESPONSE PAYLOAD');
-                        this.messageService.sendAsLiveUpdate({ [m._id]: new Date().toUTCString() });
+                this.log(`${request.methodName} : ${JSON.stringify(request.payload)}`, MSG_HUB, MSG_METH, MSG_RECV, 'DIRECT METHOD REQUEST AND PAYLOAD');
+                Object.assign(this.receivedMethodParams, { [method._id]: { date: new Date().toUTCString(), payload: request.payload } });
 
-                        if (this.device.configuration.planMode) {
-                            this.sendPlanResponse(this.nameIdResolvers.methodToId, m.name);
-                        } else if (!this.device.configuration.planMode && m.asProperty) {
-                            this.methodReturnPayload = Object.assign({}, { [m.name]: responsePayload })
+                // this response is the payload of the device
+                response.send((method.status), JSON.parse(method.payload || {}), (err) => {
+                    this.log(err ? err.toString() : `${method.name} : ${method.payload}`, MSG_HUB, MSG_METH, MSG_SEND, 'DIRECT METHOD RESPONSE PAYLOAD');
+                    this.messageService.sendAsLiveUpdate({ [method._id]: new Date().toUTCString() });
+
+                    if (this.device.configuration.planMode) {
+                        this.sendPlanResponse(this.nameIdResolvers.methodToId, method.name);
+                    } else if (!this.device.configuration.planMode && method.asProperty && method.asPropertyId) {
+                        const p = this.device.comms.filter((x) => { return x._id === method.asPropertyId })
+                        for (const send in p) {
+                            let json: ValueByIdPayload = <ValueByIdPayload>{};
+                            let converted = Utils.formatValue(p[send].string, p[send].value);
+                            json[p[send]._id] = converted
+
+                            // if this an immediate update, send to the runloop
+                            if (p[send].sdk === "twin") { this.updateTwin(json); }
+                            if (p[send].sdk === "msg") { this.updateMsg(json); }
                         }
+                    } else if (!this.device.configuration.planMode && method.asProperty) {
+                        this.methodReturnPayload = Object.assign({}, { [method.name]: method.payload })
+                    }
 
-                        // intentional delay to allow any properties to be sent
-                        setTimeout(() => {
-                            this.processMockDevicesCMD(m.name);
-                        }, 3000);
+                    // intentional delay to allow any properties to be sent
+                    setTimeout(() => {
+                        this.processMockDevicesCMD(method.name);
+                    }, 3000);
 
-                    })
-                });
-            }
+                })
+            });
         }
     }
 
