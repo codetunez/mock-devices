@@ -106,6 +106,21 @@ export class SimulationStore {
         "plan": {
             "startDelay": 2000,
             "timelineDelay": 5000
+        },
+        "snippets": {
+            "Setting1": {
+                "value": "DESIRED_VALUE",
+                "status": "completed",
+                "message": "test message",
+                "statusCode": 200,
+                "desiredVersion": "DESIRED_VERSION"
+            },
+            "Setting2": {
+                "value": "DESIRED_VALUE",
+                "ac": 200,
+                "ad": "completed",
+                "av": "DESIRED_VERSION"
+            }
         }
     }
 

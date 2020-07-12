@@ -1,6 +1,6 @@
 export const RESX = {
     "app": {
-        "version": "v5.4"
+        "version": "v5.5"
     },
     "core": {
         "templateNoSupport": "This is not supported for templates. Create a mock device from this template to use this feature",
@@ -29,10 +29,10 @@ export const RESX = {
             "powerOn_title": "Connect this mock device to the hub and start sending and receiving events",
             "powerOff_label": " Turn off power",
             "powerOff_title": "Disconnect this mock device from the hub and stop sending data",
-            "kindTemplate": "Template for ",
-            "kindReal": "Real device using ",
-            "sdkLegacy": "current SDK",
-            "sdkPnp": "PnP SDK (Digital Twins)",
+            "kindTemplate": "Template",
+            "kindReal": "Real device",
+            "sdkLegacy": "",
+            "sdkPnp": "",
         },
         "title": {
             "planMode": "Plan mode",
@@ -135,10 +135,20 @@ export const RESX = {
                 "int_name_title": "The PnP interface instance name. Can be duplicated across capabilities",
                 "int_urn_label": "URN",
                 "int_urn_title": "The PnP interface unique ID. Can be duplicated across capabilities",
-                "version_label": "Last known twin version",
+                "version_label": "Last desired version of capability",
                 "version_title": "The properties/desired/$version of the twin associated with this device",
-                "value_label": "Last known twin value",
+                "value_label": "Last desired value of capability",
                 "value_title": "The value at the properties/desired/<name> of the twin associated with this device",
+                "twin_rpt_label": "Use a capability to send a response",
+                "twin_rpt_title": "The capability will be sent after the desired is received (Read is not required)",
+                "property_report_label": "Select capability",
+                "property_report_title": "Both telemetry and twin send data can be used as the response",
+                "property_version_label": "Override capability's value",
+                "property_version_title": "Ignore the current capability's configuration and use a custom value",
+                "property_convention_label": "Use convention",
+                "property_convention_title": "Will treat data as objects and merge desired received into reported payload. Then it will replace any AUTO/RECEIVE macros",
+                "property_version_payload_label": "Value (can be JSON)",                
+                "property_version_payload_title": "See Help for full ist of AUTO macros available",
             }
         },
         "plan": {

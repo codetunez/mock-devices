@@ -5,6 +5,24 @@ export const DeviceContext = React.createContext({});
 
 export class DeviceProvider extends React.PureComponent {
 
+    constructor() {
+        super(null);
+
+        let devices = null;
+        axios.get('/api/devices')
+            .then((response: any) => {
+                devices = response.data;
+                return axios.get('/api/sensors')
+            })
+            .then((response: any) => {
+                this.setState({
+                    devices: devices,
+                    device: {},
+                    sensors: response.data
+                });
+            })
+    }
+
     // group control plane
     setDevices = (devices: any) => {
         this.setState({ devices: devices });
@@ -160,6 +178,8 @@ export class DeviceProvider extends React.PureComponent {
     }
 
     state: any = {
+        sensors: {},
+        sensorSelcted: {},
         device: {},
         devices: [],
         requests: {},

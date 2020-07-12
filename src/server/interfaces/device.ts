@@ -41,6 +41,11 @@ export interface Property {
     mock?: MockSensor;
     enabled: boolean;
     color?: string;
+    asProperty?: boolean;
+    asPropertyId?: string;
+    asPropertyConvention?: boolean;
+    asPropertyVersion?: boolean;
+    asPropertyVersionPayload?: any;
 }
 
 export interface Method {

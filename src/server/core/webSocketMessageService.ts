@@ -30,9 +30,11 @@ export class WebSocketMessageService implements MessageService {
         });
     }
 
-    sendAsLiveUpdate(payload: any) {
+    sendAsLiveUpdate(deviceId: string, payload: any) {
         Object.assign(this.propertyUpdatePayload, payload);
     }
+
+    sendAsControlPlane() {}
 
     liveUpdateTimer = () => {
         if (!Config.PROPERTY_LOGGING) { return; }

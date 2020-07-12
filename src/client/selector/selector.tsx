@@ -22,7 +22,7 @@ export const Selector: React.FunctionComponent = () => {
       {deviceContext.devices.map((item: any, index: number) => {
         return <SelectorCard key={item._id} exp={expand} index={index} active={deviceContext.device._id === item._id} device={item} />
       })}
-      {deviceContext.devices.length === 0 ? <><span>{RESX.selector.empty[0]} </span><span className='far fa-save'></span><span>{RESX.selector.empty[1]}</span></> : ''}
+      {deviceContext.devices.length === 0 ? <><span>{RESX.selector.empty[0]} </span><span className='fa fa-plus'></span><span>{RESX.selector.empty[1]}</span></> : ''}
     </div>
   </div>
 }

@@ -187,10 +187,10 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <button onClick={() => setPanel(4)} className={cx('btn btn-outline-primary', panel === 4 ? 'active' : '')}>Load/Save from file system</button><br />
                         <button onClick={() => setPanel(5)} className={cx('btn btn-outline-primary', panel === 5 ? 'active' : '')}>Editor</button><br />
                     </div>
-                    <div className='form-group' >
+                    {/* <div className='form-group' >
                         <label>Use PnP SDK</label>
                         <div><Toggle name='pnpSdk' checked={state.pnpSdk} defaultChecked={false} onChange={() => { togglePnpSdk() }} /></div>
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className='m-tabbed-panel'>

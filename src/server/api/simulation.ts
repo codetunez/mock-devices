@@ -4,6 +4,11 @@ import * as Utils from '../core/utils';
 export default function (deviceStore, simulationStore) {
     let api = Router();
 
+    api.get('/:key', function (req, res) {
+        res.send(simulationStore.get()[req.params.key || '']);
+        res.end();
+    });
+
     api.get('/', function (req, res) {
         res.send(simulationStore.get());
         res.end();

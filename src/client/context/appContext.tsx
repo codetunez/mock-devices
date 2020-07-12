@@ -6,14 +6,20 @@ export const AppContext = React.createContext({});
 export class AppProvider extends React.PureComponent {
 
     setExpand = (id: any) => {
-        const o = this.state.property;
-        o[id] = !o[id] ? true : !o[id]
-        this.setState(o);
+        const newProp = this.state.property;
+        newProp[id] = !newProp[id] ? true : !newProp[id]
+        this.setState({ ...this.state, property: newProp });
+    }
+
+    setSelectorExpand = (flag: boolean) => {
+        this.setState({ ...this.state, selectorExpand: flag });
     }
 
     state: any = {
         property: {},
+        selectorExpand: false,
         setExpand: this.setExpand,
+        setSelectorExpand: this.setSelectorExpand
     }
 
     render() {

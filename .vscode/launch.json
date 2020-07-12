@@ -8,9 +8,14 @@
             "type": "node",
             "request": "launch",
             "name": "Electron Main",
+            "cwd": "${workspaceFolder}",
             "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
-            "program": "${workspaceRoot}/_dist/server/start.js",
-            "protocol": "inspector"
+            "windows": {
+                "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd",
+            },
+            "args": [
+                "."
+            ],
         }
     ]
 }

@@ -23,9 +23,11 @@ export class ConsoleMessageService implements MessageService {
         if (this.showConsole) { console.log(message); }
     }
 
-    sendAsLiveUpdate(payload: any) {
+    sendAsLiveUpdate(deviceId: string, payload: any) {
         Object.assign(this.propertyUpdatePayload, payload);
     }
+
+    sendAsControlPlane() {}
 
     liveUpdateTimer = () => {
         if (this.showLiveUpdate) {

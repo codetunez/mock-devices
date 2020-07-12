@@ -5,46 +5,48 @@ const cx = classNames.bind(require('./console.scss'));
 const cxM = classNames.bind(require('./modal.scss'));
 
 export const Console: React.FunctionComponent<any> = ({ lines, index, handler }) => {
-    const [selectedIndex, setIndex] = React.useState(index);
+
+    const [messages, setMessages] = React.useState({ lines, index });
 
     React.useEffect(() => {
-        setIndex(index);
-    }, [index]);
+        setMessages({ lines, index });
+    }, [index, lines]);
 
     const display = () => {
-        const DOM = [];
-        try {
-            const regex = /(\[.*\])|(\{.*?\})$/g
-            const msg = lines[selectedIndex];
+        const regex = /(.*?)([^\]]*)$/
+        const match = messages.lines[messages.index].match(regex);
 
-            const matches = msg.matchAll(regex);
-            for (const match of matches) {
-                if (match[1] != undefined) {
-                    DOM.push(<div>{match[1]}</div>);
-                } else {
-                    DOM.push(<pre>{JSON.stringify(JSON.parse(match[0]), null, 2)}</pre>);
-                }
+        let title = '';
+        let preContent = '';
+        if (match) {
+            title = match[1];
+            try {
+                preContent = JSON.stringify(JSON.parse(match[2]), null, 2);
+            } catch (err) {
+                preContent = match[2].trim();
             }
-        } catch (err) {
-            DOM.push(lines[selectedIndex]);
         }
-        return DOM
+
+        return <>
+            <div>{title}</div>
+            <pre>{preContent}</pre>
+        </>
     }
 
     const prev = () => {
-        setIndex(selectedIndex > 0 ? selectedIndex - 1 : 0);
+        setMessages({ lines, index: messages.index > 0 ? messages.index - 1 : 0 });
     }
     const next = () => {
-        setIndex(selectedIndex < lines.length - 1 ? selectedIndex + 1 : lines.length - 1);
+        setMessages({ lines, index: messages.index < lines.length - 1 ? messages.index + 1 : lines.length - 1 });
     }
 
     return <div className='m-modal'>
         <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
         <div className='m-content'>
             <div className='console-buttons'>
-                <a onClick={() => prev()}><span className={cx('fas', 'fa-chevron-left')}></span></a>
-                <a onClick={() => next()}><span className={cx('fas', 'fa-chevron-right')}></span></a>
-                <div>[{selectedIndex + 1}/{lines.length}]</div>
+                <a onClick={() => next()}><span className={cx('fas', 'fa-chevron-left')}></span></a>
+                <a onClick={() => prev()}><span className={cx('fas', 'fa-chevron-right')}></span></a>
+                <div>Event {lines.length - messages.index} of {messages.lines.length}</div>
             </div>
             <div className='console-window'>
                 <div className='console-message'>{display()}</div>
