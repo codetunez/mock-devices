@@ -120,7 +120,17 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
     }
 
     const save = (send: boolean) => {
-        dispatch({ type: 'save-capability', payload: { context: deviceContext, send: send } })
+        dispatch({ type: 'save-capability', payload: { context: deviceContext, send: send } });
+    }
+
+    let snippets = []
+    for (const snippet in appContext.snippets) {
+        const code = Object.assign({}, appContext.snippets[snippet]);
+        snippets.push(<div onClick={() => snippetsHandler(code)}>{snippet}</div>);
+    }
+
+    const snippetsHandler = (code: any) => {
+        dispatch({ type: 'update-capability', payload: { name: 'asPropertyVersionPayload', value: JSON.stringify(code, null, 2) } });
     }
 
     return <div className={cx('device-field-card', state.form.expanded ? '' : 'device-field-card-small')} style={state.data.color ? { backgroundColor: state.data.color } : {}}>
@@ -194,9 +204,16 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
                             {!state.data.asPropertyVersion ? null :
                                 <div>
                                     <label title={RESX.device.card.receive.property_version_payload_title}>{RESX.device.card.receive.property_version_payload_label}</label>
-                                    <textarea className='form-control form-control-sm custom-textarea full-width' rows={7} name='asPropertyVersionPayload' onChange={updateField} >{state.data.asPropertyVersionPayload || ''}</textarea>
+                                    <textarea className='form-control form-control-sm custom-textarea full-width' rows={7} name='asPropertyVersionPayload' onChange={updateField} value={state.data.asPropertyVersionPayload}></textarea>
                                 </div>
                             }
+                        </div>
+                        <div className='df-card-row df-card-row-nogap'>
+                            <div></div>
+                            <div className="snippets">
+                                <div>Add snippet:</div>
+                                <div className="snippet-links">{snippets}</div>
+                            </div>
                         </div>
                         <div className='df-card-row'>
                             <div></div>

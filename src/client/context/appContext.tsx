@@ -5,6 +5,24 @@ export const AppContext = React.createContext({});
 
 export class AppProvider extends React.PureComponent {
 
+    constructor() {
+        super(null);
+
+        let data = null;
+        axios.get('/api/simulation/snippets')
+            .then((response: any) => {
+                data = response.data;
+                return axios.get('/api/simulation/colors')
+            })
+            .then((response: any) => {
+                this.setState({
+                    snippets: data,
+                    colors: response.data
+                });
+            })
+
+    }
+
     setExpand = (id: any) => {
         const newProp = this.state.property;
         newProp[id] = !newProp[id] ? true : !newProp[id]
@@ -18,6 +36,8 @@ export class AppProvider extends React.PureComponent {
     state: any = {
         property: {},
         selectorExpand: false,
+        snippets: {},
+        colors: {},
         setExpand: this.setExpand,
         setSelectorExpand: this.setSelectorExpand
     }

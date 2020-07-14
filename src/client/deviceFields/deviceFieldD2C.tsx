@@ -163,6 +163,16 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
         dispatch({ type: 'save-capability', payload: { context: deviceContext, send: send } })
     }
 
+    let snippets = []
+    for (const snippet in appContext.snippets) {
+        const code = Object.assign({}, appContext.snippets[snippet]);
+        snippets.push(<div onClick={() => snippetsHandler(code)}>{snippet}</div>);
+    }
+
+    const snippetsHandler = (code: any) => {
+        dispatch({ type: 'update-complex', payload: { name: 'propertyObject.template', value: JSON.stringify(code, null, 2) } });
+    }
+
     const title = () => {
         const loop = state.data.runloop.include ? ' every ' + state.data.runloop.value + ' ' + state.data.runloop.unit : '';
         const mock = state.data.mock && state.data.type.mock ? ' (mock ' + state.data.mock._type + ')' : '';
@@ -237,10 +247,20 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
                 {state.data.propertyObject.type === 'templated' ? <>
                     <div>
                         <label title={RESX.device.card.send.complex_title}>{RESX.device.card.send.complex_label}</label>
-                        <textarea className='form-control form-control-sm custom-textarea full-width' rows={7} name='propertyObject.template' onChange={updateField} >{state.data.propertyObject.template || ''}</textarea>
+                        <textarea className='form-control form-control-sm custom-textarea full-width' rows={7} name='propertyObject.template' onChange={updateField} value={state.data.propertyObject.template || ''}></textarea>
                     </div>
                 </> : <div style={{ height: '55px' }}></div>}
             </div>
+
+            {state.data.propertyObject.type != 'templated' ? null :
+                <div className='df-card-row df-card-row-nogap'>
+                    <div></div>
+                    <div className="snippets">
+                        <div>Add snippet:</div>
+                        <div className="snippet-links">{snippets}</div>
+                    </div>
+                </div>
+            }
 
             {pnp ? <>
                 <div className='df-card-row'>

@@ -124,6 +124,16 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
         dispatch({ type: 'save-capability', payload: { context: deviceContext, send: send, originalName: originalName } })
     }
 
+    let snippets = []
+    for (const snippet in appContext.snippets) {
+        const code = Object.assign({}, appContext.snippets[snippet]);
+        snippets.push(<div onClick={() => snippetsHandler(code)}>{snippet}</div>);
+    }
+
+    const snippetsHandler = (code: any) => {
+        dispatch({ type: 'update-capability', payload: { name: 'payload', value: JSON.stringify(code, null, 2) } });
+    }
+
     const request = () => {
         return deviceContext.requests[state.data._id] && deviceContext.requests[state.data._id].payload;
     }
@@ -202,7 +212,14 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
 
                 <div className='df-card-row'>
                     <div></div>
-                    <div><label title={RESX.device.card.method.response_payload_title}>{RESX.device.card.method.response_payload_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={6} name='payload' onChange={updateField} >{state.data.payload || ''}</textarea></div></div>
+                    <div><label title={RESX.device.card.method.response_payload_title}>{RESX.device.card.method.response_payload_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={6} name='payload' onChange={updateField} value={state.data.payload || ''}></textarea></div></div>
+                </div>
+                <div className='df-card-row df-card-row-nogap'>
+                    <div></div>
+                    <div className="snippets">
+                        <div>Add snippet:</div>
+                        <div className="snippet-links">{snippets}</div>
+                    </div>
                 </div>
             </>
         }

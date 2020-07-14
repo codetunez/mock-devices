@@ -120,6 +120,9 @@ export class SimulationStore {
                 "ac": 200,
                 "ad": "completed",
                 "av": "DESIRED_VERSION"
+            },
+            "Response": {
+                "result": "OK"
             }
         }
     }
