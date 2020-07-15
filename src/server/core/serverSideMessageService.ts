@@ -57,9 +57,8 @@ export class ServerSideMessageService implements MessageService {
         this.timers['controlLoop'] = setInterval(() => {
             if (Object.keys(this.eventControl).length > 0) {
                 res.write(`data: ${JSON.stringify(this.eventControl)}\n\n`);
-                this.eventControl = {};
             }
-        }, 457)
+        }, 2345)
     }
 
     dataLoop = (res) => {

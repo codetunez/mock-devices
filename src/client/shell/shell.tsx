@@ -61,10 +61,21 @@ export const Shell: React.FunctionComponent = () => {
   const [paused, setPause] = React.useState(false);
 
   React.useEffect(() => {
-    let eventSource = new EventSource('/api/events/message')
-    eventSource.onmessage = ((e) => {
-      dispatch({ type: 'lines-add', payload: { messages: JSON.parse(e.data) } })
-    });
+    let eventSource: any = {};
+    source();
+    function source() {
+      eventSource = new EventSource('/api/events/message')
+      eventSource.onmessage = ((e) => {
+        dispatch({ type: 'lines-add', payload: { messages: JSON.parse(e.data) } })
+      });      
+      eventSource.onerror = ((e) => {
+        console.log('Reconnecting');
+        setTimeout(() => {
+          eventSource.close();
+          source();
+        }, 5000);
+      });
+    }
   }, []);
 
   const closeDialog = () => { dispatch({ type: 'dialog-close', payload: null }) }
