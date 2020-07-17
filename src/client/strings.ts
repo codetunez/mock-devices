@@ -17,7 +17,7 @@ export const RESX = {
         "reset": "WARNING! Remove all mock devices and templates. Keeps the simulation configuration",
     },
     "selector": {
-        "title": "DEVICES",
+        "title": "DEVICES & TEMPLATES",
         "empty": ["Use ", " to add a new mock device, template or load/save/edit the state"],
         "card": {
             "device_title": "Select this mock device",
