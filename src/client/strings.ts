@@ -25,6 +25,7 @@ export const RESX = {
         }
     },
     "modal": {
+        "error_json": "JSON has errors",
         "console": {
             "text1": ["From", "of"]
         },
@@ -36,6 +37,8 @@ export const RESX = {
         "simulation": {
             "title": "Simulation",
             "text1": "Adjust the min/max ranges of each AUTO type and add to the Semantic Type schemas. Changes persisted to state. Devices must be restarted",
+            "error_load": "Simulation data cannot be loaded",
+            "error_save": "Simulation data cannot be saved",
             "configuration_label": "Configuration",
             "reset_label": "Reset simulation",
             "reset_title": "Stops all devices, resets the engine and applies the new simulation changes",

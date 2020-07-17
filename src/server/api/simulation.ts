@@ -18,9 +18,9 @@ export default function (deviceStore, simulationStore) {
         try {
             let payload = req.body;
             deviceStore.stopAll();
-            simulationStore.set(JSON.parse(payload.simulation));
-            let d = JSON.parse(JSON.stringify(deviceStore.getListOfItems()));
-            deviceStore.createFromArray(d);
+            simulationStore.set(payload.simulation);
+            let devices = Object.assign({}, deviceStore.getListOfItems());
+            deviceStore.createFromArray(devices);
             res.json(deviceStore.getListOfItems());
             res.end();
         }

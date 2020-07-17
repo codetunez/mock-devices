@@ -9,6 +9,7 @@ import { Combo, Json } from '../ui/controls';
 import axios from 'axios';
 import Toggle from 'react-toggle';
 import { DeviceContext } from '../context/deviceContext';
+import { RESX } from '../strings';
 
 const initialState = {
     _kind: '',
@@ -230,7 +231,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                 <div className='form-group'>
                                     <label>DPS blob payload</label>
                                     <div className='form-group'>
-                                        <Json json={state.dpsPayload} cb={(text: any) => { updateJson(text, 'dpsPayload') }} err={() => setError('JSON error')} />
+                                        <Json json={state.dpsPayload} cb={(text: any) => { updateJson(text, 'dpsPayload') }} err={() => setError(RESX.modal.error_json)} />
                                     </div>
                                 </div>
                             </div>
@@ -289,7 +290,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             </div>
 
                             <div className='form-group' style={{ height: "calc(100% - 160px)" }}>
-                                <Json json={state.capabilityModel} cb={(text: any) => { updateJson(text, 'capabilityModel') }} err={() => setError('JSON error')} />
+                                <Json json={state.capabilityModel} cb={(text: any) => { updateJson(text, 'capabilityModel') }} err={() => setError(RESX.modal.error_json)} />
                             </div>
 
                         </div>
@@ -333,7 +334,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <div className='m-tabbed-panel-form'>
                             <div className='form-group'><label>Copy/Paste the State's JSON</label></div>
                             <div className='form-group' style={{ height: "calc(100% - 60px)" }}>
-                                <Json json={state.machineStateClipboard} cb={(text: any) => { updateJson(text, 'machineStateClipboard') }} err={() => setError('JSON error')} />
+                                <Json json={state.machineStateClipboard} cb={(text: any) => { updateJson(text, 'machineStateClipboard') }} err={() => setError(RESX.modal.error_json)} />
                             </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
