@@ -26,7 +26,7 @@ export const SelectorCard: React.FunctionComponent<any> = ({ exp, index, active,
           <h4>{device.configuration.mockDeviceName || ''}</h4>
           {device.configuration._kind === 'template' ?
             <div className='selector-card-spinner'>
-              <i className={classNames('fa fa-ban fa-2x fa-fw')}></i>
+              <i className={classNames('fa fa-pencil-alt fa-2x fa-fw')}></i>
             </div>
             :
             <>
@@ -37,13 +37,13 @@ export const SelectorCard: React.FunctionComponent<any> = ({ exp, index, active,
               <div className={'control control-' + isRunning}>{isRunning}</div>
             </>
           }
-          <strong>{device.configuration._kind || ''} / {device.configuration.pnpSdk ? 'pnp' : 'current'}</strong>
+          <strong>{device.configuration._kind || ''}</strong>
         </div>
         :
         <div className='selector-card-mini'>
           <div>
             {device.configuration._kind === 'template' ?
-              <i className={classNames('fa fa-ban fa-sm fa-fw')}></i> :
+              <i className={classNames('fa fa-pencil-alt fa-sm fa-fw')}></i> :
               <i className={cx('fas fa-spinner fa-sm fa-fw', { 'fa-pulse': isRunning != OFF })} ></i>
             }
             <h5>{device.configuration.mockDeviceName || ''}</h5>
