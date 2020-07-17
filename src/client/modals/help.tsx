@@ -213,19 +213,17 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
             </div>
 
             <div className='help-row'>
-                <h4>Settings (IoT Central)</h4>
-                <p>Settings are a matched pair of desired and reported capabilities where the report has a well defined Complex payload
-                and the desired is required to send an ack back in a given format. See IoT Central documentation for more details.
+                <h4>Settings (IoT Central posy July 15th 2020 and DTDLv2)</h4>
+                <p>Settings are a matched pair of desired and reported capabilities where the reported has a well defined payload
+                and the desired is required to send an ack back in a given format.
                 </p>
-
                 <p>Required JSON payload for reported Setting</p>
                 <pre>
                     {JSON.stringify({
-                        'value': 'AUTO_INTEGER',
-                        'status': 'completed',
-                        'message': 'test message',
-                        'statusCode': 200,
-                        'desiredVersion': 1
+                        'value': 'DESIRED_VALUE',
+                        'ac': 200,
+                        'ad': 'completed',
+                        'av': 'DESIRED_VERSION'
                     }, null, 2)}
                 </pre>
             </div>

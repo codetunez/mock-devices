@@ -35,7 +35,8 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
     const [panel, setPanel] = React.useState(0);
     const [state, setPayload] = React.useState(initialState);
     const [merge, setMerge] = React.useState(false);
-    const [jsons, setJsons] = React.useState<any>({})
+    const [jsons, setJsons] = React.useState<any>({});
+    const [error, setError] = React.useState<any>('');
 
     React.useEffect(() => {
         let list = [];
@@ -61,23 +62,20 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
         for (const j in jsons) {
             state[j] = jsons[j]
         }
-        axios.post('/api/device/new', state).then(res => {
-            deviceContext.setDevices(res.data);
-            handler(false);
-        })
+        axios.post('/api/device/new', state)
+            .then(res => {
+                deviceContext.setDevices(res.data);
+                handler(false);
+            })
+            .catch((err) => {
+                setError('The device cannot be added. Check values or possible dupe');
+            })
     }
 
     const toggleMasterKey = () => {
         setPayload({
             ...state,
             isMasterKey: !state.isMasterKey
-        });
-    }
-
-    const togglePnpSdk = () => {
-        setPayload({
-            ...state,
-            pnpSdk: !state.pnpSdk
         });
     }
 
@@ -138,6 +136,9 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             deviceContext.refreshAllDevices();
                             handler(false);
                         })
+                        .catch((err) => {
+                            setError('Data cannot be loaded. Check file format or version mismatch');
+                        })
                 } else {
                     setPayload({
                         ...state,
@@ -149,25 +150,31 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
     const updateJson = (text: any, type: string) => {
         setJsons({ ...jsons, [type]: text });
+        setError('')
     }
 
     /* State Machine */
 
     const updateCurrentState = (nextState) => {
-        for (const j in jsons) {
-            state[j] = jsons[j]
+        if (error === '') {
+            axios.post('/api/state/' + (merge ? 'merge' : ''), jsons[nextState])
+                .then(() => {
+                    deviceContext.refreshAllDevices();
+                    handler(false);
+                })
+                .catch((err) => {
+                    setError('State cannot be updated. Format is not valid');
+                })
         }
-        axios.post('/api/state/' + (merge ? 'merge' : ''), state[nextState])
-            .then(() => {
-                deviceContext.refreshAllDevices();
-                handler(false);
-            })
     }
 
     const saveToDisk = () => {
         axios.post('/api/saveDialog', state.machineStateClipboard, { headers: { 'Content-Type': 'application/json' } })
             .then(() => {
                 handler(false);
+            })
+            .catch((err) => {
+                setError('File did not save');
             })
     }
 
@@ -187,10 +194,9 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <button onClick={() => setPanel(4)} className={cx('btn btn-outline-primary', panel === 4 ? 'active' : '')}>Load/Save from file system</button><br />
                         <button onClick={() => setPanel(5)} className={cx('btn btn-outline-primary', panel === 5 ? 'active' : '')}>Editor</button><br />
                     </div>
-                    {/* <div className='form-group' >
-                        <label>Use PnP SDK</label>
-                        <div><Toggle name='pnpSdk' checked={state.pnpSdk} defaultChecked={false} onChange={() => { togglePnpSdk() }} /></div>
-                    </div> */}
+                    <div className='form-group'>
+                        <span className='error'>{error}</span>
+                    </div>
                 </div>
 
                 <div className='m-tabbed-panel'>
@@ -224,7 +230,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                 <div className='form-group'>
                                     <label>DPS blob payload</label>
                                     <div className='form-group'>
-                                        <Json json={state.dpsPayload} cb={(text: any) => { updateJson(text, 'dpsPayload') }} />
+                                        <Json json={state.dpsPayload} cb={(text: any) => { updateJson(text, 'dpsPayload') }} err={() => setError('JSON error')} />
                                     </div>
                                 </div>
                             </div>
@@ -283,7 +289,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             </div>
 
                             <div className='form-group' style={{ height: "calc(100% - 160px)" }}>
-                                <Json json={state.capabilityModel} cb={(text: any) => { updateJson(text, 'capabilityModel') }} />
+                                <Json json={state.capabilityModel} cb={(text: any) => { updateJson(text, 'capabilityModel') }} err={() => setError('JSON error')} />
                             </div>
 
                         </div>
@@ -327,7 +333,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <div className='m-tabbed-panel-form'>
                             <div className='form-group'><label>Copy/Paste the State's JSON</label></div>
                             <div className='form-group' style={{ height: "calc(100% - 60px)" }}>
-                                <Json json={state.machineStateClipboard} cb={(text: any) => { updateJson(text, 'machineStateClipboard') }} />
+                                <Json json={state.machineStateClipboard} cb={(text: any) => { updateJson(text, 'machineStateClipboard') }} err={() => setError('JSON error')} />
                             </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>

@@ -10,13 +10,19 @@ export const Combo: React.FunctionComponent<any> = ({ name, value, items, cls, o
     </select>
 }
 
-export const Json: React.FunctionComponent<any> = ({ json, cb }) => {
+export const Json: React.FunctionComponent<any> = ({ json, cb, err }) => {
 
     let editor = null;
     const [payload, setPayload] = React.useState(json || {})
 
     const callback = () => {
-        cb(this.editor.get());
+        let text = '';
+        try {
+            text = this.editor.get()
+            cb(text);
+        } catch {
+            err();
+        }
     }
 
     const options = {

@@ -3,6 +3,7 @@ import * as React from 'react';
 var classNames = require('classnames');
 const cx = classNames.bind(require('./console.scss'));
 const cxM = classNames.bind(require('./modal.scss'));
+import { RESX } from '../strings';
 
 export const Console: React.FunctionComponent<any> = ({ lines, index, handler }) => {
 
@@ -46,7 +47,7 @@ export const Console: React.FunctionComponent<any> = ({ lines, index, handler })
             <div className='console-buttons'>
                 <a onClick={() => next()}><span className={cx('fas', 'fa-chevron-left')}></span></a>
                 <a onClick={() => prev()}><span className={cx('fas', 'fa-chevron-right')}></span></a>
-                <div>Event {lines.length - messages.index} of {messages.lines.length}</div>
+                <div>{RESX.modal.console.text1[0]} {lines.length - messages.index} {RESX.modal.console.text1[1]} {messages.lines.length}</div>
             </div>
             <div className='console-window'>
                 <div className='console-message'>{display()}</div>

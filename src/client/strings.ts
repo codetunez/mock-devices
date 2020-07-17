@@ -24,6 +24,23 @@ export const RESX = {
             "template_title": "Select this template",
         }
     },
+    "modal": {
+        "console": {
+            "text1": ["From", "of"]
+        },
+        "edit": {
+            "title": "Update this mock device's configuration. Bad settings will destabilize the app",
+            "update_label": "Update",
+            "update_title": "Stops the devices. Requires restart for new setting to take effect",
+        },
+        "simulation": {
+            "title": "Simulation",
+            "text1": "Adjust the min/max ranges of each AUTO type and add to the Semantic Type schemas. Changes persisted to state. Devices must be restarted",
+            "configuration_label": "Configuration",
+            "reset_label": "Reset simulation",
+            "reset_title": "Stops all devices, resets the engine and applies the new simulation changes",
+        },
+    },
     "device": {
         "empty": "Use + to add new capabilities such as sending telemetry or reporting/receiving twin data. Methods can be configured to send back a payload. Plan mode is disabled until capabilities are added",
         "toolbar": {
