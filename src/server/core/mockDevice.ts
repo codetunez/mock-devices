@@ -17,7 +17,6 @@ import { MessageService } from '../interfaces/messageService';
 import * as request from 'request';
 import * as rw from 'random-words';
 import * as Crypto from 'crypto';
-import { DeviceStore } from '../store/deviceStore';
 import * as _ from 'lodash';
 
 import { PnpInterface } from './pnpInterface';
@@ -82,7 +81,6 @@ export class MockDevice {
     private simulationStore = new SimulationStore();
     private ranges: any = {};
     private geo: any = {};
-    private macros: any = {};
 
     // device is not mutable
     private connectionDPSTimer = null;
@@ -118,14 +116,14 @@ export class MockDevice {
 
     private registrationConnectionString: string = null;
 
-    private deviceStore: DeviceStore = null;
-
     private pnpInterfaces = {};
     private pnpInterfaceCache = {};
 
     private planModeLastEventTime = 0;
 
     private dpsRetires: number = 10;
+
+    private delayStartTimer = null;
 
     private resolversCollection = {
         desiredToId: {},
@@ -136,32 +134,10 @@ export class MockDevice {
         directMethodIndex: {}
     }
 
-    constructor(device, messageService: MessageService, deviceStore: DeviceStore) {
-        this.updateDevice(device);
+    constructor(device, messageService: MessageService) {
+
         this.messageService = messageService;
-        this.deviceStore = deviceStore;
-        this.ranges = this.simulationStore.get()['ranges'];
-        this.geo = this.simulationStore.get()['geo'];
-        this.macros = this.simulationStore.get()['macros'];
-
-        const simulation = this.simulationStore.get()['simulation'];
-        const commands = this.simulationStore.get()['commands'];
-
-
-        this.CMD_REBOOT = commands['reboot'];
-        this.CMD_FIRMWARE = commands['firmware'];
-        this.CMD_SHUTDOWN = commands['shutdown'];
-
-        this.FIRMWARE_LOOP = simulation['firmware'];
-        this.CONNECT_POLL = simulation['connect'];
-
-        // v5 - Random restarts
-        const { min, max } = simulation['restart'];
-
-        this.RESTART_LOOP = (Utils.getRandomNumberBetweenRange(min, max, true) * 3600000);
-        this.sasTokenExpiry = this.getSecondsFromHours(simulation['sasExpire']);
-
-        this.buildIndexes(device);
+        this.initialize(device);
     }
 
     getRunning() {
@@ -173,24 +149,36 @@ export class MockDevice {
         return Math.ceil(raw);
     }
 
-    buildIndexes(device: Device) {
-        // build indexes
-        device.comms.forEach((comm, index) => {
-            this.resolversCollection.deviceCommsIndex[comm._id] = index;
-            if (comm._type === 'property' && comm.sdk === 'twin' && comm.type.direction === 'c2d') {
-                this.resolversCollection.desiredToId[comm.name] = comm._id;
-                this.resolversCollection.desiredToIndex[comm.name] = index;
-            }
-            if (comm._type === 'method') {
-                this.resolversCollection.methodToId[comm.name] = comm._id;
-                if (comm.execution === 'cloud') {
-                    this.resolversCollection.c2dIndex[comm.name] = index;
-                }
-                if (comm.execution === 'direct') {
-                    this.resolversCollection.directMethodIndex[comm.name] = index;
-                }
-            }
-        })
+
+    initialize(device) {
+        this.ranges = this.simulationStore.get()['ranges'];
+        this.geo = this.simulationStore.get()['geo'];
+
+        const commands = this.simulationStore.get()['commands'];
+        this.CMD_REBOOT = commands['reboot'];
+        this.CMD_FIRMWARE = commands['firmware'];
+        this.CMD_SHUTDOWN = commands['shutdown'];
+
+        const simulation = this.simulationStore.get()['simulation'];
+        this.FIRMWARE_LOOP = simulation['firmware'];
+        this.CONNECT_POLL = simulation['connect'];
+        const { min, max } = simulation['restart'];
+
+        this.RESTART_LOOP = (Utils.getRandomNumberBetweenRange(min, max, true) * 3600000);
+        this.sasTokenExpiry = this.getSecondsFromHours(simulation['sasExpire']);
+
+        this.updateDevice(device);
+    }
+
+    // Start of device setup and update code
+
+    updateDevice(device: Device) {
+        if (this.device != null && this.device.configuration.connectionString != device.configuration.connectionString) {
+            this.log('DEVICE UPDATE ERROR. CONNECTION STRING HAS CHANGED. DELETE DEVICE', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
+        } else {
+            this.device = Object.assign({}, device);
+            this.reconfigDeviceDynamically();
+        }
     }
 
     reconfigDeviceDynamically() {
@@ -216,7 +204,7 @@ export class MockDevice {
         this.msgRLReportedTimers = [];
         this.msgRLMockSensorTimers = {};
 
-        this.buildIndexes(this.device);
+        this.buildIndexes();
 
         // for PM we are only interested in the list. the rest has been defined in IM mode
         if (this.device.configuration.planMode) {
@@ -318,16 +306,27 @@ export class MockDevice {
         }
     }
 
-    updateDevice(device: Device) {
-        if (this.device != null && this.device.configuration.connectionString != device.configuration.connectionString) {
-            this.log('DEVICE UPDATE ERROR. CONNECTION STRING HAS CHANGED. DELETE DEVICE', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
-        } else {
-            this.device = JSON.parse(JSON.stringify(device));
-            this.reconfigDeviceDynamically();
-        }
+    buildIndexes() {
+        this.device.comms.forEach((comm, index) => {
+            this.resolversCollection.deviceCommsIndex[comm._id] = index;
+            if (comm._type === 'property' && comm.sdk === 'twin' && comm.type.direction === 'c2d') {
+                this.resolversCollection.desiredToId[comm.name] = comm._id;
+                this.resolversCollection.desiredToIndex[comm.name] = index;
+            }
+            if (comm._type === 'method') {
+                this.resolversCollection.methodToId[comm.name] = comm._id;
+                if (comm.execution === 'cloud') {
+                    this.resolversCollection.c2dIndex[comm.name] = index;
+                }
+                if (comm.execution === 'direct') {
+                    this.resolversCollection.directMethodIndex[comm.name] = index;
+                }
+            }
+        })
     }
 
-    // is this safe?
+    // End of device setup and update code
+
     updateTwin(payload: ValueByIdPayload) {
         this.twinRLPayloadAdditions = payload;
     }
@@ -350,39 +349,37 @@ export class MockDevice {
 
         if (methodName === this.CMD_SHUTDOWN) {
             this.log('DEVICE METHOD SHUTDOWN ... STOPPING IMMEDIATELY', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
-            this.deviceStore.stopDevice(this.device);
+            this.stop();
             return;
         }
 
         if (methodName === this.CMD_REBOOT) {
             this.log('DEVICE METHOD REBOOT ... RESTARTING IMMEDIATELY', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
-            this.deviceStore.stopDevice(this.device);
-            this.deviceStore.startDevice(this.device);
-            this.reconfigDeviceDynamically();
+            this.stop();
+            this.start(undefined);
             return;
         }
 
         if (methodName === this.CMD_FIRMWARE) {
             this.log(`DEVICE METHOD FIRMWARE ... RESTARTING IN ${this.FIRMWARE_LOOP / 1000} SECONDS`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
-            this.deviceStore.stopDevice(this.device);
+            this.stop();
             setTimeout(() => {
-                this.deviceStore.startDevice(this.device);
-                this.reconfigDeviceDynamically();
+                this.start(undefined);
             }, this.FIRMWARE_LOOP)
         }
     }
 
     /// starts a device
-    start(delay?: number) {
+    start(delay) {
         if (this.device.configuration._kind === 'template') { return; }
-        if (this.running) { return; }
+        if (this.delayStartTimer || this.running) { return; }
 
         if (delay) {
             this.log(`DEVICE DELAYED START SECONDS: ${delay / 1000}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
             this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.DELAY);
-            setTimeout(() => {
+            this.delayStartTimer = setTimeout(() => {
                 this.startDevice();
-            }, delay / 1000)
+            }, delay)
         } else {
             this.startDevice();
         }
@@ -408,7 +405,7 @@ export class MockDevice {
 
                 if (this.dpsRetires === 0) {
                     clearInterval(this.connectionDPSTimer);
-                    this.end();
+                    this.stop();
                     return;
                 }
 
@@ -438,15 +435,44 @@ export class MockDevice {
         }, this.RESTART_LOOP)
     }
 
-    end() {
-        if (!this.running) { return; }
-
-        this.dpsRetires = 0;
-        this.log('DEVICE IS SWITCHED OFF', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+    stop() {
+        if (this.delayStartTimer) {
+            clearTimeout(this.delayStartTimer);
+            this.delayStartTimer = null;
+            this.log(`DEVICE DELAYED START CANCELED`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+            this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
+        } else {
+            if (!this.running) { return; }
+            this.log('DEVICE IS SWITCHED OFF', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+        }        
         this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
+        this.final();
+    }
+
+    final() {
+        this.dpsRetires = 0;
         clearInterval(this.connectionTimer);
         this.cleanUp();
     }
+
+    cleanUp() {
+        clearInterval(this.twinRLTimer);
+        clearInterval(this.msgRLTimer);
+        clearInterval(this.methodRLTimer);
+
+        try {
+            if (this.iotHubDevice && this.iotHubDevice.client) {
+                this.iotHubDevice.client.removeAllListeners();
+                this.iotHubDevice.client.close();
+                this.iotHubDevice.client = null;
+            }
+        } catch (err) {
+            this.log(`TEAR DOWN OPEN ERROR: ${err.message}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+        } finally {
+            this.running = false;
+        }
+    }
+
 
     mainLoop() {
         if (!this.running) { return; }
@@ -696,24 +722,6 @@ export class MockDevice {
 
                 })
             });
-        }
-    }
-
-    cleanUp() {
-        clearInterval(this.twinRLTimer);
-        clearInterval(this.msgRLTimer);
-        clearInterval(this.methodRLTimer);
-
-        try {
-            if (this.iotHubDevice.client) {
-                this.iotHubDevice.client.removeAllListeners();
-                this.iotHubDevice.client.close();
-                this.iotHubDevice.client = null;
-            }
-        } catch (err) {
-            this.log(`TEAR DOWN OPEN ERROR: ${err.message}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
-        } finally {
-            this.running = false;
         }
     }
 

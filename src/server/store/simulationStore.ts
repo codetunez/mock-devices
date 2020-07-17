@@ -71,10 +71,10 @@ export class SimulationStore {
             "firmware": 30000,
             "connect": 5000,
             "restart": {
-                min: 5,
-                max: 10
+                min: 8,
+                max: 16
             },
-            "sasExpire": 72,
+            "sasExpire": 168,
             "dpsRetires": 10
         },
         "commands": {
