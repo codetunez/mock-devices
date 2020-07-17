@@ -7,7 +7,6 @@ import { Nav } from '../nav/nav'
 import { Modal } from '../modals/modal';
 import { Selector } from '../selector/selector';
 import { Device } from '../device/device';
-import { AppContext } from '../context/appContext';
 
 import { Console } from '../modals/console';
 import { RESX } from '../strings';
@@ -58,8 +57,6 @@ const reducer = (state: State, action: Action) => {
 }
 
 export const Shell: React.FunctionComponent = () => {
-
-  const appContext: any = React.useContext(AppContext);
 
   const [state, dispatch] = React.useReducer(reducer, { data: { lines: [], dialogIndex: -1, dialogLines: [] }, dialog: { showDialog: false } });
   const [paused, setPause] = React.useState(false);

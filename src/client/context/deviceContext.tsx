@@ -29,20 +29,23 @@ export class DeviceProvider extends React.PureComponent {
     }
 
     refreshAllDevices = () => {
-        this.getDevices();
+        axios.get('/api/devices')
+            .then((response: any) => {
+                this.setState({ devices: response.data });
+            })
     }
 
     startAllDevices = () => {
         axios.get('/api/devices/start')
             .then((response: any) => {
-                this.setState({ devices: response.data, device: {} });
+                this.setState({ devices: response.data });
             })
     }
 
     stopAllDevices = () => {
         axios.get('/api/devices/stop')
             .then((response: any) => {
-                this.setState({ devices: response.data, device: {} });
+                this.setState({ devices: response.data });
             })
     }
 
@@ -51,18 +54,6 @@ export class DeviceProvider extends React.PureComponent {
             .then((response: any) => {
                 this.setState({ devices: response.data, device: {} });
             })
-    }
-
-    // group data plane
-    getDevices = () => {
-        const id = this.state.device ? `/${this.state.device._id}` : ''
-        axios.get(`/api/devices${id}`).then((response: any) => {
-            let p = {};
-            if (response.data.device) {
-                Object.assign(p, { [response.data.device._id]: response.data.device.running })
-            }
-            this.setState({ powers: p, devices: response.data.devices });
-        })
     }
 
     // single device control plane
@@ -183,7 +174,6 @@ export class DeviceProvider extends React.PureComponent {
         device: {},
         devices: [],
         requests: {},
-        powers: {},
         startAllDevices: this.startAllDevices,
         stopAllDevices: this.stopAllDevices,
         refreshAllDevices: this.refreshAllDevices,
@@ -196,7 +186,6 @@ export class DeviceProvider extends React.PureComponent {
         updateDeviceMethod: this.updateDeviceMethod,
         setDevices: this.setDevices,
         setDevice: this.setDevice,
-        getDevices: this.getDevices,
         getCapability: this.getCapability,
         createCapability: this.createCapability,
         deleteCapability: this.deleteCapability,

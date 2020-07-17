@@ -11,16 +11,13 @@ export class ServerSideMessageService implements MessageService {
 
     private messageIdCount = 1;
 
-    constructor() {
-    }
-
     end(type: string) {
         clearInterval(this.timers[type]);
     }
 
     endAll() {
         for (const timer in this.timers) {
-            clearInterval(this.timers[timer])
+            this.end(this.timers[timer]);
         }
     }
 
@@ -48,11 +45,8 @@ export class ServerSideMessageService implements MessageService {
         this.timers['messageLoop'] = setInterval(() => {
             if (this.eventMessage.length > 0) {
                 let msg = `id: ${this.messageIdCount}\n`
-                for (const event of this.eventMessage) {
-                    msg = msg + `data: ${event}\n`
-                }
-                msg += `\n`;
-                res.write(msg);
+                for (const event of this.eventMessage) { msg = msg + `data: ${event}\n`; }
+                res.write(msg + `\n`);
                 this.eventMessage = [];
                 this.messageIdCount++
             }

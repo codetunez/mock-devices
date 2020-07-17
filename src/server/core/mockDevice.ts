@@ -379,7 +379,10 @@ export class MockDevice {
             this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.DELAY);
             this.delayStartTimer = setTimeout(() => {
                 this.startDevice();
-            }, delay)
+                setTimeout(() => {
+                    this.delayStartTimer = null;
+                }, 100);
+            }, delay);
         } else {
             this.startDevice();
         }
@@ -444,7 +447,7 @@ export class MockDevice {
         } else {
             if (!this.running) { return; }
             this.log('DEVICE IS SWITCHED OFF', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
-        }        
+        }
         this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
         this.final();
     }
