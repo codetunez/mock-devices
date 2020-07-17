@@ -4,6 +4,8 @@ export const RESX = {
     },
     "core": {
         "templateNoSupport": "This is not supported for templates. Create a mock device from this template to use this feature",
+        "deviceL": "device",
+        "deviceU": "Device"
     },
     "nav": {
         "help": "Find out how to use mock-devices",

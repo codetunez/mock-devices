@@ -479,45 +479,8 @@ export class MockDevice {
 
     mainLoop() {
         if (!this.running) { return; }
-
-        // if (this.device.configuration.pnpSdk) {
-        //     this.pnpMainLoop();
-        // } else {
         this.legacyMainLoop();
-        // }
     }
-
-    // async pnpMainLoop() {
-    //     try {
-    //         this.log('IOT HUB CLIENT CONNECTED VIA DIGITALTWIN SDK', LOGGING_TAGS.CTRL.DGT, LOGGING_TAGS.LOG.OPS);
-
-    //         if (this.device.configuration.planMode) {
-    //             this.log('PLAN MODE CURRENTLY NOT SUPPORTED FOR DIGITALTWIN SDK', LOGGING_TAGS.CTRL.DGT, LOGGING_TAGS.LOG.OPS);
-    //             return;
-    //         }
-
-    //         // reported properties are cleared every runloop cycle
-    //         this.twinRLTimer = setInterval(() => {
-
-    //             let payload: ValueByIdPayload = <ValueByIdPayload>this.calcPropertyValues(this.twinRLProps, this.twinRLReportedTimers, this.twinRLMockSensorTimers, this.twinRLPropsPlanValues);
-    //             this.messageService.sendAsLiveUpdate(this.device._id, payload);
-    //             this.runloopTwin(this.twinRLPayloadAdditions, payload);
-    //             this.twinRLPayloadAdditions = <ValueByIdPayload>{};
-    //         }, 1000);
-
-    //         this.msgRLTimer = setInterval(() => {
-
-    //             let payload: ValueByIdPayload = <ValueByIdPayload>this.calcPropertyValues(this.msgRLProps, this.msgRLReportedTimers, this.msgRLMockSensorTimers, this.msgRLPropsPlanValues);
-    //             this.messageService.sendAsLiveUpdate(this.device._id, payload);
-
-    //             this.runloopMsg(this.msgRLPayloadAdditions, payload);
-    //             this.msgRLPayloadAdditions = <ValueByIdPayload>{};
-    //         }, 1000);
-
-    //     } catch (err) {
-    //         this.log(`DIGITALTWIN SDK OPEN ERROR: ${err.message}`, LOGGING_TAGS.CTRL.DGT, LOGGING_TAGS.LOG.OPS);
-    //     }
-    // }
 
     legacyMainLoop() {
         try {
@@ -525,7 +488,7 @@ export class MockDevice {
                 this.registerDirectMethods();
                 this.regsisterC2D();
 
-                this.log('IOT HUB CLIENT CONNECTED VIA CURRENT SDK', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+                this.log('IOT HUB CLIENT CONNECTED', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
                 this.log(this.device.configuration.planMode ? 'PLAN MODE' : 'INTERACTIVE MODE', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
                 this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.CONNECTED);
 
@@ -617,9 +580,11 @@ export class MockDevice {
             })
         }
         catch (err) {
-            this.log(`CURRENT SDK OPEN ERROR: ${err.message}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+            this.log(`SDK OPEN ERROR (CHECK CONN STRING): ${err.message}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
             this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.ERROR);
-
+            setTimeout(() => {
+                this.stop();
+            }, 5000);
         }
     }
 
@@ -1117,24 +1082,4 @@ export class MockDevice {
     logCP(type, operation, event) {
         this.messageService.sendAsControlPlane({ [this.device._id]: [type, operation, event] });
     }
-
-    // // handler - PoC
-    // pnpPropertyUpdateHandler(interfaceInstance, propertyName, reportedValue, desiredValue, version) {
-    //     console.log('Received an update for ' + propertyName + ': ' + JSON.stringify(desiredValue));
-    //     interfaceInstance[propertyName].report(desiredValue, {
-    //         code: 200,
-    //         description: 'helpful descriptive text',
-    //         version: version
-    //     })
-    //         .then(() => console.log('updated the property'))
-    //         .catch(() => console.log('failed to update the property'));
-    // };
-
-    // // handler - PoC
-    // pnpCommandHandler(request, response) {
-    //     console.log('received command: ' + request.commandName + ' for interfaceInstance: ' + request.interfaceInstanceName);
-    //     response.acknowledge(200, 'helpful response text')
-    //         .then(() => console.log('acknowledgement succeeded.'))
-    //         .catch(() => console.log('acknowledgement failed'));
-    // }
 } 

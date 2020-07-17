@@ -37,7 +37,7 @@ export const SelectorCard: React.FunctionComponent<any> = ({ exp, index, active,
               <div className={'control control-' + isRunning}>{isRunning}</div>
             </>
           }
-          <strong>{device.configuration._kind || ''}</strong>
+          <strong>{device.configuration._kind || ''} {device.configuration._kind === 'template' ? '' : RESX.core.deviceL}</strong>
         </div>
         :
         <div className='selector-card-mini'>
