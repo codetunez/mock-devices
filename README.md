@@ -22,8 +22,9 @@ Help is available inside the application
 
 #### v5.5 Updates
 - Updated [device SDK](https://www.npmjs.com/package/azure-iot-device) to 1.17.0
-- Send capability responses for commands and desired properties
+- Acks for C2D commands and desired properties
 - Removed digital-twins support
+- New UX for device connected status
 
 ## Features
 - Host up to 1,000 mock devices
