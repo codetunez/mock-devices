@@ -66,7 +66,6 @@ class Server {
                 'Cache-Control': 'no-cache'
             });
             res.write('\n');
-            res.flush();
 
             const dynamicName = `${req.params.type}Loop`;
 
