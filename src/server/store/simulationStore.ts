@@ -58,11 +58,14 @@ export class SimulationStore {
             "Default": "#333333",
             "Color1": "#3a1e1e",
             "Color2": "#383a1e",
-            "Color3": "#1e3a36",
+            "Color3": "#035000",
             "Color4": "#1e233a",
-            "Color5": "#3a1e29",
-            "Color6": "#3e3136",
-            "Color7": "#4c4c4c"
+            "Color5": "#581984",
+            "Color6": "#006cb3",
+            "Color7": "#797979",
+            "Color8": "#774b00",
+            "Color9": "#8e234c",
+            "Color10": "#000"
         },
         "simulation": {
             "firmware": 30000,

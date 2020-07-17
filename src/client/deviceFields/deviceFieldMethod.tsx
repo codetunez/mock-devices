@@ -130,6 +130,11 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
         snippets.push(<div onClick={() => snippetsHandler(code)}>{snippet}</div>);
     }
 
+    let colors = [];
+    for (const color in appContext.colors) {
+        colors.push({ name: color, value: appContext.colors[color] })
+    }
+
     const snippetsHandler = (code: any) => {
         dispatch({ type: 'update-capability', payload: { name: 'payload', value: JSON.stringify(code, null, 2) } });
     }
@@ -232,7 +237,7 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
         </div>
 
         {!state.data.asProperty ? null :
-            < div className='df-card-row'>
+            <div className='df-card-row'>
                 <div><label></label><div></div></div>
                 <div><label title={RESX.device.card.method.property_report_title}>{RESX.device.card.method.property_report_label}</label>
                     <div>
@@ -241,6 +246,15 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
                 </div>
             </div>
         }
+
+        <div className='df-card-row'>
+            <div><label>{RESX.device.card.UX}</label></div>
+            <div><label title={RESX.device.card.color_title}>{RESX.device.card.color_label}</label>
+                <div>
+                    <Combo items={colors} cls='full-width' name='color' onChange={updateField} value={state.data.color} />
+                </div>
+            </div>
+        </div>
 
     </div >
 }

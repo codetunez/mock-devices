@@ -9,16 +9,18 @@ export class ServerSideMessageService implements MessageService {
     private timers = {};
     private compose: boolean = false;
 
+    private messageIdCount = 1;
+
     constructor() {
     }
 
     end(type: string) {
-        this.timers[type] = null;
+        clearInterval(this.timers[type]);
     }
 
     endAll() {
         for (const timer in this.timers) {
-            this.timers[timer] = null;
+            clearInterval(this.timers[timer])
         }
     }
 
@@ -43,32 +45,35 @@ export class ServerSideMessageService implements MessageService {
     }
 
     messageLoop = (res) => {
-        if (this.timers['messageLoop'] != null) { return; }
         this.timers['messageLoop'] = setInterval(() => {
             if (this.eventMessage.length > 0) {
-                res.write(`data: ${JSON.stringify(this.eventMessage)}\n\n`);
+                let msg = `id: ${this.messageIdCount}\n`
+                for (const event of this.eventMessage) {
+                    msg = msg + `data: ${event}\n`
+                }
+                msg += `\n`;
+                res.write(msg);
                 this.eventMessage = [];
+                this.messageIdCount++
             }
-        }, 250)
+        }, 255)
     }
 
     controlLoop = (res) => {
-        if (this.timers['controlLoop'] != null) { return; }
         this.timers['controlLoop'] = setInterval(() => {
             if (Object.keys(this.eventControl).length > 0) {
-                res.write(`data: ${JSON.stringify(this.eventControl)}\n\n`);
+                res.write(`data: ${JSON.stringify(this.eventControl)} \n\n`);
             }
-        }, 2345)
+        }, 995)
     }
 
     dataLoop = (res) => {
-        if (this.timers['dataLoop'] != null) { return; }
         this.timers['dataLoop'] = setInterval(() => {
             if (Object.keys(this.eventData).length > 0) {
-                res.write(`data: ${JSON.stringify(this.eventData)}\n\n`);
+                res.write(`data: ${JSON.stringify(this.eventData)} \n\n`);
                 this.eventData = {};
             }
-        }, 823)
+        }, 1525)
     }
 
 }

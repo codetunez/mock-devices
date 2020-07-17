@@ -62,7 +62,13 @@
   padding: $sm-gutter;
   display: flex;
   align-items: center;
-  overflow: hidden;
+  justify-content: space-between;
+  
+  div:first-child {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
 
   h5 {
     margin: 0;
@@ -71,4 +77,30 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+}
+
+.control {
+  font-size: 0.8rem;
+  padding: 0 $xs-gutter;
+}
+.control-ON {
+  color: $app-clr-blue-1;
+}
+.control-OFF {
+  color: $app-clr-4;
+}
+.control-INIT {
+  color: $app-clr-blue-2;
+}
+.control-SUCCESS {
+  color: $app-clr-green-1;
+}
+.control-CONNECTED {
+  color: $app-clr-green-2;
+}
+.control-TRYING {
+  color: $app-clr-orange-1;
+}
+.control-ERROR {
+  color: $app-clr-red-1;
 }

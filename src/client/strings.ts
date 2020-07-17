@@ -51,6 +51,7 @@ export const RESX = {
             "delete_title": "Delete this device or template including all its capabilities. Ensure you have saved your state first",
         },
         "card": {
+            "UX": "UX",
             "save_label": "Save",
             "save_title": "Save changes to this capability",
             "delete_label": "Delete",
@@ -63,6 +64,8 @@ export const RESX = {
             "read_param_title": "Read the last known set of parameters sent for this method capability",
             "waiting_placeholder": "Waiting ...",
             "save_pre_error": "Select or remove a sensor to update this property",
+            "color_title": "Pick a color for this capability in mock-devices",
+            "color_label": "Color",
             "toggle": {
                 "enabled_label": "Enabled",
                 "enabled_title": "Enable this capability in the simulation (always enabled)",
@@ -147,7 +150,7 @@ export const RESX = {
                 "property_version_title": "Ignore the current capability's configuration and use a custom value",
                 "property_convention_label": "Use convention",
                 "property_convention_title": "Will treat data as objects and merge desired received into reported payload. Then it will replace any AUTO/RECEIVE macros",
-                "property_version_payload_label": "Value (can be JSON)",                
+                "property_version_payload_label": "Value (can be JSON)",
                 "property_version_payload_title": "See Help for full ist of AUTO macros available",
             }
         },

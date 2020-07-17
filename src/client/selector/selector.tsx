@@ -10,6 +10,16 @@ export const Selector: React.FunctionComponent = () => {
 
   const deviceContext: any = React.useContext(DeviceContext);
   const [expand, setExpand] = React.useState(true);
+  const [deviceControl, setDevices] = React.useState({});
+
+  let eventSource = null;
+
+  React.useEffect(() => {
+    eventSource = new EventSource('/api/events/control')
+    eventSource.onmessage = ((e) => {
+      setDevices(JSON.parse(e.data));
+    });
+  }, []);
 
   return <div className='selector-container '>
     <div className='selector-container-header'>
@@ -20,7 +30,8 @@ export const Selector: React.FunctionComponent = () => {
     </div>
     <div className='selector-container-body'>
       {deviceContext.devices.map((item: any, index: number) => {
-        return <SelectorCard key={item._id} exp={expand} index={index} active={deviceContext.device._id === item._id} device={item} />
+        const id = item._id;
+        return <SelectorCard key={item._id} exp={expand} index={index} active={deviceContext.device._id === item._id} device={item} state={deviceControl[id]} />
       })}
       {deviceContext.devices.length === 0 ? <><span>{RESX.selector.empty[0]} </span><span className='fa fa-plus'></span><span>{RESX.selector.empty[1]}</span></> : ''}
     </div>

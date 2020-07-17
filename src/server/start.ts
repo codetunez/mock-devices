@@ -65,6 +65,8 @@ class Server {
                 'Connection': 'keep-alive',
                 'Cache-Control': 'no-cache'
             });
+            res.write('\n');
+            res.flush();
 
             const dynamicName = `${req.params.type}Loop`;
 
@@ -74,7 +76,11 @@ class Server {
                 case "dataLoop": ms.dataLoop(res); break;
             }
 
-            req.on('close', () => {
+            res.on('close', () => {
+                ms.end(dynamicName);
+            });
+            
+            res.on('finish', () => {
                 ms.end(dynamicName);
             });
         });

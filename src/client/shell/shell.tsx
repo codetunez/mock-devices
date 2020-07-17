@@ -25,6 +25,10 @@ interface Action {
   payload: any;
 }
 
+const minSize = 40;
+const minHeight = 46;
+const height = window.innerHeight - minSize;
+
 const reducer = (state: State, action: Action) => {
 
   const item = action.type.split('-')[1]
@@ -32,8 +36,8 @@ const reducer = (state: State, action: Action) => {
 
   switch (action.type) {
     case 'lines-add':
-      // reverse the incoming list and unshift the array with new messages
-      const newList = action.payload.messages.slice(0).reverse().concat(newData.lines);
+      // reverse the incoming list and unshift the array with new messages      
+      const newList = action.payload.data.split('\n').reverse().concat(newData.lines);
       const trim = newData.lines.length - 2000;
       for (let i = 0; i < trim; i++) { newData.lines.pop(); };
       return { ...state, data: { lines: newList } };
@@ -60,28 +64,19 @@ export const Shell: React.FunctionComponent = () => {
   const [state, dispatch] = React.useReducer(reducer, { data: { lines: [], dialogIndex: -1, dialogLines: [] }, dialog: { showDialog: false } });
   const [paused, setPause] = React.useState(false);
 
+  let eventSource = null;
+
   React.useEffect(() => {
-    let eventSource: any = {};
-    source();
-    function source() {
-      eventSource = new EventSource('/api/events/message')
-      eventSource.onmessage = ((e) => {
-        dispatch({ type: 'lines-add', payload: { messages: JSON.parse(e.data) } })
-      });      
-      eventSource.onerror = ((e) => {
-        console.log('Reconnecting');
-        setTimeout(() => {
-          eventSource.close();
-          source();
-        }, 5000);
-      });
-    }
+    eventSource = new EventSource('/api/events/message')
+    eventSource.onmessage = ((e) => {
+      dispatch({ type: 'lines-add', payload: { data: e.data } })
+    });
   }, []);
 
   const closeDialog = () => { dispatch({ type: 'dialog-close', payload: null }) }
 
   return <div className='shell'>
-    <SplitterLayout vertical={true} primaryMinSize={40} secondaryMinSize={46} secondaryInitialSize={660}>
+    <SplitterLayout vertical={true} primaryMinSize={minSize} secondaryMinSize={minHeight} secondaryInitialSize={height}>
       <div className={cx('shell-console')}>
         <a title={RESX.console.pause_title} className='console-pause' onClick={() => setPause(!paused)}><span className={cx('fas', paused ? 'fa-play' : 'fa-pause')}></span></a>
         <a title={RESX.console.erase_title} className='console-erase' onClick={() => { dispatch({ type: 'lines-clear', payload: null }) }}><span className={cx('fas', 'fa-times')}></span></a>

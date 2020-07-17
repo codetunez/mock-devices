@@ -133,6 +133,11 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
         dispatch({ type: 'update-capability', payload: { name: 'asPropertyVersionPayload', value: JSON.stringify(code, null, 2) } });
     }
 
+    let colors = [];
+    for (const color in appContext.colors) {
+        colors.push({ name: color, value: appContext.colors[color] })
+    }
+
     return <div className={cx('device-field-card', state.form.expanded ? '' : 'device-field-card-small')} style={state.data.color ? { backgroundColor: state.data.color } : {}}>
 
         <div className='df-card-header'>
@@ -243,6 +248,15 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
             </div>
         </>
         }
+
+        <div className='df-card-row'>
+            <div><label>{RESX.device.card.UX}</label></div>
+            <div><label title={RESX.device.card.color_title}>{RESX.device.card.color_label}</label>
+                <div>
+                    <Combo items={colors} cls='full-width' name='color' onChange={updateField} value={state.data.color} />
+                </div>
+            </div>
+        </div>
 
     </div >
 

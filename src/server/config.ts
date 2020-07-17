@@ -7,7 +7,7 @@ export class Config {
 
     public static LOCALHOST: string = 'http://127.0.0.1';
     public static NODE_MODE: boolean = false;
-    public static DEV_TOOLS: boolean = true;
+    public static DEV_TOOLS: boolean = false;
     public static PROPERTY_WEBSOCKET_PORT: string = '24377';
     public static CONSOLE_WEBSOCKET_PORT: string = '24387';
     public static APP_HEIGHT: number = 740;
