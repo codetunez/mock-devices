@@ -64,6 +64,7 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
     // Telemetry is sent via Msg SDK API
     if (isType(item['@type'], 'Telemetry')) {
         o.sdk = 'msg';
+        o.color = simColors["Color3"] || '#333';
         addRunLoop = true;
     }
 
@@ -122,6 +123,8 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
     // If we are are not a writable property, report out by mins
     if ((isType(item['@type'], 'Property')) && item.writable) {
         addRunLoop = false;
+        o.string = false; //REFACTOR: desired should be a different schema and not shared
+        o.value = null; //REFACTOR: desired should be a different schema and not shared
     }
 
     // Add a runloop based on settings
@@ -133,35 +136,32 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
         }
     }
 
+    // if this is a writable property create a twin reported property to do settings
     if ((isType(item['@type'], 'Property')) && item.writable) {
-        o.color = simColors["Color2"];
+
+        var rptTwin: any = {};
+        rptTwin.name = item.name;
+        rptTwin.sdk = 'twin';
+        rptTwin.string = false;
+        rptTwin.interface = pnpInterface; //REFACTOR: pnp        
+        rptTwin.propertyObject = { "type": "templated", template: '{}' }
+        const reportedTwinId = deviceStore.addDeviceProperty(deviceId, 'd2c', rptTwin);
+
+        o.color = simColors["Color2"] || '#333';
+        o.asProperty = true;
+        o.asPropertyId = reportedTwinId;
+        o.asPropertyConvention = false;
+        o.asPropertyVersion = true;
+        o.asPropertyVersionPayload = JSON.stringify({
+            "value": "DESIRED_VALUE",
+            "ac": 200,
+            "ad": "completed",
+            "av": "DESIRED_VERSION"
+        }, null, 2)
     }
 
     // Add the item. This handles Telemetry/Property/Command
     deviceStore.addDeviceProperty(deviceId, ((isType(item['@type'], 'Property')) && item.writable ? 'c2d' : 'd2c'), o);
-
-    // if this is a writable property create a copy desired property to do settings
-    if ((isType(item['@type'], 'Property')) && item.writable) {
-        addRunLoop = false;
-        var oW: any = {};
-        oW._id = uuid();
-        oW.name = item.name;
-        oW.color = simColors["Color2"];
-        oW.sdk = 'twin';
-        oW.string = o.string;
-        oW.value = o.string ? "" : 0;
-        oW.interface = pnpInterface;
-        oW.propertyObject = {
-            "type": "templated", template: JSON.stringify({
-                "value": o.propertyObject && o.propertyObject.type === "templated" ? JSON.parse(o.propertyObject.template) : "",
-                "status": "completed",
-                "message": "a test message",
-                "statusCode": 200,
-                "desiredVersion": 1
-            }, null, 1)
-        }
-        deviceStore.addDeviceProperty(deviceId, 'd2c', oW);
-    }
 }
 
 function isType(node: any, type: string) {

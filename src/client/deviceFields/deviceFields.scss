@@ -156,7 +156,8 @@ $device-card-title-width-text: 320px; //220px;
   width: 410px;
   color: $app-clr-4;
 
-  div:first-child {
+  > div:first-child {
+    color: $app-clr-yellow-1;
     white-space: nowrap;
   }
 
