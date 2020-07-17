@@ -31,8 +31,6 @@ const initialState: State = {
     data: {}
 }
 
-const SELECT_TEXT = '--select';
-
 const reducer = (state: State, action: Action) => {
 
     const item = action.type.split('-')[1]
@@ -84,7 +82,7 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
 
     const deviceContext: any = React.useContext(DeviceContext);
     const appContext: any = React.useContext(AppContext);
-    const sendComms = [{ name: SELECT_TEXT, value: null }];
+    const sendComms = [{ name: RESX.device.card.select, value: null }];
 
     React.useEffect(() => {
         dispatch({ type: 'init-expand', payload: { expand: shouldExpand, context: appContext } })
@@ -196,7 +194,7 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
                         </div>
                     </div>
                 </div>
-                {state.data.asPropertyId === SELECT_TEXT ? null : <>
+                {state.data.asPropertyId === RESX.device.card.select ? null : <>
                     <div className='df-card-row'>
                         <div></div>
                         <div><label>{RESX.device.card.receive.property_version_label}</label>

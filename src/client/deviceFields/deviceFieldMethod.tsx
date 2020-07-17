@@ -85,7 +85,7 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
 
     const deviceContext: any = React.useContext(DeviceContext);
     const appContext: any = React.useContext(AppContext);
-    const sendComms = [{ name: '--select', value: null }];
+    const sendComms = [{ name: RESX.device.card.select, value: null }];
 
     React.useEffect(() => {
         dispatch({ type: 'init-expand', payload: { expand: shouldExpand, context: appContext } })

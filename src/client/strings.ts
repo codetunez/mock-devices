@@ -5,7 +5,7 @@ export const RESX = {
     "core": {
         "templateNoSupport": "This is not supported for templates. Create a mock device from this template to use this feature",
         "deviceL": "device",
-        "deviceU": "Device"
+        "deviceU": "Device",
     },
     "nav": {
         "help": "Find out how to use mock-devices",
@@ -26,6 +26,73 @@ export const RESX = {
     },
     "modal": {
         "error_json": "JSON has errors",
+        "add": {
+            "option1": {
+                "title": "Add a mock device",
+                "buttons": {
+                    "button1_label": "Use DPS",
+                    "button1_title": "Create the device using the DPS configuration",
+                    "button2_label": "Use Connection String",
+                    "button2_title": "Create the device using the a IoT device connection",
+                },
+                "select": "--Do not clone. Create device with no capabilities",
+                "label": {
+                    "clone": "Clone another mock device or use a template",
+                    "deviceId": "Device ID (-# appended in bulk create)",
+                    "dps": "DPS scope ID",
+                    "sas": "SaS key",
+                    "root": "Root key",
+                    "dps_blob": "DPS blob payload",
+                    "bulk_from": "Bulk from # (needs root key)",
+                    "bulk_to": "Bulk from # (needs root key)",
+                    "friendly": "mock-devices friendly name (-# appended in bulk create)",
+                    "connstr": "Device connection string",
+                    "friendly_sm": "mock-devices friendly name",
+                },
+                "cta_title": "Create this device",
+                "cta_label": "Create this mock device",
+            },
+            "option2": {
+                "title": "Add a template",
+                "buttons": {
+                    "button1_label": "Start with a DCM",
+                    "button1_title": "Create a new template using a DTDLv1 DCM",
+                    "button2_label": "Start new Template",
+                    "button2_title": "Create a new empty (or cloned) template",
+                },
+                "label": {
+                    "name": "mock-devices template Name",
+                    "name_placeholder": "Leave blank to use DCM displayName",
+                    "browse": "Browse disk for a DCM",
+                },
+                "cta_title": "Create this template",
+                "cta_label": "Create template",
+            },
+            "option3": {
+                "title": "State",
+                "buttons": {
+                    "button1_label": "Load/Save from file system",
+                    "button1_title": "Load or save a state file",
+                    "button2_label": "Editor",
+                    "button2_title": "Create a new empty (or cloned) template",
+                },
+                "label": {
+                    "state": "Load a state file",
+                    "merge": "Merge Devices (keeps current Simulation config)",
+                    "browse": "Browse for file",
+                    "state_save": "Save a state file",
+                    "browse_folder": "Browse folder",
+                    "copy": "Copy/Paste the State's JSON",
+                },
+                "cta_title": "Replace the current and state and reset the simulator",
+                "cta_label": "Update current State",
+            },
+            "error_add": "The device cannot be added. Check values or possible dupe",
+            "error_dcm": "The DCM is not valid or contains errors",
+            "error_load": "Data cannot be loaded. Check file format or version mismatch",
+            "error_state": "State cannot be updated. Format is not valid",
+            "error_file": "State file did not save",
+        },
         "console": {
             "text1": ["From", "of"]
         },
@@ -88,6 +155,8 @@ export const RESX = {
             "save_pre_error": "Select or remove a sensor to update this property",
             "color_title": "Pick a color for this capability in mock-devices",
             "color_label": "Color",
+            "select": "--Select",
+            "noselect": "--No send capability",
             "toggle": {
                 "enabled_label": "Enabled",
                 "enabled_title": "Enable this capability in the simulation (always enabled)",
