@@ -63,7 +63,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  
+
   div:first-child {
     display: flex;
     align-items: center;
@@ -103,4 +103,7 @@
 }
 .control-ERROR {
   color: $app-clr-red-1;
+}
+.control-DELAY {
+  color: $app-clr-purple-1;
 }

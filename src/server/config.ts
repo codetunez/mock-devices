@@ -6,7 +6,7 @@ export class Config {
     public static MAX_NUM_DEVICES: number = 1000;
 
     public static LOCALHOST: string = 'http://127.0.0.1';
-    public static NODE_MODE: boolean = false;
+    public static NODE_MODE: boolean = true;
     public static DEV_TOOLS: boolean = false;
     public static PROPERTY_WEBSOCKET_PORT: string = '24377';
     public static CONSOLE_WEBSOCKET_PORT: string = '24387';

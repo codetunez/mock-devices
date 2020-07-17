@@ -388,16 +388,18 @@ export class DeviceStore {
         return rd.readMethodParams();
     }
 
-    public startDevice = (device: Device) => {
+    public startDevice = (device: Device, delay?: number) => {
 
         if (device.configuration._kind === 'template') { return; }
 
         try {
+            let d: Device = this.store.getItem(device._id);                        
             let rd: MockDevice = this.runners[device._id];
-            rd.start();
-
-            let d: Device = this.store.getItem(device._id);
+            //REFACTOR: start using MockDevice as SoT
             d.running = true;
+            rd.start(delay || undefined);
+
+
             this.store.setItem(d, d._id);
         }
         catch (err) {
@@ -459,10 +461,7 @@ export class DeviceStore {
             if (devices[i].configuration._kind === 'template') { continue; }
             if (devices[i].running) { continue; }
             const delay = Utils.getRandomNumberBetweenRange(min, max, true);
-            this.liveUpdatesService.sendConsoleUpdate(`[${new Date().toISOString()}][${devices[i]._id}] DEVICE DELAYED START SECONDS: ${delay / 1000}`);
-            setTimeout(() => {
-                this.startDevice(devices[i]);
-            }, delay)
+            this.startDevice(devices[i], delay);
         }
     }
 

@@ -45,7 +45,8 @@ const LOGGING_TAGS = {
             SUCCESS: 'SUCCESS',
             CONNECTED: 'CONNECTED',
             TRYING: 'TRYING',
-            ERROR: 'ERROR'
+            ERROR: 'ERROR',
+            DELAY: 'DELAY'
         },
     },
     MSG: {
@@ -372,10 +373,23 @@ export class MockDevice {
     }
 
     /// starts a device
-    start() {
+    start(delay?: number) {
         if (this.device.configuration._kind === 'template') { return; }
         if (this.running) { return; }
 
+        if (delay) {
+            this.log(`DEVICE DELAYED START SECONDS: ${delay / 1000}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+            this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.DELAY);
+            setTimeout(() => {
+                this.startDevice();
+            }, delay / 1000)
+        } else {
+            this.startDevice();
+        }
+    }
+
+    /// starts a device
+    startDevice() {
         this.log('DEVICE IS SWITCHED ON', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
         this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.ON);
         this.running = true;
