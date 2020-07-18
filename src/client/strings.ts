@@ -97,9 +97,12 @@ export const RESX = {
             "text1": ["From", "of"]
         },
         "edit": {
-            "title": "Update this mock device's configuration. Bad settings will destabilize the app",
-            "update_label": "Update",
-            "update_title": "Stops the devices. Requires restart for new setting to take effect",
+            "title1": "Update this mock device's configuration",
+            "update1_label": "Update configuration",
+            "update1_title": "Stops the device. Requires a restart for new setting to take effect",
+            "title2": "Update this mock device's position",
+            "update2_label": "Change position",
+            "update2_title": "Move the position of the device or template in the list",
         },
         "simulation": {
             "title": "Simulation",

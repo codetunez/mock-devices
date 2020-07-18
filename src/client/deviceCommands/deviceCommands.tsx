@@ -16,6 +16,8 @@ export function DeviceCommands() {
     const template = deviceContext.device.configuration._kind === 'template';
     const pnpSdk = deviceContext.device.configuration.pnpSdk;
 
+    const index = deviceContext.devices.findIndex((x) => x._id == deviceContext.device._id);
+
     return <>{deviceContext.device.configuration.planMode ?
         <div className='device-commands-container'>
             <div className='btn-bar'>
@@ -34,10 +36,10 @@ export function DeviceCommands() {
                     : null}
             </div>
             <div className='btn-bar'>
-                <button title={template ? RESX.core.templateNoSupport : RESX.device.commands.config_title} className='btn btn-warning' disabled={template} onClick={() => { toggleEdit(!showEdit) }}><span className='fas fa-wrench'></span></button>
+                <button title={RESX.device.commands.config_title} className='btn btn-warning' onClick={() => { toggleEdit(!showEdit) }}><span className='fas fa-wrench'></span></button>
                 <button title={RESX.device.commands.delete_title} className='btn btn-danger' onClick={() => { deviceContext.deleteDevice() }}><span className={'fas fa-lg fa-trash-alt'}></span></button>
             </div>
-            {showEdit ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><Edit handler={toggleEdit} /></div></Modal> : null}
+            {showEdit ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><Edit handler={toggleEdit} index={index} /></div></Modal> : null}
         </div>
     }</>
 }
