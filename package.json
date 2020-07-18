@@ -34,7 +34,7 @@
     "classnames": "^2.2.6",
     "cors": "^2.8.5",
     "css-loader": "^2.1.1",
-    "electron": "^6.0.12",
+    "electron": "^7.2.4",
     "express": "^4.17.0",
     "file-loader": "^6.0.0",
     "jsoneditor": "^9.0.0",
