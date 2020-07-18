@@ -85,7 +85,7 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
 
     const deviceContext: any = React.useContext(DeviceContext);
     const appContext: any = React.useContext(AppContext);
-    const sendComms = [{ name: '--select', value: null }];
+    const sendComms = [{ name: RESX.device.card.select, value: null }];
 
     React.useEffect(() => {
         dispatch({ type: 'init-expand', payload: { expand: shouldExpand, context: appContext } })
@@ -122,6 +122,21 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
 
     const save = (send: boolean) => {
         dispatch({ type: 'save-capability', payload: { context: deviceContext, send: send, originalName: originalName } })
+    }
+
+    let snippets = []
+    for (const snippet in appContext.snippets) {
+        const code = Object.assign({}, appContext.snippets[snippet]);
+        snippets.push(<div onClick={() => snippetsHandler(code)}>{snippet}</div>);
+    }
+
+    let colors = [];
+    for (const color in appContext.colors) {
+        colors.push({ name: color, value: appContext.colors[color] })
+    }
+
+    const snippetsHandler = (code: any) => {
+        dispatch({ type: 'update-capability', payload: { name: 'payload', value: JSON.stringify(code, null, 2) } });
     }
 
     const request = () => {
@@ -202,7 +217,14 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
 
                 <div className='df-card-row'>
                     <div></div>
-                    <div><label title={RESX.device.card.method.response_payload_title}>{RESX.device.card.method.response_payload_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={6} name='payload' onChange={updateField} >{state.data.payload || ''}</textarea></div></div>
+                    <div><label title={RESX.device.card.method.response_payload_title}>{RESX.device.card.method.response_payload_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={6} name='payload' onChange={updateField} value={state.data.payload || ''}></textarea></div></div>
+                </div>
+                <div className='df-card-row df-card-row-nogap'>
+                    <div></div>
+                    <div className="snippets">
+                        <div>Add snippet:</div>
+                        <div className="snippet-links">{snippets}</div>
+                    </div>
                 </div>
             </>
         }
@@ -215,7 +237,7 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
         </div>
 
         {!state.data.asProperty ? null :
-            < div className='df-card-row'>
+            <div className='df-card-row'>
                 <div><label></label><div></div></div>
                 <div><label title={RESX.device.card.method.property_report_title}>{RESX.device.card.method.property_report_label}</label>
                     <div>
@@ -224,6 +246,15 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
                 </div>
             </div>
         }
+
+        <div className='df-card-row'>
+            <div><label>{RESX.device.card.UX}</label></div>
+            <div><label title={RESX.device.card.color_title}>{RESX.device.card.color_label}</label>
+                <div>
+                    <Combo items={colors} cls='full-width' name='color' onChange={updateField} value={state.data.color} />
+                </div>
+            </div>
+        </div>
 
     </div >
 }

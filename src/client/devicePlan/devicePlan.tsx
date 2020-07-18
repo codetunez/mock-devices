@@ -175,7 +175,7 @@ export function DevicePlan({ device }) {
         const dom = [];
 
         const newComms = sendComms.slice();
-        newComms.unshift({ name: '--No send property', value: '_NULL_' });
+        newComms.unshift({ name: RESX.device.card.noselect, value: '_NULL_' });
         state.data.receive.map((ele, i) => {
             const key: number = i;
             dom.push(<div key={i} className="mini-grid-row">

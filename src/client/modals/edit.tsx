@@ -4,6 +4,7 @@ const cxM = classNames.bind(require('./modal.scss'));
 
 import * as React from 'react';
 import { DeviceContext } from '../context/deviceContext';
+import { RESX } from '../strings';
 
 export const Edit: React.FunctionComponent<any> = ({ handler }) => {
 
@@ -28,10 +29,11 @@ export const Edit: React.FunctionComponent<any> = ({ handler }) => {
         <div className='m-content'>
             <div className='edit-device'>
                 <div className='form-group'>
-                    <label>Update this mock device's configuration. Bad settings will destabilize the app</label>
+                    <h2>{RESX.modal.edit.title}</h2>
+                    <label></label>
                     <textarea className='custom-textarea form-control form-control-sm' name='configuration' rows={20} onChange={updateField} value={updatePayload}></textarea>
                 </div>
-                <button className='btn btn-info' onClick={() => updateDeviceConfiguration()}>Update</button>
+                <button title={RESX.modal.edit.update_title} className='btn btn-info' onClick={() => updateDeviceConfiguration()}>{RESX.modal.edit.update_label}</button>
             </div>
         </div>
     </div>

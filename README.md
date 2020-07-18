@@ -20,20 +20,21 @@ Help is available inside the application
 
 ---
 
-## v5 Features
-- Plan mode - Create a timed series of events
-- Create Azure IoT Digital Twins devices with limited support [see here](https://www.npmjs.com/package/azure-iot-digitaltwins-device/v/1.0.0-pnp-refresh.0)
-- Support for current SDK devices
-- Support for C2D command using cloud messages
-- App Updates - New UX for control. Previous state files not supported
+#### v5.5 Updates
+- Updated [device SDK](https://www.npmjs.com/package/azure-iot-device) to 1.17.0
+- Acks for C2D commands and desired properties
+- Removed digital-twins support
+- New UX for device connected status
 
-#### Features
+## Features
 - Host up to 1,000 mock devices
 - DPS single or group enrollment support 
 - SaS or Connection String support (72 hour SaS expiry)
 - Bulk/Clone/Templated device create operations
 - Auto Gen DTDL Complex Types; Objects/Maps/Arrays with random values from a DCM
 - Simulated versions of common device operations such as Reboot, Shutdown, Firmware and sensors like battery, heaters, fans
+- Support for C2D command using cloud messages
+- Plan mode - Create a timed series of events
 
 #### Macro support for value payloads
 Use auto generated values to send as device data

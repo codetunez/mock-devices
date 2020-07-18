@@ -2,15 +2,11 @@ var classNames = require('classnames');
 const cx = classNames.bind(require('./shell.scss'));
 
 import * as React from 'react';
-import axios from 'axios';
-import * as Websocket from 'react-websocket';
 
 import { Nav } from '../nav/nav'
 import { Modal } from '../modals/modal';
 import { Selector } from '../selector/selector';
 import { Device } from '../device/device';
-import { DeviceContext } from '../context/deviceContext';
-import { AppProvider } from '../context/appContext';
 
 import { Console } from '../modals/console';
 import { RESX } from '../strings';
@@ -18,75 +14,84 @@ import { RESX } from '../strings';
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
 
+interface State {
+  dialog: any;
+  data: any;
+}
+
+interface Action {
+  type: string;
+  payload: any;
+}
+
+const minSize = 40;
+const minHeight = 46;
+const height = window.innerHeight - minSize;
+
+const reducer = (state: State, action: Action) => {
+
+  const item = action.type.split('-')[1]
+  const newData = Object.assign({}, state.data);
+
+  switch (action.type) {
+    case 'lines-add':
+      // reverse the incoming list and unshift the array with new messages      
+      const newList = action.payload.data.split('\n').reverse().concat(newData.lines);
+      const trim = newData.lines.length - 2000;
+      for (let i = 0; i < trim; i++) { newData.lines.pop(); };
+      return { ...state, data: { lines: newList } };
+    case 'lines-clear':
+      return { ...state, data: { lines: [] } };
+    case 'dialog-show':
+      // create a small window of events to scroll between
+      const i = action.payload.index;
+      const start = newData.lines.slice(i - 50, i);
+      const newIndex = start.slice(0).length;
+      const end = newData.lines.slice(i, i + 50);
+      return { ...state, dialog: { showDialog: true, dialogIndex: newIndex, dialogLines: start.concat(end) } };
+    case 'dialog-close':
+      return { ...state, dialog: { showDialog: false, dialogIndex: -1, dialogLines: [] } };
+    default:
+      return state;
+  }
+}
+
 export const Shell: React.FunctionComponent = () => {
-  const deviceContext: any = React.useContext(DeviceContext);
+
+  const [state, dispatch] = React.useReducer(reducer, { data: { lines: [], dialogIndex: -1, dialogLines: [] }, dialog: { showDialog: false } });
   const [paused, setPause] = React.useState(false);
-  const [lines, updateConsole] = React.useState([]);
-  const [consoleModal, setConsole] = React.useState<any>({});
 
-  const propertyUpdate = (data: any) => {
-    //console.log(data);
-  }
-
-  const liveUpdate = (data: any) => {
-    let payload = JSON.parse(data);
-    let latest = lines.slice(0);
-    latest.unshift(payload.message);
-    if (latest.length > 2000) {
-      latest.pop();
-    }
-    !paused && updateConsole(latest);
-  }
+  let eventSource = null;
 
   React.useEffect(() => {
-    axios.get('/api/devices')
-      .then((res: any) => {
-        deviceContext.setDevices(res.data);
-        return axios.get('/api/sensors')
-      })
-      .then((res: any) => {
-        deviceContext.setSensors(res.data);
-      })
+    eventSource = new EventSource('/api/events/message')
+    eventSource.onmessage = ((e) => {
+      dispatch({ type: 'lines-add', payload: { data: e.data } })
+    });
   }, []);
 
-  const openConsole = (lines, index) => {
-    setConsole({
-      showConsole: true,
-      lines: lines,
-      index: index
-    })
-  }
-
-  const closeConsole = () => {
-    setConsole({
-      showConsole: false
-    })
-  }
+  const closeDialog = () => { dispatch({ type: 'dialog-close', payload: null }) }
 
   return <div className='shell'>
-    <Websocket url={'ws://127.0.0.1:24377'} onMessage={propertyUpdate} />
-    <Websocket url={'ws://127.0.0.1:24387'} onMessage={liveUpdate} />
-
-    <SplitterLayout vertical={true} primaryMinSize={40} secondaryMinSize={46} secondaryInitialSize={660}>
+    <SplitterLayout vertical={true} primaryMinSize={minSize} secondaryMinSize={minHeight} secondaryInitialSize={height}>
       <div className={cx('shell-console')}>
         <a title={RESX.console.pause_title} className='console-pause' onClick={() => setPause(!paused)}><span className={cx('fas', paused ? 'fa-play' : 'fa-pause')}></span></a>
-        <a title={RESX.console.erase_title} className='console-erase' onClick={() => updateConsole([])}><span className={cx('fas', 'fa-times')}></span></a>
+        <a title={RESX.console.erase_title} className='console-erase' onClick={() => { dispatch({ type: 'lines-clear', payload: null }) }}><span className={cx('fas', 'fa-times')}></span></a>
         <div>
-          {lines.length > 0 && lines.map((element, index) => {
-            return <div className={cx('console-line', 'ellipsis')} onClick={() => { openConsole(lines, index) }}>{element}</div>
+          {state.data.lines.length > 0 && state.data.lines.map((element, index) => {
+            const i = index;
+            return <div className={cx('console-line', 'ellipsis')} onClick={() => { dispatch({ type: 'dialog-show', payload: { index: i } }) }}>{element}</div>
           })}
         </div>
       </div>
       <div className={cx('shell-content')}>
         <div className={cx('shell-content-nav')}><Nav /></div>
         <div className={cx('shell-content-selector')}><Selector /></div>
-        <AppProvider>
-          <div className={cx('shell-content')}><Device /></div>
-        </AppProvider>
+        <div className={cx('shell-content')}><Device /></div>
       </div>
     </SplitterLayout>
 
-    {consoleModal.showConsole ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><Console lines={consoleModal.lines} index={consoleModal.index} handler={closeConsole} /></div></Modal> : null}
+    {state.dialog.showDialog ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><Console lines={state.dialog.dialogLines} index={state.dialog.dialogIndex} handler={closeDialog} /></div></Modal> : null}
 
   </div>
 }

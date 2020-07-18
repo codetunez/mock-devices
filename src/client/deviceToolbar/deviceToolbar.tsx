@@ -3,34 +3,25 @@ const cx = classNames.bind(require('./deviceToolbar.scss'));
 
 import * as React from 'react';
 import { DeviceContext } from '../context/deviceContext';
+import { AppContext } from '../context/appContext';
+
 import { RESX } from '../strings';
 
 export function DeviceToolbar() {
 
     const deviceContext: any = React.useContext(DeviceContext);
+    const appContext: any = React.useContext(AppContext);
     const [power, setPower] = React.useState<any>({});
 
     React.useEffect(() => {
+        const on = appContext.control[deviceContext.device._id] && appContext.control[deviceContext.device._id][2] != 'OFF' || false;
         setPower({
-            label: deviceContext.device.running ? RESX.device.toolbar.powerOff_label : RESX.device.toolbar.powerOn_label,
-            title: deviceContext.device.running ? RESX.device.toolbar.powerOff_title : RESX.device.toolbar.powerOn_title,
-            style: deviceContext.device.running ? "btn-success" : "btn-outline-secondary",
-            handler: deviceContext.device.running ? deviceContext.stopDevice : deviceContext.startDevice
+            label: on ? RESX.device.toolbar.powerOff_label : RESX.device.toolbar.powerOn_label,
+            title: on ? RESX.device.toolbar.powerOff_title : RESX.device.toolbar.powerOn_title,
+            style: on ? "btn-success" : "btn-outline-secondary",
+            handler: on ? deviceContext.stopDevice : deviceContext.startDevice
         })
-    }, [deviceContext.device])
-
-
-    React.useEffect(() => {
-        const p = deviceContext.powers[deviceContext.device._id];
-        if (p != null || p != undefined) {
-            setPower({
-                label: p ? RESX.device.toolbar.powerOff_label : RESX.device.toolbar.powerOn_label,
-                title: p ? RESX.device.toolbar.powerOff_title : RESX.device.toolbar.powerOn_title,
-                style: p ? "btn-success" : "btn-outline-secondary",
-                handler: p ? deviceContext.stopDevice : deviceContext.startDevice
-            })
-        }
-    }, [deviceContext.powers])
+    }, [deviceContext.device, appContext])
 
     const template = deviceContext.device.configuration._kind === 'template';
 

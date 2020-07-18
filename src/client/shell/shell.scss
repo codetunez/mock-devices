@@ -49,6 +49,13 @@
   display: flex;
 }
 
+.shell-content-worldview {
+  background-color: $app-clr-0;
+  color: $app-white;
+  width: 100%;
+  height: 100%;
+}
+
 .shell-content-selector {
   border-right: $border-thicker solid $app-clr-3;
 }

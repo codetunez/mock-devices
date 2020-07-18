@@ -62,7 +62,6 @@ export class DeviceStore {
         if (d.configuration.mockDeviceCloneId) {
             const origDevice: Device = JSON.parse(JSON.stringify(this.store.getItem(d.configuration.mockDeviceCloneId)));
             if (Object.keys(origDevice).length != 0) {
-                origDevice.running = false;
                 d.configuration.capabilityUrn = origDevice.configuration.capabilityUrn;
                 for (let i = 0; i < origDevice.comms.length; i++) {
                     let p = origDevice.comms[i];
@@ -104,7 +103,7 @@ export class DeviceStore {
         d.configuration.deviceId = d._id;
 
         this.store.setItem(d, d._id);
-        let md = new MockDevice(d, this.liveUpdatesService, this);
+        let md = new MockDevice(d, this.liveUpdatesService);
         this.runners[d._id] = md;
     }
 
@@ -134,7 +133,7 @@ export class DeviceStore {
 
         this.store.setItem(d, d._id);
 
-        let md = new MockDevice(d, this.liveUpdatesService, this);
+        let md = new MockDevice(d, this.liveUpdatesService);
         this.runners[d._id] = md;
 
         return newId;
@@ -388,17 +387,13 @@ export class DeviceStore {
         return rd.readMethodParams();
     }
 
-    public startDevice = (device: Device) => {
+    public startDevice = (device: Device, delay?: number) => {
 
         if (device.configuration._kind === 'template') { return; }
 
         try {
             let rd: MockDevice = this.runners[device._id];
-            rd.start();
-
-            let d: Device = this.store.getItem(device._id);
-            d.running = true;
-            this.store.setItem(d, d._id);
+            rd.start(delay || undefined);
         }
         catch (err) {
             console.error("[DEVICE ERR] " + err.message);
@@ -411,11 +406,7 @@ export class DeviceStore {
 
         try {
             let rd: MockDevice = this.runners[device._id];
-            rd.end();
-
-            let d: Device = this.store.getItem(device._id);
-            d.running = false;
-            this.store.setItem(d, d._id);
+            rd.stop();
         }
         catch (err) {
             console.error("[DEVICE ERR] " + err.message);
@@ -455,29 +446,19 @@ export class DeviceStore {
 
         let devices: Array<Device> = this.store.getAllItems();
 
-        for (let i = 0; i < devices.length; i++) {
-            if (devices[i].configuration._kind === 'template') { continue; }
-            if (devices[i].running) { continue; }
+        for (let index in devices) {
             const delay = Utils.getRandomNumberBetweenRange(min, max, true);
-            this.liveUpdatesService.sendConsoleUpdate(`[${new Date().toISOString()}][${devices[i]._id}] DEVICE DELAYED START SECONDS: ${delay / 1000}`);
-            setTimeout(() => {
-                this.startDevice(devices[i]);
-            }, delay)
+            this.startDevice(devices[index], delay);
         }
     }
 
     public startAllBatch = (from: number, to: number, devices: Array<Device>) => {
-        for (let i = from; i < to; i++) {
-            if (devices[i].running) { continue; }
-            this.startDevice(devices[i]);
-        }
+        for (let index = from; index < to; index++) { this.startDevice(devices[index]); }
     }
 
     public stopAll = () => {
-        let devices: Array<Device> = this.store.getAllItems();
-        for (let i = 0; i < devices.length; i++) {
-            if (devices[i].running) { this.stopDevice(devices[i]); }
-        }
+        const devices: Array<Device> = this.store.getAllItems();
+        for (let index in devices) { this.stopDevice(devices[index]); }
     }
 
     public exists = (id: string) => {
@@ -489,24 +470,14 @@ export class DeviceStore {
     }
 
     public getListOfItems = () => {
-        let devices: Array<Device> = this.store.getAllItems();
-
-        for (const d in devices) {
-            //TODO: _id refactor into configuration
-            const rd: MockDevice = this.runners[devices[d]._id];
-            devices[d].running = rd && rd.getRunning() || false;
-        }
-
-        return devices;
+        return this.store.getAllItems();
     }
 
     public createFromArray = (items: Array<Device>) => {
         this.store.createStoreFromArray(items);
-
-        // re-establish running store
-        for (let i = 0; i < items.length; i++) {
-            let rd = new MockDevice(items[i], this.liveUpdatesService, this);
-            this.runners[items[i]._id] = rd;
+        for (const index in items) {
+            let rd = new MockDevice(items[index], this.liveUpdatesService);
+            this.runners[items[index]._id] = rd;
         }
     }
 }

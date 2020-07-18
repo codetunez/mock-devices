@@ -17,15 +17,11 @@ export function Nav() {
     const [showHelp, toggleHelp] = React.useState(false);
     const [showDevices, toggleDevices] = React.useState(false);
     const [showSimulation, toggleSimulation] = React.useState(false);
-
-    //TODO: refactor this to server side events
-    const fetchFunc = async () => { await deviceContext.getDevices(); }
-    useAPIPolling<any>({ fetchFunc, initialState: [], delay: 5000 })
-
+    
     return <div className='nav'>
         <div className='section-title section-title-nav'>{RESX.app.version}</div>
         <button title={RESX.nav.help} onClick={() => toggleHelp(!showHelp)} className={'btn btn-outline-primary'}><span className='fas fa-question-circle'></span></button >
-        <button title={RESX.nav.file} onClick={() => toggleDevices(!showDevices)} className={'btn btn-outline-primary'}><span className='far fa-save'></span></button >
+        <button title={RESX.nav.file} onClick={() => toggleDevices(!showDevices)} className={'btn btn-outline-primary'}><span className='fa fa-plus'></span></button >
         <hr />
         <button title={RESX.nav.power} onClick={() => deviceContext.startAllDevices()} className='btn btn-outline-primary'><span className='fas fa-power-off'></span></button>
         <button title={RESX.nav.stop} onClick={() => deviceContext.stopAllDevices()} className='btn btn-outline-primary'><span className='fas fa-stop'></span></button>

@@ -1,4 +1,4 @@
-import { dialog, app, Menu, BrowserWindow } from 'electron';
+import { screen, dialog, app, Menu, BrowserWindow } from 'electron';
 import * as http from 'http';
 import * as express from 'express';
 import * as morgan from 'morgan';
@@ -18,7 +18,7 @@ import { Config } from './config';
 import { DeviceStore } from './store/deviceStore';
 import { SensorStore } from './store/sensorStore';
 import { SimulationStore } from './store/simulationStore';
-import { WebSocketMessageService } from './core/webSocketMessageService';
+import { ServerSideMessageService } from './core/serverSideMessageService';
 
 class Server {
 
@@ -32,7 +32,8 @@ class Server {
 
     public start = () => {
 
-        const ms = new WebSocketMessageService();
+        const ms = new ServerSideMessageService();
+
         this.deviceStore = new DeviceStore(ms);
         this.sensorStore = new SensorStore();
         this.simulationStore = new SimulationStore();
@@ -57,6 +58,32 @@ class Server {
         this.expressServer.use('/api/template', template(this.deviceStore));
         this.expressServer.use('/api', root(dialog, app));
 
+        // experimental stream api
+        this.expressServer.get('/api/events/:type', (req, res, next) => {
+            res.writeHead(200, {
+                'Content-Type': 'text/event-stream',
+                'Connection': 'keep-alive',
+                'Cache-Control': 'no-cache'
+            });
+            res.write('\n');
+
+            const dynamicName = `${req.params.type}Loop`;
+
+            switch (dynamicName) {
+                case "messageLoop": ms.messageLoop(res); break;
+                case "controlLoop": ms.controlLoop(res); break;
+                case "dataLoop": ms.dataLoop(res); break;
+            }
+
+            res.on('close', () => {
+                ms.end(dynamicName);
+            });
+            
+            res.on('finish', () => {
+                ms.end(dynamicName);
+            });
+        });
+
         if (Config.NODE_MODE) {
             this.startService();
         }
@@ -78,19 +105,20 @@ class Server {
             }));
 
             app.on('will-quit', (() => {
-                ms.end();
+                ms.endAll();
             }));
         }
     }
 
-
     public startService = () => {
         this.expressServer.server.listen(Config.APP_PORT);
+
+        const scr = screen.getPrimaryDisplay();
 
         if (!Config.NODE_MODE) {
             this.mainWindow = new BrowserWindow({
                 "width": Config.APP_WIDTH,
-                "height": Config.APP_HEIGHT,
+                "height": scr.size.height,
                 "minWidth": Config.APP_WIDTH,
                 "minHeight": Config.APP_HEIGHT,
                 webPreferences: {

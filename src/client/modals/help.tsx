@@ -30,7 +30,7 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
             <div className='help-row'>
                 <h4>Adding a new mock device</h4>
                 <p>A device can be created with any combination of platform, SDK and connection identity.</p>
-                <p>Use the <span className='far fa-save'></span> button from menu and follow the "ADD A MOCK DEVICE" menu options. Once the device
+                <p>Use the <span className='far fa-plus'></span> button from menu and follow the "ADD A MOCK DEVICE" menu options. Once the device
                 is successfully created, it will be added to the "DEVICES" list. Selecting a card from the list will allow you to see how the device
                 is configured and allow the addition of capabilities to send and receive data.</p>
             </div>
@@ -40,11 +40,11 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
                 <p>Templates allow you to create a device configuration without a connection profile. These can be used as a source to clone
                 other devices that use real connection profiles. Devices are disconnected from the template they were created from.
                 </p>
-                <p>Use the <span className='far fa-save'></span> button from menu and follow the "ADD A TEMPLATE" menu options.</p>
+                <p>Use the <span className='far fa-plus'></span> button from menu and follow the "ADD A TEMPLATE" menu options.</p>
 
                 <h5>Create a template using a DCM</h5>
                 <p>A DCM can be used to generate a best guess device configuration. Objects, HashMaps and Arrays are fully supported as well
-                as custom JSON to support IoT Central semantic types. To add a DCM (as a Template) use the <span className='far fa-save'></span> button
+                as custom JSON to support IoT Central semantic types. To add a DCM (as a Template) use the <span className='far fa-plus'></span> button
                 from menu  and follow the "ADD A TEMPLATE - &gt; Start with a DCM". The template configuration will be automatically be created with AUTO values
                 (see later) and run loops to help quickly configure any device cloned from the template.
                 </p>
@@ -213,19 +213,17 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
             </div>
 
             <div className='help-row'>
-                <h4>Settings (IoT Central)</h4>
-                <p>Settings are a matched pair of desired and reported capabilities where the report has a well defined Complex payload
-                and the desired is required to send an ack back in a given format. See IoT Central documentation for more details.
+                <h4>Settings (IoT Central posy July 15th 2020 and DTDLv2)</h4>
+                <p>Settings are a matched pair of desired and reported capabilities where the reported has a well defined payload
+                and the desired is required to send an ack back in a given format.
                 </p>
-
                 <p>Required JSON payload for reported Setting</p>
                 <pre>
                     {JSON.stringify({
-                        'value': 'AUTO_INTEGER',
-                        'status': 'completed',
-                        'message': 'test message',
-                        'statusCode': 200,
-                        'desiredVersion': 1
+                        'value': 'DESIRED_VALUE',
+                        'ac': 200,
+                        'ad': 'completed',
+                        'av': 'DESIRED_VERSION'
                     }, null, 2)}
                 </pre>
             </div>
@@ -233,7 +231,7 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
             <div className='help-row'>
                 <h3>Saving and Loading mock-devices devices</h3>
                 <p>mock-devices is a state machine and the current running state can replaced with another snapshot of state.</p>
-                <p>Use the <span className='far fa-save'></span> button from menu and follow the "STATE MACHINE" menu options</p>
+                <p>Use the <span className='far fa-plus'></span> button from menu and follow the "STATE MACHINE" menu options</p>
                 <ul>
                     <li>Copy/Paste - CTRL+C to capture the current state. CTRL+V to replace the current state.</li>
                     <li>LoadSave from file system - Load or save a JSON file of a previous sate</li>

@@ -41,6 +41,11 @@ export interface Property {
     mock?: MockSensor;
     enabled: boolean;
     color?: string;
+    asProperty?: boolean;
+    asPropertyId?: string;
+    asPropertyConvention?: boolean;
+    asPropertyVersion?: boolean;
+    asPropertyVersionPayload?: any;
 }
 
 export interface Method {
@@ -79,7 +84,6 @@ export class Device {
     public _id: string;
     public configuration: DeviceConfiguration;
     public comms: Array<any>;
-    public running: boolean;
     public plan: Plan;
 
     constructor() {

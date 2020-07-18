@@ -9,6 +9,7 @@ import { Combo, Json } from '../ui/controls';
 import axios from 'axios';
 import Toggle from 'react-toggle';
 import { DeviceContext } from '../context/deviceContext';
+import { RESX } from '../strings';
 
 const initialState = {
     _kind: '',
@@ -35,13 +36,14 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
     const [panel, setPanel] = React.useState(0);
     const [state, setPayload] = React.useState(initialState);
     const [merge, setMerge] = React.useState(false);
-    const [jsons, setJsons] = React.useState<any>({})
+    const [jsons, setJsons] = React.useState<any>({});
+    const [error, setError] = React.useState<any>('');
 
     React.useEffect(() => {
         let list = [];
         axios.get('/api/devices')
             .then((response: any) => {
-                list.push({ name: '--Do not clone. Create device with no capabilities', value: null });
+                list.push({ name: RESX.modal.add.option1.select, value: null });
                 response.data.map(function (ele: any) {
                     list.push({ name: ele.configuration.mockDeviceName, value: ele._id });
                 });
@@ -61,23 +63,20 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
         for (const j in jsons) {
             state[j] = jsons[j]
         }
-        axios.post('/api/device/new', state).then(res => {
-            deviceContext.setDevices(res.data);
-            handler(false);
-        })
+        axios.post('/api/device/new', state)
+            .then(res => {
+                deviceContext.setDevices(res.data);
+                handler(false);
+            })
+            .catch((err) => {
+                setError(kind === 'capabilityModel' ? RESX.modal.add.error_add : RESX.modal.add.error_dcm);
+            })
     }
 
     const toggleMasterKey = () => {
         setPayload({
             ...state,
             isMasterKey: !state.isMasterKey
-        });
-    }
-
-    const togglePnpSdk = () => {
-        setPayload({
-            ...state,
-            pnpSdk: !state.pnpSdk
         });
     }
 
@@ -138,6 +137,9 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             deviceContext.refreshAllDevices();
                             handler(false);
                         })
+                        .catch((err) => {
+                            setError(RESX.modal.add.error_load);
+                        })
                 } else {
                     setPayload({
                         ...state,
@@ -149,25 +151,36 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
     const updateJson = (text: any, type: string) => {
         setJsons({ ...jsons, [type]: text });
+        setError('');
+    }
+
+    const selectPanel = (panelNumber: number) => {
+        setPanel(panelNumber);
+        setError('');
     }
 
     /* State Machine */
 
     const updateCurrentState = (nextState) => {
-        for (const j in jsons) {
-            state[j] = jsons[j]
+        if (error === '') {
+            axios.post('/api/state/' + (merge ? 'merge' : ''), jsons[nextState])
+                .then(() => {
+                    deviceContext.refreshAllDevices();
+                    handler(false);
+                })
+                .catch((err) => {
+                    setError(RESX.modal.add.error_state);
+                })
         }
-        axios.post('/api/state/' + (merge ? 'merge' : ''), state[nextState])
-            .then(() => {
-                deviceContext.refreshAllDevices();
-                handler(false);
-            })
     }
 
     const saveToDisk = () => {
         axios.post('/api/saveDialog', state.machineStateClipboard, { headers: { 'Content-Type': 'application/json' } })
             .then(() => {
                 handler(false);
+            })
+            .catch((err) => {
+                setError(RESX.modal.add.error_file);
             })
     }
 
@@ -177,19 +190,18 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
             <div className='add-device'>
                 <div className='m-tabbed-nav' style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div className='menu-vertical' >
-                        <label>Add a mock device</label>
-                        <button onClick={() => setPanel(0)} className={cx('btn btn-outline-primary', panel === 0 ? 'active' : '')}>Use DPS</button><br />
-                        <button onClick={() => setPanel(1)} className={cx('btn btn-outline-primary', panel === 1 ? 'active' : '')}>Use Connection String</button><br />
-                        <label>Add a template</label>
-                        <button onClick={() => setPanel(2)} className={cx('btn btn-outline-primary', panel === 2 ? 'active' : '')}>Start with a DCM</button><br />
-                        <button onClick={() => setPanel(3)} className={cx('btn btn-outline-primary', panel === 3 ? 'active' : '')}>Start new Template</button><br />
-                        <label>State</label>
-                        <button onClick={() => setPanel(4)} className={cx('btn btn-outline-primary', panel === 4 ? 'active' : '')}>Load/Save from file system</button><br />
-                        <button onClick={() => setPanel(5)} className={cx('btn btn-outline-primary', panel === 5 ? 'active' : '')}>Editor</button><br />
+                        <label>{RESX.modal.add.option1.title}</label>
+                        <button title={RESX.modal.add.option1.buttons.button1_title} onClick={() => selectPanel(0)} className={cx('btn btn-outline-primary', panel === 0 ? 'active' : '')}>{RESX.modal.add.option1.buttons.button1_label}</button><br />
+                        <button title={RESX.modal.add.option1.buttons.button2_title} onClick={() => selectPanel(1)} className={cx('btn btn-outline-primary', panel === 1 ? 'active' : '')}>{RESX.modal.add.option1.buttons.button2_label}</button><br />
+                        <label>{RESX.modal.add.option2.title}</label>
+                        <button title={RESX.modal.add.option2.buttons.button1_title} onClick={() => selectPanel(2)} className={cx('btn btn-outline-primary', panel === 2 ? 'active' : '')}>{RESX.modal.add.option2.buttons.button1_label}</button><br />
+                        <button title={RESX.modal.add.option2.buttons.button2_title} onClick={() => selectPanel(3)} className={cx('btn btn-outline-primary', panel === 3 ? 'active' : '')}>{RESX.modal.add.option2.buttons.button2_label}</button><br />
+                        <label>{RESX.modal.add.option3.title}</label>
+                        <button title={RESX.modal.add.option2.buttons.button1_title} onClick={() => selectPanel(4)} className={cx('btn btn-outline-primary', panel === 4 ? 'active' : '')}>{RESX.modal.add.option3.buttons.button1_label}</button><br />
+                        <button title={RESX.modal.add.option2.buttons.button2_title} onClick={() => selectPanel(5)} className={cx('btn btn-outline-primary', panel === 5 ? 'active' : '')}>{RESX.modal.add.option3.buttons.button2_label}</button><br />
                     </div>
-                    <div className='form-group' >
-                        <label>Use PnP SDK</label>
-                        <div><Toggle name='pnpSdk' checked={state.pnpSdk} defaultChecked={false} onChange={() => { togglePnpSdk() }} /></div>
+                    <div className='form-group'>
+                        <span className='error'>{error}</span>
                     </div>
                 </div>
 
@@ -198,109 +210,109 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <div className='m-tabbed-panel-form'>
 
                             <div className='form-group'>
-                                <label>Clone another mock device or use a template</label><br />
+                                <label>{RESX.modal.add.option1.label.clone}</label><br />
                                 <Combo items={state._deviceList} cls='custom-textarea-sm' name='mockDeviceCloneId' onChange={(e) => getTemplate(e.target.value)} value={state.mockDeviceCloneId || ''} />
                             </div>
                             <div className='form-group'>
-                                <label>Device ID (-# appended in bulk create)</label><br />
+                                <label>{RESX.modal.add.option1.label.deviceId}</label><br />
                                 <input autoFocus={true} id="device-id" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} />
                             </div>
 
                             <div className='form-group' style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                 <div className='form-group' style={{ paddingRight: '20px' }} >
                                     <div className='form-group'>
-                                        <label>DPS scope ID</label>
+                                        <label>{RESX.modal.add.option1.label.dps}</label>
                                         <input className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
                                     </div>
                                     <div className='form-group'>
-                                        <label>SaS key</label>
+                                        <label>{RESX.modal.add.option1.label.sas}</label>
                                         <input className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
                                     </div>
                                     <div className='form-group'>
-                                        <label>Root key</label>
+                                        <label>{RESX.modal.add.option1.label.root}</label>
                                         <div><Toggle name='masterKey' checked={state.isMasterKey} defaultChecked={false} onChange={() => { toggleMasterKey() }} /></div>
                                     </div>
                                 </div>
                                 <div className='form-group'>
-                                    <label>DPS blob payload</label>
+                                    <label>{RESX.modal.add.option1.label.dps}</label>
                                     <div className='form-group'>
-                                        <Json json={state.dpsPayload} cb={(text: any) => { updateJson(text, 'dpsPayload') }} />
+                                        <Json json={state.dpsPayload} cb={(text: any) => { updateJson(text, 'dpsPayload') }} err={() => setError(RESX.modal.error_json)} />
                                     </div>
                                 </div>
                             </div>
 
                             <div className='form-group' style={{ display: 'flex', alignContent: 'stretch' }}>
                                 <div className='form-group' style={{ paddingRight: '10px' }} >
-                                    <label>Bulk from # (needs root key)</label><br />
+                                    <label>{RESX.modal.add.option1.label.bulk_from}</label><br />
                                     <input className='form-control form-control-sm' type='number' name='mockDeviceCount' disabled={!state.isMasterKey} onChange={updateField} value={state.mockDeviceCount || ''} />
                                 </div>
                                 <div className='form-group'>
-                                    <label>Bulk to # (needs root key)</label><br />
+                                    <label>{RESX.modal.add.option1.label.bulk_to}</label><br />
                                     <input className='form-control form-control-sm' type='number' name='mockDeviceCountMax' disabled={!state.isMasterKey} onChange={updateField} value={state.mockDeviceCountMax || ''} />
                                 </div>
                             </div>
 
                             <div className='form-group'>
-                                <label>mock-devices friendly name (-# appended in bulk create)</label>
+                                <label>{RESX.modal.add.option1.label.friendly}</label>
                                 <input className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
                             </div>
 
                         </div>
                         <div className='m-tabbed-panel-footer'>
-                            <button className='btn btn-info' disabled={state.scopeId == '' || state.deviceId == '' || state.sasKey == '' || (state.pnpSdk && state.capabilityUrn === '')} onClick={() => clickAddDevice('dps')}>Create this mock device</button>
+                            <button title={RESX.modal.add.option1.cta_title} className='btn btn-info' disabled={state.scopeId == '' || state.deviceId == '' || state.sasKey == '' || (state.pnpSdk && state.capabilityUrn === '')} onClick={() => clickAddDevice('dps')}>{RESX.modal.add.option1.cta_label}</button>
                         </div>
                     </>}
 
                     {panel !== 1 ? null : <>
                         <div className='m-tabbed-panel-form'>
                             <div className='form-group'>
-                                <label>Clone another mock device or use a template</label><br />
+                                <label>{RESX.modal.add.option1.label.clone}</label><br />
                                 <Combo items={state._deviceList} cls='custom-textarea-sm' name='mockDeviceCloneId' onChange={updateField} value={state.mockDeviceCloneId || ''} />
                             </div>
                             <div className='form-group'>
-                                <label>Device connection string</label>
+                                <label>{RESX.modal.add.option1.label.connstr}</label>
                                 <textarea className='custom-textarea form-control form-control-sm' name='connectionString' rows={4} onChange={updateField} value={state.connectionString || ''}></textarea>
                             </div>
                             <div className='form-group'>
-                                <label>mock-devices friendly name</label>
+                                <label>{RESX.modal.add.option1.label.friendly_sm}</label>
                                 <input className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
                             </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
-                            <button className='btn btn-info' disabled={!state.connectionString || state.connectionString === '' || state.mockDeviceName === ''} onClick={() => clickAddDevice('hub')}>Create this mock device</button>
+                            <button title={RESX.modal.add.option1.cta_title} className='btn btn-info' disabled={!state.connectionString || state.connectionString === '' || state.mockDeviceName === ''} onClick={() => clickAddDevice('hub')}>{RESX.modal.add.option1.cta_label}</button>
                         </div>
                     </>}
 
                     {panel !== 2 ? null : <>
                         <div className='m-tabbed-panel-form'>
                             <div className='form-group'>
-                                <label>mock-devices template Name</label>
-                                <input className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} placeholder='Leave blank to use DCM displayName' />
+                                <label>{RESX.modal.add.option2.label.name}</label>
+                                <input className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} placeholder={RESX.modal.add.option2.label.name_placeholder} />
                             </div>
                             <br />
                             <div className='form-group'>
-                                <button className='btn btn-success' onClick={() => loadFromDisk('capabilityModel')}>Browse disk for a DCM</button>
+                                <button className='btn btn-success' onClick={() => loadFromDisk('capabilityModel')}>{RESX.modal.add.option2.label.browse}</button>
                             </div>
 
                             <div className='form-group' style={{ height: "calc(100% - 160px)" }}>
-                                <Json json={state.capabilityModel} cb={(text: any) => { updateJson(text, 'capabilityModel') }} />
+                                <Json json={state.capabilityModel} cb={(text: any) => { updateJson(text, 'capabilityModel') }} err={() => setError(RESX.modal.error_json)} />
                             </div>
 
                         </div>
                         <div className='m-tabbed-panel-footer'>
-                            <button className='btn btn-info' onClick={() => clickAddDevice('template')}>Create template</button>
+                            <button title={RESX.modal.add.option2.cta_title} className='btn btn-info' onClick={() => clickAddDevice('template')}>{RESX.modal.add.option2.cta_label}</button>
                         </div>
                     </>}
 
                     {panel !== 3 ? null : <>
                         <div className='m-tabbed-panel-form'>
                             <div className='form-group'>
-                                <label>mock-devices template Name</label>
+                                <label>{RESX.modal.add.option2.label.name}</label>
                                 <input className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
                             </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
-                            <button className='btn btn-info' disabled={!state.mockDeviceName || state.mockDeviceName === ''} onClick={() => clickAddDevice('template')}>Create template</button>
+                            <button title={RESX.modal.add.option2.cta_title} className='btn btn-info' disabled={!state.mockDeviceName || state.mockDeviceName === ''} onClick={() => clickAddDevice('template')}>{RESX.modal.add.option2.cta_label}</button>
                         </div>
                     </>}
 
@@ -308,16 +320,16 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <div className='m-tabbed-panel-form'>
                             <div className='form-group'>
                                 <div style={{ height: '250px' }}>
-                                    <label>Load a state file</label>
+                                    <label>{RESX.modal.add.option3.label.state}</label>
                                     <div>
-                                        <span><input type='checkbox' name='merge' checked={merge} onClick={() => setMerge(!merge)} /> Merge Devices (keeps current Simulation config)</span>
+                                        <span><input type='checkbox' name='merge' checked={merge} onClick={() => setMerge(!merge)} /> {RESX.modal.add.option3.label.merge}</span>
                                         <br /><br />
-                                        <button className='btn btn-success' onClick={() => loadFromDisk('machineState')}>Browse for file</button>
+                                        <button className='btn btn-success' onClick={() => loadFromDisk('machineState')}>{RESX.modal.add.option3.label.browse}</button>
                                     </div>
                                 </div>
                                 <div>
-                                    <label>Save a state file</label><br />
-                                    <button className='btn btn-danger' onClick={() => saveToDisk()}>Browse folder</button>
+                                    <label>{RESX.modal.add.option3.label.state_save}</label><br />
+                                    <button className='btn btn-danger' onClick={() => saveToDisk()}>{RESX.modal.add.option3.label.browse_folder}</button>
                                 </div>
                             </div>
                         </div>
@@ -325,13 +337,13 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
                     {panel !== 5 ? null : <>
                         <div className='m-tabbed-panel-form'>
-                            <div className='form-group'><label>Copy/Paste the State's JSON</label></div>
+                            <div className='form-group'><label>{RESX.modal.add.option3.label.copy}</label></div>
                             <div className='form-group' style={{ height: "calc(100% - 60px)" }}>
-                                <Json json={state.machineStateClipboard} cb={(text: any) => { updateJson(text, 'machineStateClipboard') }} />
+                                <Json json={state.machineStateClipboard} cb={(text: any) => { updateJson(text, 'machineStateClipboard') }} err={() => setError(RESX.modal.error_json)} />
                             </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
-                            <button className='btn btn-info' onClick={() => updateCurrentState('machineStateClipboard')}>Update current State</button>
+                            <button title={RESX.modal.add.option3.cta_title} className='btn btn-info' onClick={() => updateCurrentState('machineStateClipboard')}>{RESX.modal.add.option3.cta_label}</button>
                         </div>
                     </>}
                 </div>

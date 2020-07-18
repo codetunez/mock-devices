@@ -1,9 +1,11 @@
 export const RESX = {
     "app": {
-        "version": "v5.4"
+        "version": "v5.5"
     },
     "core": {
         "templateNoSupport": "This is not supported for templates. Create a mock device from this template to use this feature",
+        "deviceL": "device",
+        "deviceU": "Device",
     },
     "nav": {
         "help": "Find out how to use mock-devices",
@@ -15,12 +17,99 @@ export const RESX = {
         "reset": "WARNING! Remove all mock devices and templates. Keeps the simulation configuration",
     },
     "selector": {
-        "title": "DEVICES",
+        "title": "DEVICES & TEMPLATES",
         "empty": ["Use ", " to add a new mock device, template or load/save/edit the state"],
         "card": {
             "device_title": "Select this mock device",
             "template_title": "Select this template",
         }
+    },
+    "modal": {
+        "error_json": "JSON has errors",
+        "add": {
+            "option1": {
+                "title": "Add a mock device",
+                "buttons": {
+                    "button1_label": "Use DPS",
+                    "button1_title": "Create the device using the DPS configuration",
+                    "button2_label": "Use Connection String",
+                    "button2_title": "Create the device using the a IoT device connection",
+                },
+                "select": "--Do not clone. Create device with no capabilities",
+                "label": {
+                    "clone": "Clone another mock device or use a template",
+                    "deviceId": "Device ID (-# appended in bulk create)",
+                    "dps": "DPS scope ID",
+                    "sas": "SaS key",
+                    "root": "Root key",
+                    "dps_blob": "DPS blob payload",
+                    "bulk_from": "Bulk from # (needs root key)",
+                    "bulk_to": "Bulk from # (needs root key)",
+                    "friendly": "mock-devices friendly name (-# appended in bulk create)",
+                    "connstr": "Device connection string",
+                    "friendly_sm": "mock-devices friendly name",
+                },
+                "cta_title": "Create this device",
+                "cta_label": "Create this mock device",
+            },
+            "option2": {
+                "title": "Add a template",
+                "buttons": {
+                    "button1_label": "Start with a DCM",
+                    "button1_title": "Create a new template using a DTDLv1 DCM",
+                    "button2_label": "Start new Template",
+                    "button2_title": "Create a new empty (or cloned) template",
+                },
+                "label": {
+                    "name": "mock-devices template Name",
+                    "name_placeholder": "Leave blank to use DCM displayName",
+                    "browse": "Browse disk for a DCM",
+                },
+                "cta_title": "Create this template",
+                "cta_label": "Create template",
+            },
+            "option3": {
+                "title": "State",
+                "buttons": {
+                    "button1_label": "Load/Save from file system",
+                    "button1_title": "Load or save a state file",
+                    "button2_label": "Editor",
+                    "button2_title": "Create a new empty (or cloned) template",
+                },
+                "label": {
+                    "state": "Load a state file",
+                    "merge": "Merge Devices (keeps current Simulation config)",
+                    "browse": "Browse for file",
+                    "state_save": "Save a state file",
+                    "browse_folder": "Browse folder",
+                    "copy": "Copy/Paste the State's JSON",
+                },
+                "cta_title": "Replace the current and state and reset the simulator",
+                "cta_label": "Update current State",
+            },
+            "error_add": "The device cannot be added. Check values or possible dupe",
+            "error_dcm": "The DCM is not valid or contains errors",
+            "error_load": "Data cannot be loaded. Check file format or version mismatch",
+            "error_state": "State cannot be updated. Format is not valid",
+            "error_file": "State file did not save",
+        },
+        "console": {
+            "text1": ["From", "of"]
+        },
+        "edit": {
+            "title": "Update this mock device's configuration. Bad settings will destabilize the app",
+            "update_label": "Update",
+            "update_title": "Stops the devices. Requires restart for new setting to take effect",
+        },
+        "simulation": {
+            "title": "Simulation",
+            "text1": "Adjust the min/max ranges of each AUTO type and add to the Semantic Type schemas. Changes persisted to state. Devices must be restarted",
+            "error_load": "Simulation data cannot be loaded",
+            "error_save": "Simulation data cannot be saved",
+            "configuration_label": "Configuration",
+            "reset_label": "Reset simulation",
+            "reset_title": "Stops all devices, resets the engine and applies the new simulation changes",
+        },
     },
     "device": {
         "empty": "Use + to add new capabilities such as sending telemetry or reporting/receiving twin data. Methods can be configured to send back a payload. Plan mode is disabled until capabilities are added",
@@ -29,10 +118,10 @@ export const RESX = {
             "powerOn_title": "Connect this mock device to the hub and start sending and receiving events",
             "powerOff_label": " Turn off power",
             "powerOff_title": "Disconnect this mock device from the hub and stop sending data",
-            "kindTemplate": "Template for ",
-            "kindReal": "Real device using ",
-            "sdkLegacy": "current SDK",
-            "sdkPnp": "PnP SDK (Digital Twins)",
+            "kindTemplate": "Template",
+            "kindReal": "Real device",
+            "sdkLegacy": "",
+            "sdkPnp": "",
         },
         "title": {
             "planMode": "Plan mode",
@@ -51,6 +140,7 @@ export const RESX = {
             "delete_title": "Delete this device or template including all its capabilities. Ensure you have saved your state first",
         },
         "card": {
+            "UX": "UX",
             "save_label": "Save",
             "save_title": "Save changes to this capability",
             "delete_label": "Delete",
@@ -63,6 +153,10 @@ export const RESX = {
             "read_param_title": "Read the last known set of parameters sent for this method capability",
             "waiting_placeholder": "Waiting ...",
             "save_pre_error": "Select or remove a sensor to update this property",
+            "color_title": "Pick a color for this capability in mock-devices",
+            "color_label": "Color",
+            "select": "--Select",
+            "noselect": "--No send capability",
             "toggle": {
                 "enabled_label": "Enabled",
                 "enabled_title": "Enable this capability in the simulation (always enabled)",
@@ -135,10 +229,20 @@ export const RESX = {
                 "int_name_title": "The PnP interface instance name. Can be duplicated across capabilities",
                 "int_urn_label": "URN",
                 "int_urn_title": "The PnP interface unique ID. Can be duplicated across capabilities",
-                "version_label": "Last known twin version",
+                "version_label": "Last desired version of capability",
                 "version_title": "The properties/desired/$version of the twin associated with this device",
-                "value_label": "Last known twin value",
+                "value_label": "Last desired value of capability",
                 "value_title": "The value at the properties/desired/<name> of the twin associated with this device",
+                "twin_rpt_label": "Use a capability to send a response",
+                "twin_rpt_title": "The capability will be sent after the desired is received (Read is not required)",
+                "property_report_label": "Select capability",
+                "property_report_title": "Both telemetry and twin send data can be used as the response",
+                "property_version_label": "Override capability's value",
+                "property_version_title": "Ignore the current capability's configuration and use a custom value",
+                "property_convention_label": "Use convention",
+                "property_convention_title": "Will treat data as objects and merge desired received into reported payload. Then it will replace any AUTO/RECEIVE macros",
+                "property_version_payload_label": "Value (can be JSON)",
+                "property_version_payload_title": "See Help for full ist of AUTO macros available",
             }
         },
         "plan": {

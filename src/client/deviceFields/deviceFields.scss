@@ -141,7 +141,40 @@ $device-card-title-width-text: 320px; //220px;
   }
 }
 
+.df-card-row-nogap {
+  margin-top: -20px;
+}
+
 .df-card-row > div:nth-child(1) {
   width: $device-field-width-1st-col;
   color: $app-clr-yellow-1;
+}
+
+.snippets {
+  font-size: 0.7rem;
+  display: flex;
+  width: 410px;
+  color: $app-clr-4;
+
+  > div:first-child {
+    color: $app-clr-yellow-1;
+    white-space: nowrap;
+  }
+
+  * {
+    margin-right: $sm-gutter;
+  }
+
+  .snippet-links {
+    display: flex;
+    flex-wrap: wrap;
+
+    div {
+      cursor: pointer;
+    }
+
+    div:hover {
+      color: $app-white;
+    }
+  }
 }
