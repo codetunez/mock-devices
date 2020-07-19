@@ -1,11 +1,11 @@
 import * as React from 'react';
 
 var classNames = require('classnames');
-const cx = classNames.bind(require('./console.scss'));
+const cx = classNames.bind(require('./ConsoleInspector.scss'));
 const cxM = classNames.bind(require('./modal.scss'));
 import { RESX } from '../strings';
 
-export const Console: React.FunctionComponent<any> = ({ lines, index, handler }) => {
+export const ConsoleInspector: React.FunctionComponent<any> = ({ lines, index, handler }) => {
 
     const [messages, setMessages] = React.useState({ lines, index });
 
