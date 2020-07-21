@@ -20,15 +20,6 @@ export class AppProvider extends React.PureComponent {
                     colors: response.data
                 });
             })
-
-        let eventSource = new EventSource('/api/events/control');
-        eventSource.onmessage = ((e) => {
-            this.setControlMessages(JSON.parse(e.data));
-        });
-    }
-
-    setControlMessages(data: any) {
-        this.setState({ ...this.state, control: data });
     }
 
     setExpand = (id: any) => {
@@ -43,7 +34,6 @@ export class AppProvider extends React.PureComponent {
 
     state: any = {
         property: {},
-        control: {},
         selectorExpand: false,
         snippets: {},
         colors: {},

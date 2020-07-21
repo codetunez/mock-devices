@@ -8,37 +8,6 @@
   flex-wrap: nowrap;
 }
 
-.shell-console {
-  background-color: $app-black;
-  color: limegreen;
-  height: 100%;
-  font-size: 0.8rem;
-  display: flex;
-  padding-left: 1.7rem;
-  overflow-y: auto;
-
-  .console-pause {
-    position: fixed;
-    left: 0.6rem;
-    cursor: pointer;
-  }
-
-  .console-erase {
-    position: fixed;
-    font-size: 1rem;
-    left: 0.6rem;
-    top: 1rem;
-    cursor: pointer;
-  }
-
-  .ellipsis {
-    width: calc(100vw - 2.9rem);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-}
-
 .shell-content {
   background-color: $app-clr-0;
   color: $app-white;

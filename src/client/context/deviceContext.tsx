@@ -111,6 +111,12 @@ export class DeviceProvider extends React.PureComponent {
             })
     }
 
+    reorderDevicePosition = (updatePayload: any) => {
+        axios.post('/api/device/reorder', updatePayload)
+            .then((response) => {
+                this.setState({ device: response.data.device, devices: response.data.devices });
+            })
+    }
 
     // this handles creating a method and twin and telemetry. need to always up the list
     createCapability = (type: string, direction: string, pnpSdk: boolean) => {
@@ -184,6 +190,7 @@ export class DeviceProvider extends React.PureComponent {
         deleteDevice: this.deleteDevice,
         updateDeviceProperty: this.updateDeviceProperty,
         updateDeviceMethod: this.updateDeviceMethod,
+        reorderDevicePosition: this.reorderDevicePosition,
         setDevices: this.setDevices,
         setDevice: this.setDevice,
         getCapability: this.getCapability,

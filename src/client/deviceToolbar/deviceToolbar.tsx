@@ -3,25 +3,25 @@ const cx = classNames.bind(require('./deviceToolbar.scss'));
 
 import * as React from 'react';
 import { DeviceContext } from '../context/deviceContext';
-import { AppContext } from '../context/appContext';
+import { ControlContext } from '../context/controlContext';
 
 import { RESX } from '../strings';
 
 export function DeviceToolbar() {
 
     const deviceContext: any = React.useContext(DeviceContext);
-    const appContext: any = React.useContext(AppContext);
+    const controlContext: any = React.useContext(ControlContext);
     const [power, setPower] = React.useState<any>({});
 
     React.useEffect(() => {
-        const on = appContext.control[deviceContext.device._id] && appContext.control[deviceContext.device._id][2] != 'OFF' || false;
+        const on = controlContext.control[deviceContext.device._id] && controlContext.control[deviceContext.device._id][2] != 'OFF' || false;
         setPower({
             label: on ? RESX.device.toolbar.powerOff_label : RESX.device.toolbar.powerOn_label,
             title: on ? RESX.device.toolbar.powerOff_title : RESX.device.toolbar.powerOn_title,
             style: on ? "btn-success" : "btn-outline-secondary",
             handler: on ? deviceContext.stopDevice : deviceContext.startDevice
         })
-    }, [deviceContext.device, appContext])
+    }, [deviceContext.device, controlContext])
 
     const template = deviceContext.device.configuration._kind === 'template';
 
