@@ -1,6 +1,6 @@
 export const RESX = {
     "app": {
-        "version": "v5.5"
+        "version": "v6"
     },
     "core": {
         "templateNoSupport": "This is not supported for templates. Create a mock device from this template to use this feature",

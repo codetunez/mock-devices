@@ -9,6 +9,10 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
         <div className='help-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
         <div className='help-content'>
             <div className='help-row'>
+                <h3>New help coming soon ...</h3>
+            </div>
+            {/*
+             <div className='help-row'>
                 <h3>How to use mock-devices</h3>
                 <p>mock-devices is a tool that can be used to quickly create multiple devices with different configurations that act and respond
                     like real devices. It utilizes the <a href="https://github.com/Azure/azure-iot-sdk-node/tree/master/device" target="_blank">node.js</a> Azure
@@ -242,6 +246,7 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
                 <h3>Changing the Simulation</h3>
                 <p>Some some parts of the simulation can be changed like the min/max ranges for number. Change with caution!</p>
             </div>
+             */}
         </div>
     </div >
 }
