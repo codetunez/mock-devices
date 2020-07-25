@@ -4,13 +4,20 @@ export const ControlContext = React.createContext({});
 
 export class ControlProvider extends React.PureComponent {
 
+    private eventSource = null;
+
     constructor() {
         super(null);
 
-        let eventSource = new EventSource('/api/events/control');
-        eventSource.onmessage = ((e) => {
+        this.eventSource = new EventSource('/api/events/control');
+        this.eventSource.onmessage = ((e) => {
             this.setControlMessages(JSON.parse(e.data));
         });
+    }
+
+    killConnection = () => {
+        this.eventSource.close()
+        this.eventSource = null;
     }
 
     setControlMessages(data: any) {
@@ -19,6 +26,7 @@ export class ControlProvider extends React.PureComponent {
 
     state: any = {
         control: {},
+        killConnection: this.killConnection
     }
 
     render() {
