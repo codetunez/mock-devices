@@ -23,6 +23,12 @@ export function DeviceToolbar() {
         })
     }, [deviceContext.device, controlContext])
 
+    React.useEffect(() => {
+        return () => {
+            controlContext.killConnection();
+        }
+    }, [controlContext]);
+
     const template = deviceContext.device.configuration._kind === 'template';
 
     return <div className='device-toolbar-container'>
