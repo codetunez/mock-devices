@@ -82,6 +82,13 @@ export class DeviceProvider extends React.PureComponent {
             })
     }
 
+    deleteModule = (id: string) => {
+        axios.delete('/api/device/' + this.state.device._id + '/module/' + id)
+            .then((response: any) => {
+                this.setState({ devices: response.data.devices, device: response.data.device });
+            })
+    }
+
     // single device data control plane 
     updateDeviceConfiguration = (updatePayload: any) => {
         axios.put(`/api/device/${this.state.device._id}/configuration`, { payload: updatePayload })
@@ -197,6 +204,7 @@ export class DeviceProvider extends React.PureComponent {
         startDevice: this.startDevice,
         stopDevice: this.stopDevice,
         deleteDevice: this.deleteDevice,
+        deleteModule: this.deleteModule,
         updateDeviceProperty: this.updateDeviceProperty,
         updateDeviceMethod: this.updateDeviceMethod,
         reorderDevicePosition: this.reorderDevicePosition,

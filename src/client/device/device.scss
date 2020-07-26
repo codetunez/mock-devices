@@ -33,7 +33,8 @@
 }
 
 .device-capabilities,
-.device-plan {
+.device-plan,
+.device-edge {
   margin: $md-gutter 0 0 $md-gutter;
   display: flex;
   flex-wrap: wrap;
@@ -42,17 +43,4 @@
 
 .device-capabilities-empty {
   padding-right: $sm-gutter;
-}
-
-.device-edge-modules {  
-  .title {
-    padding-bottom: $md-gutter;
-  }
-  .list {
-    display: flex;
-    flex-direction: column;
-    div {
-      margin-bottom: $sm-gutter;
-    }
-  }
 }

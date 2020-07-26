@@ -1,0 +1,18 @@
+@import "../const.scss";
+
+.device-edge-empty {
+  padding-right: $sm-gutter;
+}
+
+.device-edge-modules {
+  .title {
+    padding-bottom: $md-gutter;
+  }
+  .list {
+    display: flex;
+    flex-direction: column;
+    button {
+      margin: 0 $xs-gutter $sm-gutter 0;
+    }
+  }
+}

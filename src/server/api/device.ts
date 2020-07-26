@@ -14,6 +14,16 @@ export default function (deviceStore: DeviceStore) {
         res.json(deviceStore.exists(id));
     });
 
+    // delete a module
+    api.delete('/:id/module/:moduleId', function (req, res, next) {
+        var id = req.params.id;
+        var moduleId = req.params.moduleId;
+        deviceStore.stopDevice(deviceStore.exists(moduleId));
+        deviceStore.deleteDevice(deviceStore.exists(moduleId));
+        deviceStore.removeDeviceModule(deviceStore.exists(id), moduleId)
+        res.json({ device: deviceStore.exists(id), devices: deviceStore.getListOfItems() });
+    });
+
     // delete a device
     api.delete('/:id', function (req, res, next) {
         var id = req.params.id;

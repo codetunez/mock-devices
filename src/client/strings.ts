@@ -140,13 +140,21 @@ export const RESX = {
             "cta_label": "Add this module to the Edge device",
         }
     },
-    "device": {
-        "empty": "Use + to add new capabilities such as sending telemetry or reporting/receiving twin data. Methods can be configured to send back a payload. Plan mode is disabled until capabilities are added",
-        "edge_empty": [
+    "edge": {
+        "title": "Manage modules",
+        "empty": [
             "Use + to add a new module. Modules get connection information via the Edge runtime",
             "When running in the runtime, the Edge device's Id and module's Id will be used to map the module to the environments variables on the host Edge device. To run multiple modules, deploy multiple mock-devices containers in the Edge manifest",
             "Modules have capabilities such as sending telemetry or reporting/receiving twin data like normal devices. Methods can be configured to send back a payload. Plan mode is disabled until capabilities are added"
         ],
+        "buttons": {
+            "module_title": "Select this module",
+            "delete_label": "Delete",
+            "delete_title": "Delete this module from the Edge device"
+        },
+    },
+    "device": {
+        "empty": "Use + to add new capabilities such as sending telemetry or reporting/receiving twin data. Methods can be configured to send back a payload. Plan mode is disabled until capabilities are added",
         "toolbar": {
             "powerOn_label": " Turn on power",
             "powerOn_title": "Connect this mock device to the hub and start sending and receiving events",

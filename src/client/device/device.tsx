@@ -10,6 +10,7 @@ import { DeviceFieldD2C } from '../deviceFields/deviceFieldD2C';
 import { DeviceFieldC2D } from '../deviceFields/deviceFieldC2D';
 import { DeviceFieldMethod } from '../deviceFields/deviceFieldMethod';
 import { DevicePlan } from '../devicePlan/devicePlan';
+import { DeviceEdge } from '../deviceEdge/deviceEdge';
 import { RESX } from '../strings';
 
 import { DeviceContext } from '../context/deviceContext';
@@ -21,8 +22,11 @@ export function Device() {
     const deviceContext: any = React.useContext(DeviceContext);
     const appContext: any = React.useContext(AppContext);
 
-    const kind = deviceContext.device.configuration && deviceContext.device.configuration._kind;
-    const modules = deviceContext.device.configuration && deviceContext.device.configuration.modules || [];
+    if (!deviceContext.device.configuration) { return null; }
+
+    const kind = deviceContext.device.configuration._kind;
+    const modules = deviceContext.device.configuration.modules || [];
+    const content = deviceContext.device.configuration.planMode ? 'plan' : kind === 'edge' ? 'edge' : 'caps');
 
     return <>{Object.keys(deviceContext.device).length > 0 ?
         <div className='device'>
@@ -31,42 +35,22 @@ export function Device() {
             <div className='device-commands'><DeviceCommands /></div>
 
             <div className='device-fields'>
-                {deviceContext.device.configuration.planMode ?
-                    <div className='device-plan'>
-                        <DevicePlan device={deviceContext.device} />
+                {content === 'plan' ? <div className='device-plan'><DevicePlan device={deviceContext.device} /></div> : null}
+                {content === 'edge' ? <div className='device-edge'><DeviceEdge modules={modules} /></div> : null}
+                {content === 'caps' ? <div className='device-capabilities'>
+                    {deviceContext.device && deviceContext.device.comms && deviceContext.device.comms.map((capability: any) => {
+                        const expand = appContext.property[capability._id] || false;
+                        return <>
+                            {capability.type && capability.type.direction === 'd2c' ? <DeviceFieldD2C capability={capability} shouldExpand={expand} sensors={deviceContext.sensors} pnp={deviceContext.device.configuration.pnpSdk} template={kind === 'template'} /> : null}
+                            {capability.type && capability.type.direction === 'c2d' ? <DeviceFieldC2D capability={capability} shouldExpand={expand} pnp={deviceContext.device.configuration.pnpSdk} template={kind === 'template'} /> : null}
+                            {capability._type === 'method' ? <DeviceFieldMethod capability={capability} shouldExpand={expand} pnp={deviceContext.device.configuration.pnpSdk} template={kind === 'template'} originalName={capability.name} /> : null}
+                        </>
+                    })}
+                    <div className='device-capabilities-empty'>
+                        {deviceContext.device.comms && deviceContext.device.comms.length === 0 ? RESX.device.empty : ''}
                     </div>
-                    :
-                    <div className='device-capabilities'>
-                        {deviceContext.device && deviceContext.device.comms && deviceContext.device.comms.map((capability: any) => {
-                            const expand = appContext.property[capability._id] || false;
-                            return <>
-                                {capability.type && capability.type.direction === 'd2c' ? <DeviceFieldD2C capability={capability} shouldExpand={expand} sensors={deviceContext.sensors} pnp={deviceContext.device.configuration.pnpSdk} template={kind === 'template'} /> : null}
-                                {!deviceContext.device.configuration.pnpSdk ?
-                                    <>
-                                        {capability.type && capability.type.direction === 'c2d' ? <DeviceFieldC2D capability={capability} shouldExpand={expand} pnp={deviceContext.device.configuration.pnpSdk} template={kind === 'template'} /> : null}
-                                        {capability._type === 'method' ? <DeviceFieldMethod capability={capability} shouldExpand={expand} pnp={deviceContext.device.configuration.pnpSdk} template={kind === 'template'} originalName={capability.name} /> : null}
-                                    </>
-                                    : null}
-                            </>
-                        })}
-                        <div className='device-capabilities-empty'>
-                            {deviceContext && kind != 'edge' && (deviceContext.device.comms && deviceContext.device.comms.length === 0) ? RESX.device.empty : ''}
-                            {deviceContext && kind === 'edge' && modules.length === 0 ? <><p>{RESX.device.edge_empty[0]}</p><p>{RESX.device.edge_empty[1]}</p><p>{RESX.device.edge_empty[2]}</p></> : null}
-                            {deviceContext && kind === 'edge' && modules.length > 0 ?
-                                <div className='device-edge-modules'>
-                                    <div className='title'><h4>Goto module</h4></div>
-                                    <div className='list'>
-                                        {modules.map((element) => {
-                                            return <div><button className='btn btn-primary' onClick={() => { deviceContext.getDevice(element) }}>{element}</button></div>
-                                        })}
-                                    </div>
-                                </div>
-                                : null}
-                        </div>
-                    </div>
-                }
+                </div> : null}
             </div>
-        </div>
-        : null
-    }</>
+        </div> : null}
+    </>
 }

@@ -59,6 +59,16 @@ export class DeviceStore {
         return this.addDevice(d)
     }
 
+    public removeDeviceModule = (d: Device, moduleId: string) => {
+        const i = d.configuration.modules.indexOf(moduleId);
+        if (i > -1) {
+            const payload = {
+                modules: d.configuration.modules.splice(i, 1)
+            }
+            this.updateDevice(d._id, payload);
+        }
+    }
+
     public addDevice = (d: Device) => {
 
         // set this up by default
