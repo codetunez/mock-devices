@@ -1,4 +1,4 @@
-# mock-devices v5 (Desktop Edition)
+# mock-devices v6 Beta (Desktop Edition)
 Use mock-devices to create fake/mock devices that connect to an Azure IoT Hub. The devices can send and receive data like a physical device would.
 
 This is the desktop edition of mock-devices which is a cross platform (Windows or OSX) Electron app. To use the Docker version, visit this repo [mock-devices DE](http://github.com/codetunez/mock-devices-de)
