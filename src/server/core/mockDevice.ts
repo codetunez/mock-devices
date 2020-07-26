@@ -7,6 +7,8 @@ import { Client, ModuleClient } from 'azure-iot-device';
 import { Message, SharedAccessSignature } from 'azure-iot-device';
 import { ConnectionString } from 'azure-iot-common';
 
+var Protocol = require('azure-iot-device-mqtt').Mqtt;
+
 import { Mqtt as MqttDps } from 'azure-iot-provisioning-device-mqtt';
 import { SymmetricKeySecurityClient } from 'azure-iot-security-symmetric-key';
 import { ProvisioningDeviceClient } from 'azure-iot-provisioning-device';
@@ -56,7 +58,6 @@ const LOGGING_TAGS = {
 
 interface IoTHubDevice {
     client: any;
-    digitalTwinClient: any;
 }
 
 interface Timers {
@@ -86,8 +87,7 @@ export class MockDevice {
     private connectionDPSTimer = null;
     private connectionTimer = null;
     private device: Device = null;
-    private iotHubDevice: IoTHubDevice = null;
-
+    private iotHubDevice: IoTHubDevice = { client: undefined };
     private methodRLTimer = null;
     private methodReturnPayload = null;
     private receivedMethodParams = {}
@@ -115,9 +115,6 @@ export class MockDevice {
     private messageService: MessageService = null;
 
     private registrationConnectionString: string = null;
-
-    private pnpInterfaces = {};
-    private pnpInterfaceCache = {};
 
     private planModeLastEventTime = 0;
 
@@ -191,8 +188,6 @@ export class MockDevice {
             c2dIndex: {},
             directMethodIndex: {}
         }
-
-        this.pnpInterfaceCache = {};
 
         this.twinRLProps = [];
         this.twinRLPropsPlanValues = [];
@@ -396,6 +391,8 @@ export class MockDevice {
         this.running = true;
 
         if (this.device.configuration._kind === 'module') {
+            this.iotHubDevice = { client: undefined };
+
             this.log('MODULE INIT', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
             this.logCP(LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.TRYING);
 
@@ -409,7 +406,7 @@ export class MockDevice {
                 return;
             }
 
-            if (IOTEDGE_DEVICEID != deviceId && IOTEDGE_MODULEID != moduleId) {
+            if (IOTEDGE_DEVICEID != deviceId || IOTEDGE_MODULEID != moduleId) {
                 this.log('MODULE IS NOT CONFIGURED FOR HOST EDGE DEVICE (NOT A FAILURE)', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
                 this.log('DEVICE IS SWITCHED OFF', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
                 this.logCP(LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
@@ -417,17 +414,17 @@ export class MockDevice {
             }
 
             try {
-                this.iotHubDevice.client = await ModuleClient.fromEnvironment(M1);
+                this.iotHubDevice.client = await ModuleClient.fromEnvironment(Protocol);
+                this.log('MODULE CHECK PASSED. ENTERING MAIN LOOP', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
+                this.logCP(LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.CONNECTED);
+                this.mainLoop();
             } catch (err) {
-                this.log('MODULE FAILED TO CONNECT TO IOT HUB CLIENT', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
+                this.log('MODULE FAILED TO CONNECT TO IOT HUB CLIENT: ' + err, LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
                 this.log('DEVICE IS SWITCHED OFF', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
                 this.logCP(LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
                 return;
             }
-
-            this.log('MODULE CHECK PASSED', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
-            this.logCP(LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.CONNECTED);
-            return;
+            return // needed
         }
 
         if (this.device.configuration._kind === 'dps') {
@@ -532,9 +529,6 @@ export class MockDevice {
 
                     // desired properties are cached
                     twin.on('properties.desired', ((delta) => {
-                        if (!this.CONNECT_RESTART) {
-                            this.log('IOT HUB CLIENT IS HAVING PROBLEMS. DELETE THE DEVICE AND START AGAIN', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
-                        }
 
                         _.merge(this.desiredMergedCache, delta);
 
@@ -730,7 +724,7 @@ export class MockDevice {
     }
 
     async connectClient(connectionString) {
-        this.iotHubDevice = { client: undefined, digitalTwinClient: undefined };
+        this.iotHubDevice = { client: undefined };
 
         if (this.useSasMode) {
             const cn = ConnectionString.parse(connectionString);
@@ -766,7 +760,7 @@ export class MockDevice {
         if (this.dpsRetires === 0) { return; }
 
         let config = this.device.configuration;
-        this.iotHubDevice = { client: undefined, digitalTwinClient: undefined };
+        this.iotHubDevice = { client: undefined };
         this.registrationConnectionString = 'init';
 
         let transformedSasKey = config.isMasterKey ? this.computeDrivedSymmetricKey(config.sasKey, config.deviceId) : config.sasKey;

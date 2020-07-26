@@ -26,7 +26,7 @@ export function Device() {
 
     const kind = deviceContext.device.configuration._kind;
     const modules = deviceContext.device.configuration.modules || [];
-    const content = deviceContext.device.configuration.planMode ? 'plan' : kind === 'edge' ? 'edge' : 'caps');
+    const content = deviceContext.device.configuration.planMode ? 'plan' : kind === 'edge' ? 'edge' : 'caps';
 
     return <>{Object.keys(deviceContext.device).length > 0 ?
         <div className='device'>
