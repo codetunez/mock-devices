@@ -396,23 +396,37 @@ export class MockDevice {
         this.running = true;
 
         if (this.device.configuration._kind === 'module') {
-            this.log('MODULE ENVIRONMENT CHECK', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
-            this.logCP(LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.TRYING);
+            this.log('MODULE INIT', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
+            this.logCP(LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.TRYING);
 
-            this.log(JSON.stringify(process.env), LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
+            const { deviceId, moduleId } = Utils.decodeModuleKey(this.device._id);
+            const { IOTEDGE_WORKLOADURI, IOTEDGE_DEVICEID, IOTEDGE_MODULEID, IOTEDGE_MODULEGENERATIONID, IOTEDGE_IOTHUBHOSTNAME, IOTEDGE_AUTHSCHEME } = process.env;
+
+            if (!IOTEDGE_WORKLOADURI && !IOTEDGE_DEVICEID && !IOTEDGE_MODULEID && !IOTEDGE_MODULEGENERATIONID && !IOTEDGE_IOTHUBHOSTNAME && !IOTEDGE_AUTHSCHEME) {
+                this.log('MODULE ENVIRONMENT CHECK FAILED - MISSING IOTEDGE_*', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
+                this.log('DEVICE IS SWITCHED OFF', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
+                this.logCP(LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
+                return;
+            }
+
+            if (IOTEDGE_DEVICEID != deviceId && IOTEDGE_MODULEID != moduleId) {
+                this.log('MODULE IS NOT CONFIGURED FOR HOST EDGE DEVICE (NOT A FAILURE)', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
+                this.log('DEVICE IS SWITCHED OFF', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
+                this.logCP(LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
+                return;
+            }
 
             try {
                 this.iotHubDevice.client = await ModuleClient.fromEnvironment(M1);
             } catch (err) {
-
-                console.error(err);
-
-                this.log('MODULE ENVIRONMENT CHECK FAILED', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
-                this.logCP(LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
+                this.log('MODULE FAILED TO CONNECT TO IOT HUB CLIENT', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
+                this.log('DEVICE IS SWITCHED OFF', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
+                this.logCP(LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
                 return;
             }
-            this.log('MODULE ENVIRONMENT PASSED', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
-            this.logCP(LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.CONNECTED);
+
+            this.log('MODULE CHECK PASSED', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
+            this.logCP(LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.CONNECTED);
             return;
         }
 

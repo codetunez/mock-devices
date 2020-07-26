@@ -61,7 +61,7 @@ export function Device() {
                                         })}
                                     </div>
                                 </div>
-                            : null}
+                                : null}
                         </div>
                     </div>
                 }
