@@ -43,3 +43,16 @@
 .device-capabilities-empty {
   padding-right: $sm-gutter;
 }
+
+.device-edge-modules {  
+  .title {
+    padding-bottom: $md-gutter;
+  }
+  .list {
+    display: flex;
+    flex-direction: column;
+    div {
+      margin-bottom: $sm-gutter;
+    }
+  }
+}

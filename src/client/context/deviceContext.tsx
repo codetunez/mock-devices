@@ -88,6 +88,15 @@ export class DeviceProvider extends React.PureComponent {
             .then((response: any) => {
                 this.setState({ device: response.data.device, devices: response.data.devices });
             })
+            .catch((err) => { alert(err.response.data); })
+    }
+
+    updateDeviceModules = (updatePayload: any) => {
+        axios.put(`/api/device/${this.state.device._id}/module`, { payload: updatePayload })
+            .then((response: any) => {
+                this.setState({ device: response.data.device, devices: response.data.devices });
+            })
+            .catch((err) => { alert(err.response.data); })
     }
 
     getDevice = (id: string, index: number) => {
@@ -201,7 +210,8 @@ export class DeviceProvider extends React.PureComponent {
         getSensor: this.getSensor,
         planRestart: this.planRestart,
         planSave: this.planSave,
-        updateDeviceConfiguration: this.updateDeviceConfiguration
+        updateDeviceConfiguration: this.updateDeviceConfiguration,
+        updateDeviceModules: this.updateDeviceModules
     }
 
     render() {

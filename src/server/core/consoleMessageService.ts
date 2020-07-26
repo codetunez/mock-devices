@@ -4,36 +4,21 @@ import { MessageService } from '../interfaces/messageService';
 
 export class ConsoleMessageService implements MessageService {
 
-    private propertyUpdatePayload = {};
-    private showConsole: boolean;
-    private showLiveUpdate: boolean;
-    private timer: any = null;
-
-    constructor(showConsole: boolean, showLiveUpdate: boolean) {
-        this.liveUpdateTimer();
-        this.showConsole = showConsole;
-        this.showLiveUpdate = showLiveUpdate;
-    }
-
-    end() {
-        this.timer = null;
-    }
+    end() { }
 
     sendConsoleUpdate(message: string) {
-        if (this.showConsole) { console.log(message); }
+        if (Config.CONSOLE_LOGGING) { console.log(message); }
     }
 
-    sendAsLiveUpdate(deviceId: string, payload: any) {
-        Object.assign(this.propertyUpdatePayload, payload);
+    sendAsLiveUpdate(payload: any) {
+        if (Config.PROPERTY_LOGGING) {
+            console.log(JSON.stringify(payload));
+        }
     }
 
-    sendAsControlPlane() {}
-
-    liveUpdateTimer = () => {
-        if (this.showLiveUpdate) {
-            this.timer = setInterval(() => {
-                console.log(JSON.stringify(this.propertyUpdatePayload));
-            }, 750)
+    sendAsControlPlane(payload: any) {
+        if (Config.CONTROL_LOGGING) {
+            console.log('CONTROL PLANE >>>>>> ' + JSON.stringify(payload));
         }
     }
 }

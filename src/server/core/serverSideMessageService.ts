@@ -7,7 +7,6 @@ export class ServerSideMessageService implements MessageService {
     private eventData = {};
     private eventControl = {};
     private timers = {};
-    private compose: boolean = false;
 
     private messageIdCount = 1;
 
@@ -36,7 +35,7 @@ export class ServerSideMessageService implements MessageService {
     }
 
     sendAsControlPlane(payload: any) {
-        if (Config.CONSOLE_LOGGING) {
+        if (Config.CONTROL_LOGGING) {
             for (const key in payload) { this.eventControl[key] = payload[key] }
         }
     }

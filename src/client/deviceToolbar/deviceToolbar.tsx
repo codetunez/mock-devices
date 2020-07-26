@@ -12,6 +12,7 @@ export function DeviceToolbar() {
     const deviceContext: any = React.useContext(DeviceContext);
     const controlContext: any = React.useContext(ControlContext);
     const [power, setPower] = React.useState<any>({});
+    const kind = deviceContext.device.configuration._kind;
 
     React.useEffect(() => {
         const on = controlContext.control[deviceContext.device._id] && controlContext.control[deviceContext.device._id][2] != 'OFF' || false;
@@ -29,15 +30,12 @@ export function DeviceToolbar() {
         }
     }, [controlContext]);
 
-    const template = deviceContext.device.configuration._kind === 'template';
-
     return <div className='device-toolbar-container'>
         <div className='power'>
-            <button title={template ? RESX.core.templateNoSupport : power.title} className={cx('btn', power.style)} disabled={deviceContext.device.configuration._kind === 'template'} onClick={() => { power.handler() }}><span className='fas fa-power-off'></span>{power.label}</button>
+            <button title={kind === 'template' ? RESX.core.templateNoSupport : kind === 'edge' ? RESX.core.edgeNoSupport : power.title} className={cx('btn', power.style)} disabled={kind === 'template' || kind === 'edge'} onClick={() => { power.handler() }}><span className='fas fa-power-off'></span>{power.label}</button>
         </div>
         <div className='type'>
-            {template ? RESX.device.toolbar.kindTemplate : RESX.device.toolbar.kindReal}
-            {deviceContext.device.configuration.pnpSdk ? RESX.device.toolbar.sdkPnp : RESX.device.toolbar.sdkLegacy}
+            {kind === 'template' ? RESX.device.toolbar.kindTemplate : kind === 'edge' ? RESX.device.toolbar.kindEdge : kind === 'module' ? RESX.device.toolbar.kindModule : RESX.device.toolbar.kindReal}
         </div>
     </div >
 }

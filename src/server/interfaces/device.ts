@@ -93,7 +93,7 @@ export class Device {
 }
 
 export class DeviceConfiguration {
-    public _kind: 'dps' | 'hub' | 'template';
+    public _kind: 'dps' | 'hub' | 'template' | 'edge' | 'module';
     public _deviceList?: [];
     public deviceId?: string;
     public devices?: [];
@@ -112,4 +112,5 @@ export class DeviceConfiguration {
     public machineStateClipboard?: string;
     public pnpSdk?: boolean;
     public planMode?: boolean;
+    public modules?: Array<string> = [];
 }

@@ -3,7 +3,7 @@ import { Device, Property, Method } from '../interfaces/device';
 import { SimulationStore } from '../store/simulationStore';
 
 import { Mqtt as M1, clientFromConnectionString } from 'azure-iot-device-mqtt';
-import { Client } from 'azure-iot-device';
+import { Client, ModuleClient } from 'azure-iot-device';
 import { Message, SharedAccessSignature } from 'azure-iot-device';
 import { ConnectionString } from 'azure-iot-common';
 
@@ -19,14 +19,14 @@ import * as rw from 'random-words';
 import * as Crypto from 'crypto';
 import * as _ from 'lodash';
 
-import { PnpInterface } from './pnpInterface';
-
 const LOGGING_TAGS = {
     CTRL: {
         HUB: 'HUB',
         DPS: 'DPS',
         DEV: 'DEV',
         DGT: 'DGT',
+        EDG: 'EDG',
+        MOD: 'MOD'
     },
     DATA: {
         FNC: 'FNC',
@@ -372,6 +372,7 @@ export class MockDevice {
     /// starts a device
     start(delay) {
         if (this.device.configuration._kind === 'template') { return; }
+        if (this.device.configuration._kind === 'edge') { return; }
         if (this.delayStartTimer || this.running) { return; }
 
         if (delay) {
@@ -389,10 +390,31 @@ export class MockDevice {
     }
 
     /// starts a device
-    startDevice() {
-        this.log('DEVICE IS SWITCHED ON', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
-        this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.ON);
+    async startDevice() {
+        this.log('DEVICE IS SWITCHED ON', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
+        this.logCP(LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.ON);
         this.running = true;
+
+        if (this.device.configuration._kind === 'module') {
+            this.log('MODULE ENVIRONMENT CHECK', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
+            this.logCP(LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.TRYING);
+
+            this.log(JSON.stringify(process.env), LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
+
+            try {
+                this.iotHubDevice.client = await ModuleClient.fromEnvironment(M1);
+            } catch (err) {
+
+                console.error(err);
+
+                this.log('MODULE ENVIRONMENT CHECK FAILED', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
+                this.logCP(LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
+                return;
+            }
+            this.log('MODULE ENVIRONMENT PASSED', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
+            this.logCP(LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.CONNECTED);
+            return;
+        }
 
         if (this.device.configuration._kind === 'dps') {
             const simulation = this.simulationStore.get()['simulation'];
@@ -442,11 +464,11 @@ export class MockDevice {
         if (this.delayStartTimer) {
             clearTimeout(this.delayStartTimer);
             this.delayStartTimer = null;
-            this.log(`DEVICE DELAYED START CANCELED`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+            this.log(`DEVICE DELAYED START CANCELED`, LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
             this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
         } else {
             if (!this.running) { return; }
-            this.log('DEVICE IS SWITCHED OFF', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+            this.log('DEVICE IS SWITCHED OFF', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
         }
         this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
         this.final();
@@ -470,7 +492,7 @@ export class MockDevice {
                 this.iotHubDevice.client = null;
             }
         } catch (err) {
-            this.log(`TEAR DOWN OPEN ERROR: ${err.message}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+            this.log(`TEAR DOWN OPEN ERROR: ${err.message}`, LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
         } finally {
             this.running = false;
         }
@@ -497,7 +519,7 @@ export class MockDevice {
                     // desired properties are cached
                     twin.on('properties.desired', ((delta) => {
                         if (!this.CONNECT_RESTART) {
-                            console.error("UNTESTED PATH");
+                            this.log('IOT HUB CLIENT IS HAVING PROBLEMS. DELETE THE DEVICE AND START AGAIN', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
                         }
 
                         _.merge(this.desiredMergedCache, delta);
