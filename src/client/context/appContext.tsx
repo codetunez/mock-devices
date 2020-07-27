@@ -8,15 +8,22 @@ export class AppProvider extends React.PureComponent {
     constructor() {
         super(null);
 
-        let data = null;
-        axios.get('/api/simulation/snippets')
+        let container = false;
+        let snippets = null;
+
+        axios.get('/api/container')
             .then((response: any) => {
-                data = response.data;
+                container = response.data.container;
+                return axios.get('/api/simulation/snippets')
+            })
+            .then((response: any) => {
+                snippets = response.data;
                 return axios.get('/api/simulation/colors')
             })
             .then((response: any) => {
                 this.setState({
-                    snippets: data,
+                    container: container,
+                    snippets: snippets,
                     colors: response.data
                 });
             })
@@ -37,6 +44,7 @@ export class AppProvider extends React.PureComponent {
         selectorExpand: false,
         snippets: {},
         colors: {},
+        container: false,
         setExpand: this.setExpand,
         setSelectorExpand: this.setSelectorExpand
     }

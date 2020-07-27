@@ -1,3 +1,4 @@
+const isDocker = require('is-docker');
 import { screen, dialog, app, Menu, BrowserWindow } from 'electron';
 import * as http from 'http';
 import * as express from 'express';
@@ -30,7 +31,7 @@ class Server {
 
     private mainWindow: any = null;
 
-    public start = () => {
+    public start = (inContainer: boolean) => {
 
         const ms = new ServerSideMessageService();
 
@@ -56,7 +57,7 @@ class Server {
         this.expressServer.use('/api/server', server(this.deviceStore));
         this.expressServer.use('/api/sensors', sensors(this.sensorStore));
         this.expressServer.use('/api/template', template(this.deviceStore));
-        this.expressServer.use('/api', root(dialog, app));
+        this.expressServer.use('/api', root(dialog, app, inContainer));
 
         // experimental stream api
         this.expressServer.get('/api/events/:type', (req, res, next) => {
@@ -84,8 +85,8 @@ class Server {
             });
         });
 
-        if (Config.NODE_MODE) {
-            this.startService();
+        if (inContainer || Config.NODE_MODE) {
+            this.startService(inContainer);
         }
         else {
             app.on('quit', function (err) {
@@ -100,7 +101,7 @@ class Server {
 
             app.on('activate', (() => {
                 if (this.mainWindow === null) {
-                    this.startService();
+                    this.startService(inContainer);
                 }
             }));
 
@@ -110,12 +111,12 @@ class Server {
         }
     }
 
-    public startService = () => {
+    public startService = (inContainer) => {
         this.expressServer.server.listen(Config.APP_PORT);
 
-        const scr = screen.getPrimaryDisplay();
+        const scr = screen && screen.getPrimaryDisplay() || { size: { height: 1000 } }
 
-        if (!Config.NODE_MODE) {
+        if (!inContainer || !Config.NODE_MODE) {
             this.mainWindow = new BrowserWindow({
                 "width": Config.APP_WIDTH,
                 "height": scr.size.height,
@@ -146,7 +147,7 @@ class Server {
             }));
             console.log("Launching mock-devices. Keep window active to keep app running");
         } else {
-            console.log("mock-devices for NodeJS started on: : " + this.expressServer.server.address().port);
+            console.log("mock-devices for container/NodeJS started on: : " + this.expressServer.server.address().port);
         }
     }
 }
@@ -156,5 +157,8 @@ process.on('uncaughtException', ((err) => {
     console.log(err);
 }));
 
-// start the expressServerlication
-new Server().start();
+// Experimental
+const CONTAINER = isDocker();;
+
+// start the application
+new Server().start(CONTAINER);

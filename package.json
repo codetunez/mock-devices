@@ -37,6 +37,7 @@
     "electron": "^6.0.12",
     "express": "^4.17.0",
     "file-loader": "^6.0.0",
+    "is-docker": "^2.0.0",
     "jsoneditor": "^9.0.0",
     "lodash": "^4.17.19",
     "mini-css-extract-plugin": "^0.6.0",

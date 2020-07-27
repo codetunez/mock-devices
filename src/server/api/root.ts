@@ -2,11 +2,15 @@ import { Router } from 'express';
 import * as uuidV4 from 'uuid/v4';
 import * as fs from 'fs';
 
-export default function (dialog, app) {
+export default function (dialog, app, container) {
     let api = Router();
 
     api.get('/ping', function (req, res) {
-        res.status(200).end();
+        res.status(200);
+    });
+
+    api.get('/container', function (req, res) {
+        res.json({ container });
     });
 
     api.get('/id', function (req, res) {
