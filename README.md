@@ -1,5 +1,5 @@
 # mock-devices v6 Beta (Desktop Edition)
-Use mock-devices to create fake/mock devices that connect to an Azure IoT Hub. The devices can send and receive data like a physical device would.
+Use mock-devices to create fake/mock devices that connect to an Azure IoT Hub. The devices can send and receive data like a physical device would. The Beta brings support for Azure IoT Edge device modules.
 
 This is the desktop edition of mock-devices which is a cross platform (Windows or OSX) Electron app. To use the Docker version, visit this repo [mock-devices DE](http://github.com/codetunez/mock-devices-de)
 
@@ -20,6 +20,9 @@ Help is available inside the application
 
 ---
 
+#### v6 - Beta
+- Azure IoT Edge support for modules
+
 #### v5.5 Updates
 - Updated [device SDK](https://www.npmjs.com/package/azure-iot-device) to 1.17.0
 - Acks for C2D commands and desired properties
@@ -29,7 +32,7 @@ Help is available inside the application
 ## Features
 - Host up to 1,000 mock devices
 - DPS single or group enrollment support 
-- SaS or Connection String support (72 hour SaS expiry)
+- SaS or Connection String support
 - Bulk/Clone/Templated device create operations
 - Auto Gen DTDL Complex Types; Objects/Maps/Arrays with random values from a DCM
 - Simulated versions of common device operations such as Reboot, Shutdown, Firmware and sensors like battery, heaters, fans
