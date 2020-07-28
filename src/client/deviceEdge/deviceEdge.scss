@@ -10,9 +10,23 @@
   }
   .list {
     display: flex;
-    flex-direction: column;
-    button {
-      margin: 0 $xs-gutter $sm-gutter 0;
-    }
+    flex-direction: row;
+  }
+
+  .edge-module {
+    width: 260px;
+  }
+
+  .edge-module:not(:last-child) {
+    margin: 0 1rem 1rem 0;
+  }
+  .expander {
+    padding-left: $xs-gutter;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 2.4rem;
+    cursor: default;
+    font-size: 1rem;
   }
 }

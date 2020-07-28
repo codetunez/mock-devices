@@ -1,13 +1,13 @@
 var classNames = require('classnames');
-const cx = classNames.bind(require('./deviceToolbar.scss'));
+const cx = classNames.bind(require('./devicePower.scss'));
 
 import * as React from 'react';
 import { DeviceContext } from '../context/deviceContext';
 import { ControlContext } from '../context/controlContext';
-
+import { controlEvents } from '../ui/utilities';
 import { RESX } from '../strings';
 
-export function DeviceToolbar({ control }) {
+export function DevicePower({ control }) {
 
     const deviceContext: any = React.useContext(DeviceContext);
     const controlContext: any = React.useContext(ControlContext);
@@ -15,14 +15,14 @@ export function DeviceToolbar({ control }) {
     const kind = deviceContext.device.configuration._kind;
 
     React.useEffect(() => {
-        const on = control[deviceContext.device._id] && control[deviceContext.device._id][2] != 'OFF' || false;
+        const on = control && control[deviceContext.device._id] ? control[deviceContext.device._id][2] != controlEvents.OFF : false;
         setPower({
             label: on ? RESX.device.toolbar.powerOff_label : RESX.device.toolbar.powerOn_label,
             title: on ? RESX.device.toolbar.powerOff_title : RESX.device.toolbar.powerOn_title,
             style: on ? "btn-success" : "btn-outline-secondary",
             handler: on ? deviceContext.stopDevice : deviceContext.startDevice
         })
-    }, [control])
+    }, [deviceContext.device, control])
 
     React.useEffect(() => {
         return () => {

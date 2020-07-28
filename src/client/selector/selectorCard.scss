@@ -11,6 +11,7 @@
   margin: 0;
   font-size: 0.4rem;
   padding: 0.1rem;
+  height: 0.8rem;
   line-height: 0.3rem;
   i {
     margin: 0;
@@ -48,6 +49,10 @@
   background-color: $app-clr-0;
 }
 
+.selector-card-active-edge {
+  background-color: $app-clr-0;
+}
+
 .selector-card-expanded {
   text-align: center;
   padding: $sm-gutter;
@@ -55,6 +60,12 @@
 
   strong {
     font-weight: 400;
+  }
+
+  .module-count {
+    color: $app-clr-4;
+    font-size: 0.8rem;
+    padding-bottom: 4px;
   }
 }
 

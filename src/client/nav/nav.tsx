@@ -8,7 +8,6 @@ import { AddDevice } from '../modals/addDevice';
 import { Simulation } from '../modals/simulation';
 import { DeviceContext } from '../context/deviceContext';
 import { RESX } from '../strings';
-import useAPIPolling, { APIPollingOptions } from 'use-api-polling'
 
 export function Nav() {
 

@@ -5,7 +5,7 @@ import * as React from 'react';
 
 import { DeviceTitle } from '../deviceTitle/deviceTitle';
 import { DeviceCommands } from '../deviceCommands/deviceCommands';
-import { DeviceToolbar } from '../deviceToolbar/deviceToolbar';
+import { DevicePower } from '../devicePower/devicePower';
 import { DeviceFieldD2C } from '../deviceFields/deviceFieldD2C';
 import { DeviceFieldC2D } from '../deviceFields/deviceFieldC2D';
 import { DeviceFieldMethod } from '../deviceFields/deviceFieldMethod';
@@ -16,6 +16,7 @@ import { RESX } from '../strings';
 import { DeviceContext } from '../context/deviceContext';
 import { AppContext } from '../context/appContext';
 import { ControlContext } from '../context/controlContext';
+import { controlEvents } from '../ui/utilities';
 
 export function Device() {
 
@@ -33,7 +34,7 @@ export function Device() {
             <div className='device-toolbar'>
                 <ControlContext.Consumer>
                     {(state: any) => (
-                        <DeviceToolbar control={state.control} />
+                        <DevicePower control={state.control} />
                     )}
                 </ControlContext.Consumer>
             </div>
@@ -42,7 +43,12 @@ export function Device() {
 
             <div className='device-fields'>
                 {content === 'plan' ? <div className='device-plan'><DevicePlan device={deviceContext.device} /></div> : null}
-                {content === 'edge' ? <div className='device-edge'><DeviceEdge modules={modules} /></div> : null}
+                {content === 'edge' ? <div className='device-edge'><ControlContext.Consumer>
+                    {(state: any) => (
+                        <DeviceEdge modules={modules} control={state.control} />
+                    )}
+                </ControlContext.Consumer>
+                </div> : null}
                 {content === 'caps' ? <div className='device-capabilities'>
                     {deviceContext.device && deviceContext.device.comms && deviceContext.device.comms.map((capability: any) => {
                         const expand = appContext.property[capability._id] || false;
