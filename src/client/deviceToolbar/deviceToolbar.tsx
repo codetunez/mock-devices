@@ -7,7 +7,7 @@ import { ControlContext } from '../context/controlContext';
 
 import { RESX } from '../strings';
 
-export function DeviceToolbar() {
+export function DeviceToolbar({ control }) {
 
     const deviceContext: any = React.useContext(DeviceContext);
     const controlContext: any = React.useContext(ControlContext);
@@ -15,20 +15,20 @@ export function DeviceToolbar() {
     const kind = deviceContext.device.configuration._kind;
 
     React.useEffect(() => {
-        const on = controlContext.control[deviceContext.device._id] && controlContext.control[deviceContext.device._id][2] != 'OFF' || false;
+        const on = control[deviceContext.device._id] && control[deviceContext.device._id][2] != 'OFF' || false;
         setPower({
             label: on ? RESX.device.toolbar.powerOff_label : RESX.device.toolbar.powerOn_label,
             title: on ? RESX.device.toolbar.powerOff_title : RESX.device.toolbar.powerOn_title,
             style: on ? "btn-success" : "btn-outline-secondary",
             handler: on ? deviceContext.stopDevice : deviceContext.startDevice
         })
-    }, [deviceContext.device, controlContext])
+    }, [control])
 
     React.useEffect(() => {
         return () => {
             controlContext.killConnection();
         }
-    }, [controlContext]);
+    }, []);
 
     return <div className='device-toolbar-container'>
         <div className='power'>
@@ -37,5 +37,5 @@ export function DeviceToolbar() {
         <div className='type'>
             {kind === 'template' ? RESX.device.toolbar.kindTemplate : kind === 'edge' ? RESX.device.toolbar.kindEdge : kind === 'module' ? RESX.device.toolbar.kindModule : RESX.device.toolbar.kindReal}
         </div>
-    </div >
+    </div>
 }

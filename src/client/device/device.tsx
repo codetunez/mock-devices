@@ -15,7 +15,7 @@ import { RESX } from '../strings';
 
 import { DeviceContext } from '../context/deviceContext';
 import { AppContext } from '../context/appContext';
-import { ControlProvider } from '../context/controlContext';
+import { ControlContext } from '../context/controlContext';
 
 export function Device() {
 
@@ -30,7 +30,13 @@ export function Device() {
 
     return <>{Object.keys(deviceContext.device).length > 0 ?
         <div className='device'>
-            <div className='device-toolbar'><ControlProvider><DeviceToolbar /></ControlProvider></div>
+            <div className='device-toolbar'>
+                <ControlContext.Consumer>
+                    {(state: any) => (
+                        <DeviceToolbar control={state.control} />
+                    )}
+                </ControlContext.Consumer>
+            </div>
             <div className='device-title'><DeviceTitle /></div>
             <div className='device-commands'><DeviceCommands /></div>
 

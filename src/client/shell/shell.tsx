@@ -23,8 +23,10 @@ export const Shell: React.FunctionComponent = () => {
       <Console />
       <div className={cx('shell-content')}>
         <div className={cx('shell-content-nav')}><Nav /></div>
-        <div className={cx('shell-content-selector')}><ControlProvider><Selector /></ControlProvider></div>
-        <div className={cx('shell-content')}><Device /></div>
+        <ControlProvider>
+          <div className={cx('shell-content-selector')}><Selector /></div>
+          <div className={cx('shell-content')}><Device /></div>
+        </ControlProvider>
       </div>
     </SplitterLayout>
 
