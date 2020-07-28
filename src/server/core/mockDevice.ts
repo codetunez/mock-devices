@@ -439,7 +439,7 @@ export class MockDevice {
                     return;
                 }
 
-                if (this.dpsRetires < 0) {
+                if (this.dpsRetires <= 0) {
                     clearInterval(this.connectionDPSTimer);
                     this.stop();
                     return;
