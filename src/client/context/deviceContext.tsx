@@ -1,5 +1,6 @@
 import * as React from 'react';
 import axios from 'axios';
+import { getEndpoint } from './globalContext';
 
 export const DeviceContext = React.createContext({});
 
@@ -9,10 +10,10 @@ export class DeviceProvider extends React.PureComponent {
         super(null);
 
         let devices = null;
-        axios.get('/api/devices')
+        axios.get(`${getEndpoint()}api/devices`)
             .then((response: any) => {
                 devices = response.data;
-                return axios.get('/api/sensors')
+                return axios.get(`${getEndpoint()}api/sensors`)
             })
             .then((response: any) => {
                 this.setState({
@@ -29,28 +30,28 @@ export class DeviceProvider extends React.PureComponent {
     }
 
     refreshAllDevices = () => {
-        axios.get('/api/devices')
+        axios.get(`${getEndpoint()}api/devices`)
             .then((response: any) => {
                 this.setState({ devices: response.data });
             })
     }
 
     startAllDevices = () => {
-        axios.get('/api/devices/start')
+        axios.get(`${getEndpoint()}api/devices/start`)
             .then((response: any) => {
                 this.setState({ devices: response.data });
             })
     }
 
     stopAllDevices = () => {
-        axios.get('/api/devices/stop')
+        axios.get(`${getEndpoint()}api/devices/stop`)
             .then((response: any) => {
                 this.setState({ devices: response.data });
             })
     }
 
     reset = () => {
-        axios.get('/api/devices/reset')
+        axios.get(`${getEndpoint()}api/devices/reset`)
             .then((response: any) => {
                 this.setState({ devices: response.data, device: {} });
             })
@@ -62,28 +63,28 @@ export class DeviceProvider extends React.PureComponent {
     }
 
     startDevice = () => {
-        axios.get('/api/device/' + this.state.device._id + '/start')
+        axios.get(`${getEndpoint()}api/device/${this.state.device._id}/start`)
             .then((response: any) => {
                 this.setState({ device: response.data.device, devices: response.data.devices });
             })
     }
 
     stopDevice = () => {
-        axios.get('/api/device/' + this.state.device._id + '/stop')
+        axios.get(`${getEndpoint()}api/device/${this.state.device._id}/stop`)
             .then((response: any) => {
                 this.setState({ device: response.data.device, devices: response.data.devices });
             })
     }
 
     deleteDevice = () => {
-        axios.delete('/api/device/' + this.state.device._id)
+        axios.delete(`${getEndpoint()}api/device/${this.state.device._id}`)
             .then((response: any) => {
                 this.setState({ devices: response.data, device: {} });
             })
     }
 
     deleteModule = (id: string) => {
-        axios.delete('/api/device/' + this.state.device._id + '/module/' + id)
+        axios.delete(`${getEndpoint()}api/device/${this.state.device._id}/module/${id}`)
             .then((response: any) => {
                 this.setState({ devices: response.data.devices, device: response.data.device });
             })
@@ -91,7 +92,7 @@ export class DeviceProvider extends React.PureComponent {
 
     // single device data control plane 
     updateDeviceConfiguration = (updatePayload: any) => {
-        axios.put(`/api/device/${this.state.device._id}/configuration`, { payload: updatePayload })
+        axios.put(`${getEndpoint()}api/device/${this.state.device._id}/configuration`, { payload: updatePayload })
             .then((response: any) => {
                 this.setState({ device: response.data.device, devices: response.data.devices });
             })
@@ -99,7 +100,7 @@ export class DeviceProvider extends React.PureComponent {
     }
 
     updateDeviceModules = (updatePayload: any) => {
-        axios.put(`/api/device/${this.state.device._id}/module`, { payload: updatePayload })
+        axios.put(`${getEndpoint()}api/device/${this.state.device._id}/module`, { payload: updatePayload })
             .then((response: any) => {
                 this.setState({ device: response.data.device, devices: response.data.devices });
             })
@@ -107,28 +108,28 @@ export class DeviceProvider extends React.PureComponent {
     }
 
     getDevice = (id: string, index: number) => {
-        axios.get('/api/device/' + id)
+        axios.get(`${getEndpoint()}api/device/${id}`)
             .then((response: any) => {
                 this.setState({ device: response.data, deviceIndex: index });
             })
     }
 
     updateDeviceProperty = (updatePayload: any, send: boolean) => {
-        axios.put('/api/device/' + this.state.device._id + '/property/' + updatePayload._id + (send ? '/value' : ''), updatePayload)
+        axios.put(`${getEndpoint()}api/device/${this.state.device._id}/property/${updatePayload._id}` + (send ? '/value' : ''), updatePayload)
             .then(response => {
                 this.setState({ device: response.data.device, devices: response.data.devices });
             })
     }
 
     updateDeviceMethod = (updatePayload: any) => {
-        axios.put('/api/device/' + this.state.device._id + '/method/' + updatePayload._id, updatePayload)
+        axios.put(`${getEndpoint()}api/device/${this.state.device._id}/method/${updatePayload._id}`, updatePayload)
             .then(response => {
                 this.setState({ device: response.data.device, devices: response.data.devices });
             })
     }
 
     reorderDevicePosition = (updatePayload: any) => {
-        axios.post('/api/device/reorder', updatePayload)
+        axios.post(`${getEndpoint()}api/device/reorder`, updatePayload)
             .then((response) => {
                 this.setState({ device: response.data.device, devices: response.data.devices });
             })
@@ -136,42 +137,42 @@ export class DeviceProvider extends React.PureComponent {
 
     // this handles creating a method and twin and telemetry. need to always up the list
     createCapability = (type: string, direction: string, pnpSdk: boolean) => {
-        axios.post('/api/device/' + this.state.device._id + '/' + type + '/new', { pnpSdk: pnpSdk, type: direction ? direction : undefined })
+        axios.post(`${getEndpoint()}api/device/${this.state.device._id}/${type}/new`, { pnpSdk: pnpSdk, type: direction ? direction : undefined })
             .then((response: any) => {
                 this.setState({ device: response.data.device, devices: response.data.devices });
             })
     }
 
     deleteCapability = (id: string, type: string) => {
-        axios.delete('/api/device/' + this.state.device._id + '/' + type + '/' + id, null)
+        axios.delete(`${getEndpoint()}api/device/${this.state.device._id}/${type}/${id}`, null)
             .then((response: any) => {
                 this.setState({ device: response.data.device, devices: response.data.devices });
             })
     }
 
     getCapability = (id: string) => {
-        axios.get('/api/device/' + this.state.device._id + '/property/' + id + '/value')
+        axios.get(`${getEndpoint()}api/device/${this.state.device._id}/property/${id}/value`)
             .then((response: any) => {
                 this.setState({ device: response.data });
             })
     }
 
     getCapabilityMethodRequest = (id: string) => {
-        axios.get('/api/device/' + this.state.device._id + '/method/' + id + '/params')
+        axios.get(`${getEndpoint()}api/device/${this.state.device._id}/method/${id}/params`)
             .then((response: any) => {
                 this.setState({ requests: Object.assign({}, this.state.requests, response.data) });
             })
     }
 
     planRestart = () => {
-        axios.get('/api/device/' + this.state.device._id + '/plan/restart')
+        axios.get(`${getEndpoint()}api/device/${this.state.device._id}/plan/restart`)
             .then((response: any) => {
                 this.setState({ device: response.data.device, devices: response.data.devices });
             })
     }
 
     planSave = (updatePayload: any) => {
-        axios.put('/api/device/' + this.state.device._id + '/plan', { payload: updatePayload })
+        axios.put(`${getEndpoint()}api/device/${this.state.device._id}/plan`, { payload: updatePayload })
             .then((response: any) => {
                 this.setState({ device: response.data.device, devices: response.data.devices });
             })
@@ -184,7 +185,7 @@ export class DeviceProvider extends React.PureComponent {
     }
 
     getSensor = (type: string) => {
-        axios.get('/api/sensors/' + type)
+        axios.get(`${getEndpoint()}api / sensors` + type)
             .then((response: any) => {
                 this.setState({ sensorSelcted: response.data })
             })

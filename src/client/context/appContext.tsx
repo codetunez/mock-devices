@@ -1,5 +1,6 @@
 import * as React from 'react';
 import axios from 'axios';
+import { getEndpoint } from './globalContext';
 
 export const AppContext = React.createContext({});
 
@@ -8,22 +9,22 @@ export class AppProvider extends React.PureComponent {
     constructor() {
         super(null);
 
-        let container = false;
+        let ui = false;
         let snippets = null;
 
-        axios.get('/api/container')
+        axios.get(`${getEndpoint()}api/ui`)
             .then((response: any) => {
-                container = response.data.container;
-                return axios.get('/api/simulation/snippets')
+                ui = response.data;
+                return axios.get(`${getEndpoint()}api/simulation/snippets`)
             })
             .then((response: any) => {
                 snippets = response.data;
-                return axios.get('/api/simulation/colors')
+                return axios.get(`${getEndpoint()}api/simulation/colors`)
             })
             .then((response: any) => {
                 this.setState({
-                    container: container,
-                    snippets: snippets,
+                    ui,
+                    snippets,
                     colors: response.data
                 });
             })
@@ -44,7 +45,7 @@ export class AppProvider extends React.PureComponent {
         selectorExpand: false,
         snippets: {},
         colors: {},
-        container: false,
+        ui: { container: false },
         setExpand: this.setExpand,
         setSelectorExpand: this.setSelectorExpand
     }

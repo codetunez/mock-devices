@@ -1,3 +1,4 @@
+import { GLOBAL_CONTEXT } from '../config';
 import { Device, Property, Method } from '../interfaces/device';
 
 import { SimulationStore } from '../store/simulationStore';
@@ -15,7 +16,6 @@ import { ProvisioningDeviceClient } from 'azure-iot-provisioning-device';
 
 import { ValueByIdPayload, DesiredPayload } from '../interfaces/payload';
 import * as Utils from './utils';
-import { MessageService } from '../interfaces/messageService';
 import * as request from 'request';
 import * as rw from 'random-words';
 import * as Crypto from 'crypto';
@@ -112,7 +112,7 @@ export class MockDevice {
     private msgRLMockSensorTimers = {};
     private running: boolean = false;
 
-    private messageService: MessageService = null;
+    private messageService = null;
 
     private registrationConnectionString: string = null;
 
@@ -131,7 +131,7 @@ export class MockDevice {
         directMethodIndex: {}
     }
 
-    constructor(device, messageService: MessageService) {
+    constructor(device: Device, messageService) {
 
         this.messageService = messageService;
         this.initialize(device);
@@ -397,16 +397,16 @@ export class MockDevice {
             this.logCP(LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.TRYING);
 
             const { deviceId, moduleId } = Utils.decodeModuleKey(this.device._id);
-            const { IOTEDGE_WORKLOADURI, IOTEDGE_DEVICEID, IOTEDGE_MODULEID, IOTEDGE_MODULEGENERATIONID, IOTEDGE_IOTHUBHOSTNAME, IOTEDGE_AUTHSCHEME } = process.env;
 
-            if (!IOTEDGE_WORKLOADURI && !IOTEDGE_DEVICEID && !IOTEDGE_MODULEID && !IOTEDGE_MODULEGENERATIONID && !IOTEDGE_IOTHUBHOSTNAME && !IOTEDGE_AUTHSCHEME) {
+
+            if (!GLOBAL_CONTEXT.IOTEDGE_WORKLOADURI && !GLOBAL_CONTEXT.IOTEDGE_DEVICEID && !GLOBAL_CONTEXT.IOTEDGE_MODULEID && !GLOBAL_CONTEXT.IOTEDGE_MODULEGENERATIONID && !GLOBAL_CONTEXT.IOTEDGE_IOTHUBHOSTNAME && !GLOBAL_CONTEXT.IOTEDGE_AUTHSCHEME) {
                 this.log('MODULE ENVIRONMENT CHECK FAILED - MISSING IOTEDGE_*', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
                 this.log('DEVICE IS SWITCHED OFF', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
                 this.logCP(LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
                 return;
             }
 
-            if (IOTEDGE_DEVICEID != deviceId || IOTEDGE_MODULEID != moduleId) {
+            if (GLOBAL_CONTEXT.IOTEDGE_DEVICEID != deviceId || GLOBAL_CONTEXT.IOTEDGE_MODULEID != moduleId) {
                 this.log('MODULE IS NOT CONFIGURED FOR HOST EDGE DEVICE (NOT A FAILURE)', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
                 this.log('DEVICE IS SWITCHED OFF', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
                 this.logCP(LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
@@ -1103,7 +1103,7 @@ export class MockDevice {
     }
 
     log(message, type, operation, direction?, submsg?) {
-        let msg = `[${new Date().toISOString()}][${type}][${operation}][${this.device._id}]`;
+        let msg = `[${type}][${operation}][${this.device._id}]`;
         if (direction) { msg += `[${direction}]` }
         if (submsg) { msg += `[${submsg}]` }
         this.messageService.sendConsoleUpdate(`${msg} ${message}`)

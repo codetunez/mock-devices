@@ -16,6 +16,7 @@ export const RESX = {
         "sync": "Refresh the UX if out of sync with the device engine",
         "sim": "Reset the current configuration for the simulation (advanced)",
         "reset": "WARNING! Remove all mock devices and templates. Keeps the simulation configuration",
+        "ux": "Change the mock-devices engine that this UX is binding to",
     },
     "selector": {
         "title": "DEVICES & TEMPLATES",
@@ -139,6 +140,19 @@ export const RESX = {
             },
             "cta_title": "Create this module",
             "cta_label": "Add this module to the Edge device",
+        },
+        "ux": {
+            "title": "Change the mock-devices engine",
+            "warning": "This action will refresh the application",
+            "label": {
+                "server": "The server + port of the engine",
+                "mode": "Reporting mode of bound engine [ux|server|mixed]",
+                "mode_placeholder": "Leave empty for default",
+            },
+            "cta_title": "Change the UX to use a different mock-devices engine. This is useful if you run the mock-devices-de",
+            "cta_label": "Change",
+            "cta2_title": "Reset the UX to use the default mock-devices engine",
+            "cta2_label": "Reset to default",
         }
     },
     "edge": {

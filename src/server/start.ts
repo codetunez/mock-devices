@@ -15,11 +15,11 @@ import sensors from './api/sensors';
 import semantics from './api/simulation';
 import template from './api/template';
 
-import { Config } from './config';
+import { Config, GLOBAL_CONTEXT } from './config';
 import { DeviceStore } from './store/deviceStore';
 import { SensorStore } from './store/sensorStore';
 import { SimulationStore } from './store/simulationStore';
-import { ServerSideMessageService } from './core/serverSideMessageService';
+import { ServerSideMessageService } from './core/messageService';
 
 class Server {
 
@@ -29,9 +29,7 @@ class Server {
     private sensorStore: SensorStore;
     private simulationStore: SimulationStore;
 
-    private mainWindow: any = null;
-
-    public start = (inContainer: boolean) => {
+    public start = () => {
 
         const ms = new ServerSideMessageService();
 
@@ -41,8 +39,18 @@ class Server {
 
         this.expressServer = express();
         this.expressServer.server = http.createServer(this.expressServer);
-        this.expressServer.use(cors({ exposedHeaders: ["Link"] }));
+        this.expressServer.use(cors({ origin: false, exposedHeaders: ["Link"] }));
         if (Config.WEBAPI_LOGGING) { this.expressServer.use(morgan('tiny')); }
+
+        // if sec is an issue, this should be changed
+        this.expressServer.use(function (req, res, next) {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+            res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+            res.setHeader('Access-Control-Allow-Credentials', false);
+            next();
+        });
+
         this.expressServer.use(bodyParser.urlencoded({ extended: false }));
         this.expressServer.use(bodyParser.json({ limit: "9000kb" }));
 
@@ -57,7 +65,7 @@ class Server {
         this.expressServer.use('/api/server', server(this.deviceStore));
         this.expressServer.use('/api/sensors', sensors(this.sensorStore));
         this.expressServer.use('/api/template', template(this.deviceStore));
-        this.expressServer.use('/api', root(dialog, app, inContainer));
+        this.expressServer.use('/api', root(dialog, app, GLOBAL_CONTEXT));
 
         // experimental stream api
         this.expressServer.get('/api/events/:type', (req, res, next) => {
@@ -68,32 +76,22 @@ class Server {
             });
             res.write('\n');
 
+            // messageLoop|controlLoop|dataLoop
             const dynamicName = `${req.params.type}Loop`;
-
-            switch (dynamicName) {
-                case "messageLoop": ms.messageLoop(res); break;
-                case "controlLoop": ms.controlLoop(res); break;
-                case "dataLoop": ms.dataLoop(res); break;
-            }
-
-            res.on('close', () => {
-                ms.end(dynamicName);
-            });
-            
-            res.on('finish', () => {
-                ms.end(dynamicName);
-            });
+            ms[dynamicName](res);
+            res.on('close', () => { ms.end(dynamicName); });
+            res.on('finish', () => { ms.end(dynamicName); });
         });
 
-        if (inContainer || Config.NODE_MODE) {
-            this.startService(inContainer);
+        if (isDocker() || Config.NODE_MODE) {
+            this.startApplication();
         }
         else {
             app.on('quit', function (err) {
-                console.log("exiting expressServer");
+                console.log("exiting application");
             });
 
-            app.on('ready', this.startService.bind(this));
+            app.on('ready', this.startApplication.bind(this));
 
             app.on('window-all-closed', (() => {
                 app.quit();
@@ -101,7 +99,7 @@ class Server {
 
             app.on('activate', (() => {
                 if (this.mainWindow === null) {
-                    this.startService(inContainer);
+                    this.startApplication();
                 }
             }));
 
@@ -110,45 +108,52 @@ class Server {
             }));
         }
     }
-
-    public startService = (inContainer) => {
+    
+    private mainWindow: any = null;
+    
+    public startApplication = () => {
         this.expressServer.server.listen(Config.APP_PORT);
 
-        const scr = screen && screen.getPrimaryDisplay() || { size: { height: 1000 } }
-
-        if (!inContainer || !Config.NODE_MODE) {
-            this.mainWindow = new BrowserWindow({
-                "width": Config.APP_WIDTH,
-                "height": scr.size.height,
-                "minWidth": Config.APP_WIDTH,
-                "minHeight": Config.APP_HEIGHT,
-                webPreferences: {
-                    devTools: true
-                }
-            });
-
-            const template: any = [{
-                label: 'File',
-                submenu: [
-                    process.platform === 'darwin' ? { role: 'close' } : { role: 'quit' },
-                    { role: 'forcereload' },
-                    { role: 'toggledevtools' }
-                ]
-            }]
-
-            const menu = Menu.buildFromTemplate(template)
-            if (Config.DEV_TOOLS) { Menu.setApplicationMenu(menu); }
-            else { Menu.setApplicationMenu(null); }
-
-            this.mainWindow.loadURL(Config.LOCALHOST + ':' + Config.APP_PORT);
-
-            this.mainWindow.on('closed', (() => {
-                this.mainWindow = null;
-            }));
-            console.log("Launching mock-devices. Keep window active to keep app running");
-        } else {
-            console.log("mock-devices for container/NodeJS started on: : " + this.expressServer.server.address().port);
+        if (isDocker() || Config.NODE_MODE) {
+            console.log("mock-devices for desktop headless has launched on: " + this.expressServer.server.address().port);
+            return;
         }
+      
+        // electron start only
+        let override = { size: { height: 1000 } };
+        try {
+            override = screen.getPrimaryDisplay();
+        } catch{ }
+
+        this.mainWindow = new BrowserWindow({
+            "width": Config.APP_WIDTH,
+            "height": override.size.height,
+            "minWidth": Config.APP_WIDTH,
+            "minHeight": Config.APP_HEIGHT,
+            webPreferences: {
+                devTools: true
+            }
+        });
+
+        const template: any = [{
+            label: 'File',
+            submenu: [
+                process.platform === 'darwin' ? { role: 'close' } : { role: 'quit' },
+                { role: 'forcereload' },
+                { role: 'toggledevtools' }
+            ]
+        }]
+
+        const menu = Menu.buildFromTemplate(template)
+        if (Config.DEV_TOOLS) { Menu.setApplicationMenu(menu); }
+        else { Menu.setApplicationMenu(null); }
+
+        this.mainWindow.loadURL('http://127.0.0.1:' + Config.APP_PORT);
+        this.mainWindow.on('closed', (() => {
+            this.mainWindow = null;
+        }));
+
+        console.log("mock-devices for desktop is launching. Keep current window open to keep app running");
     }
 }
 
@@ -157,8 +162,5 @@ process.on('uncaughtException', ((err) => {
     console.log(err);
 }));
 
-// Experimental
-const CONTAINER = isDocker();;
-
 // start the application
-new Server().start(CONTAINER);
+new Server().start();

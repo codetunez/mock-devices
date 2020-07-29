@@ -16,7 +16,6 @@ import { RESX } from '../strings';
 import { DeviceContext } from '../context/deviceContext';
 import { AppContext } from '../context/appContext';
 import { ControlContext } from '../context/controlContext';
-import { controlEvents } from '../ui/utilities';
 
 export function Device() {
 

@@ -61,7 +61,7 @@ export const Module: React.FunctionComponent<any> = ({ handler, index }) => {
             </div>
             <div className='m-footer module-footer'>
                 <div className='form-group'>
-                    <button title={RESX.modal.module.cta_title} className='btn btn-info' onClick={() => save()}>{RESX.modal.module.cta_label}</button>
+                    <button disabled={state.moduleId === ''} title={RESX.modal.module.cta_title} className='btn btn-info' onClick={() => save()}>{RESX.modal.module.cta_label}</button>
                 </div>
             </div>
         </div>

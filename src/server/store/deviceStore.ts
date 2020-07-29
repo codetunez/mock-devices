@@ -3,7 +3,6 @@ import { AssociativeStore } from '../framework/AssociativeStore'
 import { SensorStore } from './sensorStore'
 import { Method, Device, Property } from '../interfaces/device';
 import { MockDevice } from '../core/mockDevice';
-import { MessageService } from '../interfaces/messageService';
 import { ValueByIdPayload } from '../interfaces/payload';
 import * as uuidV4 from 'uuid/v4';
 import * as Utils from '../core/utils';
@@ -18,14 +17,14 @@ export class DeviceStore {
 
     private sensorStore: SensorStore;
 
-    private liveUpdatesService: MessageService = null;
+    private messageService = null;
 
     private simulationStore = null;
     private simColors = null;
     private bulkRun = null;
 
-    constructor(messageService: MessageService) {
-        this.liveUpdatesService = messageService;
+    constructor(messageService) {
+        this.messageService = messageService;
         this.init();
     }
 
@@ -124,7 +123,7 @@ export class DeviceStore {
         d.configuration.deviceId = d._id;
 
         this.store.setItem(d, d._id);
-        let md = new MockDevice(d, this.liveUpdatesService);
+        let md = new MockDevice(d, this.messageService);
         this.runners[d._id] = md;
 
         return d._id;
@@ -166,7 +165,7 @@ export class DeviceStore {
 
         this.store.setItem(d, d._id);
 
-        let md = new MockDevice(d, this.liveUpdatesService);
+        let md = new MockDevice(d, this.messageService);
         this.runners[d._id] = md;
 
         return newId;
@@ -426,7 +425,7 @@ export class DeviceStore {
 
         try {
             let rd: MockDevice = this.runners[device._id];
-            rd.start(delay || undefined);
+            if (rd) { rd.start(delay || undefined); }
         }
         catch (err) {
             console.error("[DEVICE ERR] " + err.message);
@@ -439,7 +438,7 @@ export class DeviceStore {
 
         try {
             let rd: MockDevice = this.runners[device._id];
-            rd.stop();
+            if (rd) { rd.stop(); }
         }
         catch (err) {
             console.error("[DEVICE ERR] " + err.message);
@@ -509,7 +508,7 @@ export class DeviceStore {
     public createFromArray = (items: Array<Device>) => {
         this.store.createStoreFromArray(items);
         for (const index in items) {
-            let rd = new MockDevice(items[index], this.liveUpdatesService);
+            let rd = new MockDevice(items[index], this.messageService);
             this.runners[items[index]._id] = rd;
         }
     }

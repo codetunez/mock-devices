@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { getEndpoint } from './globalContext';
 
 export const ControlContext = React.createContext({});
 
@@ -8,8 +9,7 @@ export class ControlProvider extends React.PureComponent {
 
     constructor() {
         super(null);
-
-        this.eventSource = new EventSource('/api/events/control');
+        this.eventSource = new EventSource(`${getEndpoint()}api/events/control`);
         this.eventSource.onmessage = ((e) => {
             this.setControlMessages(JSON.parse(e.data));
         });

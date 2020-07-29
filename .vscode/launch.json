@@ -16,6 +16,8 @@
             "args": [
                 "."
             ],
+            "console": "internalConsole",
+            "outputCapture": "std",
         }
     ]
 }
