@@ -1,34 +1,10 @@
 import * as React from 'react';
 import axios from 'axios';
-import { getEndpoint } from './globalContext';
+import { Endpoint } from './endpoint';
 
 export const AppContext = React.createContext({});
 
 export class AppProvider extends React.PureComponent {
-
-    constructor() {
-        super(null);
-
-        let ui = false;
-        let snippets = null;
-
-        axios.get(`${getEndpoint()}api/ui`)
-            .then((response: any) => {
-                ui = response.data;
-                return axios.get(`${getEndpoint()}api/simulation/snippets`)
-            })
-            .then((response: any) => {
-                snippets = response.data;
-                return axios.get(`${getEndpoint()}api/simulation/colors`)
-            })
-            .then((response: any) => {
-                this.setState({
-                    ui,
-                    snippets,
-                    colors: response.data
-                });
-            })
-    }
 
     setExpand = (id: any) => {
         const newProp = this.state.property;
@@ -43,9 +19,6 @@ export class AppProvider extends React.PureComponent {
     state: any = {
         property: {},
         selectorExpand: false,
-        snippets: {},
-        colors: {},
-        ui: { container: false },
         setExpand: this.setExpand,
         setSelectorExpand: this.setSelectorExpand
     }

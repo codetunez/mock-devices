@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { getEndpoint } from './globalContext';
+import { Endpoint } from './endpoint';
 
 export const ControlContext = React.createContext({});
 
@@ -9,7 +9,11 @@ export class ControlProvider extends React.PureComponent {
 
     constructor() {
         super(null);
-        this.eventSource = new EventSource(`${getEndpoint()}api/events/control`);
+        this.init();
+    }
+
+    init = () => {
+        this.eventSource = new EventSource(`${Endpoint.getEndpoint()}api/events/control`);
         this.eventSource.onmessage = ((e) => {
             this.setControlMessages(JSON.parse(e.data));
         });
@@ -26,6 +30,7 @@ export class ControlProvider extends React.PureComponent {
 
     state: any = {
         control: {},
+        init: this.init,
         killConnection: this.killConnection
     }
 

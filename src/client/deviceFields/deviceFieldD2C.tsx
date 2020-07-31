@@ -164,8 +164,8 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
     }
 
     let snippets = []
-    for (const snippet in appContext.snippets) {
-        const code = Object.assign({}, appContext.snippets[snippet]);
+    for (const snippet in deviceContext.snippets) {
+        const code = Object.assign({}, deviceContext.snippets[snippet]);
         snippets.push(<div onClick={() => snippetsHandler(code)}>{snippet}</div>);
     }
 
@@ -174,8 +174,8 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
     }
 
     let colors = [];
-    for (const color in appContext.colors) {
-        colors.push({ name: color, value: appContext.colors[color] })
+    for (const color in deviceContext.colors) {
+        colors.push({ name: color, value: deviceContext.colors[color] })
     }
 
     const title = () => {

@@ -3,15 +3,14 @@ import "react-toggle/style.css"
 
 const cxM = classNames.bind(require('./modal.scss'));
 const cx = classNames.bind(require('./addDevice.scss'));
+import { Endpoint } from '../context/endpoint';
 
 import * as React from 'react';
 import { Combo, Json } from '../ui/controls';
 import axios from 'axios';
 import Toggle from 'react-toggle';
 import { DeviceContext } from '../context/deviceContext';
-import { AppContext } from '../context/appContext';
 import { RESX } from '../strings';
-import { getEndpoint } from '../context/globalContext';
 
 const initialState = {
     _kind: '',
@@ -35,7 +34,7 @@ const initialState = {
 
 export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
     const deviceContext: any = React.useContext(DeviceContext);
-    const appContext: any = React.useContext(AppContext);
+
     const [panel, setPanel] = React.useState(0);
     const [state, setPayload] = React.useState(initialState);
     const [merge, setMerge] = React.useState(false);
@@ -44,13 +43,13 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
     React.useEffect(() => {
         let list = [];
-        axios.get(`${getEndpoint()}api/devices`)
+        axios.get(`${Endpoint.getEndpoint()}api/devices`)
             .then((response: any) => {
                 list.push({ name: RESX.modal.add.option1.select, value: null });
                 response.data.map(function (ele: any) {
                     list.push({ name: ele.configuration.mockDeviceName, value: ele._id });
                 });
-                return axios.get(`${getEndpoint()}api/state`);
+                return axios.get(`${Endpoint.getEndpoint()}api/state`);
             })
             .then((response: any) => {
                 setPayload({
@@ -66,7 +65,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
         for (const j in jsons) {
             state[j] = jsons[j]
         }
-        axios.post(`${getEndpoint()}api/device/new`, state)
+        axios.post(`${Endpoint.getEndpoint()}api/device/new`, state)
             .then(res => {
                 deviceContext.setDevices(res.data);
                 handler(false);
@@ -99,7 +98,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
     }
 
     const getTemplate = (id: string) => {
-        axios.get(`${getEndpoint()}api/device/${id}`)
+        axios.get(`${Endpoint.getEndpoint()}api/device/${id}`)
             .then(response => {
                 const json = response.data;
 
@@ -131,11 +130,11 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
 
     const loadFromDisk = (file: string) => {
-        axios.get(`${getEndpoint()}api/openDialog`)
+        axios.get(`${Endpoint.getEndpoint()}api/openDialog`)
             .then(response => {
                 const json = response.data;
                 if (file === 'machineState') {
-                    axios.post(`${getEndpoint()}api/state/${merge ? 'merge' : ''}`, json)
+                    axios.post(`${Endpoint.getEndpoint()}api/state/${merge ? 'merge' : ''}`, json)
                         .then(() => {
                             deviceContext.refreshAllDevices();
                             handler(false);
@@ -166,7 +165,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
     const updateCurrentState = (nextState) => {
         if (error === '') {
-            axios.post(`${getEndpoint()}api/state/${merge ? 'merge' : ''}`, jsons[nextState])
+            axios.post(`${Endpoint.getEndpoint()}api/state/${merge ? 'merge' : ''}`, jsons[nextState])
                 .then(() => {
                     deviceContext.refreshAllDevices();
                     handler(false);
@@ -178,7 +177,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
     }
 
     const saveToDisk = () => {
-        axios.post(`${getEndpoint()}api/saveDialog`, state.machineStateClipboard, { headers: { 'Content-Type': 'application/json' } })
+        axios.post(`${Endpoint.getEndpoint()}api/saveDialog`, state.machineStateClipboard, { headers: { 'Content-Type': 'application/json' } })
             .then(() => {
                 handler(false);
             })
@@ -200,7 +199,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <button title={RESX.modal.add.option2.buttons.button1_title} onClick={() => selectPanel(2)} className={cx('btn btn-outline-primary', panel === 2 ? 'active' : '')}>{RESX.modal.add.option2.buttons.button1_label}</button><br />
                         <button title={RESX.modal.add.option2.buttons.button2_title} onClick={() => selectPanel(3)} className={cx('btn btn-outline-primary', panel === 3 ? 'active' : '')}>{RESX.modal.add.option2.buttons.button2_label}</button><br />
                         <label>{RESX.modal.add.option3.title}</label>
-                        {appContext.ui.container ? null : <>
+                        {deviceContext.ui.container ? null : <>
                             <button title={RESX.modal.add.option3.buttons.button1_title} onClick={() => selectPanel(4)} className={cx('btn btn-outline-primary', panel === 4 ? 'active' : '')}>{RESX.modal.add.option3.buttons.button1_label}</button><br />
                         </>}
                         <button title={RESX.modal.add.option3.buttons.button2_title} onClick={() => selectPanel(5)} className={cx('btn btn-outline-primary', panel === 5 ? 'active' : '')}>{RESX.modal.add.option3.buttons.button2_label}</button><br />
@@ -208,7 +207,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <button title={RESX.modal.add.option4.buttons.button1_title} onClick={() => selectPanel(6)} className={cx('btn btn-outline-primary', panel === 6 ? 'active' : '')}>{RESX.modal.add.option4.buttons.button1_label}</button><br />
                     </div>
                     <div className='form-group'>
-                        {appContext.ui.container ? <><label>{getEndpoint()}</label><br /><i className="fab fa-docker fa-2x fa-fw" /></> : null}
+                        {deviceContext.ui.container ? <><label>{Endpoint.getEndpoint()}</label><br /><i className="fab fa-docker fa-2x fa-fw" /></> : null}
                         <span className='error'>{error}</span>
                     </div>
                 </div>
@@ -297,7 +296,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                 <label>{RESX.modal.add.option2.label.name}</label>
                                 <input className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} placeholder={RESX.modal.add.option2.label.name_placeholder} />
                             </div>
-                            {appContext.ui.container ? null : <>
+                            {deviceContext.ui.container ? null : <>
                                 <br />
                                 <div className='form-group'>
                                     <button className='btn btn-success' onClick={() => loadFromDisk('capabilityModel')}>{RESX.modal.add.option2.label.browse}</button>

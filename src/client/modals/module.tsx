@@ -4,11 +4,10 @@ const cxM = classNames.bind(require('./modal.scss'));
 
 import * as React from 'react';
 import axios from 'axios';
-import Toggle from 'react-toggle';
 import { DeviceContext } from '../context/deviceContext';
 import { RESX } from '../strings';
 import { Combo, Json } from '../ui/controls';
-
+import { Endpoint } from '../context/endpoint';
 
 export const Module: React.FunctionComponent<any> = ({ handler, index }) => {
 
@@ -17,7 +16,7 @@ export const Module: React.FunctionComponent<any> = ({ handler, index }) => {
 
     React.useEffect(() => {
         let list = [];
-        axios.get('/api/devices')
+        axios.get(`${Endpoint.getEndpoint()}api/devices`)
             .then((response: any) => {
                 list.push({ name: RESX.modal.add.option1.select, value: null });
                 response.data.map(function (ele: any) {

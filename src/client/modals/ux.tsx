@@ -4,13 +4,14 @@ const cxM = classNames.bind(require('./modal.scss'));
 
 import * as React from 'react';
 import { Combo } from '../ui/controls';
-import { getEndpoint, GlobalContext } from '../context/globalContext';
 import { RESX } from '../strings';
+import { Endpoint } from '../context/endpoint';
+import { DeviceContext } from '../context/deviceContext';
 
 export const Ux: React.FunctionComponent<any> = ({ handler, index }) => {
 
-    const globalContext: any = React.useContext(GlobalContext);
-    const [state, setPayload] = React.useState({ serverEndpoint: getEndpoint(), serverMode: '' });
+    const deviceContext: any = React.useContext(DeviceContext);
+    const [state, setPayload] = React.useState({ serverEndpoint: Endpoint.getEndpoint(), serverMode: '' });
 
     const updateField = (e: any) => {
         setPayload({
@@ -19,7 +20,12 @@ export const Ux: React.FunctionComponent<any> = ({ handler, index }) => {
         })
     }
 
-    const combo = [{ name: '--Select to change', value: null },{ name: 'ux', value: 'ux' }, { name: 'server', value: 'server' }, { name: 'mixed', value: 'mixed' },]
+    const save = (state?) => {
+        if (state) { Endpoint.setEndpoint(state) } else { Endpoint.resetEndpoint() };
+        handler(false);
+    }
+
+    const combo = [{ name: '--Select to change', value: null }, { name: 'ux', value: 'ux' }, { name: 'server', value: 'server' }, { name: 'mixed', value: 'mixed' },]
 
     return <div className='m-modal'>
         <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
@@ -40,8 +46,8 @@ export const Ux: React.FunctionComponent<any> = ({ handler, index }) => {
             </div>
             <div className='m-footer module-footer'>
                 <div className='form-group btn-bar'>
-                    <button title={RESX.modal.ux.cta_title} className='btn btn-info' onClick={() => globalContext.setEndpoint(state)}>{RESX.modal.ux.cta_label}</button>
-                    <button title={RESX.modal.ux.cta2_title} className='btn btn-outline-info' onClick={() => globalContext.resetEndpoint(state)}>{RESX.modal.ux.cta2_label}</button>
+                    <button title={RESX.modal.ux.cta_title} className='btn btn-info' onClick={() => save(state)}>{RESX.modal.ux.cta_label}</button>
+                    <button title={RESX.modal.ux.cta2_title} className='btn btn-outline-info' onClick={() => save()}>{RESX.modal.ux.cta2_label}</button>
                 </div>
             </div>
         </div>
