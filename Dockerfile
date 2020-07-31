@@ -7,4 +7,4 @@ COPY . ./
 RUN tsc
 RUN webpack
 CMD [ "node", "./_dist/server/start.js" ]
-EXPOSE 9001
+EXPOSE 9000

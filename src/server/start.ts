@@ -65,7 +65,7 @@ class Server {
         this.expressServer.use('/api/server', server(this.deviceStore));
         this.expressServer.use('/api/sensors', sensors(this.sensorStore));
         this.expressServer.use('/api/template', template(this.deviceStore));
-        this.expressServer.use('/api', root(dialog, app, GLOBAL_CONTEXT));
+        this.expressServer.use('/api', root(dialog, app, GLOBAL_CONTEXT, ms));
 
         // experimental stream api
         this.expressServer.get('/api/events/:type', (req, res, next) => {

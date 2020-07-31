@@ -21,7 +21,7 @@ export class ServerSideMessageService {
 
     sendConsoleUpdate(message: string) {
         if (Config.CONSOLE_LOGGING) {
-            const msg = `[${new Date().toISOString()}]${message}`;
+            const msg = `[${new Date().toISOString()}] ${message}`;
             if (GLOBAL_CONTEXT.OPERATION_MODE === REPORTING_MODES.MIXED || GLOBAL_CONTEXT.OPERATION_MODE === REPORTING_MODES.SERVER) {
                 console.log(msg);
                 if (GLOBAL_CONTEXT.OPERATION_MODE === REPORTING_MODES.SERVER) { return; }

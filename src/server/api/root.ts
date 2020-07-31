@@ -4,7 +4,7 @@ import * as uuidV4 from 'uuid/v4';
 import * as fs from 'fs';
 import { REPORTING_MODES } from '../config';
 
-export default function (dialog, app, globalContext) {
+export default function (dialog, app, globalContext, ms) {
     let api = Router();
 
     api.get('/ping', function (req, res) {
@@ -40,6 +40,7 @@ export default function (dialog, app, globalContext) {
             default:
                 globalContext.OPERATION_MODE = REPORTING_MODES.UX;
         }
+        ms.sendConsoleUpdate(`DATA BACKEND CHANGED TO [${globalContext.OPERATION_MODE}] ${req.body.serverEndpoint}`);
         res.status(200).send(globalContext.OPERATION_MODE.toString()).end();
     });
 
