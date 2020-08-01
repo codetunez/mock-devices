@@ -8,6 +8,11 @@ export const RESX = {
         "deviceL": "device",
         "deviceU": "Device",
     },
+    "banner": {
+        "connect": "CONNECTED TO: ",
+        "local": "(local)",
+        "edge": ['EDGE RUNTIME DETECTED: ', 'MODULE', 'RUNNING ON DEVICE'],
+    },
     "nav": {
         "help": "Find out how to use mock-devices",
         "file": "Create or clone a new mock device or template utilizing DCMs, SDKs, DPS and Connection strings",
@@ -173,7 +178,6 @@ export const RESX = {
     },
     "device": {
         "empty": "Use + to add new capabilities such as sending telemetry or reporting/receiving twin data. Methods can be configured to send back a payload. Plan mode is disabled until capabilities are added",
-        "edge": ['MODULE', 'RUNNING ON EDGE DEVICE'],
         "toolbar": {
             "powerOn_label": " Turn on power",
             "powerOn_title": "Connect this mock device to the hub and start sending and receiving events",

@@ -1,32 +1,40 @@
 @import "../const.scss";
 
 .shell-console {
-    background-color: $app-black;
-    color: limegreen;
-    height: 100%;
-    font-size: 0.8rem;
-    display: flex;
-    padding-left: 1.7rem;
-    overflow-y: auto;
-  
-    .console-pause {
-      position: fixed;
-      left: 0.6rem;
-      cursor: pointer;
-    }
-  
-    .console-erase {
-      position: fixed;
-      font-size: 1rem;
-      left: 0.6rem;
-      top: 1rem;
-      cursor: pointer;
-    }
-  
-    .ellipsis {
-      width: calc(100vw - 2.9rem);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+  background-color: $app-black;
+  color: limegreen;
+  height: 100%;
+  font-size: 0.8rem;
+  display: flex;
+  padding-left: 1.7rem;
+  overflow-y: auto;
+
+  .console-pause {
+    position: fixed;
+    left: 0.6rem;
+    cursor: pointer;
   }
+
+  .console-erase {
+    position: fixed;
+    font-size: 1rem;
+    left: 0.6rem;
+    top: 1rem;
+    cursor: pointer;
+  }
+
+  .console-line {
+    cursor: pointer;
+  }
+
+  .console-line:hover {
+    background-color: $app-clr-2;
+  }
+
+  .ellipsis {
+    width: calc(100vw - 2.9rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

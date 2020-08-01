@@ -8,20 +8,6 @@
   flex-wrap: nowrap;
 }
 
-.device-env {
-  flex-shrink: 0;
-  border-bottom: 1px solid $app-clr-3;
-  box-shadow: 0px 2px 3px 0px $app-shadow;
-  background-color: $app-clr-blue-3;
-  margin: auto;
-  height: 2rem;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
 .device-title {
   flex-shrink: 0;
   border-bottom: 1px solid $app-clr-3;
