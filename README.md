@@ -22,6 +22,7 @@ Help is available inside the application
 
 #### v6 - Beta
 - Azure IoT Edge support for modules
+- Change UX to different mock-devices engine
 
 #### v5.5 Updates
 - Updated [device SDK](https://www.npmjs.com/package/azure-iot-device) to 1.17.0
