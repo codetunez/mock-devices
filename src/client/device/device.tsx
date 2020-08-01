@@ -30,6 +30,8 @@ export function Device() {
 
     return <>{Object.keys(deviceContext.device).length > 0 ?
         <div className='device'>
+            {deviceContext.ui && deviceContext.ui.edge && deviceContext.ui.edge.deviceId && deviceContext.ui.edge.moduleId ?
+                <div className='device-env'>{`${RESX.device.edge[0]} '${deviceContext.ui.edge.deviceId}' ${RESX.device.edge[1]} '${deviceContext.ui.edge.deviceId}'`}</div> : null}
             <div className='device-toolbar'>
                 <ControlContext.Consumer>
                     {(state: any) => (

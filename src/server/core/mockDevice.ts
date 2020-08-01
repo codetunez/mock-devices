@@ -171,7 +171,7 @@ export class MockDevice {
 
     updateDevice(device: Device) {
         if (this.device != null && this.device.configuration.connectionString != device.configuration.connectionString) {
-            this.log('DEVICE UPDATE ERROR. CONNECTION STRING HAS CHANGED. DELETE DEVICE', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
+            this.log('DEVICE/MODULE UPDATE ERROR. CONNECTION STRING HAS CHANGED. DELETE DEVICE', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
         } else {
             this.device = Object.assign({}, device);
             this.reconfigDeviceDynamically();
@@ -343,20 +343,20 @@ export class MockDevice {
         const methodName = name.toLocaleLowerCase();
 
         if (methodName === this.CMD_SHUTDOWN) {
-            this.log('DEVICE METHOD SHUTDOWN ... STOPPING IMMEDIATELY', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+            this.log('DEVICE/MODULE METHOD SHUTDOWN ... STOPPING IMMEDIATELY', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
             this.stop();
             return;
         }
 
         if (methodName === this.CMD_REBOOT) {
-            this.log('DEVICE METHOD REBOOT ... RESTARTING IMMEDIATELY', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+            this.log('DEVICE/MODULE METHOD REBOOT ... RESTARTING IMMEDIATELY', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
             this.stop();
             this.start(undefined);
             return;
         }
 
         if (methodName === this.CMD_FIRMWARE) {
-            this.log(`DEVICE METHOD FIRMWARE ... RESTARTING IN ${this.FIRMWARE_LOOP / 1000} SECONDS`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+            this.log(`DEVICE/MODULE METHOD FIRMWARE ... RESTARTING IN ${this.FIRMWARE_LOOP / 1000} SECONDS`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
             this.stop();
             setTimeout(() => {
                 this.start(undefined);
@@ -371,7 +371,7 @@ export class MockDevice {
         if (this.delayStartTimer || this.running) { return; }
 
         if (delay) {
-            this.log(`DEVICE DELAYED START SECONDS: ${delay / 1000}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+            this.log(`DEVICE/MODULE DELAYED START SECONDS: ${delay / 1000}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
             this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.DELAY);
             this.delayStartTimer = setTimeout(() => {
                 this.startDevice();
@@ -386,11 +386,12 @@ export class MockDevice {
 
     /// starts a device
     async startDevice() {
-        this.log('DEVICE IS SWITCHED ON', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
-        this.logCP(LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.ON);
+
         this.running = true;
 
         if (this.device.configuration._kind === 'module') {
+            this.log('DEVICE IS MODULE', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
+            this.logCP(LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.ON);
             this.iotHubDevice = { client: undefined };
 
             this.log('MODULE INIT', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
@@ -398,17 +399,16 @@ export class MockDevice {
 
             const { deviceId, moduleId } = Utils.decodeModuleKey(this.device._id);
 
-
             if (!GLOBAL_CONTEXT.IOTEDGE_WORKLOADURI && !GLOBAL_CONTEXT.IOTEDGE_DEVICEID && !GLOBAL_CONTEXT.IOTEDGE_MODULEID && !GLOBAL_CONTEXT.IOTEDGE_MODULEGENERATIONID && !GLOBAL_CONTEXT.IOTEDGE_IOTHUBHOSTNAME && !GLOBAL_CONTEXT.IOTEDGE_AUTHSCHEME) {
                 this.log('MODULE ENVIRONMENT CHECK FAILED - MISSING IOTEDGE_*', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
-                this.log('DEVICE IS SWITCHED OFF', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
+                this.log('MODULE WILL SHUTDOWN', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
                 this.logCP(LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
                 return;
             }
 
             if (GLOBAL_CONTEXT.IOTEDGE_DEVICEID != deviceId || GLOBAL_CONTEXT.IOTEDGE_MODULEID != moduleId) {
-                this.log('MODULE IS NOT CONFIGURED FOR HOST EDGE DEVICE (NOT A FAILURE)', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
-                this.log('DEVICE IS SWITCHED OFF', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
+                this.log(`MODULE '${moduleId}' DOES NOT MATCH THE MANIFEST CONFIGURATION FOR HOST DEVICE/MODULE (NOT A FAILURE)`, LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
+                this.log('MODULE WILL SHUTDOWN', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
                 this.logCP(LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
                 return;
             }
@@ -419,13 +419,16 @@ export class MockDevice {
                 this.logCP(LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.CONNECTED);
                 this.mainLoop();
             } catch (err) {
-                this.log('MODULE FAILED TO CONNECT TO IOT HUB CLIENT: ' + err, LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
-                this.log('DEVICE IS SWITCHED OFF', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
+                this.log('MODULE FAILED TO CONNECT THROUGH ENVIRONMENT TO IOT HUB: ' + err, LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
+                this.log('MODULE WILL SHUTDOWN', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
                 this.logCP(LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
                 return;
             }
             return // needed
         }
+
+        this.log('DEVICE IS SWITCHED ON', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
+        this.logCP(LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.ON);
 
         if (this.device.configuration._kind === 'dps') {
             const simulation = this.simulationStore.get()['simulation'];
@@ -445,7 +448,7 @@ export class MockDevice {
                     return;
                 }
 
-                this.log('ATTEMPTING DEVICE REGISTRATION', LOGGING_TAGS.CTRL.DPS, LOGGING_TAGS.LOG.OPS);
+                this.log('ATTEMPTING DPS REGISTRATION', LOGGING_TAGS.CTRL.DPS, LOGGING_TAGS.LOG.OPS);
                 this.logCP(LOGGING_TAGS.CTRL.DPS, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.TRYING);
                 this.dpsRegistration();
             }, this.CONNECT_POLL);
@@ -475,11 +478,15 @@ export class MockDevice {
         if (this.delayStartTimer) {
             clearTimeout(this.delayStartTimer);
             this.delayStartTimer = null;
-            this.log(`DEVICE DELAYED START CANCELED`, LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
+            this.log(`DEVICE/MODULE DELAYED START CANCELED`, LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
             this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
         } else {
             if (!this.running) { return; }
-            this.log('DEVICE IS SWITCHED OFF', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
+            if (this.device.configuration._kind === 'module') {
+                this.log('MODULE WILL SHUTDOWN', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
+            } else {
+                this.log('DEVICE WILL SHUTDOWN', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
+            }
         }
         this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
         this.final();
@@ -503,7 +510,7 @@ export class MockDevice {
                 this.iotHubDevice.client = null;
             }
         } catch (err) {
-            this.log(`TEAR DOWN OPEN ERROR: ${err.message}`, LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
+            this.log(`DEVICE/MODULE CLIENT TEARDOWN ERROR: ${err.message}`, LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
         } finally {
             this.running = false;
         }
@@ -751,7 +758,7 @@ export class MockDevice {
             this.iotHubDevice.client = clientFromConnectionString(connectionString);
             this.log(`CONNECTING VIA CONN STRING`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
         }
-        this.log(`DEVICE AUTO RESTARTS EVERY ${this.RESTART_LOOP / 60000} MINUTES`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+        this.log(`DEVICE/MODULE AUTO RESTARTS EVERY ${this.RESTART_LOOP / 60000} MINUTES`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
     }
 
     dpsRegistration() {

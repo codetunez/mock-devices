@@ -173,6 +173,7 @@ export const RESX = {
     },
     "device": {
         "empty": "Use + to add new capabilities such as sending telemetry or reporting/receiving twin data. Methods can be configured to send back a payload. Plan mode is disabled until capabilities are added",
+        "edge": ['MODULE', 'RUNNING ON EDGE DEVICE'],
         "toolbar": {
             "powerOn_label": " Turn on power",
             "powerOn_title": "Connect this mock device to the hub and start sending and receiving events",
