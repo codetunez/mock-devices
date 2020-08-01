@@ -122,8 +122,8 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
     }
 
     let snippets = []
-    for (const snippet in appContext.snippets) {
-        const code = Object.assign({}, appContext.snippets[snippet]);
+    for (const snippet in deviceContext.snippets) {
+        const code = Object.assign({}, deviceContext.snippets[snippet]);
         snippets.push(<div onClick={() => snippetsHandler(code)}>{snippet}</div>);
     }
 
@@ -132,8 +132,8 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
     }
 
     let colors = [];
-    for (const color in appContext.colors) {
-        colors.push({ name: color, value: appContext.colors[color] })
+    for (const color in deviceContext.colors) {
+        colors.push({ name: color, value: deviceContext.colors[color] })
     }
 
     return <div className={cx('device-field-card', state.form.expanded ? '' : 'device-field-card-small')} style={state.data.color ? { backgroundColor: state.data.color } : {}}>

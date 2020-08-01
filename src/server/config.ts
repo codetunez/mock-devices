@@ -1,15 +1,33 @@
-export class Config {
-    public static APP_PORT: string = '18922';
-    public static WEBAPI_LOGGING: boolean = false;
-    public static CONSOLE_LOGGING: boolean = true;
-    public static PROPERTY_LOGGING: boolean = true;
-    public static MAX_NUM_DEVICES: number = 1000;
+export enum REPORTING_MODES {
+    UX = "UX",
+    SERVER = "SERVER",
+    MIXED = "MIXED"
+}
 
-    public static LOCALHOST: string = 'http://127.0.0.1';
-    public static NODE_MODE: boolean = false;
-    public static DEV_TOOLS: boolean = false;
-    public static PROPERTY_WEBSOCKET_PORT: string = '24377';
-    public static CONSOLE_WEBSOCKET_PORT: string = '24387';
+export const GLOBAL_CONTEXT = {
+    OPERATION_MODE: REPORTING_MODES.UX,
+    IOTEDGE_WORKLOADURI: process.env.IOTEDGE_WORKLOADURI,
+    IOTEDGE_DEVICEID: process.env.IOTEDGE_DEVICEID,
+    IOTEDGE_MODULEID: process.env.IOTEDGE_MODULEID,
+    IOTEDGE_MODULEGENERATIONID: process.env.IOTEDGE_MODULEGENERATIONID,
+    IOTEDGE_IOTHUBHOSTNAME: process.env.IOTEDGE_IOTHUBHOSTNAME,
+    IOTEDGE_AUTHSCHEME: process.env.IOTEDGE_AUTHSCHEME
+};
+
+export class Config {
+    // app settings
+    public static APP_PORT: string = '9000';
     public static APP_HEIGHT: number = 740;
     public static APP_WIDTH: number = 1000;
+    public static MAX_NUM_DEVICES: number = 1000;
+
+    // reporting settings
+    public static CONSOLE_LOGGING: boolean = true;
+    public static CONTROL_LOGGING: boolean = true;
+    public static PROPERTY_LOGGING: boolean = false;
+
+    // dev settings
+    public static NODE_MODE: boolean = false;
+    public static WEBAPI_LOGGING: boolean = false;    
+    public static DEV_TOOLS: boolean = false;
 }

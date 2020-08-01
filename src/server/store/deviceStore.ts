@@ -3,7 +3,6 @@ import { AssociativeStore } from '../framework/AssociativeStore'
 import { SensorStore } from './sensorStore'
 import { Method, Device, Property } from '../interfaces/device';
 import { MockDevice } from '../core/mockDevice';
-import { MessageService } from '../interfaces/messageService';
 import { ValueByIdPayload } from '../interfaces/payload';
 import * as uuidV4 from 'uuid/v4';
 import * as Utils from '../core/utils';
@@ -18,14 +17,14 @@ export class DeviceStore {
 
     private sensorStore: SensorStore;
 
-    private liveUpdatesService: MessageService = null;
+    private messageService = null;
 
     private simulationStore = null;
     private simColors = null;
     private bulkRun = null;
 
-    constructor(messageService: MessageService) {
-        this.liveUpdatesService = messageService;
+    constructor(messageService) {
+        this.messageService = messageService;
         this.init();
     }
 
@@ -46,6 +45,27 @@ export class DeviceStore {
 
     public deleteDevice = (d: Device) => {
         this.store.deleteItem(d._id);
+    }
+
+    public addDeviceModule = (deviceId, moduleId, cloneId): string => {
+        const d: Device = new Device();
+        const moduleKey = Utils.getModuleKey(deviceId, moduleId);
+        d._id = moduleKey
+        d.configuration._kind = 'module';
+        d.configuration.deviceId = moduleKey;
+        d.configuration.mockDeviceCloneId = cloneId;
+        d.configuration.mockDeviceName = moduleKey;
+        return this.addDevice(d)
+    }
+
+    public removeDeviceModule = (d: Device, moduleId: string) => {
+        const i = d.configuration.modules.indexOf(moduleId);
+        if (i > -1) {
+            const payload = {
+                modules: d.configuration.modules.splice(i, 1)
+            }
+            this.updateDevice(d._id, payload);
+        }
     }
 
     public addDevice = (d: Device) => {
@@ -103,8 +123,10 @@ export class DeviceStore {
         d.configuration.deviceId = d._id;
 
         this.store.setItem(d, d._id);
-        let md = new MockDevice(d, this.liveUpdatesService);
+        let md = new MockDevice(d, this.messageService);
         this.runners[d._id] = md;
+
+        return d._id;
     }
 
     public renameDevice = (id: string, name: string) => {
@@ -130,10 +152,20 @@ export class DeviceStore {
         if (type === 'urn') Object.assign(d.configuration.capabilityUrn, payload.capabilityUrn);
         if (type === 'plan') { d.plan = payload; }
         if (type === 'configuration') Object.assign(d.configuration, payload);
+        if (type === 'module') {
+            if (!d.configuration.modules) { d.configuration.modules = []; }
+            const key = Utils.getModuleKey(id, payload.moduleId);
+            const findIndex = d.configuration.modules.findIndex((m) => { return m === key; })
+            if (findIndex === -1) {
+                d.configuration.modules.push(this.addDeviceModule(id, payload.moduleId, payload.mockDeviceCloneId));
+            } else {
+                throw "This module has already been added"; //REFACTOR: new type of error
+            }
+        };
 
         this.store.setItem(d, d._id);
 
-        let md = new MockDevice(d, this.liveUpdatesService);
+        let md = new MockDevice(d, this.messageService);
         this.runners[d._id] = md;
 
         return newId;
@@ -393,7 +425,7 @@ export class DeviceStore {
 
         try {
             let rd: MockDevice = this.runners[device._id];
-            rd.start(delay || undefined);
+            if (rd) { rd.start(delay || undefined); }
         }
         catch (err) {
             console.error("[DEVICE ERR] " + err.message);
@@ -406,7 +438,7 @@ export class DeviceStore {
 
         try {
             let rd: MockDevice = this.runners[device._id];
-            rd.stop();
+            if (rd) { rd.stop(); }
         }
         catch (err) {
             console.error("[DEVICE ERR] " + err.message);
@@ -476,7 +508,7 @@ export class DeviceStore {
     public createFromArray = (items: Array<Device>) => {
         this.store.createStoreFromArray(items);
         for (const index in items) {
-            let rd = new MockDevice(items[index], this.liveUpdatesService);
+            let rd = new MockDevice(items[index], this.messageService);
             this.runners[items[index]._id] = rd;
         }
     }

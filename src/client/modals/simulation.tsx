@@ -6,14 +6,16 @@ import axios from 'axios';
 import * as React from 'react';
 import { RESX } from '../strings';
 import { Json } from '../ui/controls';
+import { Endpoint } from '../context/endpoint';
 
 export const Simulation: React.FunctionComponent<any> = ({ handler }) => {
+
     const [updatePayload, setPayload] = React.useState({ simulation: {} });
     const [json, setJson] = React.useState({ simulation: {} });
     const [error, setError] = React.useState<any>('');
 
     React.useEffect(() => {
-        axios.get('/api/simulation')
+        axios.get(`${Endpoint.getEndpoint()}api/simulation`)
             .then((response: any) => {
                 setPayload(response.data);
             })
@@ -29,7 +31,7 @@ export const Simulation: React.FunctionComponent<any> = ({ handler }) => {
 
     const reset = () => {
         if (error != '') { return; }
-        axios.post('/api/simulation', { simulation: json })
+        axios.post(`${Endpoint.getEndpoint()}api/simulation`, { simulation: json })
             .then(res => {
                 handler(false);
             })

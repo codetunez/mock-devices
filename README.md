@@ -1,7 +1,7 @@
-# mock-devices v5 (Desktop Edition)
-Use mock-devices to create fake/mock devices that connect to an Azure IoT Hub. The devices can send and receive data like a physical device would.
+# mock-devices v6 Beta (Desktop Edition)
+Use mock-devices to create simulated devices and simulated Edge modules that connect to an Azure IoT Hub. The devices/modules support D2C/C2D scenarios using the device SDK
 
-This is the desktop edition of mock-devices which is a cross platform (Windows or OSX) Electron app. To use the Docker version, visit this repo [mock-devices DE](http://github.com/codetunez/mock-devices-de)
+This is the desktop edition of mock-devices which is a cross platform (Windows or OSX) Electron app. To use the Docker version, visit this repo [mock-devices DE](http://github.com/codetunez/mock-devices-de) To see how to use mock-devices for Edge visit this repro [mock-devices-edge](http://github.com/codetunez/mock-devices-edge)
 
 #### First time running the app - One Time Install and Build
 From a command prompt navigate to the folder where the repo was sync'd. Perform the following command.
@@ -20,16 +20,19 @@ Help is available inside the application
 
 ---
 
+#### v6 - Beta
+- Azure IoT Edge support for modules
+- Change UX to different mock-devices engine
+
 #### v5.5 Updates
 - Updated [device SDK](https://www.npmjs.com/package/azure-iot-device) to 1.17.0
 - Acks for C2D commands and desired properties
-- Removed digital-twins support
 - New UX for device connected status
 
 ## Features
-- Host up to 1,000 mock devices
+- Host up to 1,000 mock devices/modules
 - DPS single or group enrollment support 
-- SaS or Connection String support (72 hour SaS expiry)
+- SaS or Connection String support
 - Bulk/Clone/Templated device create operations
 - Auto Gen DTDL Complex Types; Objects/Maps/Arrays with random values from a DCM
 - Simulated versions of common device operations such as Reboot, Shutdown, Firmware and sensors like battery, heaters, fans
@@ -53,7 +56,7 @@ Use auto generated values to send as device data
 - AUTO_VECTOR - Use a random x,y,z
 - AUTO_MAP - Use empty HashMap
 - AUTO_ENUM/* - Use a random Enum value (See below)
-- AUTO_VALUE - Use the last user suppllied or mock sensor value. Honors String setting.
+- AUTO_VALUE - Use the last user supplied or mock sensor value. Honors String setting.
 
 --- 
 ### Pre-Reqs and build issues

@@ -10,13 +10,18 @@ export function DeviceTitle() {
 
     const deviceContext: any = React.useContext(DeviceContext);
 
+    const kind = deviceContext.device.configuration._kind;
+
     return <div className='device-title-container'>
         <div>{deviceContext.device.configuration && deviceContext.device.configuration.mockDeviceName}</div>
-        <div style={{ display: 'flex' }}>
-            <div style={{ paddingRight: '8px' }}>{RESX.device.title.planMode}</div>
-            <div title={RESX.device.title.planMode_title}>
-                <Toggle name={'plan-mode'} disabled={deviceContext.device['comms'].length === 0} defaultChecked={false} checked={deviceContext.device.configuration.planMode} onChange={(e) => { deviceContext.updateDeviceConfiguration({ planMode: e.target.checked }) }} />
+        {kind === 'edge' ? null : <>
+            <div style={{ display: 'flex' }}>
+                <div style={{ paddingRight: '8px' }}>{RESX.device.title.planMode}</div>
+                <div title={kind === 'edge' ? RESX.core.edgeNoSupport : RESX.device.title.planMode_title}>
+                    <Toggle name={'plan-mode'} disabled={kind === 'edge' || deviceContext.device['comms'].length === 0} defaultChecked={false} checked={deviceContext.device.configuration.planMode} onChange={(e) => { deviceContext.updateDeviceConfiguration({ planMode: e.target.checked }) }} />
+                </div>
             </div>
-        </div>
+        </>
+        }
     </div>
 }

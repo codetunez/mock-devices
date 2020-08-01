@@ -1,0 +1,33 @@
+@import "../const.scss";
+
+.device-edge-empty {
+  padding-right: $sm-gutter;
+}
+
+.device-edge-modules {
+  .title {
+    padding-bottom: $md-gutter;
+  }
+  .list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .edge-module {
+    width: 260px;
+  }
+
+  .edge-module:not(:last-child) {
+    margin: 0 1rem 1rem 0;
+  }
+  .expander {
+    padding-left: $xs-gutter;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 2.4rem;
+    cursor: default;
+    font-size: 1rem;
+  }
+}

@@ -7,6 +7,7 @@ import { DeviceContext } from '../context/deviceContext';
 import { AppContext } from '../context/appContext';
 import { ControlContext } from '../context/controlContext';
 import { RESX } from '../strings';
+import { decodeModuleKey } from '../ui/utilities';
 
 export const Selector: React.FunctionComponent = () => {
 
@@ -20,14 +21,17 @@ export const Selector: React.FunctionComponent = () => {
           {deviceContext.devices.length === 0 ? null : <>
             <div className='section-title'>{RESX.selector.title}</div>
             <div className='selector-toggle'>
-              {appContext.selectorExpand ? <i onClick={() => appContext.setSelectorExpand(false)} className="fas fa-sm fa-chevron-up"></i> : <i onClick={() => appContext.setSelectorExpand(true)} className="fas fs-sm fa-chevron-down"></i>}
+              {appContext.selectorExpand ? <i onClick={() => appContext.setSelectorExpand(false)} className="fas fa-sm fa-chevron-down"></i> : <i onClick={() => appContext.setSelectorExpand(true)} className="fas fs-sm fa-chevron-up"></i>}
             </div>
           </>
           }
         </div>
         <div className='selector-container-body'>
           {deviceContext.devices.map((item: any, index: number) => {
-            return <SelectorCard key={item._id} exp={appContext.selectorExpand} index={index} active={deviceContext.device._id === item._id} device={item} state={state.control && state.control[item._id] || null} />
+            const decoded = decodeModuleKey(deviceContext.device._id || '')
+            const active = deviceContext.device._id === item._id || item.configuration._kind === 'edge' && decoded && decoded.deviceId === item._id || false
+            // hide the any modules as these are found in the Edge device
+            return item.configuration._kind === 'module' ? null : <SelectorCard key={item._id} exp={appContext.selectorExpand} index={index} active={active} device={item} control={state.control} />
           })}
           {deviceContext.devices.length === 0 ? <><span>{RESX.selector.empty[0]} </span><span className='fa fa-plus'></span><span>{RESX.selector.empty[1]}</span></> : ''}
         </div>

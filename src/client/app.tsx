@@ -6,9 +6,9 @@ import { DeviceProvider } from './context/deviceContext'
 import { AppProvider } from './context/appContext';
 
 ReactDOM.render(
-        <DeviceProvider>
-            <AppProvider>
-                <Shell />
-            </AppProvider>
-        </DeviceProvider>
+    <DeviceProvider>
+        <AppProvider>
+            <Shell />
+        </AppProvider>
+    </DeviceProvider>
     , document.getElementById('app'));

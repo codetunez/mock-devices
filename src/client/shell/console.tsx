@@ -1,5 +1,6 @@
 var classNames = require('classnames');
 const cx = classNames.bind(require('./console.scss'));
+import { Endpoint } from '../context/endpoint';
 
 import * as React from 'react';
 
@@ -53,7 +54,7 @@ export const Console: React.FunctionComponent = () => {
     let eventSource = null;
 
     React.useEffect(() => {
-        eventSource = new EventSource('/api/events/message')
+        eventSource = new EventSource(`${Endpoint.getEndpoint()}api/events/message`)
         eventSource.onmessage = ((e) => {
             dispatch({ type: 'lines-add', payload: { data: e.data } })
         });

@@ -1,11 +1,17 @@
 export const RESX = {
     "app": {
-        "version": "v5.5"
+        "version": "v6"
     },
     "core": {
         "templateNoSupport": "This is not supported for templates. Create a mock device from this template to use this feature",
+        "edgeNoSupport": "For Edge devices, the modules support this mode but only when running within the Edge runtime",
         "deviceL": "device",
         "deviceU": "Device",
+    },
+    "banner": {
+        "connect": "CONNECTED TO: ",
+        "local": "(local)",
+        "edge": ['EDGE RUNTIME DETECTED: ', 'MODULE', 'RUNNING ON DEVICE'],
     },
     "nav": {
         "help": "Find out how to use mock-devices",
@@ -15,6 +21,7 @@ export const RESX = {
         "sync": "Refresh the UX if out of sync with the device engine",
         "sim": "Reset the current configuration for the simulation (advanced)",
         "reset": "WARNING! Remove all mock devices and templates. Keeps the simulation configuration",
+        "ux": "Change the mock-devices engine that this UX is binding to",
     },
     "selector": {
         "title": "DEVICES & TEMPLATES",
@@ -22,7 +29,8 @@ export const RESX = {
         "card": {
             "device_title": "Select this mock device",
             "template_title": "Select this template",
-        }
+            "modules_title": " modules(s)"
+        },
     },
     "modal": {
         "error_json": "JSON has errors",
@@ -35,9 +43,9 @@ export const RESX = {
                     "button2_label": "Use Connection String",
                     "button2_title": "Create the device using the a IoT device connection",
                 },
-                "select": "--Do not clone. Create device with no capabilities",
+                "select": "--Do not fork. Create with empty capabilities",
                 "label": {
-                    "clone": "Clone another mock device or use a template",
+                    "clone": "Fork another mock device or template",
                     "deviceId": "Device ID (-# appended in bulk create)",
                     "dps": "DPS scope ID",
                     "sas": "SaS key",
@@ -87,6 +95,21 @@ export const RESX = {
                 "cta_title": "Replace the current and state and reset the simulator",
                 "cta_label": "Update current State",
             },
+            "option4": {
+                "title": "Azure IoT Edge",
+                "buttons": {
+                    "button1_label": "Create Edge device",
+                    "button1_title": "Create an Edge device to add modules",
+                },
+                "select": "--Do not fork. Create with empty capabilities",
+                "label": {
+                    "clone": "Fork another mock device or template",
+                    "deviceId": "Edge Device ID (same as manifest.json)",
+                    "friendly": "mock-devices friendly name",
+                },
+                "cta_title": "The Edge device is a container for modules and is not a real device. The Device Id and Module Id need to be the same as the ones in the manifest file.",
+                "cta_label": "Create this Edge device profile",
+            },
             "error_add": "The device cannot be added. Check values or possible dupe",
             "error_dcm": "The DCM is not valid or contains errors",
             "error_load": "Data cannot be loaded. Check file format or version mismatch",
@@ -113,6 +136,45 @@ export const RESX = {
             "reset_label": "Reset simulation",
             "reset_title": "Stops all devices, resets the engine and applies the new simulation changes",
         },
+        "module": {
+            "title": "Add a new module",
+            "select": "--Do not clone. Create module with no capabilities",
+            "label": {
+                "clone": "Clone another mock device or use a template",
+                "moduleId": "Module ID",
+            },
+            "cta_title": "Create this module",
+            "cta_label": "Add this module to the Edge device",
+        },
+        "ux": {
+            "title": "Change the mock-devices engine",
+            "warning": "This action will refresh the application",
+            "label": {
+                "server": "The server + port of the engine",
+                "mode": "Reporting mode of bound engine [ux|server|mixed]",
+                "mode_placeholder": "Leave empty for default",
+            },
+            "cta_title": "Change the UX to use a different mock-devices engine. This is useful if you run the mock-devices-de",
+            "cta_label": "Change",
+            "cta2_title": "Reset the UX to use the default mock-devices engine",
+            "cta2_label": "Reset to default",
+        }
+    },
+    "edge": {
+        "title": "The Module Id and (Edge) Device Id must match for one of these modules to run",
+        "empty": [
+            "Use + to add a new module. Modules get connection information via the Edge runtime",
+            "When running in the runtime, the Edge device's Id and module's Id will be used to map the module to the environments variables on the host Edge device. To run multiple modules, deploy multiple mock-devices containers in the Edge manifest",
+            "Modules have capabilities such as sending telemetry or reporting/receiving twin data like normal devices. Methods can be configured to send back a payload. Plan mode is disabled until capabilities are added"
+        ],
+        "buttons": {
+            "module_title": "Select this module",
+            "delete_label": "Delete",
+            "delete_title": "Delete this module from the Edge device"
+        },
+        "card": {
+            "title": "Module"
+        },
     },
     "device": {
         "empty": "Use + to add new capabilities such as sending telemetry or reporting/receiving twin data. Methods can be configured to send back a payload. Plan mode is disabled until capabilities are added",
@@ -122,9 +184,9 @@ export const RESX = {
             "powerOff_label": " Turn off power",
             "powerOff_title": "Disconnect this mock device from the hub and stop sending data",
             "kindTemplate": "Template",
-            "kindReal": "Real device",
-            "sdkLegacy": "",
-            "sdkPnp": "",
+            "kindReal": "Hub device",
+            "kindEdge": "Edge device",
+            "kindModule": "Edge device module",
         },
         "title": {
             "planMode": "Plan mode",
@@ -139,8 +201,13 @@ export const RESX = {
             "receiveData_title": "Add a capability to receive a specific desired property in the device twin",
             "method_label": " Method",
             "method_title": "Add a direct or C2D method capability to the device. This will stop the device",
+            "module_label": " Module",
+            "module_title": "Add a module to the Edge device",
             "config_title": "Change this device's configuration (advanced)",
             "delete_title": "Delete this device or template including all its capabilities. Ensure you have saved your state first",
+            "edge_device_label": "Go to Edge device",
+            "edge_device_title": "Manage the other modules in this Edge device",
+
         },
         "card": {
             "UX": "UX",

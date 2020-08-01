@@ -17,6 +17,14 @@
     border: 1px solid $app-clr-blue-1;
     margin: $xs-gutter $sm-gutter $md-gutter $sm-gutter;
   }
+
+  .nav-links {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 
 .blast-shield {
@@ -57,4 +65,9 @@
   width: 810px;
   height: 680px;
   border-radius: $xs-gutter;
+}
+
+.small-modal {
+  width: 500px;
+  height: 320px;
 }
