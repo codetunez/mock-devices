@@ -4,7 +4,7 @@ const cx = classNames.bind(require('./selectorCard.scss'));
 import * as React from 'react';
 import { DeviceContext } from '../context/deviceContext';
 import { RESX } from '../strings';
-import { controlEvents } from '../ui/utilities';
+import { controlEvents, decodeModuleKey } from '../ui/utilities';
 
 export const SelectorCard: React.FunctionComponent<any> = ({ exp, index, active, device, control }) => {
 
@@ -15,9 +15,21 @@ export const SelectorCard: React.FunctionComponent<any> = ({ exp, index, active,
     setExpanded(exp);
   }, [exp]);
 
+  let edgeOn = false;
   const runningEvent = control && control[device._id] ? control[device._id][2] : controlEvents.OFF;
   const kind = device.configuration._kind
   const selected = kind === 'edge' ? 'selector-card-active-edge' : 'selector-card-active';
+
+  if (device.configuration.modules) {
+    for (const index in device.configuration.modules) {
+      const key = device.configuration.modules[index];
+      const { deviceId, moduleId } = decodeModuleKey(key);
+      if (deviceId === device._id && control[key] && control[key][2] != controlEvents.OFF) {
+        edgeOn = true;
+        break;
+      }
+    }
+  }
 
   return <>
     <div className='expander' onClick={() => setExpanded(!expanded)}><i className={cx(expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-up')}></i></div>
@@ -37,9 +49,9 @@ export const SelectorCard: React.FunctionComponent<any> = ({ exp, index, active,
           {kind === 'edge' ? <>
             <strong>{device.configuration.deviceId || ''}</strong>
             <div className='selector-card-spinner'>
-              <i className={classNames('fa fa-hdd fa-2x fa-fw')}></i>
+              <i className={classNames('fa fa-hdd fa-2x fa-fw', edgeOn ? 'control-CONNECTED' : 'control-OFF')}></i>
             </div>
-            <div className='module-count'>{device.configuration.modules && device.configuration.modules.length} {RESX.selector.card.modules_title}</div>
+            <div className='module-count'>{device.configuration.modules && device.configuration.modules.length || '0'} {RESX.selector.card.modules_title}</div>
             <strong>{kind} {RESX.core.deviceL}</strong>
           </>
             : null}

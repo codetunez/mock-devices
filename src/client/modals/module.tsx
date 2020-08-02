@@ -20,7 +20,9 @@ export const Module: React.FunctionComponent<any> = ({ handler, index }) => {
             .then((response: any) => {
                 list.push({ name: RESX.modal.add.option1.select, value: null });
                 response.data.map(function (ele: any) {
-                    list.push({ name: ele.configuration.mockDeviceName, value: ele._id });
+                    if (ele.configuration._kind != 'template' && ele.configuration._kind != 'edge') {
+                        list.push({ name: ele.configuration.mockDeviceName, value: ele._id });
+                    }
                 });
                 setPayload({
                     ...state,
