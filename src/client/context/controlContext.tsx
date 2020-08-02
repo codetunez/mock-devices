@@ -13,15 +13,21 @@ export class ControlProvider extends React.PureComponent {
     }
 
     init = () => {
-        this.eventSource = new EventSource(`${Endpoint.getEndpoint()}api/events/control`);
-        this.eventSource.onmessage = ((e) => {
-            this.setControlMessages(JSON.parse(e.data));
-        });
+        setInterval(() => {
+            if (!this.eventSource) {
+                this.eventSource = new EventSource(`${Endpoint.getEndpoint()}api/events/control`);
+                this.eventSource.onmessage = ((e) => {
+                    this.setControlMessages(JSON.parse(e.data));
+                });
+            }
+        }, 150);
     }
 
     killConnection = () => {
-        this.eventSource.close()
-        this.eventSource = null;
+        if (this.eventSource != null) {
+            this.eventSource.close()
+            this.eventSource = null;
+        }
     }
 
     setControlMessages(data: any) {

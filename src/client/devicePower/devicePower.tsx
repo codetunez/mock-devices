@@ -22,7 +22,7 @@ export function DevicePower({ control }) {
             style: on ? "btn-success" : "btn-outline-secondary",
             handler: on ? deviceContext.stopDevice : deviceContext.startDevice
         })
-    }, [deviceContext.device, control])
+    }, [deviceContext.device, control[deviceContext.device._id]])
 
     React.useEffect(() => {
         return () => {
