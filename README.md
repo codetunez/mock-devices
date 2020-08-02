@@ -39,7 +39,7 @@ Help is available inside the application
 ---
 
 #### v6 - Beta
-- Azure IoT Edge support for modules
+- Support for Azure IoT Edge modules
 - Connect to any mock-devices engine using IP or DNS
 - [Azure IoT Device SDK 1.17.0](https://www.npmjs.com/package/azure-iot-device)
 
