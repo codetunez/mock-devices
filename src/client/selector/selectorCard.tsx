@@ -71,7 +71,7 @@ export const SelectorCard: React.FunctionComponent<any> = ({ exp, index, active,
         <div className='selector-card-mini'>
           <div>
             {kind === 'template' ? <i className={classNames('fa fa-pencil-alt fa-sm fa-fw')}></i> : null}
-            {kind === 'edge' ? <i className={classNames('fa fa-hdd fa-sm fa-fw')}></i> : null}
+            {kind === 'edge' ? <i className={classNames('fa fa-hdd fa-sm fa-fw', edgeOn ? 'control-CONNECTED' : 'control-OFF')}></i> : null}
             {kind != 'edge' && kind != 'template' ? <i className={cx('fas fa-spinner fa-sm fa-fw', { 'fa-pulse': runningEvent != controlEvents.OFF })} ></i> : null}
             <h5>{device.configuration.mockDeviceName || ''}</h5>
           </div>
