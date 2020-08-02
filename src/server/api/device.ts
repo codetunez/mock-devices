@@ -3,7 +3,7 @@ import { DeviceStore } from '../store/deviceStore';
 import { Device } from '../interfaces/device';
 import { DCMtoMockDevice } from '../core/templates';
 import * as Utils from '../core/utils';
-import * as  Config from '../config';
+import { Config } from '../config';
 
 export default function (deviceStore: DeviceStore) {
     let api = Router();
@@ -208,13 +208,13 @@ export default function (deviceStore: DeviceStore) {
         } else {
 
             let items = deviceStore.getListOfItems();
-            let capacity = Config.Config.MAX_NUM_DEVICES - items.length;
+            let capacity = Config.MAX_NUM_DEVICES - items.length;
 
             let from = parseInt(updatePayload.mockDeviceCount);
             const to = parseInt(updatePayload.mockDeviceCountMax) + 1;
             const count = to - from === 0 ? 1 : to - from;
 
-            let maxCount = count > capacity ? Config.Config.MAX_NUM_DEVICES - capacity : count;
+            let maxCount = count > capacity ? Config.MAX_NUM_DEVICES - capacity : count;
 
             for (let i = 0; i < maxCount; i++) {
                 let d: Device = new Device();
@@ -223,7 +223,7 @@ export default function (deviceStore: DeviceStore) {
                 if (updatePayload._kind === 'dps') {
                     createId = updatePayload.deviceId;
                 } else if (updatePayload._kind === 'hub') {
-                    Utils.getDeviceId(updatePayload.connectionString);
+                    createId = Utils.getDeviceId(updatePayload.connectionString);
                 } else {
                     createId = updatePayload.deviceId;
                 }
