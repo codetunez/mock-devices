@@ -13,7 +13,7 @@ This desktop edition of mock-devices is an Electron app for Windows/Linux/OSX an
 - The [mdux](https://hub.docker.com/r/codetunez/mdux) edition is a Docker container build of the desktop edition. It is designed to run inside containers with no access to file systems. It is a fully functional UX + engine mock-devices instance and is useful for localhost scenarios. It can also be used to connect to any mock-devices engine using IP or DNS
 
 ## State file
-The state file is the current state of simulation including the list of devices/modules, their capabilities and value set ups. Its also used the load/save file for the tool. The desktop and Docker editions of mock-devices can create and/or utilize any state file created with the same version of the tool. It is recommend to use the desktop edition to create/manage a state file and share with any running instance of a mock-devices engine.
+The state file is the current state of the simulation engine including the list of devices/modules, their capabilities and value set ups. Its also used as the load/save file for the mock-devices desktop tool. Both editions of mock-devices can create and/or utilize a state file created in ether edition with matching version numbers. It is recommended to use the desktop edition to create/manage state files
 
 # Getting started
 
