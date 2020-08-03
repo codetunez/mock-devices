@@ -1,16 +1,16 @@
 # mock-devices v6 Beta (Desktop Edition)
-mock-devices is a simulation engine that manages and runs simulated devices or Azure IoT Edge modules that connect to an Azure Iot Hub. The devices/modules support D2C/C2D scenarios i.e telemetry, twin and commands as supported by the Azure IoT Device SDK
+mock-devices is a simulation engine that manages and runs simulated devices that connect to an Azure Iot Hub. When hosted in the Azure IoT Edge runtime, the engine will simulate Edge modules too. The simulated devices and modules implement D2C/C2D scenarios i.e telemetry, twin and commands as supported by the Azure IoT Device SDK
 
 The simulation engine does not share device configurations and is platform agnostic. Each configured device/module acts independently of other devices/modules running within the engine. Each has its own model (capabilities), configuration and connection details. Devices/modules running on the same simulation engine can be a mix of connection strings, DPS, SaS, Edge modules. The engine has additional scenarios like cloning, bulk, templates and acknowledgements. See internal help
 
 This desktop edition of mock-devices is an Electron app for Windows/Linux/OSX and provides a UX + engine single install application experience. It is part of a suite of mock-devices tools
 
 **Other editions**
-- The [mock-devices-de](http://github.com/codetunez/mock-devices-de) edition of the tool is the simulation engine built as a Docker container without the UX. Its useful in scenarios where simulation is required with minimal interaction
+- The [mock-devices-de](http://github.com/codetunez/mock-devices-de) edition is a Docker container of the running simulation engine. It exposes a REST endpoint for control and data plane operations. Use this edition to run the Edge modules configured in a mock-devices state file (and deploy as an Edge module) It is also useful where a headless simulation experience per state file is required
 
-- The [mock-devices-edge](http://github.com/codetunez/mock-devices-edge) edition of the tool is used to manage mock-devices for use in Azure IoT Edge deployments
+- The [mock-devices-edge](http://github.com/codetunez/mock-devices-edge) edition is a Docker container configured as an Edge module that can be used to manage basic operations for running instances of mock-devices-de within the same Edge runtime. Clients can interact with the simulation engine using Twin Desired and Direct Commands making it an alternative to doing REST
 
-- The [mdux](https://hub.docker.com/r/codetunez/mdux) edition is a Docker container build of the desktop edition. It is designed to run inside containers with no access to file systems. It is a fully functional UX + engine mock-devices instance and is useful for localhost scenarios. It can also be used to connect to any mock-devices engine using IP or DNS
+- The [mdux](https://hub.docker.com/r/codetunez/mdux) edition is a Docker container build of the desktop edition. It is a fully functional UX + simulation engine mock-devices instance and is useful for dynamic module scenarios. It is feature limited to run inside containers with no access to file system. It can also be used as a "terminal" UX experience to see other running mock-devices engines connecting via IP or DNS
 
 ## State file
 The state file is the current state of the simulation engine including the list of devices/modules, their capabilities and value set ups. Its also used as the load/save file for the mock-devices desktop tool. Both editions of mock-devices can create and/or utilize a state file created in ether edition with matching version numbers. It is recommended to use the desktop edition to create/manage state files
