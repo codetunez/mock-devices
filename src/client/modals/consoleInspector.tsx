@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 var classNames = require('classnames');
-const cx = classNames.bind(require('./ConsoleInspector.scss'));
+const cx = classNames.bind(require('./consoleInspector.scss'));
 const cxM = classNames.bind(require('./modal.scss'));
 import { RESX } from '../strings';
 
