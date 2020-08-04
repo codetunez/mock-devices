@@ -8,6 +8,7 @@ export const DeviceContext = React.createContext({});
 export class DeviceProvider extends React.PureComponent {
 
     private sessionId: any = null;
+    private eventSource = null;
 
     constructor() {
         super(null);
@@ -51,6 +52,18 @@ export class DeviceProvider extends React.PureComponent {
                 });
 
             })
+
+        setInterval(() => {
+            if (!this.eventSource) {
+                this.eventSource = new EventSource(`${Endpoint.getEndpoint()}api/events/state`);
+                this.eventSource.onmessage = ((e) => {
+                    const message = JSON.parse(e.data);
+                    if (message && message['devices']) {
+                        this.refreshAllDevices();
+                    }
+                });
+            }
+        }, 150);
     }
 
     // group control plane

@@ -6,6 +6,7 @@ export class ServerSideMessageService {
     private eventMessage: Array<any> = [];
     private eventData = {};
     private eventControl = {};
+    private eventState = {};
     private timers = {};
     private messageIdCount = 1;
 
@@ -21,7 +22,8 @@ export class ServerSideMessageService {
 
     sendConsoleUpdate(message: string) {
         if (Config.CONSOLE_LOGGING) {
-            const msg = `[${new Date().toISOString()}] ${message}`;
+            if (message.length > 0 && message[0] != '[') { message = ` ${message}`; }
+            const msg = `[${new Date().toISOString()}]${message}`;
             if (GLOBAL_CONTEXT.OPERATION_MODE === REPORTING_MODES.MIXED || GLOBAL_CONTEXT.OPERATION_MODE === REPORTING_MODES.SERVER) {
                 console.log(msg);
                 if (GLOBAL_CONTEXT.OPERATION_MODE === REPORTING_MODES.SERVER) { return; }
@@ -49,6 +51,16 @@ export class ServerSideMessageService {
                 if (GLOBAL_CONTEXT.OPERATION_MODE === REPORTING_MODES.SERVER) { return; }
             }
             for (const key in payload) { this.eventControl[key] = payload[key] }
+        }
+    }
+
+    sendAsStateChange(payload: any) {
+        if (Config.STATE_LOGGING) {
+            if (GLOBAL_CONTEXT.OPERATION_MODE === REPORTING_MODES.MIXED || GLOBAL_CONTEXT.OPERATION_MODE === REPORTING_MODES.SERVER) {
+                console.log(`[${new Date().toISOString()}][LOG][STATE CHANGE REPORTING] ${JSON.stringify(payload)}`);
+                if (GLOBAL_CONTEXT.OPERATION_MODE === REPORTING_MODES.SERVER) { return; }
+            }
+            for (const key in payload) { this.eventState[key] = payload[key] }
         }
     }
 
@@ -81,4 +93,12 @@ export class ServerSideMessageService {
         }, 1525)
     }
 
+    stateLoop = (res) => {
+        this.timers['stateLoop'] = setInterval(() => {
+            if (Object.keys(this.eventState).length > 0) {
+                res.write(`data: ${JSON.stringify(this.eventState)} \n\n`);
+                this.eventState = {};
+            }
+        }, 2895)
+    }
 }

@@ -25,6 +25,7 @@ export class Config {
     public static CONSOLE_LOGGING: boolean = true;
     public static CONTROL_LOGGING: boolean = true;
     public static PROPERTY_LOGGING: boolean = false;
+    public static STATE_LOGGING: boolean = true;
 
     // dev settings
     public static NODE_MODE: boolean = false;

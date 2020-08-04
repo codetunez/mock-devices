@@ -61,7 +61,7 @@ class Server {
         this.expressServer.use('/api/simulation', semantics(this.deviceStore, this.simulationStore));
         this.expressServer.use('/api/device', device(this.deviceStore));
         this.expressServer.use('/api/devices', devices(this.deviceStore));
-        this.expressServer.use('/api/state', state(this.deviceStore, this.simulationStore));
+        this.expressServer.use('/api/state', state(this.deviceStore, this.simulationStore, ms));
         this.expressServer.use('/api/server', server(this.deviceStore));
         this.expressServer.use('/api/sensors', sensors(this.sensorStore));
         this.expressServer.use('/api/template', template(this.deviceStore));
@@ -76,7 +76,7 @@ class Server {
             });
             res.write('\n');
 
-            // messageLoop|controlLoop|dataLoop
+            // messageLoop|controlLoop|dataLoop|stateLoop
             const dynamicName = `${req.params.type}Loop`;
             ms[dynamicName](res);
             res.on('close', () => { ms.end(dynamicName); });
@@ -108,9 +108,9 @@ class Server {
             }));
         }
     }
-    
+
     private mainWindow: any = null;
-    
+
     public startApplication = () => {
         this.expressServer.server.listen(Config.APP_PORT);
 
@@ -118,7 +118,7 @@ class Server {
             console.log("mock-devices for desktop headless has launched on: " + this.expressServer.server.address().port);
             return;
         }
-      
+
         // electron start only
         let override = { size: { height: 1000 } };
         try {
