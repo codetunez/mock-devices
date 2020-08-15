@@ -623,6 +623,30 @@ export class MockDevice {
         }
     }
 
+    sendMethodResponse(method: Method) {
+        if (this.device.configuration.planMode) {
+            this.sendPlanResponse(this.resolversCollection.methodToId, method.name);
+        } else if (!this.device.configuration.planMode && method.asProperty && method.asPropertyId) {
+            const p = this.device.comms.filter((x) => { return x._id === method.asPropertyId })
+            for (const send in p) {
+                let json: ValueByIdPayload = <ValueByIdPayload>{};
+                let converted = Utils.formatValue(p[send].string, p[send].value);
+                json[p[send]._id] = converted
+
+                // if this an immediate update, send to the runloop
+                if (p[send].sdk === 'twin') { this.updateTwin(json); }
+                if (p[send].sdk === 'msg') { this.updateMsg(json); }
+            }
+        } else if (!this.device.configuration.planMode && method.asProperty) {
+            this.methodReturnPayload = Object.assign({}, { [method.name]: method.payload })
+        }
+
+        // intentional delay to allow any properties to be sent
+        setTimeout(() => {
+            this.processMockDevicesCMD(method.name);
+        }, 2000);
+    }
+
     registerC2D() {
         this.iotHubDevice.client.on('message', (msg) => {
             if (msg === undefined || msg === null) { return; }
@@ -642,24 +666,7 @@ export class MockDevice {
                     this.log(cloudMethod + ' ' + JSON.stringify(cloudMethodPayload), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.DATA.METH, LOGGING_TAGS.DATA.RECV, 'C2D REQUEST AND PAYLOAD');
                     Object.assign(this.receivedMethodParams, { [method._id]: { date: new Date().toUTCString(), payload: JSON.stringify(cloudMethodPayload, null, 2) } });
 
-                    if (this.device.configuration.planMode) {
-                        this.sendPlanResponse(this.resolversCollection.methodToId, method.name);
-                    } else if (!this.device.configuration.planMode && method.asProperty && method.asPropertyId) {
-                        const p = this.device.comms.filter((x) => { return x._id === method.asPropertyId })
-                        for (const send in p) {
-                            let json: ValueByIdPayload = <ValueByIdPayload>{};
-                            let converted = Utils.formatValue(p[send].string, p[send].value);
-                            json[p[send]._id] = converted
-
-                            // if this an immediate update, send to the runloop
-                            if (p[send].sdk === 'twin') { this.updateTwin(json); }
-                            if (p[send].sdk === 'msg') { this.updateMsg(json); }
-                        }
-                    } else if (!this.device.configuration.planMode && method.asProperty) {
-                        this.methodReturnPayload = Object.assign({}, { [method.name]: method.payload })
-                    }
-
-                    this.processMockDevicesCMD(method.name);
+                    this.sendMethodResponse(method);
                 }
             }
             catch (err) {
@@ -676,41 +683,20 @@ export class MockDevice {
     registerDirectMethods() {
 
         for (const key in this.resolversCollection.directMethodIndex) {
-            this.iotHubDevice.client.onDeviceMethod(key, (request, response) => {
-
+            const clientMethodKey = this.device.configuration._kind === 'module' ? 'onMethod' : 'onDeviceMethod';
+            this.iotHubDevice.client[clientMethodKey](key, (request, response) => {
                 const method: Method = this.device.comms[this.resolversCollection.directMethodIndex[key]];
+                const methodPayload = JSON.parse(method.payload || {});
 
-                this.log(`${request.methodName} : ${JSON.stringify(request.payload)}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.DATA.METH, LOGGING_TAGS.DATA.RECV, 'DIRECT METHOD REQUEST AND PAYLOAD');
+                this.log(`${request.methodName} : ${request.payload ? JSON.stringify(request.payload) : '<NO PAYLOAD>'}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.DATA.METH, LOGGING_TAGS.DATA.RECV, 'DIRECT METHOD REQUEST AND PAYLOAD');
                 Object.assign(this.receivedMethodParams, { [method._id]: { date: new Date().toUTCString(), payload: request.payload } });
 
                 // this response is the payload of the device
-                response.send((method.status), JSON.parse(method.payload || {}), (err) => {
-                    this.log(err ? err.toString() : `${method.name} : ${method.payload}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.DATA.METH, LOGGING_TAGS.DATA.SEND, 'DIRECT METHOD RESPONSE PAYLOAD');
+                response.send((method.status), methodPayload, (err) => {
+                    this.log(err ? err.toString() : `${method.name} : ${JSON.stringify(methodPayload)}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.DATA.METH, LOGGING_TAGS.DATA.SEND, 'DIRECT METHOD RESPONSE PAYLOAD');
                     this.messageService.sendAsLiveUpdate(this.device._id, { [method._id]: new Date().toUTCString() });
 
-                    if (this.device.configuration.planMode) {
-                        this.sendPlanResponse(this.resolversCollection.methodToId, method.name);
-                    } else if (!this.device.configuration.planMode && method.asProperty && method.asPropertyId) {
-                        const p = this.device.comms.filter((x) => { return x._id === method.asPropertyId })
-                        // should only be 1
-                        for (const send in p) {
-                            let json: ValueByIdPayload = <ValueByIdPayload>{};
-                            let converted = Utils.formatValue(p[send].string, p[send].value);
-                            json[p[send]._id] = converted
-
-                            // if this an immediate update, send to the runloop
-                            if (p[send].sdk === 'twin') { this.updateTwin(json); }
-                            if (p[send].sdk === 'msg') { this.updateMsg(json); }
-                        }
-                    } else if (!this.device.configuration.planMode && method.asProperty) {
-                        this.methodReturnPayload = Object.assign({}, { [method.name]: method.payload })
-                    }
-
-                    // intentional delay to allow any properties to be sent
-                    setTimeout(() => {
-                        this.processMockDevicesCMD(method.name);
-                    }, 3000);
-
+                    this.sendMethodResponse(method);
                 })
             });
         }
