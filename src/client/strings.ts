@@ -161,7 +161,7 @@ export const RESX = {
         }
     },
     "edge": {
-        "title": "The Module Id and (Edge) Device Id must match for one of these modules to run",
+        "title": "The Module Id and (Edge) Device Id must match for a module to run",
         "empty": [
             "Use + to add a new module. Modules get connection information via the Edge runtime",
             "When running in the runtime, the Edge device's Id and module's Id will be used to map the module to the environments variables on the host Edge device. To run multiple modules, deploy multiple mock-devices containers in the Edge manifest",
