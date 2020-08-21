@@ -64,18 +64,19 @@ export default function (dialog, app, globalContext, ms) {
     });
 
     api.post('/saveDialog', function (req, res, next) {
-        var body = JSON.stringify(req.body);
-        dialog.showSaveDialog(app.getPath('desktop'), (path: string) => {
-            if (path === "") {
-                res.status(400).end();
-                return;
-            }
-            if (!path.toLocaleLowerCase().endsWith('.json')) { path += '.json'; }
-            fs.writeFile(path, body, 'utf8', (error) => {
-                if (error) { res.status(500).end(); }
-                else { res.status(200).end(); }
-            })
-        })
+        dialog.showSaveDialog()
+            .then((path: any) => {
+                if (path.canceled) { res.status(444).end(); return; }
+                if (path.filePath === "") { res.status(204).end(); return; }
+                if (!path.filePath.toLocaleLowerCase().endsWith('.json')) { path.filePath += '.json'; }
+
+                fs.writeFile(path.filePath, JSON.stringify(req.body, null, 2), 'utf8', (error) => {
+                    if (error) { res.status(500).end(); }
+                    else { res.status(200).end(); }
+                })
+            }).catch((error: any) => {
+                res.status(500).end();
+            });
     });
 
     return api;
