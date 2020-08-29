@@ -40,6 +40,7 @@ export class DeviceStore {
 
     public reset() {
         this.stopAll();
+        this.messageService.clearState();
         this.init();
     }
 

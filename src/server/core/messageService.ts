@@ -8,7 +8,8 @@ export class ServerSideMessageService {
     private eventControl = {};
     private eventState = {};
     private timers = {};
-    private messageIdCount = 1;
+    private messageCount = 1;
+    private controlCount = 1;
 
     end(type: string) {
         clearInterval(this.timers[type]);
@@ -18,6 +19,12 @@ export class ServerSideMessageService {
         for (const timer in this.timers) {
             this.end(this.timers[timer]);
         }
+    }
+
+    clearState() {
+        this.eventData = {};
+        this.eventControl = {};
+        this.eventState = {};
     }
 
     sendConsoleUpdate(message: string) {
@@ -67,11 +74,11 @@ export class ServerSideMessageService {
     messageLoop = (res) => {
         this.timers['messageLoop'] = setInterval(() => {
             if (this.eventMessage.length > 0) {
-                let msg = `id: ${this.messageIdCount}\n`
+                let msg = `id: ${this.messageCount}\n`
                 for (const event of this.eventMessage) { msg = msg + `data: ${event}\n`; }
                 res.write(msg + `\n`);
                 this.eventMessage = [];
-                this.messageIdCount++
+                this.messageCount++
             }
         }, 255)
     }
@@ -79,7 +86,8 @@ export class ServerSideMessageService {
     controlLoop = (res) => {
         this.timers['controlLoop'] = setInterval(() => {
             if (Object.keys(this.eventControl).length > 0) {
-                res.write(`data: ${JSON.stringify(this.eventControl)} \n\n`);
+                res.write(`id: ${this.controlCount}\ndata: ${JSON.stringify(this.eventControl)} \n\n`);
+                this.controlCount++;
             }
         }, 995)
     }

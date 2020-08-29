@@ -20,7 +20,7 @@ export class ControlProvider extends React.PureComponent {
                     this.setControlMessages(JSON.parse(e.data));
                 });
             }
-        }, 150);
+        }, 250);
     }
 
     killConnection = () => {
@@ -31,12 +31,11 @@ export class ControlProvider extends React.PureComponent {
     }
 
     setControlMessages(data: any) {
-        this.setState({ ...this.state, control: data });
+        this.setState({ control: data });
     }
 
     state: any = {
         control: {},
-        init: this.init,
         killConnection: this.killConnection
     }
 

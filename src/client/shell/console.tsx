@@ -11,6 +11,7 @@ import { RESX } from '../strings';
 interface State {
     dialog: any;
     data: any;
+    paused: boolean
 }
 
 interface Action {
@@ -25,13 +26,16 @@ const reducer = (state: State, action: Action) => {
 
     switch (action.type) {
         case 'lines-add':
+            if (state.paused) { return state };
             // reverse the incoming list and unshift the array with new messages      
             const newList = action.payload.data.split('\n').reverse().concat(newData.lines);
-            const trim = newData.lines.length - 2000;
-            for (let i = 0; i < trim; i++) { newData.lines.pop(); };
+            const trim = newList.length - 1000;
+            for (let i = 0; i < trim; i++) { newList.pop(); };
             return { ...state, data: { lines: newList } };
         case 'lines-clear':
             return { ...state, data: { lines: [] } };
+        case 'toggle-pause':
+            return { ...state, paused: !state.paused };
         case 'dialog-show':
             // create a small window of events to scroll between
             const i = action.payload.index;
@@ -48,8 +52,7 @@ const reducer = (state: State, action: Action) => {
 
 export const Console: React.FunctionComponent = () => {
 
-    const [state, dispatch] = React.useReducer(reducer, { data: { lines: [], dialogIndex: -1, dialogLines: [] }, dialog: { showDialog: false } });
-    const [paused, setPause] = React.useState(false);
+    const [state, dispatch] = React.useReducer(reducer, { data: { lines: [], dialogIndex: -1, dialogLines: [] }, dialog: { showDialog: false }, paused: false });
 
     let eventSource = null;
 
@@ -64,7 +67,7 @@ export const Console: React.FunctionComponent = () => {
 
     return <>
         <div className={cx('shell-console')}>
-            <a title={RESX.console.pause_title} className='console-pause' onClick={() => setPause(!paused)}><span className={cx('fas', paused ? 'fa-play' : 'fa-pause')}></span></a>
+            <a title={RESX.console.pause_title} className='console-pause' onClick={() => { dispatch({ type: 'toggle-pause', payload: null }) }}><span className={cx('fas', state.paused ? 'fa-play' : 'fa-pause')}></span></a>
             <a title={RESX.console.erase_title} className='console-erase' onClick={() => { dispatch({ type: 'lines-clear', payload: null }) }}><span className={cx('fas', 'fa-times')}></span></a>
             <div>
                 {state.data.lines.length > 0 && state.data.lines.map((element, index) => {

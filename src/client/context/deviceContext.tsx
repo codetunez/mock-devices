@@ -63,7 +63,7 @@ export class DeviceProvider extends React.PureComponent {
                     }
                 });
             }
-        }, 150);
+        }, 250);
     }
 
     // group control plane

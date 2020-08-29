@@ -42,11 +42,12 @@ export function Device() {
 
             <div className='device-fields'>
                 {content === 'plan' ? <div className='device-plan'><DevicePlan device={deviceContext.device} /></div> : null}
-                {content === 'edge' ? <div className='device-edge'><ControlContext.Consumer>
-                    {(state: any) => (
-                        <DeviceEdge modules={modules} control={state.control} />
-                    )}
-                </ControlContext.Consumer>
+                {content === 'edge' ? <div className='device-edge'>
+                    <ControlContext.Consumer>
+                        {(state: any) => (
+                            <DeviceEdge modules={modules} control={state.control} />
+                        )}
+                    </ControlContext.Consumer>
                 </div> : null}
                 {content === 'caps' ? <div className='device-capabilities'>
                     {deviceContext.device && deviceContext.device.comms && deviceContext.device.comms.map((capability: any) => {
