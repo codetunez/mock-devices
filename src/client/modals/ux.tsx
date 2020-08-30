@@ -13,6 +13,12 @@ export const Ux: React.FunctionComponent<any> = ({ handler, index }) => {
     const deviceContext: any = React.useContext(DeviceContext);
     const [state, setPayload] = React.useState({ serverEndpoint: Endpoint.getEndpoint(), serverMode: '' });
 
+    React.useEffect(() => {
+        var ele = document.getElementById('serverEndpoint') as HTMLInputElement;
+        ele.focus();
+        ele.select();
+    }, [])
+
     const updateField = (e: any) => {
         setPayload({
             ...state,

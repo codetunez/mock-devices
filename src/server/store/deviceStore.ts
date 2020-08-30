@@ -434,16 +434,9 @@ export class DeviceStore {
     }
 
     public stopDevice = (device: Device) => {
-
         if (device.configuration._kind === 'template') { return; }
-
-        try {
-            let rd: MockDevice = this.runners[device._id];
-            if (rd) { rd.stop(); }
-        }
-        catch (err) {
-            console.error("[DEVICE ERR] " + err.message);
-        }
+        let rd: MockDevice = this.runners[device._id];
+        if (rd) { rd.stop(); }
     }
 
     public startAll = () => {
@@ -490,8 +483,22 @@ export class DeviceStore {
     }
 
     public stopAll = () => {
+        let errorCount = 0;
         const devices: Array<Device> = this.store.getAllItems();
-        for (let index in devices) { this.stopDevice(devices[index]); }
+
+        for (let index in devices) {
+            try {
+                this.stopDevice(devices[index]);
+            } catch (err) {
+                errorCount++;
+                console.error(`[ERROR SHUTDOWN DEVICES RUNNER] ${devices[index]._id}`)
+            }
+        }
+
+        if (errorCount === 0) {
+            this.messageService.clearState();
+            this.messageService.sendAsControlPlane({ "__clear": ["DEV", "PROC", "OFF"] });
+        }
     }
 
     public exists = (id: string) => {
