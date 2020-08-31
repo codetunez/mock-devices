@@ -62,6 +62,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
     const clickAddDevice = (kind: string) => {
         state._kind = kind;
+        state.machineStateClipboard = null;
         for (const j in jsons) {
             state[j] = jsons[j]
         }
@@ -71,7 +72,8 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                 handler(false);
             })
             .catch((err) => {
-                setError(kind === 'capabilityModel' ? RESX.modal.add.error_add : RESX.modal.add.error_dcm);
+                const msg = err.response && err.response.data && err.response.data.message || RESX.modal.add.error_generic_add;
+                setError(kind === 'template' ? RESX.modal.add.error_dcm : `${RESX.modal.add.error_add} : ${msg}`);
             })
     }
 

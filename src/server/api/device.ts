@@ -214,7 +214,7 @@ export default function (deviceStore: DeviceStore) {
             const to = parseInt(updatePayload.mockDeviceCountMax) + 1;
             const count = to - from === 0 ? 1 : to - from;
 
-            let maxCount = count > capacity ? Config.MAX_NUM_DEVICES - capacity : count;
+            let maxCount = count > capacity ? capacity : count;
 
             for (let i = 0; i < maxCount; i++) {
                 let d: Device = new Device();
