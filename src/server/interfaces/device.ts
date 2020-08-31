@@ -17,7 +17,7 @@ export interface PnpInterface {
 export interface MockSensor {
     _id: string;
     _hasState: boolean;
-    _type: 'fan' | 'hotplate' | 'battery' | 'random' | 'function';
+    _type: 'fan' | 'hotplate' | 'battery' | 'random' | 'function' | 'inc' | 'dec';
     _value: number;
     init: number;
     running?: number;

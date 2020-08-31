@@ -11,7 +11,9 @@ export class SensorStore {
             this.getNewSensor('hotplate'),
             this.getNewSensor('fan'),
             this.getNewSensor('random'),
-            this.getNewSensor('function')
+            this.getNewSensor('function'),
+            this.getNewSensor('inc'),
+            this.getNewSensor('dec')
         ]
     }
 
@@ -75,6 +77,30 @@ export class SensorStore {
                     _resx: {
                         init: "Initial",
                         variance: "Length"
+                    }
+                }
+                break;
+            case 'inc':
+                base = {
+                    _type: "inc",
+                    _value: 0,
+                    variance: 1,
+                    init: 0,
+                    _resx: {
+                        init: "Initial",
+                        variance: "Step"
+                    }
+                }
+                break;
+            case 'dec':
+                base = {
+                    _type: "dec",
+                    _value: 10000,
+                    variance: 1,
+                    init: 10000,
+                    _resx: {
+                        init: "Initial",
+                        variance: "Step"
                     }
                 }
                 break;

@@ -881,6 +881,16 @@ export class MockDevice {
             const res: any = await this.getFunctionPost(p.mock.function, p.mock._value);
             p.mock._value = res;
         }
+
+        if (p.mock._type === 'inc' && process) {
+            const inc = p.mock.variance && Utils.isNumeric(p.mock.variance) ? Utils.formatValue(false, p.mock.variance) : 1;
+            p.mock._value = p.mock._value + inc;
+        }
+
+        if (p.mock._type === 'dec' && process) {
+            const dec = p.mock.variance && Utils.isNumeric(p.mock.variance) ? Utils.formatValue(false, p.mock.variance) : 1;
+            p.mock._value = p.mock._value - dec;
+        }
     }
 
     getFunctionPost(url: string, value: any) {
