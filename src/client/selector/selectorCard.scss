@@ -6,6 +6,7 @@
   border-left: 2px solid $app-clr-2;
   border-top: 2px solid $app-clr-2;
   border-right: 2px solid $app-clr-2;
+  border-bottom: 0;
   color: $app-white;
   border-radius: $border-radius $border-radius 0 0;
   margin: 0;
@@ -13,17 +14,26 @@
   padding: 0.1rem;
   height: 0.8rem;
   line-height: 0.3rem;
+  width: 100%;
   i {
     margin: 0;
     padding: 0;
   }
 }
 
+.expander:focus {
+  outline: 1px dashed $app-clr-4;
+}
+
+/* --- */
+
 .selector-card {
+  color: $app-white;
+  background-color: transparent;
   overflow-wrap: break-word;
   border: 2px solid $app-clr-2;
   border-radius: 0 0 $border-radius $border-radius;
-  margin-bottom: $md-gutter;
+  width: 100%;
   h4,
   h5 {
     font-size: 1.2rem;
@@ -33,7 +43,62 @@
   h5 {
     font-size: 1rem;
   }
+  margin-top: -3px;
 }
+
+/* --- */
+
+.selector-card-expanded {
+  text-align: center;
+  padding: $sm-gutter;
+  overflow: hidden;
+
+  strong {
+    font-weight: 400;
+  }
+
+  .module-count {
+    color: $app-clr-blue-2;
+    font-size: 0.75rem;
+    padding-bottom: 4px;
+  }
+}
+
+.selector-card-expanded:focus {
+  outline: 1px dashed $app-clr-4;
+}
+
+/* --- */
+
+.selector-card-mini {
+  text-align: center;
+  padding: $sm-gutter;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  div:first-child {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  h5 {
+    margin: 0;
+    margin-left: $sm-gutter;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.selector-card-mini:focus {
+  outline: 1px dashed $app-clr-4;
+}
+
+/* --- */
 
 .selector-card-spinner {
   padding: $sm-gutter;
@@ -53,42 +118,7 @@
   background-color: $app-clr-0;
 }
 
-.selector-card-expanded {
-  text-align: center;
-  padding: $sm-gutter;
-  overflow: hidden;
-
-  strong {
-    font-weight: 400;
-  }
-
-  .module-count {
-    color: $app-clr-blue-2;
-    font-size: 0.75rem;
-    padding-bottom: 4px;
-  }
-}
-
-.selector-card-mini {
-  padding: $sm-gutter;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  div:first-child {
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-  }
-
-  h5 {
-    margin: 0;
-    margin-left: $sm-gutter;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
+/* --- */
 
 .control {
   font-size: 0.8rem;
