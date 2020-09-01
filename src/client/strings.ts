@@ -21,6 +21,7 @@ export const RESX = {
         "sync": "Refresh the UX if out of sync with the device engine",
         "sim": "Reset the current configuration for the simulation (advanced)",
         "reset": "WARNING! Remove all mock devices and templates. Keeps the simulation configuration",
+        "reset_confirm": "Are you OK to remove all devices and templates?",
         "ux": "Change the mock-devices engine that this UX is binding to",
     },
     "selector": {
@@ -171,7 +172,8 @@ export const RESX = {
         "buttons": {
             "module_title": "Select this module",
             "delete_label": "Delete",
-            "delete_title": "Delete this module from the Edge device"
+            "delete_title": "Delete this module from the Edge device",
+            "delete_confirm": "Are you OK to delete this module?"
         },
         "card": {
             "title": "Module"
@@ -190,8 +192,10 @@ export const RESX = {
             "kindModule": "Edge device module",
         },
         "title": {
-            "planMode": "Plan mode",
-            "planMode_title": "Use plan mode create a series of timed send and receive events. Switching modes stops the device",
+            "planMode": "PLAN",
+            "planMode_title": "Use plan mode create a series of timed send and receive events for all of the device capabilities. Switching modes stops the device and only the active mode runs",
+            "interactiveMode": "INTERACTIVE",
+            "interactiveMode_title": "Use interactive mode to setup each of the device's capabilities and/or send specific values. Switching modes stops the device and only the active mode runs",
         },
         "commands": {
             "restart_label": "Restart plan",
@@ -206,6 +210,7 @@ export const RESX = {
             "module_title": "Add a module to the Edge device",
             "config_title": "Change this device's configuration (advanced)",
             "delete_title": "Delete this device or template including all its capabilities. Ensure you have saved your state first",
+            "delete_confirm": "Are you OK to delete this device or template?",
             "edge_device_label": "Go to Edge device",
             "edge_device_title": "Manage the other modules in this Edge device",
 
@@ -216,6 +221,7 @@ export const RESX = {
             "save_title": "Save changes to this capability",
             "delete_label": "Delete",
             "delete_title": "Delete this capability",
+            "delete_confirm": "Are you OK to delete this capability?",
             "read_label": "Read",
             "read_title": "Read the last known twin value for this capability. Device must be on",
             "send_label": "Send",
@@ -318,7 +324,7 @@ export const RESX = {
         },
         "plan": {
             "empty": {
-                "plan_label": "A plan allows you to configure a timeline of send events with values to create repeatable device behavior",
+                "plan_label": "A plan allows you to configure a timeline of send events with values to create repeatable device behavior. Values, loops and mocks from interactive mode are not applicable in plan mode",
                 "startup_label": "Start up events are capability values that are sent to the hub when the device first powers up",
                 "timeline_label": "Timeline events are capability values that are sent to the hub at a specific duration after the device powers up",
                 "random_label": "Random events are capability values that are sent to the hub at some time between the first and last timeline event. Repeated if range is small",
@@ -338,7 +344,7 @@ export const RESX = {
                 "receive_label": "Receive events",
                 "receive_title": "Click to add a desired twin or method receive event",
                 "loop_label": "Loop plan",
-                "loop_title": "Executes the same set of event after the last one has finished",
+                "loop_title": "Execute the same set of events after the final event has completed",
                 "savePlan_label": "Save plan",
                 "savePlan_title": "Save the plan. This will stop the device and it will need to be manually restarted",
                 "clearPlan_label": "Clear plan",

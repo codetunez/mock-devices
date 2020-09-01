@@ -20,6 +20,7 @@ export function DeviceCommands() {
 
     const index = deviceContext.devices.findIndex((x) => x._id == deviceContext.device._id);
     const edgeDevice = decodeModuleKey(deviceContext.device._id);
+    const _confirm = () => { if (confirm(RESX.device.commands.delete_confirm)) { deviceContext.deleteDevice(); } }
 
     return <div className='device-commands-container'>
         <div className='btn-bar'>
@@ -43,7 +44,7 @@ export function DeviceCommands() {
             :
             <div className='btn-bar'>
                 <button title={RESX.device.commands.config_title} className='btn btn-warning' onClick={() => { toggleEdit(!showEdit) }}><span className='fas fa-wrench'></span></button>
-                <button title={RESX.device.commands.delete_title} className='btn btn-danger' onClick={() => { deviceContext.deleteDevice() }}><span className={'fas fa-lg fa-trash-alt'}></span></button>
+                <button title={RESX.device.commands.delete_title} className='btn btn-danger' onClick={() => { _confirm() }}><span className={'fas fa-lg fa-trash-alt'}></span></button>
             </div>
         }
         {showEdit ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><Edit handler={toggleEdit} index={index} /></div></Modal> : null}

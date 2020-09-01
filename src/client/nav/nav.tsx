@@ -18,6 +18,7 @@ export function Nav() {
     const [showDevices, toggleDevices] = React.useState(false);
     const [showSimulation, toggleSimulation] = React.useState(false);
     const [showUx, toggleUx] = React.useState(false);
+    const _confirm = () => { if (confirm(RESX.nav.reset_confirm)) { deviceContext.reset(); } }
 
     return <div className='nav'>
         <div className='section-title section-title-nav'>{RESX.app.version}</div>
@@ -32,7 +33,7 @@ export function Nav() {
                 <hr />
                 <button title={RESX.nav.sim} onClick={() => toggleSimulation(!showSimulation)} className='btn btn-outline-primary'><span className='fas fa-flask'></span></button>
                 <hr />
-                <button title={RESX.nav.reset} onClick={() => deviceContext.reset()} className='btn btn-outline-danger'><span className='fas fa-trash'></span></button>
+                <button title={RESX.nav.reset} onClick={() => _confirm()} className='btn btn-outline-danger'><span className='fas fa-trash'></span></button>
             </div>
             <button title={RESX.nav.ux} onClick={() => toggleUx(!showUx)} className='btn btn-outline-primary'><span className='fas fa-desktop'></span></button>
         </div>

@@ -65,7 +65,7 @@ const reducer = (state: State, action: Action) => {
             newData[item].push({ property: action.payload.comms[0].value, value: '' })
             return { ...state, form: { dirty: true }, data: newData };
         case 'add-timeline':
-            const newSeconds = newData.timeline.length === 0 ? 0 : parseInt(newData.timeline[newData.timeline.length - 1].time) + 1;
+            const newSeconds = newData.timeline.length === 0 ? 0 : parseInt(newData.timeline[newData.timeline.length - 1].time) + 60;
             newData.timeline.push({ time: newSeconds, property: action.payload.comms[0].value, value: '' })
             return { ...state, form: { dirty: true }, data: newData };
         case 'remove-startup':
@@ -204,6 +204,7 @@ export function DevicePlan({ device }) {
             <h5>{RESX.device.plan.core.plan_label}</h5>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div className="inline-label-field">
+                    <div>{RESX.device.plan.core.loop_label}</div>
                     <div title={RESX.device.plan.core.loop_title}>
                         <Toggle name={'plan-mode'} defaultChecked={false} checked={state.data.loop} onChange={(e: any) => { dispatch({ type: 'loop-plan', payload: { loop: e.target.checked } }) }} />
                     </div>

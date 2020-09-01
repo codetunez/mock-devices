@@ -40,9 +40,15 @@ $device-card-title-width-text: 320px; //220px;
     width: $device-card-title-width;
 
     .df-card-title-chevron {
-      margin-top: 1px;
-      width: $xl-gutter;
+      border: none;
+      background-color: transparent;
+      padding: 0 1rem 0 0;
+      height: 0;
+      width: 0;
+      margin: 0 1rem 0 0;
       cursor: pointer;
+      font-size: 1.2rem;
+      color: $app-white;
     }
 
     .df-card-title-chevron-spacer {
@@ -106,6 +112,10 @@ $device-card-title-width-text: 320px; //220px;
   input[type="number"] {
     width: $device-card-input;
     margin-right: $xs-gutter;
+  }
+
+  .mock-field {
+    width: 5.2rem !important;
   }
 
   .single-width {
