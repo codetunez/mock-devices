@@ -269,7 +269,7 @@ export class MockDevice {
 
                     slice = startValue / (comm.mock.timeToRunning / 1000);
                     mockSensorTimerObject = { sliceMs: slice, remainingMs: comm.mock.timeToRunning };
-                    comm.mock._value = comm.mock.init;
+                    comm.mock._value = Utils.formatValue(false, comm.mock.init);
                 }
 
                 if (comm.sdk === 'twin') {
@@ -823,13 +823,14 @@ export class MockDevice {
             let res = this.processCountdown(p, timeRemain, possibleResetTime);
             runloopTimers[i] = { 'timeRemain': res.timeRemain, originalTime };
 
-            this.updateSensorValue(p, propertySensorTimers, res.process);
             // for plan mode we send regardless of enabled or not
             if (res.process && (this.device.configuration.planMode || p.enabled)) {
                 let o: ValueByIdPayload = <ValueByIdPayload>{};
-                o[p._id] = this.device.configuration.planMode ? Utils.formatValue(p.string, runloopPropertiesValues[i]) : (p.mock ? p.mock._value : Utils.formatValue(p.string, p.value));
+                o[p._id] = this.device.configuration.planMode ? Utils.formatValue(p.string, runloopPropertiesValues[i]) : (p.mock ? p.mock._value || Utils.formatValue(false, p.mock.init) : Utils.formatValue(p.string, p.value));
                 Object.assign(payload, o);
             }
+
+            this.updateSensorValue(p, propertySensorTimers, res.process);
         }
         return payload;
     }
@@ -864,13 +865,21 @@ export class MockDevice {
         }
 
         if (p.mock._type === 'hotplate') {
-            var newCurrent = p.mock._value + (slice - (slice * p.mock.variance));
-            p.mock._value = newCurrent <= p.mock.running ? newCurrent : p.mock.running;
+            if (p.mock.reset && Utils.isNumeric(p.mock.reset) && Utils.formatValue(false, p.mock.reset) === p.mock._value) {
+                p.mock._value = Utils.formatValue(false, p.mock.init);
+            } else {
+                var newCurrent = p.mock._value + (slice - (slice * p.mock.variance));
+                p.mock._value = newCurrent <= p.mock.running ? newCurrent : p.mock.running;
+            }
         }
 
         if (p.mock._type === 'battery') {
-            var newCurrent = p.mock._value - (slice + (slice * p.mock.variance));
-            p.mock._value = newCurrent > p.mock.running ? newCurrent : p.mock.running;
+            if (p.mock.reset && Utils.isNumeric(p.mock.reset) && Utils.formatValue(false, p.mock.reset) === p.mock._value) {
+                p.mock._value = Utils.formatValue(false, p.mock.init);
+            } else {
+                var newCurrent = p.mock._value - (slice + (slice * p.mock.variance));
+                p.mock._value = newCurrent > p.mock.running ? newCurrent : p.mock.running;
+            }
         }
 
         if (p.mock._type === 'random') {
@@ -884,12 +893,20 @@ export class MockDevice {
 
         if (p.mock._type === 'inc' && process) {
             const inc = p.mock.variance && Utils.isNumeric(p.mock.variance) ? Utils.formatValue(false, p.mock.variance) : 1;
-            p.mock._value = p.mock._value + inc;
+            if (p.mock.reset && Utils.isNumeric(p.mock.reset) && Utils.formatValue(false, p.mock.reset) === p.mock._value) {
+                p.mock._value = Utils.formatValue(false, p.mock.init);
+            } else {
+                p.mock._value = p.mock._value + inc;
+            }
         }
 
         if (p.mock._type === 'dec' && process) {
             const dec = p.mock.variance && Utils.isNumeric(p.mock.variance) ? Utils.formatValue(false, p.mock.variance) : 1;
-            p.mock._value = p.mock._value - dec;
+            if (p.mock.reset && Utils.isNumeric(p.mock.reset) && Utils.formatValue(false, p.mock.reset) === p.mock._value) {
+                p.mock._value = Utils.formatValue(false, p.mock.init);
+            } else {
+                p.mock._value = p.mock._value - dec;
+            }
         }
     }
 

@@ -24,6 +24,7 @@ export interface MockSensor {
     variance?: number;
     timeToRunning?: number;
     function?: string;
+    reset?: number;
 }
 
 export interface Property {

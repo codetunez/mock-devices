@@ -28,11 +28,13 @@ export class SensorStore {
                     running: 0,
                     variance: 0.1,
                     timeToRunning: 86400000,
+                    reset: null,
                     _resx: {
                         init: "Start",
                         running: "End",
                         variance: "Varies %",
-                        timeToRunning: "End (ms)"
+                        timeToRunning: "End (ms)",
+                        reset: "Reset"
                     }
                 }
                 break;
@@ -44,11 +46,13 @@ export class SensorStore {
                     running: 275,
                     variance: 0.1,
                     timeToRunning: 28800000,
+                    reset: null,
                     _resx: {
                         init: "Start",
                         running: "End",
                         variance: "Varies %",
-                        timeToRunning: "End (ms)"
+                        timeToRunning: "End (ms)",
+                        reset: "Reset"
                     }
                 }
                 break;
@@ -86,9 +90,11 @@ export class SensorStore {
                     _value: 0,
                     variance: 1,
                     init: 0,
+                    reset: null,
                     _resx: {
                         init: "Initial",
-                        variance: "Step"
+                        variance: "Step",
+                        reset: "Reset"
                     }
                 }
                 break;
@@ -98,9 +104,11 @@ export class SensorStore {
                     _value: 10000,
                     variance: 1,
                     init: 10000,
+                    reset: null,
                     _resx: {
                         init: "Initial",
-                        variance: "Step"
+                        variance: "Step",
+                        reset: "Reset"
                     }
                 }
                 break;
