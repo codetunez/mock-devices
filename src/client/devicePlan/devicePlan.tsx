@@ -65,7 +65,7 @@ const reducer = (state: State, action: Action) => {
             newData[item].push({ property: action.payload.comms[0].value, value: '' })
             return { ...state, form: { dirty: true }, data: newData };
         case 'add-timeline':
-            const newSeconds = newData.timeline.length === 0 ? 0 : parseInt(newData.timeline[newData.timeline.length - 1].time) + 1;
+            const newSeconds = newData.timeline.length === 0 ? 0 : parseInt(newData.timeline[newData.timeline.length - 1].time) + 60;
             newData.timeline.push({ time: newSeconds, property: action.payload.comms[0].value, value: '' })
             return { ...state, form: { dirty: true }, data: newData };
         case 'remove-startup':

@@ -190,8 +190,10 @@ export const RESX = {
             "kindModule": "Edge device module",
         },
         "title": {
-            "planMode": "Plan mode",
-            "planMode_title": "Use plan mode create a series of timed send and receive events. Switching modes stops the device",
+            "planMode": "PLAN",
+            "planMode_title": "Use plan mode create a series of timed send and receive events for all of the device capabilities. Switching modes stops the device and only the active mode runs",
+            "interactiveMode": "INTERACTIVE",
+            "interactiveMode_title": "Use interactive mode to setup each of the device's capabilities and/or send specific values. Switching modes stops the device and only the active mode runs",
         },
         "commands": {
             "restart_label": "Restart plan",
@@ -318,7 +320,7 @@ export const RESX = {
         },
         "plan": {
             "empty": {
-                "plan_label": "A plan allows you to configure a timeline of send events with values to create repeatable device behavior",
+                "plan_label": "A plan allows you to configure a timeline of send events with values to create repeatable device behavior. Values, loops and mocks from interactive mode are not applicable in plan mode",
                 "startup_label": "Start up events are capability values that are sent to the hub when the device first powers up",
                 "timeline_label": "Timeline events are capability values that are sent to the hub at a specific duration after the device powers up",
                 "random_label": "Random events are capability values that are sent to the hub at some time between the first and last timeline event. Repeated if range is small",
