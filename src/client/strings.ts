@@ -270,8 +270,11 @@ export const RESX = {
                 "string_title": "Set to false for JSON, booleans, arrays",
                 "unit_label": "Time unit",
                 "unit_title": "Choose between minutes and seconds",
-                "duration_label": "Duration",
-                "duration_title": "The length of the time duration",
+                "duration_label": "Earliest",
+                "duration_title": "The engine will use this as the earliest possibly time the value will be sent. Make Earliest and Latest the same to send at a specific time",
+                "duration_max_label": "Latest",
+                "duration_max_title": "The engine will use this as the latest possibly time the value will be sent. Make Earliest and Latest the same to send at a specific time",
+
                 "sensor_label": "Sensor",
                 "sensor_title": "Select a simulated sensor that will be used as the value of this capability",
                 "sensor_generic_title": "Click to configure the sensor",

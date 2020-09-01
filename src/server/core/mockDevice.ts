@@ -250,7 +250,11 @@ export class MockDevice {
 
             // set up runloop reporting
             if (comm.runloop && comm.runloop.include === true) {
-                let ms = comm.runloop.value * (comm.runloop.unit === 'secs' ? 1000 : 60000);
+
+                // Adding for back compat. This will also update the UX for any configuration missing valueMax
+                if (!comm.runloop.valueMax) { comm.runloop.valueMax = comm.runloop.value; }
+                const newRunloopValue = Utils.getRandomNumberBetweenRange(comm.runloop.value, comm.runloop.valueMax, true);
+                comm.runloop._ms = newRunloopValue * (comm.runloop.unit === 'secs' ? 1000 : 60000);
 
                 let mockSensorTimerObject = null;
 
@@ -274,13 +278,13 @@ export class MockDevice {
 
                 if (comm.sdk === 'twin') {
                     this.twinRLProps.push(comm);
-                    this.twinRLReportedTimers.push({ timeRemain: ms, originalTime: ms });
+                    this.twinRLReportedTimers.push({ timeRemain: comm.runloop._ms, originalTime: comm.runloop._ms });
                     if (mockSensorTimerObject != null) { this.twinRLMockSensorTimers[comm._id] = mockSensorTimerObject; }
                 }
 
                 if (comm.sdk === 'msg') {
                     this.msgRLProps.push(comm);
-                    this.msgRLReportedTimers.push({ timeRemain: ms, originalTime: ms });
+                    this.msgRLReportedTimers.push({ timeRemain: comm.runloop._ms, originalTime: comm.runloop._ms });
                     if (mockSensorTimerObject != null) { this.msgRLMockSensorTimers[comm._id] = mockSensorTimerObject; }
                 }
             }
@@ -950,8 +954,7 @@ export class MockDevice {
             if (this.device.configuration.planMode) {
                 timeRemain = this.device.plan.loop ? originalPlanTime : -1;
             } else {
-                let mul = p.runloop.unit === 'secs' ? 1000 : 60000
-                timeRemain = p.runloop.value * mul;
+                timeRemain = p.runloop._ms;
             }
             res.process = true;
         }

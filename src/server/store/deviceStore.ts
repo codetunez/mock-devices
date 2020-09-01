@@ -231,9 +231,11 @@ export class DeviceStore {
                         "direction": "d2c"
                     },
                     "runloop": {
+                        "_ms": 0,
                         "include": false,
                         "unit": "secs",
-                        "value": 15
+                        "value": 15,
+                        "valueMax": 30
                     }
                 }
                 break;
