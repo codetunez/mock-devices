@@ -344,7 +344,7 @@ export const RESX = {
                 "receive_label": "Receive events",
                 "receive_title": "Click to add a desired twin or method receive event",
                 "loop_label": "Loop plan",
-                "loop_title": "Executes the same set of event after the last one has finished",
+                "loop_title": "Execute the same set of events after the final event has completed",
                 "savePlan_label": "Save plan",
                 "savePlan_title": "Save the plan. This will stop the device and it will need to be manually restarted",
                 "clearPlan_label": "Clear plan",

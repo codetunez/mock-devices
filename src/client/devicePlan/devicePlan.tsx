@@ -204,6 +204,7 @@ export function DevicePlan({ device }) {
             <h5>{RESX.device.plan.core.plan_label}</h5>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div className="inline-label-field">
+                    <div>{RESX.device.plan.core.loop_label}</div>
                     <div title={RESX.device.plan.core.loop_title}>
                         <Toggle name={'plan-mode'} defaultChecked={false} checked={state.data.loop} onChange={(e: any) => { dispatch({ type: 'loop-plan', payload: { loop: e.target.checked } }) }} />
                     </div>

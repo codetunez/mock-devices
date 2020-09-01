@@ -32,8 +32,9 @@ body {
 
 .inline-label-field {
   display: flex;
-  align-items: center;
+  justify-content: center;
   flex-flow: nowrap;
+  > div,
   label {
     margin: 0 !important;
     margin-right: $sm-gutter !important;
