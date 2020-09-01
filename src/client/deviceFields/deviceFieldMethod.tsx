@@ -151,9 +151,9 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
 
         <div className='df-card-header'>
             <div className='df-card-title'>
-                <div className='df-card-title-chevron' onClick={() => { dispatch({ type: 'toggle-expand', payload: { expand: !state.form.expanded, context: appContext } }) }}>
+                <button className='df-card-title-chevron' onClick={() => { dispatch({ type: 'toggle-expand', payload: { expand: !state.form.expanded, context: appContext } }) }}>
                     <i className={cx(state.form.expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-up')}></i>
-                </div>
+                </button>
                 <div className='df-card-title-text'>
                     <div>{RESX.device.card.method.title}</div>
                     <div>{state.data.name}</div>
@@ -174,87 +174,90 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
             <div><label title={RESX.device.card.method.property_title}>{state.data.execution === 'cloud' ? RESX.device.card.method.property_label : RESX.device.card.method.property_restart_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='name' value={state.data.name} onChange={updateField} /></div></div>
         </div>
 
-        <div className='df-card-row'>
-            <div><label></label><div></div></div>
-            <div><label title={RESX.device.card.method.c2d_title}>{RESX.device.card.method.c2d_label}</label>
-                <div title={RESX.device.card.method.c2d_title}>
-                    <Toggle name={state.data._id + '-execution'} defaultChecked={false} checked={state.data.execution === 'cloud' ? true : false} onChange={(e) => { dispatch({ type: 'toggle-execution', payload: { property: e.target.checked } }) }} />
-                </div>
-            </div>
-        </div>
-
-        {!pnp ? null :
+        {!state.form.expanded ? null :
             <>
                 <div className='df-card-row'>
-                    <div>{RESX.device.card.toggle.interface_label}</div>
-                    <div><label>{RESX.device.card.method.int_name_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.name' value={state.data.interface.name || 'Not supported'} onChange={updateField} /></div></div>
-
+                    <div><label></label><div></div></div>
+                    <div><label title={RESX.device.card.method.c2d_title}>{RESX.device.card.method.c2d_label}</label>
+                        <div title={RESX.device.card.method.c2d_title}>
+                            <Toggle name={state.data._id + '-execution'} defaultChecked={false} checked={state.data.execution === 'cloud' ? true : false} onChange={(e) => { dispatch({ type: 'toggle-execution', payload: { property: e.target.checked } }) }} />
+                        </div>
+                    </div>
                 </div>
+
+                {!pnp ? null :
+                    <>
+                        <div className='df-card-row'>
+                            <div>{RESX.device.card.toggle.interface_label}</div>
+                            <div><label>{RESX.device.card.method.int_name_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.name' value={state.data.interface.name || 'Not supported'} onChange={updateField} /></div></div>
+
+                        </div>
+                        <div className='df-card-row'>
+                            <div></div>
+                            <div><label>{RESX.device.card.method.int_urn_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.urn' value={state.data.interface.urn || 'Not supported'} onChange={updateField} /></div></div>
+                        </div>
+                    </>
+                }
+
+                {template ? null :
+                    <div className='df-card-row'>
+                        <div></div>
+                        <div><label title={RESX.device.card.method.request_title}>{RESX.device.card.method.request_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={3} readOnly={true} value={request()} placeholder={RESX.device.card.waiting_placeholder}></textarea></div></div>
+                        <div>
+                            <div className="card-field-label-height"></div>
+                            {!template ? <button title={RESX.device.card.read_param_title} className='btn btn-sm btn-outline-primary' onClick={() => { deviceContext.getCapabilityMethodRequest(state.data._id) }}><span className='fa fa-read'></span>{RESX.device.card.read_param_label}</button> : null}
+                        </div>
+                    </div>
+                }
+
+                {state.data.execution === 'cloud' ? null :
+                    <>
+                        <div className='df-card-row'>
+                            <div></div>
+                            <div><label title={RESX.device.card.method.response_title} >{RESX.device.card.method.response_label}</label><div><input type='number' max={3} className='form-control form-control-sm full-width' name='status' value={state.data.status} onChange={updateField} /></div></div>
+                        </div>
+
+                        <div className='df-card-row'>
+                            <div></div>
+                            <div><label title={RESX.device.card.method.response_payload_title}>{RESX.device.card.method.response_payload_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={6} name='payload' onChange={updateField} value={state.data.payload || ''}></textarea></div></div>
+                        </div>
+                        <div className='df-card-row df-card-row-nogap'>
+                            <div></div>
+                            <div className="snippets">
+                                <div>Add snippet:</div>
+                                <div className="snippet-links">{snippets}</div>
+                            </div>
+                        </div>
+                    </>
+                }
+
                 <div className='df-card-row'>
                     <div></div>
-                    <div><label>{RESX.device.card.method.int_urn_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.urn' value={state.data.interface.urn || 'Not supported'} onChange={updateField} /></div></div>
+                    <div><label>{RESX.device.card.method.twin_rpt_label}</label>
+                        <div title={RESX.device.card.method.twin_rpt_title}><Toggle name={state.data._id + '-sendtwin'} defaultChecked={false} checked={state.data.asProperty} onChange={() => { dispatch({ type: 'toggle-property', payload: null }) }} /></div>
+                    </div>
                 </div>
-            </>
-        }
 
-        {template ? null :
-            <div className='df-card-row'>
-                <div></div>
-                <div><label title={RESX.device.card.method.request_title}>{RESX.device.card.method.request_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={3} readOnly={true} value={request()} placeholder={RESX.device.card.waiting_placeholder}></textarea></div></div>
-                <div>
-                    <div className="card-field-label-height"></div>
-                    {!template ? <button title={RESX.device.card.read_param_title} className='btn btn-sm btn-outline-primary' onClick={() => { deviceContext.getCapabilityMethodRequest(state.data._id) }}><span className='fa fa-read'></span>{RESX.device.card.read_param_label}</button> : null}
-                </div>
-            </div>
-        }
-
-        {state.data.execution === 'cloud' ? null :
-            <>
-                <div className='df-card-row'>
-                    <div></div>
-                    <div><label title={RESX.device.card.method.response_title} >{RESX.device.card.method.response_label}</label><div><input type='number' max={3} className='form-control form-control-sm full-width' name='status' value={state.data.status} onChange={updateField} /></div></div>
-                </div>
+                {!state.data.asProperty ? null :
+                    <div className='df-card-row'>
+                        <div><label></label><div></div></div>
+                        <div><label title={RESX.device.card.method.property_report_title}>{RESX.device.card.method.property_report_label}</label>
+                            <div>
+                                <Combo items={sendComms} cls='full-width' name='asPropertyId' onChange={updateField} value={state.data.asPropertyId || ''} />
+                            </div>
+                        </div>
+                    </div>
+                }
 
                 <div className='df-card-row'>
-                    <div></div>
-                    <div><label title={RESX.device.card.method.response_payload_title}>{RESX.device.card.method.response_payload_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={6} name='payload' onChange={updateField} value={state.data.payload || ''}></textarea></div></div>
-                </div>
-                <div className='df-card-row df-card-row-nogap'>
-                    <div></div>
-                    <div className="snippets">
-                        <div>Add snippet:</div>
-                        <div className="snippet-links">{snippets}</div>
+                    <div><label>{RESX.device.card.UX}</label></div>
+                    <div><label title={RESX.device.card.color_title}>{RESX.device.card.color_label}</label>
+                        <div>
+                            <Combo items={colors} cls='full-width' name='color' onChange={updateField} value={state.data.color} />
+                        </div>
                     </div>
                 </div>
             </>
         }
-
-        <div className='df-card-row'>
-            <div></div>
-            <div><label>{RESX.device.card.method.twin_rpt_label}</label>
-                <div title={RESX.device.card.method.twin_rpt_title}><Toggle name={state.data._id + '-sendtwin'} defaultChecked={false} checked={state.data.asProperty} onChange={() => { dispatch({ type: 'toggle-property', payload: null }) }} /></div>
-            </div>
-        </div>
-
-        {!state.data.asProperty ? null :
-            <div className='df-card-row'>
-                <div><label></label><div></div></div>
-                <div><label title={RESX.device.card.method.property_report_title}>{RESX.device.card.method.property_report_label}</label>
-                    <div>
-                        <Combo items={sendComms} cls='full-width' name='asPropertyId' onChange={updateField} value={state.data.asPropertyId || ''} />
-                    </div>
-                </div>
-            </div>
-        }
-
-        <div className='df-card-row'>
-            <div><label>{RESX.device.card.UX}</label></div>
-            <div><label title={RESX.device.card.color_title}>{RESX.device.card.color_label}</label>
-                <div>
-                    <Combo items={colors} cls='full-width' name='color' onChange={updateField} value={state.data.color} />
-                </div>
-            </div>
-        </div>
-
     </div >
 }

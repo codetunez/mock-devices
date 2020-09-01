@@ -140,9 +140,9 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
 
         <div className='df-card-header'>
             <div className='df-card-title'>
-                <div className='df-card-title-chevron' onClick={() => { dispatch({ type: 'toggle-expand', payload: { expand: !state.form.expanded, context: appContext } }) }}>
+                <button className='df-card-title-chevron' onClick={() => { dispatch({ type: 'toggle-expand', payload: { expand: !state.form.expanded, context: appContext } }) }}>
                     <i className={cx(state.form.expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-up')}></i>
-                </div>
+                </button>
                 <div className='df-card-title-text'>
                     <div>{RESX.device.card.receive.title}</div>
                     <div>{state.data.name}</div>
@@ -163,99 +163,102 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
             <div><label title={RESX.device.card.receive.property_title}>{RESX.device.card.receive.property_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='name' value={state.data.name} onChange={updateField} /></div></div>
         </div>
 
-        {!pnp ? null :
+        {!state.form.expanded ? null :
             <>
-                < div className='df-card-row' >
-                    <div>{RESX.device.card.toggle.interface_label}</div>
-                    <div><label title={RESX.device.card.receive.int_name_title}>{RESX.device.card.receive.int_name_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.name' value={state.data.interface.name || 'Not supported'} onChange={updateField} /></div></div>
+                {!pnp ? null :
+                    <>
+                        < div className='df-card-row' >
+                            <div>{RESX.device.card.toggle.interface_label}</div>
+                            <div><label title={RESX.device.card.receive.int_name_title}>{RESX.device.card.receive.int_name_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.name' value={state.data.interface.name || 'Not supported'} onChange={updateField} /></div></div>
 
-                </div >
-                <div className='df-card-row'>
-                    <div></div>
-                    <div><label title={RESX.device.card.receive.int_urn_title}>{RESX.device.card.receive.int_urn_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.urn' value={state.data.interface.urn || 'Not supported'} onChange={updateField} /></div></div>
-                </div>
-            </>
-        }
-
-        <div className='df-card-row'>
-            <div></div>
-            <div><label>{RESX.device.card.receive.twin_rpt_label}</label>
-                <div title={RESX.device.card.receive.twin_rpt_title}><Toggle name={state.data._id + '-sendcapability'} defaultChecked={false} checked={state.data.asProperty} onChange={() => { dispatch({ type: 'toggle-property', payload: null }) }} /></div>
-            </div>
-        </div>
-
-        {!state.data.asProperty ? null :
-            <>
-                <div className='df-card-row'>
-                    <div><label></label><div></div></div>
-                    <div><label title={RESX.device.card.receive.property_report_title}>{RESX.device.card.receive.property_report_label}</label>
-                        <div>
-                            <Combo items={sendComms} cls='full-width' name='asPropertyId' onChange={updateField} value={state.data.asPropertyId || ''} />
-                        </div>
-                    </div>
-                </div>
-                {state.data.asPropertyId === RESX.device.card.select ? null : <>
-                    <div className='df-card-row'>
-                        <div></div>
-                        <div><label>{RESX.device.card.receive.property_version_label}</label>
-                            <div title={RESX.device.card.receive.property_version_title}><Toggle name={state.data._id + '-applyversion'} defaultChecked={false} checked={state.data.asPropertyVersion} onChange={() => { dispatch({ type: 'toggle-property-version', payload: null }) }} /></div>
-                        </div>
-                    </div>
-                    {!state.data.asPropertyVersion ? null : <>
+                        </div >
                         <div className='df-card-row'>
                             <div></div>
-                            {!state.data.asPropertyVersion ? null :
-                                <div>
-                                    <label title={RESX.device.card.receive.property_version_payload_title}>{RESX.device.card.receive.property_version_payload_label}</label>
-                                    <textarea className='form-control form-control-sm custom-textarea full-width' rows={7} name='asPropertyVersionPayload' onChange={updateField} value={state.data.asPropertyVersionPayload}></textarea>
-                                </div>
-                            }
-                        </div>
-                        <div className='df-card-row df-card-row-nogap'>
-                            <div></div>
-                            <div className="snippets">
-                                <div>Add snippet:</div>
-                                <div className="snippet-links">{snippets}</div>
-                            </div>
-                        </div>
-                        <div className='df-card-row'>
-                            <div></div>
-                            <div><label>{RESX.device.card.receive.property_convention_label}</label>
-                                <div title={RESX.device.card.receive.property_convention_title}><Toggle name={state.data._id + '-convention'} defaultChecked={false} checked={state.data.asPropertyConvention} onChange={() => { dispatch({ type: 'toggle-property-convention', payload: null }) }} /></div>
-                            </div>
+                            <div><label title={RESX.device.card.receive.int_urn_title}>{RESX.device.card.receive.int_urn_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.urn' value={state.data.interface.urn || 'Not supported'} onChange={updateField} /></div></div>
                         </div>
                     </>
-                    }
+                }
+
+                <div className='df-card-row'>
+                    <div></div>
+                    <div><label>{RESX.device.card.receive.twin_rpt_label}</label>
+                        <div title={RESX.device.card.receive.twin_rpt_title}><Toggle name={state.data._id + '-sendcapability'} defaultChecked={false} checked={state.data.asProperty} onChange={() => { dispatch({ type: 'toggle-property', payload: null }) }} /></div>
+                    </div>
+                </div>
+
+                {!state.data.asProperty ? null :
+                    <>
+                        <div className='df-card-row'>
+                            <div><label></label><div></div></div>
+                            <div><label title={RESX.device.card.receive.property_report_title}>{RESX.device.card.receive.property_report_label}</label>
+                                <div>
+                                    <Combo items={sendComms} cls='full-width' name='asPropertyId' onChange={updateField} value={state.data.asPropertyId || ''} />
+                                </div>
+                            </div>
+                        </div>
+                        {state.data.asPropertyId === RESX.device.card.select ? null : <>
+                            <div className='df-card-row'>
+                                <div></div>
+                                <div><label>{RESX.device.card.receive.property_version_label}</label>
+                                    <div title={RESX.device.card.receive.property_version_title}><Toggle name={state.data._id + '-applyversion'} defaultChecked={false} checked={state.data.asPropertyVersion} onChange={() => { dispatch({ type: 'toggle-property-version', payload: null }) }} /></div>
+                                </div>
+                            </div>
+                            {!state.data.asPropertyVersion ? null : <>
+                                <div className='df-card-row'>
+                                    <div></div>
+                                    {!state.data.asPropertyVersion ? null :
+                                        <div>
+                                            <label title={RESX.device.card.receive.property_version_payload_title}>{RESX.device.card.receive.property_version_payload_label}</label>
+                                            <textarea className='form-control form-control-sm custom-textarea full-width' rows={7} name='asPropertyVersionPayload' onChange={updateField} value={state.data.asPropertyVersionPayload}></textarea>
+                                        </div>
+                                    }
+                                </div>
+                                <div className='df-card-row df-card-row-nogap'>
+                                    <div></div>
+                                    <div className="snippets">
+                                        <div>Add snippet:</div>
+                                        <div className="snippet-links">{snippets}</div>
+                                    </div>
+                                </div>
+                                <div className='df-card-row'>
+                                    <div></div>
+                                    <div><label>{RESX.device.card.receive.property_convention_label}</label>
+                                        <div title={RESX.device.card.receive.property_convention_title}><Toggle name={state.data._id + '-convention'} defaultChecked={false} checked={state.data.asPropertyConvention} onChange={() => { dispatch({ type: 'toggle-property-convention', payload: null }) }} /></div>
+                                    </div>
+                                </div>
+                            </>
+                            }
+                        </>
+                        }
+                    </>
+                }
+
+                {template ? null : <>
+                    <div className='df-card-row'>
+                        <div></div>
+                        <div><label title={RESX.device.card.receive.value_title}>{RESX.device.card.receive.value_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={8} value={state.data.value || ''} placeholder={RESX.device.card.waiting_placeholder}>{state.data.value || ''}</textarea></div></div>
+                        <div>
+                            <div className="card-field-label-height"></div>
+                            {!template ? <button title={RESX.device.card.read_title} className='btn btn-sm btn-outline-primary' onClick={() => { dispatch({ type: 'read-parameters', payload: { context: deviceContext } }) }}>{RESX.device.card.read_label}</button> : null}
+                        </div>
+                    </div>
+                    <div className='df-card-row'>
+                        <div></div>
+                        <div><label title={RESX.device.card.receive.version_title}>{RESX.device.card.receive.version_label}</label><div><input type='text' className='form-control form-control-sm full-width' value={state.data.version === 0 ? '' : state.data.version} placeholder={RESX.device.card.waiting_placeholder} /></div></div>
+                    </div>
                 </>
                 }
+
+                <div className='df-card-row'>
+                    <div><label>{RESX.device.card.UX}</label></div>
+                    <div><label title={RESX.device.card.color_title}>{RESX.device.card.color_label}</label>
+                        <div>
+                            <Combo items={colors} cls='full-width' name='color' onChange={updateField} value={state.data.color} />
+                        </div>
+                    </div>
+                </div>
             </>
         }
-
-        {template ? null : <>
-            <div className='df-card-row'>
-                <div></div>
-                <div><label title={RESX.device.card.receive.value_title}>{RESX.device.card.receive.value_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={8} value={state.data.value || ''} placeholder={RESX.device.card.waiting_placeholder}>{state.data.value || ''}</textarea></div></div>
-                <div>
-                    <div className="card-field-label-height"></div>
-                    {!template ? <button title={RESX.device.card.read_title} className='btn btn-sm btn-outline-primary' onClick={() => { dispatch({ type: 'read-parameters', payload: { context: deviceContext } }) }}>{RESX.device.card.read_label}</button> : null}
-                </div>
-            </div>
-            <div className='df-card-row'>
-                <div></div>
-                <div><label title={RESX.device.card.receive.version_title}>{RESX.device.card.receive.version_label}</label><div><input type='text' className='form-control form-control-sm full-width' value={state.data.version === 0 ? '' : state.data.version} placeholder={RESX.device.card.waiting_placeholder} /></div></div>
-            </div>
-        </>
-        }
-
-        <div className='df-card-row'>
-            <div><label>{RESX.device.card.UX}</label></div>
-            <div><label title={RESX.device.card.color_title}>{RESX.device.card.color_label}</label>
-                <div>
-                    <Combo items={colors} cls='full-width' name='color' onChange={updateField} value={state.data.color} />
-                </div>
-            </div>
-        </div>
-
     </div >
 
 }
