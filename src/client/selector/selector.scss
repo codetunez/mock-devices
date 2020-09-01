@@ -12,7 +12,7 @@
 .selector-container-header {
   flex-shrink: 0;
   display: flex;
-  align-items: center;
+  align-content: center;
   justify-content: space-between;
   height: $title-height;
   margin: 0 1rem 0 1rem;
@@ -26,5 +26,19 @@
   min-height: 0;
   height: 100%;
   overflow-y: auto;
-  padding: 0 $md-gutter;
+  padding: 0 $md-gutter $md-gutter $md-gutter;
+}
+
+.selector-toggle {
+  margin: $sm-gutter 0;
+  border: none;
+  border-radius: 2px;
+  background-color: transparent;
+  cursor: pointer;
+  color: $app-white;
+}
+
+.selector-toggle:focus {
+  outline: none;
+  box-shadow: 0 0 2px $app-clr-4;
 }

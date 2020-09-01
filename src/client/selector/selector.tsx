@@ -18,9 +18,9 @@ export const Selector: React.FunctionComponent = () => {
     <div className='selector-container-header'>
       {deviceContext.devices.length === 0 ? null : <>
         <div className='section-title'>{RESX.selector.title}</div>
-        <div className='selector-toggle'>
-          {appContext.selectorExpand ? <i onClick={() => appContext.setSelectorExpand(false)} className="fas fa-sm fa-chevron-down"></i> : <i onClick={() => appContext.setSelectorExpand(true)} className="fas fs-sm fa-chevron-up"></i>}
-        </div>
+        <button className='selector-toggle' onClick={() => appContext.setSelectorExpand(!appContext.selectorExpand)}>
+          <i className={cx("fas fa-sm", appContext.selectorExpand ? 'fa-chevron-down' : 'fa-chevron-up')}></i>
+        </button>
       </>
       }
     </div>

@@ -152,17 +152,6 @@ input[type="number"]:disabled {
   transform: rotate(45deg);
 }
 
-.selector-toggle {
-  display: flex;
-  i {
-    cursor: pointer;
-  }
-
-  i:first-child {
-    margin-right: 5px;
-  }
-}
-
 button:disabled {
   cursor: not-allowed;
 }

@@ -40,17 +40,20 @@ $device-card-title-width-text: 320px; //220px;
     width: $device-card-title-width;
 
     .df-card-title-chevron {
+      margin: $sm-gutter;
       border: none;
+      border-radius: 2px;
       background-color: transparent;
-      padding: 0 1rem 0 0;
-      height: 0;
-      width: 0;
-      margin: 0 1rem 0 0;
       cursor: pointer;
-      font-size: 1.2rem;
       color: $app-white;
+      margin: 0 0.3rem 0 -0.3rem;
     }
 
+    .df-card-title-chevron:focus {
+      outline: none;
+      box-shadow: 0 0 2px $app-clr-4;
+    }
+    
     .df-card-title-chevron-spacer {
       width: $xl-gutter;
     }

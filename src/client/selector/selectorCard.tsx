@@ -31,7 +31,7 @@ export const SelectorCard: React.FunctionComponent<any> = ({ exp, index, active,
     }
   }
 
-  return <>
+  return <div className="selector-card-container">
     <button className='expander' onClick={() => setExpanded(!expanded)}><i className={cx(expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-up')}></i></button>
     {expanded ?
       <button className={cx('selector-card', 'selector-card-expanded', active ? selected : '')} onClick={() => deviceContext.setDevice(device)} title={device.configuration._kind === 'template' ? RESX.selector.card.template_title : RESX.selector.card.device_title}>
@@ -77,5 +77,5 @@ export const SelectorCard: React.FunctionComponent<any> = ({ exp, index, active,
         {kind != 'edge' && kind != 'template' ? <div><span className={'control control-' + runningEvent}>&#9679;</span></div> : null}
       </button>
     }
-  </>
+  </div>
 }

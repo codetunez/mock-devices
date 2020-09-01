@@ -1,5 +1,15 @@
 @import "../const.scss";
 
+.selector-card-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.selector-card-container:not(:last-child) {
+  margin-bottom: $sm-gutter;
+}
+
 .expander {
   cursor: pointer;
   background-color: $app-clr-2;
@@ -22,7 +32,8 @@
 }
 
 .expander:focus {
-  outline: 1px dashed $app-clr-4;
+  outline: none;
+  box-shadow: 0 0 2px $app-clr-4;
 }
 
 /* --- */
@@ -65,7 +76,8 @@
 }
 
 .selector-card-expanded:focus {
-  outline: 1px dashed $app-clr-4;
+  outline: none;
+  box-shadow: 0 0 2px $app-clr-4;
 }
 
 /* --- */
@@ -95,7 +107,8 @@
 }
 
 .selector-card-mini:focus {
-  outline: 1px dashed $app-clr-4;
+  outline: none;
+  box-shadow: 0 0 2px $app-clr-4;
 }
 
 /* --- */
