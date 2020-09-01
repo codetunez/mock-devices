@@ -11,7 +11,7 @@ import { Endpoint } from '../context/endpoint';
 export const Simulation: React.FunctionComponent<any> = ({ handler }) => {
 
     const [updatePayload, setPayload] = React.useState({ simulation: {} });
-    const [json, setJson] = React.useState({ simulation: {} });
+    const [json, setJson] = React.useState({});
     const [error, setError] = React.useState<any>('');
 
     React.useEffect(() => {
@@ -24,8 +24,8 @@ export const Simulation: React.FunctionComponent<any> = ({ handler }) => {
             });
     }, []);
 
-    const updateField = (text: any) => {
-        setJson(text);
+    const updateField = (obj: any) => {
+        setJson(obj);
         setError('');
     }
 
@@ -47,11 +47,11 @@ export const Simulation: React.FunctionComponent<any> = ({ handler }) => {
             <p>{RESX.modal.simulation.text1}</p>
             <label>{RESX.modal.simulation.configuration_label}</label>
             <div className="editor">
-                <Json json={updatePayload} cb={(text: any) => { updateField(text) }} err={() => setError(RESX.modal.error_json)} />
+                <Json json={updatePayload} cb={(obj: any) => { updateField(obj) }} err={() => setError(RESX.modal.error_json)} />
             </div>
         </div>
         <div className='simulation-footer'>
-            <button title={RESX.modal.simulation.reset_title} onClick={() => reset()} className="btn btn-success">{RESX.modal.simulation.reset_label}</button>
+            <button disabled={Object.keys(json).length === 0} title={RESX.modal.simulation.reset_title} onClick={() => reset()} className="btn btn-success">{RESX.modal.simulation.reset_label}</button>
             <div><span className='error'>{error}</span></div>
         </div>
     </div>
