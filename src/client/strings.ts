@@ -21,6 +21,7 @@ export const RESX = {
         "sync": "Refresh the UX if out of sync with the device engine",
         "sim": "Reset the current configuration for the simulation (advanced)",
         "reset": "WARNING! Remove all mock devices and templates. Keeps the simulation configuration",
+        "reset_confirm": "Are you OK to remove all devices and templates?",
         "ux": "Change the mock-devices engine that this UX is binding to",
     },
     "selector": {
@@ -209,6 +210,7 @@ export const RESX = {
             "module_title": "Add a module to the Edge device",
             "config_title": "Change this device's configuration (advanced)",
             "delete_title": "Delete this device or template including all its capabilities. Ensure you have saved your state first",
+            "delete_confirm": "Are you OK to delete this device or template?",
             "edge_device_label": "Go to Edge device",
             "edge_device_title": "Manage the other modules in this Edge device",
 
@@ -219,6 +221,7 @@ export const RESX = {
             "save_title": "Save changes to this capability",
             "delete_label": "Delete",
             "delete_title": "Delete this capability",
+            "delete_confirm": "Are you OK to delete this capability?",
             "read_label": "Read",
             "read_title": "Read the last known twin value for this capability. Device must be on",
             "send_label": "Send",

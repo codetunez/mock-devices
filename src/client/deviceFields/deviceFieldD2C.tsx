@@ -146,6 +146,11 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
         dispatch({ type: 'update-mock', payload: { name: e.target.name, value: e.target.value } })
     }
 
+    const _confirm = (id: string, type: string) => {
+        if (confirm(RESX.device.card.delete_confirm)) {
+            deviceContext.deleteCapability(id, type === 'method' ? 'method' : 'property')
+        }
+    }
 
     const clickSensor = (sensor: any) => {
         axios.get('/api/sensors/' + sensor._type)
@@ -229,7 +234,7 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
                     </div> */}
             <div className='df-card-cmd btn-bar'>
                 <button title={RESX.device.card.save_title} className={cx('btn btn-sm', state.form.dirty ? 'btn-warning' : 'btn-outline-warning')} onClick={() => { save(false) }}><span className='far fa-save'></span></button>
-                <button title={RESX.device.card.delete_title} className='btn btn-sm btn-outline-danger' onClick={() => { deviceContext.deleteCapability(state.data._id, state.data._type === 'method' ? 'method' : 'property') }}><span className='fa fa-times'></span></button>
+                <button title={RESX.device.card.delete_title} className='btn btn-sm btn-outline-danger' onClick={() => { _confirm(state.data._id, state.data._type === 'method' ? 'method' : 'property') }}><span className='fa fa-times'></span></button>
             </div>
         </div>
 
