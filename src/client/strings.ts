@@ -171,7 +171,8 @@ export const RESX = {
         "buttons": {
             "module_title": "Select this module",
             "delete_label": "Delete",
-            "delete_title": "Delete this module from the Edge device"
+            "delete_title": "Delete this module from the Edge device",
+            "delete_confirm": "Are you OK to delete this module?"
         },
         "card": {
             "title": "Module"

@@ -9,7 +9,7 @@ import { decodeModuleKey, controlEvents } from '../ui/utilities';
 
 export function DeviceEdge({ modules, control }) {
     const deviceContext: any = React.useContext(DeviceContext);
-
+    const _confirm = (id) => { if (confirm(RESX.edge.buttons.delete_confirm)) { deviceContext.deleteModule(id); } }
     return <>{modules.length > 0 ?
         <div className='device-edge-modules'>
             <div className='title'>{RESX.edge.title}</div>
@@ -21,18 +21,16 @@ export function DeviceEdge({ modules, control }) {
                     return <div className="edge-module">
                         <div className='expander'>
                             <div>{RESX.edge.card.title} {index + 1}</div>
-                            <button title={RESX.edge.buttons.delete_title} className='btn btn-sm btn-outline-danger' onClick={() => { deviceContext.deleteModule(id) }}><span className='fa fa-times'></span></button>
+                            <button title={RESX.edge.buttons.delete_title} className='btn btn-sm btn-outline-danger' onClick={() => _confirm(id)}><span className='fa fa-times'></span></button>
                         </div>
-                        <div className='selector-card'>
-                            <div className='selector-card-expanded' onClick={() => { deviceContext.getDevice(id) }}>
-                                <h4>{decodeModuleKey(element).moduleId}</h4>
-                                <strong>{decoded.deviceId || ''}</strong>
-                                <div className='selector-card-spinner'>
-                                    <i className={cx('fas fa-spinner fa-2x fa-fw', { 'fa-pulse': runningEvent != controlEvents.OFF })} ></i>
-                                </div>
-                                <div className={'control control-' + runningEvent}>{runningEvent}</div>
+                        <button className='selector-card selector-card-expanded' onClick={() => { deviceContext.getDevice(id) }}>
+                            <h4>{decodeModuleKey(element).moduleId}</h4>
+                            <strong>{decoded.deviceId || ''}</strong>
+                            <div className='selector-card-spinner'>
+                                <i className={cx('fas fa-spinner fa-2x fa-fw', { 'fa-pulse': runningEvent != controlEvents.OFF })} ></i>
                             </div>
-                        </div>
+                            <div className={'control control-' + runningEvent}>{runningEvent}</div>
+                        </button>
                     </div>
                 })}
             </div>
