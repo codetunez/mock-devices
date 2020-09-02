@@ -111,9 +111,7 @@ export const RESX = {
                 "cta_title": "The Edge device is a container for modules and is not a real device. The Device Id and Module Id need to be the same as the ones in the manifest file.",
                 "cta_label": "Create this Edge device profile",
             },
-            "error_add": "The device(s) cannot be added",
             "error_generic_add": "Check configuration, max devices reached or possible duplicate device",
-            "error_dcm": "The DCM is not valid or contains errors",
             "error_load": "Data cannot be loaded. Check file format or version mismatch",
             "error_state": "State cannot be updated. Format is not valid",
             "error_file": "State file did not save",
@@ -160,6 +158,13 @@ export const RESX = {
             "cta_label": "Change",
             "cta2_title": "Reset the UX to use the default mock-devices engine",
             "cta2_label": "Reset to default",
+        },
+        "reapply": {
+            "title1": "Reapply this template to devices and modules",
+            "title2": "Select the specific devices or modules. Use the SHIFT and CTRL keys to select multiple items. WARNING: Selected device(s)/module(s) will be reconfigured with this template's capability setup. Connection configuration will remain untouched",
+            "selectAll": "Select all the devices and modules",
+            "apply_label": "Apply",
+            "apply_title": "Update the selected devices with this templates. Any changed device will be stopped an will need to be manually restarted",
         }
     },
     "edge": {
@@ -186,6 +191,8 @@ export const RESX = {
             "powerOn_title": "Connect this mock device to the hub and start sending and receiving events",
             "powerOff_label": " Turn off power",
             "powerOff_title": "Disconnect this mock device from the hub and stop sending data",
+            "reapply_label": "Reapply template",
+            "reapply_title": "Select devices to update with this template's configuration",
             "kindTemplate": "Template",
             "kindReal": "Hub device",
             "kindEdge": "Edge device",

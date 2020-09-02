@@ -1,0 +1,14 @@
+@import "../const.scss";
+
+.reapply {
+  height: 100%;
+  padding: 1rem;
+
+  select {
+    width: 100%;
+  }
+
+  select:disabled {
+    cursor: not-allowed;
+  }
+}

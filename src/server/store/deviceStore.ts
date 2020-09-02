@@ -80,39 +80,7 @@ export class DeviceStore {
             receive: []
         }
 
-        if (d.configuration.mockDeviceCloneId) {
-            const origDevice: Device = JSON.parse(JSON.stringify(this.store.getItem(d.configuration.mockDeviceCloneId)));
-            if (Object.keys(origDevice).length != 0) {
-                d.configuration.capabilityUrn = origDevice.configuration.capabilityUrn;
-                for (let i = 0; i < origDevice.comms.length; i++) {
-                    let p = origDevice.comms[i];
-                    const origPropertyId = p._id;
-                    const newPropertyId = uuidV4();
-                    p._id = newPropertyId;
-                    if (p.mock) { p.mock._id = uuidV4(); }
-
-                    for (const property in origDevice.plan.startup) {
-                        if (origDevice.plan.startup[property].property === origPropertyId) { origDevice.plan.startup[property].property = newPropertyId };
-                    }
-
-                    for (const property in origDevice.plan.timeline) {
-                        if (origDevice.plan.timeline[property].property === origPropertyId) { origDevice.plan.timeline[property].property = newPropertyId };
-                    }
-
-                    for (const property in origDevice.plan.random) {
-                        if (origDevice.plan.random[property].property === origPropertyId) { origDevice.plan.random[property].property = newPropertyId };
-                    }
-
-                    for (const property in origDevice.plan.receive) {
-                        if (origDevice.plan.receive[property].propertyIn === origPropertyId) { origDevice.plan.receive[property].propertyIn = newPropertyId };
-                        if (origDevice.plan.receive[property].propertyOut === origPropertyId) { origDevice.plan.receive[property].propertyOut = newPropertyId };
-                    }
-                }
-                d.comms = origDevice.comms;
-                d.plan = origDevice.plan;
-                d.configuration.planMode = origDevice.configuration.planMode;
-            }
-        }
+        if (d.configuration.mockDeviceCloneId) { this.cloneDeviceCommsAndPlan(d, d.configuration.mockDeviceCloneId); }
 
         delete d.configuration._deviceList;
         delete d.configuration.mockDeviceCount;
@@ -520,6 +488,54 @@ export class DeviceStore {
         for (const index in items) {
             let rd = new MockDevice(items[index], this.messageService);
             this.runners[items[index]._id] = rd;
+        }
+    }
+
+    public reapplyTemplate(templateId: string, deviceList: Array<string>, applyAll: boolean) {
+        const template = this.store.getItem(templateId);
+        if (!template) { return; }
+
+        const devices = this.store.getAllItems();
+        for (let index in devices) {
+            if (!applyAll && deviceList.indexOf(devices[index]._id) === -1) { continue; }
+            if (devices[index].configuration._kind === 'edge' || devices[index].configuration._kind === 'template') { continue; }
+            this.stopDevice(devices[index]);
+            this.cloneDeviceCommsAndPlan(devices[index], templateId);
+        }
+    }
+
+    private cloneDeviceCommsAndPlan(device: Device, cloneId: string) {
+        const origDevice: Device = JSON.parse(JSON.stringify(this.store.getItem(cloneId)));
+        if (Object.keys(origDevice).length != 0) {
+            device.configuration.capabilityUrn = origDevice.configuration.capabilityUrn;
+            for (let i = 0; i < origDevice.comms.length; i++) {
+                let p = origDevice.comms[i];
+                const origPropertyId = p._id;
+                const newPropertyId = uuidV4();
+                p._id = newPropertyId;
+                if (p.mock) { p.mock._id = uuidV4(); }
+
+                for (const property in origDevice.plan.startup) {
+                    if (origDevice.plan.startup[property].property === origPropertyId) { origDevice.plan.startup[property].property = newPropertyId };
+                }
+
+                for (const property in origDevice.plan.timeline) {
+                    if (origDevice.plan.timeline[property].property === origPropertyId) { origDevice.plan.timeline[property].property = newPropertyId };
+                }
+
+                for (const property in origDevice.plan.random) {
+                    if (origDevice.plan.random[property].property === origPropertyId) { origDevice.plan.random[property].property = newPropertyId };
+                }
+
+                for (const property in origDevice.plan.receive) {
+                    if (origDevice.plan.receive[property].propertyIn === origPropertyId) { origDevice.plan.receive[property].propertyIn = newPropertyId };
+                    if (origDevice.plan.receive[property].propertyOut === origPropertyId) { origDevice.plan.receive[property].propertyOut = newPropertyId };
+                }
+            }
+            device.comms = origDevice.comms;
+            device.plan = origDevice.plan;
+            device.configuration.planMode = origDevice.configuration.planMode;
+            device.configuration.mockDeviceCloneId = cloneId;
         }
     }
 }

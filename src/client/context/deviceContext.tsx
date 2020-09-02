@@ -227,11 +227,20 @@ export class DeviceProvider extends React.PureComponent {
     }
 
     getSensor = (type: string) => {
-        axios.get(`${Endpoint.getEndpoint()}api / sensors` + type)
+        axios.get(`${Endpoint.getEndpoint()}api/sensors` + type)
             .then((response: any) => {
                 this.setState({ sensorSelcted: response.data })
             })
     }
+
+    // --- refactor
+    reapplyTemplate = (updatePayload: any) => {
+        axios.post(`${Endpoint.getEndpoint()}api/template/reapply`, { payload: updatePayload })
+            .then((response: any) => {
+                this.setState({ devices: response.data.devices });
+            })
+    }
+
 
     state: any = {
         snippets: {},
@@ -265,7 +274,8 @@ export class DeviceProvider extends React.PureComponent {
         planRestart: this.planRestart,
         planSave: this.planSave,
         updateDeviceConfiguration: this.updateDeviceConfiguration,
-        updateDeviceModules: this.updateDeviceModules
+        updateDeviceModules: this.updateDeviceModules,
+        reapplyTemplate: this.reapplyTemplate
     }
 
     render() {
