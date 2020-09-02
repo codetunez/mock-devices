@@ -146,13 +146,12 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
         rptTwin.sdk = 'twin';
         rptTwin.string = false;
         rptTwin.interface = pnpInterface; //REFACTOR: pnp        
-        rptTwin.propertyObject = { "type": "templated", template: '{}' }
         const reportedTwinId = deviceStore.addDeviceProperty(deviceId, 'd2c', rptTwin);
 
         o.color = simColors["Color2"] || '#333';
         o.asProperty = true;
         o.asPropertyId = reportedTwinId;
-        o.asPropertyConvention = false;
+        o.asPropertyConvention = true;
         o.asPropertyVersion = true;
         o.asPropertyVersionPayload = JSON.stringify({
             "value": "DESIRED_VALUE",

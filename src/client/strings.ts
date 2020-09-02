@@ -325,7 +325,7 @@ export const RESX = {
                 "property_report_title": "Both telemetry and twin send data can be used as the response",
                 "property_version_label": "Override capability's value",
                 "property_version_title": "Ignore the current capability's configuration and use a custom value",
-                "property_convention_label": "Use convention",
+                "property_convention_label": "Use value wrapped convention (has a 'value' property)",
                 "property_convention_title": "Will treat data as objects and merge desired received into reported payload. Then it will replace any AUTO/RECEIVE macros",
                 "property_version_payload_label": "Value (can be JSON)",
                 "property_version_payload_title": "See Help for full ist of AUTO macros available",

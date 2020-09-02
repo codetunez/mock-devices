@@ -299,6 +299,7 @@ export class DeviceStore {
             rd.updateDevice(d);
 
             if (d.comms[index]._type != 'property') { return; }
+            if (!sendValue) { return; }
 
             // build a reported payload and honor type
             let json: ValueByIdPayload = <ValueByIdPayload>{};
@@ -503,7 +504,7 @@ export class DeviceStore {
             if (devices[index].configuration._kind === 'edge' || devices[index].configuration._kind === 'template') { continue; }
             this.stopDevice(devices[index]);
             this.cloneDeviceCommsAndPlan(devices[index], templateId);
-      
+
             let rd: MockDevice = this.runners[devices[index]._id];
             if (rd) { rd.updateDevice(devices[index]); }
         }
