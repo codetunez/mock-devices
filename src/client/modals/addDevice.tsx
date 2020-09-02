@@ -73,7 +73,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
             })
             .catch((err) => {
                 const msg = err.response && err.response.data && err.response.data.message || RESX.modal.add.error_generic_add;
-                setError(kind === 'template' ? RESX.modal.add.error_dcm : `${RESX.modal.add.error_add} : ${msg}`);
+                setError(msg);
             })
     }
 
@@ -370,7 +370,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
-                            <button title={RESX.modal.add.option4.cta_title} className='btn btn-info' disabled={false} onClick={() => clickAddDevice('edge')}>{RESX.modal.add.option4.cta_label}</button>
+                            <button disabled={state.mockDeviceName === '' || state.deviceId === ''} title={RESX.modal.add.option4.cta_title} className='btn btn-info' onClick={() => clickAddDevice('edge')}>{RESX.modal.add.option4.cta_label}</button>
                         </div>
                     </>}
 

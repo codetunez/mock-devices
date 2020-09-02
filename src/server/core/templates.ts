@@ -19,7 +19,8 @@ export function DCMtoMockDevice(deviceConfiguration: any, deviceStore: DeviceSto
         var dcm = deviceConfiguration.capabilityModel;
         t.configuration.mockDeviceName = dcm.displayName ? (dcm.displayName.en || dcm.displayName) : 'DCM has no display name';
         t.configuration.capabilityUrn = dcm['@id'];
-        dcm.implements && dcm.implements.forEach(element => {
+
+        dcm.implements.forEach(element => {
 
             const pnpInterface: any = {
                 name: element.schema.displayName ? (element.schema.displayName.en || element.schema.displayName) : 'Interface has no display name',
@@ -129,10 +130,12 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
 
     // Add a runloop based on settings
     if (addRunLoop) {
+        const runValue = Utils.getRandomNumberBetweenRange(simRunloop[runLoopUnit]["min"], simRunloop[runLoopUnit]["max"], true)
         o.runloop = {
             'include': true,
             'unit': runLoopUnit === 'mins' ? 'mins' : 'secs',
-            'value': Utils.getRandomNumberBetweenRange(simRunloop[runLoopUnit]["min"], simRunloop[runLoopUnit]["max"], true)
+            'value': runValue,
+            'valueMax': runValue,
         }
     }
 

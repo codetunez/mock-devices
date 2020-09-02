@@ -130,6 +130,9 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
             case 'runloop.value':
                 dispatch({ type: 'update-runloop', payload: { name: "value", value: e.target.value } })
                 break;
+            case 'runloop.valueMax':
+                dispatch({ type: 'update-runloop', payload: { name: "valueMax", value: e.target.value } })
+                break;
             case 'interface.name':
                 dispatch({ type: 'update-interface', payload: { name: "name", value: e.target.value } })
                 break;
@@ -184,7 +187,7 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
     }
 
     const title = () => {
-        const loop = state.data.runloop.include ? ' every ' + state.data.runloop.value + ' ' + state.data.runloop.unit : '';
+        const loop = state.data.runloop.include ? ' every ' + state.data.runloop.value + '-' + state.data.runloop.valueMax + ' ' + state.data.runloop.unit : '';
         const mock = state.data.mock && state.data.type.mock ? ' (mock ' + state.data.mock._type + ')' : '';
         return `Send ${state.data.sdk === "msg" ? "telemetry" : state.data.sdk + " (Reported)"} ${loop} ${mock}`
     }
@@ -297,8 +300,9 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
                 <div className='df-card-row'>
                     <div><label>{RESX.device.card.toggle.runloop_label}</label><div title={RESX.device.card.toggle.runloop_title}><Toggle name={state.data._id + '-runloop'} defaultChecked={false} checked={state.data.runloop.include} onChange={() => dispatch({ type: 'toggle-runloop', payload: null })} /></div></div>
                     {state.data.runloop.include ? <>
-                        <div><label title={RESX.device.card.send.unit_title}>{RESX.device.card.send.unit_label}</label><div><Combo items={[{ name: 'Mins', value: 'mins' }, { name: 'Secs', value: 'secs' }]} cls='custom-textarea-sm  double-width' name='runloop.unit' onChange={updateField} value={state.data.runloop.unit} /></div></div>
-                        <div><label title={RESX.device.card.send.duration_title}>{RESX.device.card.send.duration_label}</label><div><input type='number' className='form-control form-control-sm double-width' name='runloop.value' min={0} value={state.data.runloop.value} onChange={updateField} /></div></div>
+                        <div><label title={RESX.device.card.send.unit_title}>{RESX.device.card.send.unit_label}</label><div><Combo items={[{ name: 'Mins', value: 'mins' }, { name: 'Secs', value: 'secs' }]} cls='custom-textarea-sm double-width' name='runloop.unit' onChange={updateField} value={state.data.runloop.unit} /></div></div>
+                        <div><label title={RESX.device.card.send.duration_title}>{RESX.device.card.send.duration_label}</label><div><input type='number' className='form-control form-control-sm single-width' name='runloop.value' min={0} value={state.data.runloop.value} onChange={updateField} /></div></div>
+                        <div><label title={RESX.device.card.send.duration_max_title}>{RESX.device.card.send.duration_max_label}</label><div><input type='number' className='form-control form-control-sm single-width' name='runloop.valueMax' min={0} value={state.data.runloop.valueMax} onChange={updateField} /></div></div>
                     </> : <div style={{ height: '55px' }}></div>}
                 </div>
 

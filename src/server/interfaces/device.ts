@@ -7,6 +7,8 @@ export interface RunLoop {
     include: boolean;
     unit: 'secs' | 'mins';
     value: number;
+    valueMax: number;
+    _ms: number;
 }
 
 export interface PnpInterface {

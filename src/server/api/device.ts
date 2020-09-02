@@ -142,6 +142,7 @@ export default function (deviceStore: DeviceStore) {
         }
         catch (msg) {
             res.status(500).send(msg);
+            return;
         }
         res.json({ device: deviceStore.exists(id), devices: deviceStore.getListOfItems() });
     });
@@ -204,7 +205,12 @@ export default function (deviceStore: DeviceStore) {
         var updatePayload = req.body;
 
         if (updatePayload._kind === 'template') {
-            DCMtoMockDevice(updatePayload, deviceStore);
+            try {
+                DCMtoMockDevice(updatePayload, deviceStore);
+            } catch (err) {
+                res.status(500).json({ "message": " The DCM has errors or has an unrecognized schema" });
+                return;
+            }
         } else {
 
             let items = deviceStore.getListOfItems();
