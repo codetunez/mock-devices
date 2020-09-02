@@ -26,6 +26,18 @@
     align-items: center;
     padding-bottom: $xs-gutter;
   }
+
+  .nav-items {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .container {
+    text-align: center;
+    padding: 0;
+    margin-bottom: $sm-gutter;
+    color: $app-clr-blue-4;
+  }
 }
 
 .blast-shield {

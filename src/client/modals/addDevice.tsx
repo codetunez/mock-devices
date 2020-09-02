@@ -209,7 +209,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <button title={RESX.modal.add.option4.buttons.button1_title} onClick={() => selectPanel(6)} className={cx('btn btn-outline-primary', panel === 6 ? 'active' : '')}>{RESX.modal.add.option4.buttons.button1_label}</button><br />
                     </div>
                     <div className='form-group'>
-                        {deviceContext.ui.container ? <><label>{Endpoint.getEndpoint()}</label><br /><i className="fab fa-docker fa-2x fa-fw" /></> : null}
+                        {deviceContext.ui.container ? <div className='container'>{Endpoint.getEndpoint()}<br /><i className="fab fa-docker fa-2x fa-fw" /></div> : null}
                         <span className='error'>{error}</span>
                     </div>
                 </div>

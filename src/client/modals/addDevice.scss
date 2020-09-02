@@ -17,3 +17,10 @@ label {
 .error {
   color: $app-clr-red-1;
 }
+
+.container {
+  font-size: 0.8rem;
+  i {
+    margin-top: $xs-gutter;
+  }
+}

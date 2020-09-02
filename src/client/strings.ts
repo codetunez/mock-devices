@@ -18,7 +18,6 @@ export const RESX = {
         "file": "Create or clone a new mock device or template utilizing DCMs, SDKs, DPS and Connection strings",
         "power": "Power up all devices that are currently off using randomized start times",
         "stop": "Power down all devices that are currently on",
-        "sync": "Refresh the UX if out of sync with the device engine",
         "sim": "Reset the current configuration for the simulation (advanced)",
         "reset": "WARNING! Remove all mock devices and templates. Keeps the simulation configuration",
         "reset_confirm": "Are you OK to remove all devices and templates?",
