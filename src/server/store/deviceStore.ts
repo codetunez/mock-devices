@@ -22,6 +22,7 @@ export class DeviceStore {
     private simulationStore = null;
     private simColors = null;
     private bulkRun = null;
+    private runloop = null;
 
     constructor(messageService) {
         this.messageService = messageService;
@@ -36,6 +37,7 @@ export class DeviceStore {
 
         this.simColors = this.simulationStore.get()["colors"];
         this.bulkRun = this.simulationStore.get()["bulk"];
+        this.runloop = this.simulationStore.get()["runloop"];
     }
 
     public reset() {
@@ -202,8 +204,8 @@ export class DeviceStore {
                         "_ms": 0,
                         "include": false,
                         "unit": "secs",
-                        "value": 15,
-                        "valueMax": 30
+                        "value": this.runloop["secs"]["min"],
+                        "valueMax": this.runloop["secs"]["max"]
                     }
                 }
                 break;
@@ -501,6 +503,9 @@ export class DeviceStore {
             if (devices[index].configuration._kind === 'edge' || devices[index].configuration._kind === 'template') { continue; }
             this.stopDevice(devices[index]);
             this.cloneDeviceCommsAndPlan(devices[index], templateId);
+
+            let rd: MockDevice = this.runners[devices[index]._id];
+            if (rd) { rd.updateDevice(devices[index]); }
         }
     }
 

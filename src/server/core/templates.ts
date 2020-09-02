@@ -130,12 +130,11 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
 
     // Add a runloop based on settings
     if (addRunLoop) {
-        const runValue = Utils.getRandomNumberBetweenRange(simRunloop[runLoopUnit]["min"], simRunloop[runLoopUnit]["max"], true)
         o.runloop = {
             'include': true,
             'unit': runLoopUnit === 'mins' ? 'mins' : 'secs',
-            'value': runValue,
-            'valueMax': runValue,
+            'value': simRunloop[runLoopUnit]["min"],
+            'valueMax': simRunloop[runLoopUnit]["max"],
         }
     }
 

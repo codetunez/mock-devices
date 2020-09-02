@@ -40,7 +40,7 @@ export class SimulationStore {
         },
         "runloop": {
             "secs": {
-                "min": 90,
+                "min": 60,
                 "max": 360
             },
             "mins": {

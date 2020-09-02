@@ -42,7 +42,8 @@ export function formatValue(asString: boolean, value: any) {
 }
 
 export function getRandomNumberBetweenRange(min: number, max: number, floor: boolean) {
-    const val = (Math.random() * (max - min)) + min;
+    const mn = formatValue(false, min);
+    const val = (Math.random() * (formatValue(false, max) - mn)) + mn;
     return floor ? Math.floor(val) : val;
 }
 
