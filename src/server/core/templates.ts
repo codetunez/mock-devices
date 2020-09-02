@@ -134,7 +134,7 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
             'include': true,
             'unit': runLoopUnit === 'mins' ? 'mins' : 'secs',
             'value': simRunloop[runLoopUnit]["min"],
-            'valueMax': simRunloop[runLoopUnit]["max"],
+            'valueMax': simRunloop[runLoopUnit]["max"]
         }
     }
 

@@ -503,7 +503,7 @@ export class DeviceStore {
             if (devices[index].configuration._kind === 'edge' || devices[index].configuration._kind === 'template') { continue; }
             this.stopDevice(devices[index]);
             this.cloneDeviceCommsAndPlan(devices[index], templateId);
-
+          
             let rd: MockDevice = this.runners[devices[index]._id];
             if (rd) { rd.updateDevice(devices[index]); }
         }
