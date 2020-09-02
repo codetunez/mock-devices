@@ -616,6 +616,9 @@ export class MockDevice {
     }
 
     sendPlanResponse(index, name) {
+        // this is from the hub where desired twin contains a meta tag
+        if (name === '$version') { return; }
+
         const propertyId = index[name];
         const property = this.device.plan.receive.find((prop) => { return prop.propertyIn === propertyId });
         if (property) {
