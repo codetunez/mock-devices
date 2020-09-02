@@ -180,7 +180,7 @@ export function DevicePlan({ device }) {
             const key: number = i;
             dom.push(<div key={i} className="mini-grid-row">
                 <div className='mini-grid-cell cell-width-3'>
-                    <Combo items={receiveComms} cls='custom-combo-sm' name='propertyIn' onChange={(e) => { dispatch({ type: 'edit-receive', payload: { index: key, field: 'propertyIn', value: e.target.value } }) }} value={ele.propertyIn} />
+                    <Combo items={receiveComms} cls='custom-combo-sm' name='property' onChange={(e) => { dispatch({ type: 'edit-receive', payload: { index: key, field: 'property', value: e.target.value } }) }} value={ele.property} />
                 </div>
                 <div className='mini-grid-cell cell-width-3'>
                     <Combo items={newComms} cls='custom-combo-sm' name='propertyOut' onChange={(e) => { dispatch({ type: 'edit-receive', payload: { index: key, field: 'propertyOut', value: e.target.value } }) }} value={ele.propertyOut} />

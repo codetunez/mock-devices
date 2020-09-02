@@ -503,7 +503,7 @@ export class DeviceStore {
             if (devices[index].configuration._kind === 'edge' || devices[index].configuration._kind === 'template') { continue; }
             this.stopDevice(devices[index]);
             this.cloneDeviceCommsAndPlan(devices[index], templateId);
-          
+      
             let rd: MockDevice = this.runners[devices[index]._id];
             if (rd) { rd.updateDevice(devices[index]); }
         }
@@ -533,7 +533,7 @@ export class DeviceStore {
                 }
 
                 for (const property in origDevice.plan.receive) {
-                    if (origDevice.plan.receive[property].propertyIn === origPropertyId) { origDevice.plan.receive[property].propertyIn = newPropertyId };
+                    if (origDevice.plan.receive[property].property === origPropertyId) { origDevice.plan.receive[property].property = newPropertyId };
                     if (origDevice.plan.receive[property].propertyOut === origPropertyId) { origDevice.plan.receive[property].propertyOut = newPropertyId };
                 }
             }

@@ -620,7 +620,7 @@ export class MockDevice {
         if (name === '$version') { return; }
 
         const propertyId = index[name];
-        const property = this.device.plan.receive.find((prop) => { return prop.propertyIn === propertyId });
+        const property = this.device.plan.receive.find((prop) => { return prop.property === propertyId });
         if (property) {
             const outboundProperty = this.device.comms[this.resolversCollection.deviceCommsIndex[property.propertyOut]];
             if (!outboundProperty) { return; }

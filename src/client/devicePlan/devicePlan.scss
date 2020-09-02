@@ -44,6 +44,10 @@
         .mini-grid-cell {
             display: table-cell;
             padding: 0 $xs-gutter $xs-gutter 0;
+
+            button {
+                margin-top: -3px;
+            }
         }
         .mini-grid-cell:not(:last-child) {
             margin-right: $sm-gutter;
