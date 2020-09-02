@@ -622,11 +622,10 @@ export class MockDevice {
         const propertyId = index[name];
         const property = this.device.plan.receive.find((prop) => { return prop.property === propertyId });
         if (property) {
-            const outboundProperty = this.device.comms[this.resolversCollection.deviceCommsIndex[property.propertyOut]];
+            const outboundProperty: Property = this.device.comms[this.resolversCollection.deviceCommsIndex[property.propertyOut]];
             if (!outboundProperty) { return; }
-            const sdk = this.device.comms[this.resolversCollection.deviceCommsIndex[propertyId]].sdk;
-            const payload = <ValueByIdPayload>{ [property.propertyOut]: property.value }
-            if (sdk === 'twin') { this.updateTwin(payload); } else { this.updateMsg(payload); }
+            const payload = <ValueByIdPayload>{ [outboundProperty._id]: property.value }
+            if (outboundProperty.sdk === 'twin') { this.updateTwin(payload); } else { this.updateMsg(payload); }
         }
     }
 
