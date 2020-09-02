@@ -165,7 +165,7 @@ export class DeviceStore {
         }
 
         Object.assign(method, override);
-        d.comms.push(method);
+        d.comms.unshift(method);
 
         this.store.setItem(d, d._id);
         let rd: MockDevice = this.runners[d._id];
@@ -238,7 +238,7 @@ export class DeviceStore {
         property.name = property.name + '_' + crypto.randomBytes(2).toString('hex');
         delete override._id;
         Object.assign(property, override);
-        d.comms.push(property);
+        d.comms.unshift(property);
         this.store.setItem(d, d._id);
         let rd: MockDevice = this.runners[d._id];
         rd.updateDevice(d);
