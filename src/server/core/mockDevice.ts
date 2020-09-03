@@ -164,21 +164,23 @@ export class MockDevice {
         this.RESTART_LOOP = (Utils.getRandomNumberBetweenRange(min, max, true) * 3600000);
         this.sasTokenExpiry = this.getSecondsFromHours(simulation['sasExpire']);
 
-        this.updateDevice(device);
+        this.updateDevice(device, false);
     }
 
     // Start of device setup and update code
 
-    updateDevice(device: Device) {
+    updateDevice(device: Device, valueOnlyUpdate: boolean) {
         if (this.device != null && this.device.configuration.connectionString != device.configuration.connectionString) {
             this.log('DEVICE/MODULE UPDATE ERROR. CONNECTION STRING HAS CHANGED. DELETE DEVICE', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
         } else {
             this.device = Object.assign({}, device);
-            this.reconfigDeviceDynamically();
+            this.reconfigDeviceDynamically(valueOnlyUpdate);
         }
     }
 
-    reconfigDeviceDynamically() {
+    reconfigDeviceDynamically(valueOnlyUpdate: boolean) {
+
+        if (valueOnlyUpdate) { return; }
 
         this.resolversCollection = {
             desiredToId: {},

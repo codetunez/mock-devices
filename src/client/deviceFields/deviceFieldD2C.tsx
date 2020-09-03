@@ -187,7 +187,9 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
     }
 
     const title = () => {
-        const loop = state.data.runloop.include ? ' every ' + state.data.runloop.value + '-' + state.data.runloop.valueMax + ' ' + state.data.runloop.unit : '';
+        let trueTime = null;
+        if (state.data.runloop._ms) { trueTime = state.data.runloop._ms / (state.data.runloop.unit === "secs" ? 1000 : 60000); }
+        const loop = state.data.runloop.include ? ' every ' + (trueTime || '???') + ' ' + state.data.runloop.unit : '';
         const mock = state.data.mock && state.data.type.mock ? ' (mock ' + state.data.mock._type + ')' : '';
         return `Send ${state.data.sdk === "msg" ? "telemetry" : state.data.sdk + " (Reported)"} ${loop} ${mock}`
     }
