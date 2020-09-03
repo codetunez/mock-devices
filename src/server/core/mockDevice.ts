@@ -21,6 +21,10 @@ import * as rw from 'random-words';
 import * as Crypto from 'crypto';
 import * as _ from 'lodash';
 
+function ignoreKind(kind) {
+    return kind === 'template' || kind === 'edge';
+}
+
 const LOGGING_TAGS = {
     CTRL: {
         HUB: 'HUB',
@@ -53,6 +57,29 @@ const LOGGING_TAGS = {
     MSG: {
         TWIN: 'TWIN',
         MSG: 'MSG'
+    },
+    STAT: {
+        MSG: {
+            FIRST: 'MSG_FIRST',
+            LAST: 'MSG_LAST',
+            COUNT: 'MSG_COUNT',
+            RATE: 'MSG_RATE'
+        },
+        TWIN: {
+            FIRST: 'TWIN_FIRST',
+            LAST: 'TWIN_LAST',
+            COUNT: 'TWIN_COUNT',
+            RATE: 'TWIN_RATE'
+        },
+        ON: 'ON',
+        OFF: 'OFF',
+        CONNECTS: 'CONNECTS',
+        COMMANDS: 'COMMANDS',
+        DESIRED: 'DESIRED',
+        RESTART: 'RESTART',
+        ERRORS: 'ERRORS',
+        DPS: 'DPS',
+        RECONFIGURES: 'RECONFIGURES',
     }
 }
 
@@ -63,6 +90,26 @@ interface IoTHubDevice {
 interface Timers {
     timeRemain: number,
     originalTime: number
+}
+
+interface Stats {
+    ON: number,
+    OFF: number,
+    MSG_FIRST: string
+    MSG_LAST: string,
+    MSG_COUNT: number,
+    MSG_RATE: number,
+    TWIN_FIRST: string
+    TWIN_LAST: string,
+    TWIN_COUNT: number,
+    TWIN_RATE: number,
+    CONNECTS: number,
+    COMMANDS: number,
+    DESIRED: number,
+    RESTART: number,
+    ERRORS: number,
+    RECONFIGURES: number,
+    DPS: number
 }
 
 export class MockDevice {
@@ -131,8 +178,10 @@ export class MockDevice {
         directMethodIndex: {}
     }
 
-    constructor(device: Device, messageService) {
+    private stats: Stats;
 
+    constructor(device: Device, messageService) {
+        if (ignoreKind(device.configuration._kind)) { return; }
         this.messageService = messageService;
         this.initialize(device);
     }
@@ -161,15 +210,35 @@ export class MockDevice {
         this.CONNECT_POLL = simulation['connect'];
         const { min, max } = simulation['restart'];
 
-        this.RESTART_LOOP = (Utils.getRandomNumberBetweenRange(min, max, true) * 3600000);
+        this.RESTART_LOOP = Utils.getRandomNumberBetweenRange(min, max, true) * 3600000;
         this.sasTokenExpiry = this.getSecondsFromHours(simulation['sasExpire']);
 
+        this.stats = {
+            MSG_COUNT: 0,
+            MSG_FIRST: null,
+            MSG_LAST: null,
+            MSG_RATE: 0,
+            TWIN_COUNT: 0,
+            TWIN_FIRST: null,
+            TWIN_LAST: null,
+            TWIN_RATE: 0,
+            CONNECTS: 0,
+            DESIRED: 0,
+            ON: 0,
+            OFF: 0,
+            RESTART: 0,
+            RECONFIGURES: -1,
+            COMMANDS: 0,
+            DPS: 0,
+            ERRORS: 0,
+        }
         this.updateDevice(device, false);
     }
 
     // Start of device setup and update code
 
     updateDevice(device: Device, valueOnlyUpdate: boolean) {
+        if (ignoreKind(device.configuration._kind)) { return; }
         if (this.device != null && this.device.configuration.connectionString != device.configuration.connectionString) {
             this.log('DEVICE/MODULE UPDATE ERROR. CONNECTION STRING HAS CHANGED. DELETE DEVICE', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
         } else {
@@ -181,6 +250,7 @@ export class MockDevice {
     reconfigDeviceDynamically(valueOnlyUpdate: boolean) {
 
         if (valueOnlyUpdate) { return; }
+        this.logStat(LOGGING_TAGS.STAT.RECONFIGURES);
 
         this.resolversCollection = {
             desiredToId: {},
@@ -358,8 +428,7 @@ export class MockDevice {
 
     /// starts a device
     start(delay) {
-        if (this.device.configuration._kind === 'template') { return; }
-        if (this.device.configuration._kind === 'edge') { return; }
+        if (ignoreKind(this.device.configuration._kind)) { return; }
         if (this.delayStartTimer || this.running) { return; }
 
         if (delay) {
@@ -384,6 +453,7 @@ export class MockDevice {
         if (this.device.configuration._kind === 'module') {
             this.log('MODULE IS SWITCHED ON', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
             this.logCP(LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.ON);
+            this.logStat(LOGGING_TAGS.STAT.ON);
             this.iotHubDevice = { client: undefined };
 
             this.log('MODULE INIT', LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
@@ -421,6 +491,7 @@ export class MockDevice {
 
         this.log('DEVICE IS SWITCHED ON', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
         this.logCP(LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.ON);
+        this.logStat(LOGGING_TAGS.STAT.ON);
 
         if (this.device.configuration._kind === 'dps') {
             const simulation = this.simulationStore.get()['simulation'];
@@ -437,6 +508,7 @@ export class MockDevice {
                 if (this.dpsRetires <= 0) {
                     clearInterval(this.connectionDPSTimer);
                     this.stop();
+                    this.logStat(LOGGING_TAGS.STAT.ERRORS);
                     return;
                 }
 
@@ -458,6 +530,7 @@ export class MockDevice {
         this.connectionTimer = setInterval(() => {
             this.log('IOT HUB RECONNECT LOOP START', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
             this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.INIT);
+            this.logStat(LOGGING_TAGS.STAT.RESTART);
             this.CONNECT_RESTART = true;
             this.cleanUp();
             this.running = true; // Quick fix to change restart behavior
@@ -503,8 +576,10 @@ export class MockDevice {
             }
         } catch (err) {
             this.log(`DEVICE/MODULE CLIENT TEARDOWN ERROR: ${err.message}`, LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
+            this.logStat(LOGGING_TAGS.STAT.ERRORS);
         } finally {
             this.running = false;
+            this.logStat(LOGGING_TAGS.STAT.OFF);
         }
     }
 
@@ -528,7 +603,7 @@ export class MockDevice {
 
                     // desired properties are cached
                     twin.on('properties.desired', ((delta) => {
-
+                        this.logStat(LOGGING_TAGS.STAT.DESIRED);
                         _.merge(this.desiredMergedCache, delta);
 
                         Object.assign(this.twinDesiredPayloadRead, delta);
@@ -726,6 +801,7 @@ export class MockDevice {
             this.iotHubDevice.client = clientFromConnectionString(connectionString);
             this.log(`CONNECTING VIA CONN STRING`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
         }
+        this.logStat(LOGGING_TAGS.STAT.CONNECTS);
         this.log(`DEVICE/MODULE AUTO RESTARTS EVERY ${this.RESTART_LOOP / 60000} MINUTES`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
     }
 
@@ -769,6 +845,7 @@ export class MockDevice {
             this.registrationConnectionString = 'HostName=' + result.assignedHub + ';DeviceId=' + result.deviceId + ';SharedAccessKey=' + transformedSasKey;
             this.log('DEVICE REGISTRATION SUCCESS', LOGGING_TAGS.CTRL.DPS, LOGGING_TAGS.LOG.OPS);
             this.logCP(LOGGING_TAGS.CTRL.DPS, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.SUCCESS);
+            this.logStat(LOGGING_TAGS.STAT.DPS);
         })
     }
 
@@ -789,9 +866,9 @@ export class MockDevice {
                 const transformed = this.transformPayload(payload);
                 twin.properties.reported.update(transformed.legacy, ((err) => {
                     this.log(JSON.stringify(transformed.legacy), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.TWIN, LOGGING_TAGS.DATA.SEND);
+                    this.logStat(LOGGING_TAGS.STAT.TWIN.COUNT);
                     this.messageService.sendAsLiveUpdate(this.device._id, transformed.live);
                 }))
-                //}
             }
         }
     }
@@ -807,9 +884,9 @@ export class MockDevice {
                 let msg = new Message(JSON.stringify(transformed.legacy));
                 this.iotHubDevice.client.sendEvent(msg, ((err) => {
                     this.log(JSON.stringify(transformed.legacy), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.MSG, LOGGING_TAGS.DATA.SEND);
+                    this.logStat(LOGGING_TAGS.STAT.MSG.COUNT);
                     this.messageService.sendAsLiveUpdate(this.device._id, transformed.live);
                 }))
-                //}
             }
         }
     }
@@ -1088,4 +1165,33 @@ export class MockDevice {
     logCP(type, operation, event) {
         this.messageService.sendAsControlPlane({ [this.device._id]: [type, operation, event] });
     }
-} 
+
+    logStat(type) {
+        if (ignoreKind(this.device.configuration._kind)) { return; }
+
+        const parts = type.split('_');
+        const update = parts.length === 2 ? parts[0] : 'METER';
+        const date = new Date().toISOString();
+
+        if (update === 'MSG' && !this.stats.MSG_FIRST) { this.stats.MSG_FIRST = date; }
+        if (update === 'TWIN' && !this.stats.TWIN_FIRST) { this.stats.TWIN_FIRST = date; }
+
+        if (update === 'MSG') { this.stats.MSG_LAST = date; }
+        if (update === 'TWIN') { this.stats.TWIN_LAST = date; }
+
+        this.stats[type] = this.stats[type] + 1;
+        if (this.stats.MSG_FIRST && this.stats.MSG_LAST && update === 'MSG') {
+            const s = Date.parse(this.stats.MSG_FIRST);
+            const f = Date.parse(this.stats.MSG_LAST);
+            this.stats[LOGGING_TAGS.STAT.MSG.RATE] = (this.stats[type] / (Math.round((f - s) / 60000))).toFixed(2)
+        }
+
+        if (this.stats.TWIN_FIRST && this.stats.TWIN_LAST && update === 'TWIN') {
+            const s = Date.parse(this.stats.TWIN_FIRST);
+            const f = Date.parse(this.stats.TWIN_LAST);
+            this.stats[LOGGING_TAGS.STAT.TWIN.RATE] = (this.stats[type] / (Math.round((f - s) / 60000))).toFixed(2)
+        }
+
+        this.messageService.sendAsStats({ [this.device._id]: this.stats });
+    }
+}

@@ -52,7 +52,7 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
         o._type = 'method';
         o.execution = !item.durable ? 'direct' : 'cloud';
 
-        deviceStore.addDeviceMethod(deviceId, o);
+        deviceStore.addDeviceMethod(deviceId, o, false);
         return;
     }
 
@@ -146,7 +146,7 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
         rptTwin.sdk = 'twin';
         rptTwin.string = false;
         rptTwin.interface = pnpInterface; //REFACTOR: pnp        
-        const reportedTwinId = deviceStore.addDeviceProperty(deviceId, 'd2c', rptTwin);
+        const reportedTwinId = deviceStore.addDeviceProperty(deviceId, 'd2c', rptTwin, false);
 
         o.color = simColors["Color2"] || '#333';
         o.asProperty = true;
@@ -162,7 +162,7 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
     }
 
     // Add the item. This handles Telemetry/Property/Command
-    deviceStore.addDeviceProperty(deviceId, ((isType(item['@type'], 'Property')) && item.writable ? 'c2d' : 'd2c'), o);
+    deviceStore.addDeviceProperty(deviceId, ((isType(item['@type'], 'Property')) && item.writable ? 'c2d' : 'd2c'), o, false);
 }
 
 function isType(node: any, type: string) {

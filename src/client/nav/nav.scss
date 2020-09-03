@@ -30,6 +30,9 @@
   .nav-items {
     display: flex;
     flex-direction: column;
+    a {
+      text-decoration: none;
+    }
   }
 
   .container {
@@ -83,4 +86,8 @@
 .small-modal {
   width: 500px;
   height: 320px;
+}
+
+.nav-active {
+  background-color: $app-clr-1;
 }

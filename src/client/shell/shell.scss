@@ -54,3 +54,14 @@
 .shell-content-selector {
   border-right: $border-thicker solid $app-clr-3;
 }
+
+.shell-content-root {
+  margin-top: 2rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  div:last-child {
+    margin-top: 0.5rem;
+  }
+}

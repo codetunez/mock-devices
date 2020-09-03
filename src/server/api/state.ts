@@ -23,7 +23,7 @@ export default function (deviceStore, simulationStore, ms) {
             res.json(deviceStore.getListOfItems());
         }
         catch (err) {
-            res.status(500).send({ "message": "Cannot import this data" })
+            res.status(500).send({ "message": "DATA ERROR: " + err.message })
         }
     });
 

@@ -2,7 +2,7 @@ var classNames = require('classnames');
 const cx = classNames.bind(require('./device.scss'));
 
 import * as React from 'react';
-
+import { useParams } from 'react-router-dom'
 import { DeviceTitle } from '../deviceTitle/deviceTitle';
 import { DeviceCommands } from '../deviceCommands/deviceCommands';
 import { DevicePower } from '../devicePower/devicePower';
@@ -19,8 +19,14 @@ import { ControlContext } from '../context/controlContext';
 
 export function Device() {
 
+    const { id } = useParams();
+
     const deviceContext: any = React.useContext(DeviceContext);
     const appContext: any = React.useContext(AppContext);
+
+    React.useEffect(() => {
+        deviceContext.getDevice(id)
+    }, [id]);
 
     if (!deviceContext.device.configuration) { return null; }
 
