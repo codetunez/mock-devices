@@ -1,6 +1,6 @@
 export const RESX = {
     "app": {
-        "version": "v6"
+        "version": "v7"
     },
     "core": {
         "templateNoSupport": "This is not supported for templates. Create a mock device from this template to use this feature",
@@ -13,15 +13,20 @@ export const RESX = {
         "local": "(local)",
         "edge": ['EDGE RUNTIME DETECTED: ', 'MODULE', 'RUNNING ON DEVICE'],
     },
+    "shell": {
+        "title": "Select Devices or Dashboard from the menu"
+    },
     "nav": {
-        "help": "Find out how to use mock-devices",
-        "file": "Create or clone a new mock device or template utilizing DCMs, SDKs, DPS and Connection strings",
-        "power": "Power up all devices that are currently off using randomized start times",
+        "stats": "Dashboard - See the current simulation statistics",
+        "devices": "Devices - See the list of devices, modules and templates",
+        "file": "Create or clone a new mock device, template or module using DCMs, SDKs, DPS and connection strings combinations",
+        "power": "Power up all devices and modules (use config for start timings)",
         "stop": "Power down all devices that are currently on",
-        "sim": "Reset the current configuration for the simulation (advanced)",
-        "reset": "WARNING! Remove all mock devices and templates. Keeps the simulation configuration",
-        "reset_confirm": "Are you OK to remove all devices and templates?",
-        "ux": "Change the mock-devices engine that this UX is binding to",
+        "sim": "Update the current simulation parameters (advanced)",
+        "reset": "WARNING! Remove all mock devices, modules and templates (keeps the simulation configuration)",
+        "reset_confirm": "Are you OK to remove all devices, modules and templates?",
+        "help": "Find out how to use mock-devices",
+        "ux": "Change the mock-devices engine that this UX is viewing",
     },
     "selector": {
         "title": "DEVICES & TEMPLATES",
@@ -111,7 +116,6 @@ export const RESX = {
                 "cta_label": "Create this Edge device profile",
             },
             "error_generic_add": "Check configuration, max devices reached or possible duplicate device",
-            "error_load": "Data cannot be loaded. Check file format or version mismatch",
             "error_state": "State cannot be updated. Format is not valid",
             "error_file": "State file did not save",
         },
@@ -378,5 +382,31 @@ export const RESX = {
     "console": {
         "pause_title": "Play/Pause the logging window",
         "erase_title": "Clear the logging window",
+    },
+    "dashboard": {
+        "title": "STATISTICS",
+        "waiting": "Waiting for data fetch ...",
+        "nodata": "No Data"
+    },
+    "UI": {
+        "STATS": {
+            "ON": "Power On",
+            "OFF": "Power Off",
+            "MSG_FIRST": "First msg sent",
+            "MSG_LAST": "Latest msg sent",
+            "MSG_COUNT": "# of msgs sent",
+            "MSG_RATE": "Msgs sent p/min",
+            "TWIN_FIRST": "First Twin sent",
+            "TWIN_LAST": "Latest Twin sent",
+            "TWIN_COUNT": "# of Twins sent",
+            "TWIN_RATE": "Twins sent p/min",
+            "CONNECTS": "Connect success",
+            "COMMANDS": "Commands received",
+            "RESTART": "Sim restarted",
+            "ERRORS": "Connect/SDK errors",
+            "RECONFIGURES": "Number of edits",
+            "DPS": "DPS success",
+            "DESIRED": "Twin received"
+        }
     }
 }

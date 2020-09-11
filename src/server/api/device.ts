@@ -50,14 +50,14 @@ export default function (deviceStore: DeviceStore) {
     api.post('/:id/property/new', function (req, res, next) {
         var id = req.params.id;
         var body = req.body;
-        deviceStore.addDeviceProperty(id, body.type, body.pnpSdk);
+        deviceStore.addDeviceProperty(id, body.type, body.pnpSdk, true);
         res.json({ device: deviceStore.exists(id), devices: deviceStore.getListOfItems() });
     });
 
     // create a new device method/C2D. as this stops the device, return the state of all devices
     api.post('/:id/method/new', function (req, res, next) {
         var id = req.params.id;
-        deviceStore.addDeviceMethod(id);
+        deviceStore.addDeviceMethod(id, {}, true);
         res.json({ device: deviceStore.exists(id), devices: deviceStore.getListOfItems() });
     });
 

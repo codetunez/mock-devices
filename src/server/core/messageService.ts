@@ -7,24 +7,27 @@ export class ServerSideMessageService {
     private eventData = {};
     private eventControl = {};
     private eventState = {};
+    private eventStats = {};
     private timers = {};
     private messageCount = 1;
     private controlCount = 1;
+    private statsCount = 1;
 
-    end(type: string) {
+    end = (type: string) => {
         clearInterval(this.timers[type]);
     }
 
-    endAll() {
+    endAll = () => {
         for (const timer in this.timers) {
             this.end(this.timers[timer]);
         }
     }
 
-    clearState() {
+    clearState = () => {
         this.eventData = {};
         this.eventControl = {};
         this.eventState = {};
+        this.eventStats = {};
     }
 
     sendConsoleUpdate(message: string) {
@@ -71,6 +74,21 @@ export class ServerSideMessageService {
         }
     }
 
+    sendAsStats(payload: any) {
+        if (Config.STATS_LOGGING) {
+            if (GLOBAL_CONTEXT.OPERATION_MODE === REPORTING_MODES.MIXED || GLOBAL_CONTEXT.OPERATION_MODE === REPORTING_MODES.SERVER) {
+                console.log(`[${new Date().toISOString()}][LOG][STATS REPORTING] ${JSON.stringify(payload)}`);
+                if (GLOBAL_CONTEXT.OPERATION_MODE === REPORTING_MODES.SERVER) { return; }
+            }
+            for (const key in payload) { this.eventStats[key] = payload[key] }
+        }
+    }
+
+    removeStatsOrControl(id: string) {
+        delete this.eventControl[id];
+        delete this.eventStats[id];
+    }
+
     messageLoop = (res) => {
         this.timers['messageLoop'] = setInterval(() => {
             if (this.eventMessage.length > 0) {
@@ -108,5 +126,14 @@ export class ServerSideMessageService {
                 this.eventState = {};
             }
         }, 2895)
+    }
+
+    statsLoop = (res) => {
+        this.timers['statsLoop'] = setInterval(() => {
+            if (Object.keys(this.eventStats).length > 0) {
+                res.write(`id: ${this.statsCount}\ndata: ${JSON.stringify(this.eventStats)} \n\n`);
+                this.statsCount++;
+            }
+        }, 5000)
     }
 }

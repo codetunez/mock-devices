@@ -17,7 +17,8 @@ export default function (dialog, app, globalContext, ms) {
             edge: {
                 deviceId: globalContext.IOTEDGE_DEVICEID,
                 moduleId: globalContext.IOTEDGE_MODULEID
-            }
+            },
+            latest: globalContext.LATEST_VERSION
         });
     });
 

@@ -6,6 +6,8 @@ const cx = classNames.bind(require('./addDevice.scss'));
 import { Endpoint } from '../context/endpoint';
 
 import * as React from 'react';
+import { useHistory } from 'react-router-dom'
+
 import { Combo, Json } from '../ui/controls';
 import axios from 'axios';
 import Toggle from 'react-toggle';
@@ -40,6 +42,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
     const [merge, setMerge] = React.useState(false);
     const [jsons, setJsons] = React.useState<any>({});
     const [error, setError] = React.useState<any>('');
+    const history = useHistory();
 
     React.useEffect(() => {
         let list = [];
@@ -69,6 +72,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
         axios.post(`${Endpoint.getEndpoint()}api/device/new`, state)
             .then(res => {
                 deviceContext.setDevices(res.data);
+                history.push('/devices');
                 handler(false);
             })
             .catch((err) => {
@@ -139,10 +143,12 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                     axios.post(`${Endpoint.getEndpoint()}api/state/${merge ? 'merge' : ''}`, json)
                         .then(() => {
                             deviceContext.refreshAllDevices();
+                            history.push('/devices');
                             handler(false);
                         })
                         .catch((err) => {
-                            setError(RESX.modal.add.error_load);
+                            const msg = err.response && err.response.data && err.response.data.message || RESX.modal.add.error_generic_add;
+                            setError(msg);
                         })
                 } else {
                     setPayload({
@@ -170,6 +176,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
             axios.post(`${Endpoint.getEndpoint()}api/state/${merge ? 'merge' : ''}`, jsons[nextState])
                 .then(() => {
                     deviceContext.refreshAllDevices();
+                    history.push('/devices');
                     handler(false);
                 })
                 .catch((err) => {

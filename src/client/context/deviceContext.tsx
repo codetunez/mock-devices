@@ -245,7 +245,7 @@ export class DeviceProvider extends React.PureComponent {
     state: any = {
         snippets: {},
         colors: {},
-        ui: { container: false },
+        ui: { container: false, latest: false },
         sensors: {},
         sensorSelcted: {},
         device: {},

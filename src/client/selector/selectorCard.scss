@@ -1,9 +1,14 @@
 @import "../const.scss";
 
+$card-width: 194px;
+
 .selector-card-container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  a {
+    text-decoration: none;
+  }
 }
 
 .selector-card-container:not(:last-child) {
@@ -24,7 +29,7 @@
   padding: 0.1rem;
   height: 0.8rem;
   line-height: 0.3rem;
-  width: 100%;
+  width: $card-width;
   i {
     margin: 0;
     padding: 0;
@@ -44,7 +49,7 @@
   overflow-wrap: break-word;
   border: 2px solid $app-clr-2;
   border-radius: 0 0 $border-radius $border-radius;
-  width: 100%;
+  width: $card-width;
   h4,
   h5 {
     font-size: 1.2rem;

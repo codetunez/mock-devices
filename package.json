@@ -1,6 +1,6 @@
 {
   "name": "mock-devices",
-  "version": "6.1.7",
+  "version": "7.0.0",
   "description": "mock-devices desktop edition",
   "main": "./_dist/server/start.js",
   "repository": {
@@ -21,6 +21,7 @@
     "@types/node": "^12.0.2",
     "@types/react": "^16.9.5",
     "@types/react-dom": "^16.9.1",
+    "@types/react-router-dom": "^5.1.5",
     "axios": "^0.18.0",
     "azure-iot-common": "^1.12.4",
     "azure-iot-device": "^1.17.0",
@@ -47,6 +48,7 @@
     "random-words": "^1.1.0",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
+    "react-router-dom": "^5.2.0",
     "react-splitter-layout": "^4.0.0",
     "react-toggle": "^4.1.1",
     "sass-loader": "^7.1.0",

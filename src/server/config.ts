@@ -6,6 +6,7 @@ export enum REPORTING_MODES {
 
 export const GLOBAL_CONTEXT = {
     OPERATION_MODE: REPORTING_MODES.UX,
+    LATEST_VERSION: false,
     IOTEDGE_WORKLOADURI: process.env.IOTEDGE_WORKLOADURI,
     IOTEDGE_DEVICEID: process.env.IOTEDGE_DEVICEID,
     IOTEDGE_MODULEID: process.env.IOTEDGE_MODULEID,
@@ -26,9 +27,10 @@ export class Config {
     public static CONTROL_LOGGING: boolean = true;
     public static PROPERTY_LOGGING: boolean = false;
     public static STATE_LOGGING: boolean = true;
+    public static STATS_LOGGING: boolean = true;
 
     // dev settings
     public static NODE_MODE: boolean = false;
-    public static WEBAPI_LOGGING: boolean = false;    
+    public static WEBAPI_LOGGING: boolean = false;
     public static DEV_TOOLS: boolean = false;
 }

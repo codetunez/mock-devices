@@ -1,4 +1,4 @@
-# mock-devices v6 Beta (Desktop Edition)
+# mock-devices v7 Beta (Desktop Edition)
 mock-devices is a simulation engine that manages and runs simulated devices that connect to an Azure Iot Hub. When hosted in the Azure IoT Edge runtime, the engine will simulate Edge modules too. The simulated devices and modules implement D2C/C2D scenarios i.e telemetry, twin and commands as supported by the Azure IoT Device SDK
 
 The simulation engine does not share device configurations and is platform agnostic. Each configured device/module acts independently of other devices/modules running within the engine. Each has its own model (capabilities), configuration and connection details. Devices/modules running on the same simulation engine can be a mix of connection strings, DPS, SaS, Edge modules. The engine has additional scenarios like cloning, bulk, templates and acknowledgements. See internal help
@@ -38,10 +38,9 @@ Help is available inside the application
 
 ---
 
-#### v6 - Beta
-- Support for Azure IoT Edge modules
-- Connect to any mock-devices engine using IP or DNS
-- [Azure IoT Device SDK 1.17.0](https://www.npmjs.com/package/azure-iot-device)
+#### v7- Beta
+- Dashboard statistics mode
+- 
 
 #### Features
 - Supports 1,000 mock devices/modules
@@ -50,10 +49,11 @@ Help is available inside the application
 - DTDLv1 DCM to simulated mock devices
   - Auto Gen DTDL Complex Types; Objects/Maps/Arrays with random values using the DCM
 - Simulated versions of common device operations such as Reboot, Shutdown, Firmware
-- "Pretend" sensors like battery, heaters, fans
-- Support for C2D command using cloud messages
+- "Pretend" sensors like battery, heaters, fans, +1 and -1
 - Plan mode - Create a timed series of events
-- Send ack's from Twin desired and Commands
+- Support for C2D command using cloud messages 
+- Support for Azure IoT Edge modules
+- Connect to any mock-devices engine using IP or DNS
 
 #### Macro support for value payloads
 Use auto generated values to send as a device value when running in loops

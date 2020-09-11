@@ -1,6 +1,7 @@
 const isDocker = require('is-docker');
 import { screen, dialog, app, Menu, BrowserWindow } from 'electron';
 import * as http from 'http';
+import * as https from 'https';
 import * as express from 'express';
 import * as morgan from 'morgan';
 import * as bodyParser from 'body-parser';
@@ -20,6 +21,8 @@ import { DeviceStore } from './store/deviceStore';
 import { SensorStore } from './store/sensorStore';
 import { SimulationStore } from './store/simulationStore';
 import { ServerSideMessageService } from './core/messageService';
+var path = require('path');
+var pjson = require('../../package.json');
 
 class Server {
 
@@ -36,6 +39,8 @@ class Server {
         this.deviceStore = new DeviceStore(ms);
         this.sensorStore = new SensorStore();
         this.simulationStore = new SimulationStore();
+
+        GLOBAL_CONTEXT.LATEST_VERSION = this.latestVersion() === pjson.version;
 
         this.expressServer = express();
         this.expressServer.server = http.createServer(this.expressServer);
@@ -83,6 +88,8 @@ class Server {
             res.on('finish', () => { ms.end(dynamicName); });
         });
 
+        this.expressServer.get('*', (req, res) => res.sendFile(path.resolve(__dirname + '/../../static/index.html')));
+
         if (isDocker() || Config.NODE_MODE) {
             this.startApplication();
         }
@@ -109,6 +116,10 @@ class Server {
         }
     }
 
+    async latestVersion() {
+        return await getLatestVersion();
+    }
+
     private mainWindow: any = null;
 
     public startApplication = () => {
@@ -123,7 +134,7 @@ class Server {
         let override = { size: { height: 1000 } };
         try {
             override = screen.getPrimaryDisplay();
-        } catch{ }
+        } catch { }
 
         this.mainWindow = new BrowserWindow({
             "width": Config.APP_WIDTH,
@@ -131,7 +142,9 @@ class Server {
             "minWidth": Config.APP_WIDTH,
             "minHeight": Config.APP_HEIGHT,
             webPreferences: {
-                devTools: true
+                devTools: true,
+                spellcheck: false,
+                enableWebSQL: false
             }
         });
 
@@ -164,3 +177,18 @@ process.on('uncaughtException', ((err) => {
 
 // start the application
 new Server().start();
+
+function getLatestVersion() {
+    return new Promise((resolve, reject) => {
+        https.get('https://raw.githubusercontent.com/codetunez/mock-devices/master/package.json', (resp) => {
+            let data = '';
+            resp.on('data', (chunk) => { data += chunk; });
+            resp.on('end', () => {
+                const o = JSON.parse(data);
+                return resolve(o.version);
+            });
+        }).on("error", (err) => {
+            return reject(err);
+        });
+    })
+}

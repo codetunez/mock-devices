@@ -40,12 +40,12 @@ export class SimulationStore {
         },
         "runloop": {
             "secs": {
-                "min": 60,
-                "max": 360
+                "min": 300,
+                "max": 900
             },
             "mins": {
-                "min": 15,
-                "max": 60
+                "min": 30,
+                "max": 120
             }
         },
         "geo": {

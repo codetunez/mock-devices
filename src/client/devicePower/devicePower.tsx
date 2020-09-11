@@ -28,12 +28,6 @@ export function DevicePower({ control }) {
         })
     }, [deviceContext.device, control[deviceContext.device._id]])
 
-    React.useEffect(() => {
-        return () => {
-            controlContext.killConnection();
-        }
-    }, []);
-
     return <div className='device-toolbar-container'>
         <div className='power'>
             {kind === 'template' ?
