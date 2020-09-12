@@ -54,7 +54,7 @@ export const Shell: React.FunctionComponent = () => {
         </div>
         <div className='shell-content'>
           <div className='shell-content-nav'><Nav actions={nav} /></div>
-          <Route exact path="/"><div className='shell-content-root'><div>{RESX.shell.title}</div><div>{deviceContext.ui.latest ? 'LATEST TOOL VERSION' : 'TOOL UPDATE AVAILABLE'}</div></div></Route>
+          <Route exact path="/"><div className='shell-content-root'><div>{RESX.shell.title}</div></div></Route>
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/devices" component={Devices} />
         </div>

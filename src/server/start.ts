@@ -40,8 +40,6 @@ class Server {
         this.sensorStore = new SensorStore();
         this.simulationStore = new SimulationStore();
 
-        GLOBAL_CONTEXT.LATEST_VERSION = this.latestVersion() === pjson.version;
-
         this.expressServer = express();
         this.expressServer.server = http.createServer(this.expressServer);
         this.expressServer.use(cors({ origin: false, exposedHeaders: ["Link"] }));
@@ -116,10 +114,6 @@ class Server {
         }
     }
 
-    async latestVersion() {
-        return await getLatestVersion();
-    }
-
     private mainWindow: any = null;
 
     public startApplication = () => {
@@ -177,18 +171,3 @@ process.on('uncaughtException', ((err) => {
 
 // start the application
 new Server().start();
-
-function getLatestVersion() {
-    return new Promise((resolve, reject) => {
-        https.get('https://raw.githubusercontent.com/codetunez/mock-devices/master/package.json', (resp) => {
-            let data = '';
-            resp.on('data', (chunk) => { data += chunk; });
-            resp.on('end', () => {
-                const o = JSON.parse(data);
-                return resolve(o.version);
-            });
-        }).on("error", (err) => {
-            return reject(err);
-        });
-    })
-}
