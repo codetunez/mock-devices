@@ -22,7 +22,6 @@ export function Nav({ actions }) {
                 <NavLink to='/dashboard'>
                     <button title={RESX.nav.stats} className={cx('btn btn-outline-primary', match && match.url.indexOf('/dashboard') > -1 ? 'nav-active' : '')}><span className='fa fa-tachometer-alt'></span></button>
                 </NavLink >
-                <hr />
                 <button title={RESX.nav.file} onClick={() => actions.menuAdd()} className={'btn btn-outline-primary'}><span className='fa fa-plus'></span></button >
                 <hr />
                 <button title={RESX.nav.power} onClick={() => actions.menuStartAll()} className='btn btn-outline-primary'><span className='fas fa-power-off'></span></button>

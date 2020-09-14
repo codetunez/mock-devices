@@ -75,6 +75,7 @@ const LOGGING_TAGS = {
         OFF: 'OFF',
         CONNECTS: 'CONNECTS',
         COMMANDS: 'COMMANDS',
+        C2D: 'C2D',
         DESIRED: 'DESIRED',
         RESTART: 'RESTART',
         ERRORS: 'ERRORS',
@@ -105,6 +106,7 @@ interface Stats {
     TWIN_RATE: number,
     CONNECTS: number,
     COMMANDS: number,
+    C2D: number,
     DESIRED: number,
     RESTART: number,
     ERRORS: number,
@@ -229,6 +231,7 @@ export class MockDevice {
             RESTART: 0,
             RECONFIGURES: -1,
             COMMANDS: 0,
+            C2D: 0,
             DPS: 0,
             ERRORS: 0,
         }
@@ -747,6 +750,7 @@ export class MockDevice {
                 if (this.resolversCollection.c2dIndex[cloudMethod]) {
                     const method: Method = this.device.comms[this.resolversCollection.c2dIndex[cloudMethod]];
                     this.log(cloudMethod + ' ' + JSON.stringify(cloudMethodPayload), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.DATA.METH, LOGGING_TAGS.DATA.RECV, 'C2D REQUEST AND PAYLOAD');
+                    this.logStat(LOGGING_TAGS.STAT.C2D);
                     Object.assign(this.receivedMethodParams, { [method._id]: { date: new Date().toUTCString(), payload: JSON.stringify(cloudMethodPayload, null, 2) } });
 
                     this.sendMethodResponse(method);
@@ -777,6 +781,7 @@ export class MockDevice {
                 // this response is the payload of the device
                 response.send((method.status), methodPayload, (err) => {
                     this.log(err ? err.toString() : `${method.name} : ${JSON.stringify(methodPayload)}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.DATA.METH, LOGGING_TAGS.DATA.SEND, 'DIRECT METHOD RESPONSE PAYLOAD');
+                    this.logStat(LOGGING_TAGS.STAT.COMMANDS);
                     this.messageService.sendAsLiveUpdate(this.device._id, { [method._id]: new Date().toUTCString() });
 
                     this.sendMethodResponse(method);

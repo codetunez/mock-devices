@@ -14,12 +14,12 @@ export const RESX = {
         "edge": ['EDGE RUNTIME DETECTED: ', 'MODULE', 'RUNNING ON DEVICE'],
     },
     "shell": {
-        "title": "Select Devices or Dashboard from the menu"
+        "title": "Select Devices, Dashboard or Create from the menu"
     },
     "nav": {
         "stats": "Dashboard - See the current simulation statistics",
         "devices": "Devices - See the list of devices, modules and templates",
-        "file": "Create or clone a new mock device, template or module using DCMs, SDKs, DPS and connection strings combinations",
+        "file": "Create - Create a new mock device, template or module using DCMs, SDKs, DPS and connection strings combinations",
         "power": "Power up all devices and modules (use config for start timings)",
         "stop": "Power down all devices that are currently on",
         "sim": "Update the current simulation parameters (advanced)",
@@ -401,7 +401,8 @@ export const RESX = {
             "TWIN_COUNT": "# of Twins sent",
             "TWIN_RATE": "Twins sent p/min",
             "CONNECTS": "Connect success",
-            "COMMANDS": "Commands received",
+            "COMMANDS": "Direct method received",
+            "C2D": "Cloud-to-device received",
             "RESTART": "Sim restarted",
             "ERRORS": "Connect/SDK errors",
             "RECONFIGURES": "Number of edits",
