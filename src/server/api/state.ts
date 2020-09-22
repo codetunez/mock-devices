@@ -31,7 +31,6 @@ export default function (deviceStore, simulationStore, ms) {
         try {
             let payload = req.body;
             deviceStore.stopAll();
-            if (payload.simulation) { simulationStore.set(payload.simulation); }
             let currentDevices = JSON.parse(JSON.stringify(deviceStore.getListOfItems()));
             payload.devices = currentDevices.concat(payload.devices);
             deviceStore.init();
