@@ -112,8 +112,10 @@ export class DeviceStore {
         let d: Device = this.store.getItem(id);
         let newId: string = type === 'configuration' ? Utils.getDeviceId(payload.connectionString) || payload.deviceId || id : id;
 
-        this.stopDevice(d);
-        delete this.runners[d._id];
+        if (type != 'module') {
+            this.stopDevice(d);
+            delete this.runners[d._id];
+        }
 
         if (id != newId) {
             d._id = newId;
@@ -137,6 +139,7 @@ export class DeviceStore {
 
         this.store.setItem(d, d._id);
 
+        //TODO: needed for modules?
         let md = new MockDevice(d, this.messageService);
         this.runners[d._id] = md;
 

@@ -6,7 +6,7 @@
 
 .device-edge-modules {
   .title {
-    padding-bottom: $md-gutter;
+    padding-bottom: $md-gutter;    
   }
   .list {
     display: flex;
@@ -15,7 +15,7 @@
   }
 
   .edge-module {
-    width: 260px;
+    max-width: 280px;
   }
 
   .edge-module:not(:last-child) {
