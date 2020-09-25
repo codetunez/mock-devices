@@ -89,6 +89,9 @@ const reducer = (state: State, action: Action) => {
             newData.type.mock = true;
             newData.mock = action.payload.mock;
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
+        case "reset-time":
+            delete newData.runloop._ms;
+            return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "load-capability":
             return { ...state, form: { dirty: false, expanded: state.form.expanded }, data: action.payload.capability };
         case "save-capability":
@@ -307,6 +310,16 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
                         <div><label title={RESX.device.card.send.duration_max_title}>{RESX.device.card.send.duration_max_label}</label><div><input type='number' className='form-control form-control-sm single-width' name='runloop.valueMax' min={0} value={state.data.runloop.valueMax} onChange={updateField} /></div></div>
                     </> : <div style={{ height: '55px' }}></div>}
                 </div>
+
+                {!state.data.runloop.include ? null :
+                    <div className='df-card-row df-card-row-nogap'>
+                        <div></div>
+                        <div className="snippets">
+                            <div>Reset loop duration</div>
+                            <div className="snippet-links"><div onClick={() => dispatch({ type: 'reset-time', payload: null })}>OK</div></div>
+                        </div>
+                    </div>
+                }
 
                 <div className='df-card-row'>
                     <div><label>{RESX.device.card.toggle.mock_label}</label><div title={RESX.device.card.toggle.mock_title}><Toggle name={state.data._id + '-mock'} defaultChecked={false} checked={state.data.type.mock} onChange={() => dispatch({ type: 'toggle-mock', payload: null })} /></div></div>

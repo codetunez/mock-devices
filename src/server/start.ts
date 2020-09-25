@@ -160,7 +160,7 @@ class Server {
             this.mainWindow = null;
         }));
 
-        console.log("mock-devices for desktop is launching. Keep current window open to keep app running");
+        console.log("mock-devices for desktop is launching. Keep current window open to keep app running. Most errors in this window are from bad device configuration");
     }
 }
 

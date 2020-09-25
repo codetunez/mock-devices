@@ -327,9 +327,12 @@ export class MockDevice {
             if (comm.runloop && comm.runloop.include === true) {
 
                 // Adding for back compat. This will also update the UX for any configuration missing valueMax
-                if (!comm.runloop.valueMax) { comm.runloop.valueMax = comm.runloop.value; }
-                const newRunloopValue = Utils.getRandomNumberBetweenRange(comm.runloop.value, comm.runloop.valueMax, true);
-                comm.runloop._ms = newRunloopValue * (comm.runloop.unit === 'secs' ? 1000 : 60000);
+                // This will need an explicit reset bu remove the _ms property to change the time
+                if (!comm.runloop._ms) {
+                    if (!comm.runloop.valueMax) { comm.runloop.valueMax = comm.runloop.value; }
+                    const newRunloopValue = Utils.getRandomNumberBetweenRange(comm.runloop.value, comm.runloop.valueMax, true);
+                    comm.runloop._ms = newRunloopValue * (comm.runloop.unit === 'secs' ? 1000 : 60000);
+                }
 
                 let mockSensorTimerObject = null;
 

@@ -53,6 +53,7 @@ export default function (dialog, app, globalContext, ms) {
                 { name: 'All Files', extensions: ['*'] }
             ]
         }).then((result: any) => {
+            if (result.canceled) { res.status(444).end(); return; }
             if (result.filePaths && result.filePaths.length > 0) {
                 const fileNamePath = result.filePaths[0];
                 fs.readFile(fileNamePath, 'utf-8', (error: any, data: any) => {
@@ -60,6 +61,7 @@ export default function (dialog, app, globalContext, ms) {
                 })
             }
         }).catch((error: any) => {
+            console.error(error);
             res.status(500).end();
         });
     });
@@ -76,6 +78,7 @@ export default function (dialog, app, globalContext, ms) {
                     else { res.status(200).end(); }
                 })
             }).catch((error: any) => {
+                console.error(error);
                 res.status(500).end();
             });
     });

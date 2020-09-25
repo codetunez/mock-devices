@@ -491,6 +491,7 @@ export class DeviceStore {
     }
 
     public createFromArray = (items: Array<Device>) => {
+        if (!items) { return; }
         this.store.createStoreFromArray(items);
         for (const index in items) {
             let rd = new MockDevice(items[index], this.messageService);
