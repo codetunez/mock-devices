@@ -118,6 +118,13 @@ export class DeviceProvider extends React.PureComponent {
             })
     }
 
+    revertDevice = () => {
+        axios.get(`${Endpoint.getEndpoint()}api/device/${this.state.device._id}`)
+            .then((response: any) => {
+                this.setState({ device: response.data });
+            })
+    }
+
     deleteDevice = () => {
         axios.delete(`${Endpoint.getEndpoint()}api/device/${this.state.device._id}`)
             .then((response: any) => {
@@ -241,7 +248,6 @@ export class DeviceProvider extends React.PureComponent {
             })
     }
 
-
     state: any = {
         snippets: {},
         colors: {},
@@ -258,6 +264,7 @@ export class DeviceProvider extends React.PureComponent {
         getDevice: this.getDevice,
         startDevice: this.startDevice,
         stopDevice: this.stopDevice,
+        revertDevice: this.revertDevice,
         deleteDevice: this.deleteDevice,
         deleteModule: this.deleteModule,
         updateDeviceProperty: this.updateDeviceProperty,

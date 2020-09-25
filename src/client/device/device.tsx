@@ -19,13 +19,14 @@ import { ControlContext } from '../context/controlContext';
 
 export function Device() {
 
-    const { id } = useParams();
+    const { id } = useParams<any>();
 
     const deviceContext: any = React.useContext(DeviceContext);
     const appContext: any = React.useContext(AppContext);
 
     React.useEffect(() => {
-        deviceContext.getDevice(id)
+        appContext.clearDirty();
+        deviceContext.getDevice(id);
     }, [id]);
 
     if (!deviceContext.device.configuration) { return null; }

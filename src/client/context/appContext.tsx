@@ -6,6 +6,8 @@ export const AppContext = React.createContext({});
 
 export class AppProvider extends React.PureComponent {
 
+    private dirty: string = '';
+
     setExpand = (id: any) => {
         const newProp = this.state.property;
         newProp[id] = !newProp[id] ? true : !newProp[id]
@@ -16,11 +18,31 @@ export class AppProvider extends React.PureComponent {
         this.setState({ ...this.state, selectorExpand: flag });
     }
 
+    setDirty = (id: string) => {
+        if (this.dirty !== id) {
+            this.dirty = id;
+            localStorage.setItem('dirty', this.dirty);
+        }
+    }
+
+    getDirty = () => {
+        return localStorage.getItem('dirty');
+    }
+
+    clearDirty = () => {
+        this.dirty = '';
+        localStorage.setItem('dirty', this.dirty);
+    }
+
     state: any = {
         property: {},
+        dirtyProperty: '',
         selectorExpand: false,
         setExpand: this.setExpand,
-        setSelectorExpand: this.setSelectorExpand
+        setSelectorExpand: this.setSelectorExpand,
+        setDirty: this.setDirty,
+        getDirty: this.getDirty,
+        clearDirty: this.clearDirty
     }
 
     render() {

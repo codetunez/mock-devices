@@ -18,25 +18,25 @@ interface Form {
 
 interface State {
     form: Form,
-    data: any
+    data: any,
+    appContext: any
 }
 
 interface Action {
     type: string;
     payload: any;
 }
-const initialState: State = {
-    form: {
-        dirty: false,
-        expanded: false
-    },
-    data: {}
-}
 
 const reducer = (state: State, action: Action) => {
 
     const item = action.type.split('-')[1]
     const newData = Object.assign({}, state.data);
+    const dirty = state.appContext.getDirty();
+
+    if (dirty != '' && dirty != newData._id) {
+        alert(RESX.device.card.save_first_title);
+        return state;
+    }
 
     switch (action.type) {
         case "init-expand":
@@ -52,19 +52,23 @@ const reducer = (state: State, action: Action) => {
             else {
                 newData[action.payload.name] = action.payload.value;
             }
+            state.appContext.setDirty(newData._id);
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "update-interface":
             newData.interface[action.payload.name] = action.payload.value;
+            state.appContext.setDirty(newData._id);
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "toggle-complex":
             newData.enabled = true;
             newData.type.mock = false;
             newData.propertyObject.type = newData.propertyObject.type === 'templated' ? 'default' : 'templated';
+            state.appContext.setDirty(newData._id);
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "toggle-runloop":
             newData.enabled = true;
             if (newData.type.mock) { newData.type.mock = false; }
             newData.runloop.include = !newData.runloop.include;
+            state.appContext.setDirty(newData._id);
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "toggle-mock":
             newData.enabled = true;
@@ -74,28 +78,39 @@ const reducer = (state: State, action: Action) => {
                 newData.propertyObject.type = 'default';
                 newData.value = '';
             }
+            state.appContext.setDirty(newData._id);
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "update-runloop":
+            state.appContext.setDirty(newData._id);
             newData.runloop[action.payload.name] = action.payload.value;
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "update-complex":
             newData.propertyObject.type = 'templated';
             newData.propertyObject.template = action.payload.value;
+            state.appContext.setDirty(newData._id);
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "update-mock":
             newData.mock[action.payload.name] = action.payload.value;
+            state.appContext.setDirty(newData._id);
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "update-sensor":
             newData.type.mock = true;
             newData.mock = action.payload.mock;
+            state.appContext.setDirty(newData._id);
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "reset-time":
             delete newData.runloop._ms;
+            state.appContext.setDirty(newData._id);
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData };
         case "load-capability":
             return { ...state, form: { dirty: false, expanded: state.form.expanded }, data: action.payload.capability };
         case "save-capability":
+            state.appContext.clearDirty();
             action.payload.context.updateDeviceProperty(newData, action.payload.send);
+            return { ...state, form: { dirty: false, expanded: state.form.expanded }, data: newData };
+        case "revert-edit":
+            state.appContext.clearDirty();
+            action.payload.context.revertDevice();
             return { ...state, form: { dirty: false, expanded: state.form.expanded }, data: newData };
         default:
             return state;
@@ -104,10 +119,10 @@ const reducer = (state: State, action: Action) => {
 
 export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, template }) {
 
-    const [state, dispatch] = React.useReducer(reducer, { form: { dirty: false, expanded: shouldExpand }, data: capability });
-
     const deviceContext: any = React.useContext(DeviceContext);
     const appContext: any = React.useContext(AppContext);
+
+    const [state, dispatch] = React.useReducer(reducer, { form: { dirty: false, expanded: shouldExpand }, data: capability, appContext: appContext });
 
     React.useEffect(() => {
         dispatch({ type: 'init-expand', payload: { expand: shouldExpand, context: appContext } })
@@ -236,11 +251,8 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
                     <div>{state.data.name}</div>
                 </div>
             </div>
-            {/* <div className='df-card-value'>
-                        <div>Last Sent</div>
-                        <div>-</div>
-                    </div> */}
             <div className='df-card-cmd btn-bar'>
+                {!state.form.dirty ? null : <button title={RESX.device.card.revert_title} className={cx('btn btn-sm btn-outline-light')} onClick={() => { dispatch({ type: 'revert-edit', payload: { context: deviceContext } }) }}><span className='fas fa-undo'></span></button>}
                 <button title={RESX.device.card.save_title} className={cx('btn btn-sm', state.form.dirty ? 'btn-warning' : 'btn-outline-warning')} onClick={() => { save(false) }}><span className='far fa-save'></span></button>
                 <button title={RESX.device.card.delete_title} className='btn btn-sm btn-outline-danger' onClick={() => { _confirm(state.data._id, state.data._type === 'method' ? 'method' : 'property') }}><span className='fa fa-times'></span></button>
             </div>
@@ -275,7 +287,7 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
                     <div className='df-card-row df-card-row-nogap'>
                         <div></div>
                         <div className="snippets">
-                            <div>Add snippet:</div>
+                            <div>{RESX.device.card.add_snippet_title}</div>
                             <div className="snippet-links">{snippets}</div>
                         </div>
                     </div>
@@ -315,7 +327,7 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
                     <div className='df-card-row df-card-row-nogap'>
                         <div></div>
                         <div className="snippets">
-                            <div>Reset loop duration</div>
+                            <div>{RESX.device.card.send.reset_duration_title}</div>
                             <div className="snippet-links"><div onClick={() => dispatch({ type: 'reset-time', payload: null })}>OK</div></div>
                         </div>
                     </div>
