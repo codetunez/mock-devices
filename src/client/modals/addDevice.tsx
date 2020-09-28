@@ -195,32 +195,31 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
             })
     }
 
-    return <div className='m-modal'>
-        <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
-        <div className='m-content'>
-            <div className='add-device'>
+    return <div className='dialog-add'>
+        <div className='m-modal'>
+            <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
+            <div className='m-content'>
                 <div className='m-tabbed-nav' style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div className='menu-vertical' >
                         <label>{RESX.modal.add.option1.title}</label>
-                        <button title={RESX.modal.add.option1.buttons.button1_title} onClick={() => selectPanel(0)} className={cx('btn btn-outline-primary', panel === 0 ? 'active' : '')}>{RESX.modal.add.option1.buttons.button1_label}</button><br />
-                        <button title={RESX.modal.add.option1.buttons.button2_title} onClick={() => selectPanel(1)} className={cx('btn btn-outline-primary', panel === 1 ? 'active' : '')}>{RESX.modal.add.option1.buttons.button2_label}</button><br />
+                        <button title={RESX.modal.add.option1.buttons.button1_title} onClick={() => selectPanel(0)} className={cx('btn btn-outline-info', panel === 0 ? 'active' : '')}>{RESX.modal.add.option1.buttons.button1_label}</button><br />
+                        <button title={RESX.modal.add.option1.buttons.button2_title} onClick={() => selectPanel(1)} className={cx('btn btn-outline-info', panel === 1 ? 'active' : '')}>{RESX.modal.add.option1.buttons.button2_label}</button><br />
                         <label>{RESX.modal.add.option2.title}</label>
-                        <button title={RESX.modal.add.option2.buttons.button1_title} onClick={() => selectPanel(2)} className={cx('btn btn-outline-primary', panel === 2 ? 'active' : '')}>{RESX.modal.add.option2.buttons.button1_label}</button><br />
-                        <button title={RESX.modal.add.option2.buttons.button2_title} onClick={() => selectPanel(3)} className={cx('btn btn-outline-primary', panel === 3 ? 'active' : '')}>{RESX.modal.add.option2.buttons.button2_label}</button><br />
+                        <button title={RESX.modal.add.option2.buttons.button1_title} onClick={() => selectPanel(2)} className={cx('btn btn-outline-info', panel === 2 ? 'active' : '')}>{RESX.modal.add.option2.buttons.button1_label}</button><br />
+                        <button title={RESX.modal.add.option2.buttons.button2_title} onClick={() => selectPanel(3)} className={cx('btn btn-outline-info', panel === 3 ? 'active' : '')}>{RESX.modal.add.option2.buttons.button2_label}</button><br />
                         <label>{RESX.modal.add.option3.title}</label>
                         {deviceContext.ui.container ? null : <>
-                            <button title={RESX.modal.add.option3.buttons.button1_title} onClick={() => selectPanel(4)} className={cx('btn btn-outline-primary', panel === 4 ? 'active' : '')}>{RESX.modal.add.option3.buttons.button1_label}</button><br />
+                            <button title={RESX.modal.add.option3.buttons.button1_title} onClick={() => selectPanel(4)} className={cx('btn btn-outline-info', panel === 4 ? 'active' : '')}>{RESX.modal.add.option3.buttons.button1_label}</button><br />
                         </>}
-                        <button title={RESX.modal.add.option3.buttons.button2_title} onClick={() => selectPanel(5)} className={cx('btn btn-outline-primary', panel === 5 ? 'active' : '')}>{RESX.modal.add.option3.buttons.button2_label}</button><br />
+                        <button title={RESX.modal.add.option3.buttons.button2_title} onClick={() => selectPanel(5)} className={cx('btn btn-outline-info', panel === 5 ? 'active' : '')}>{RESX.modal.add.option3.buttons.button2_label}</button><br />
                         <label>{RESX.modal.add.option4.title}</label>
-                        <button title={RESX.modal.add.option4.buttons.button1_title} onClick={() => selectPanel(6)} className={cx('btn btn-outline-primary', panel === 6 ? 'active' : '')}>{RESX.modal.add.option4.buttons.button1_label}</button><br />
+                        <button title={RESX.modal.add.option4.buttons.button1_title} onClick={() => selectPanel(6)} className={cx('btn btn-outline-info', panel === 6 ? 'active' : '')}>{RESX.modal.add.option4.buttons.button1_label}</button><br />
                     </div>
                     <div className='form-group'>
                         {deviceContext.ui.container ? <div className='container'>{Endpoint.getEndpoint()}<br /><i className="fab fa-docker fa-2x fa-fw" /></div> : null}
                         <span className='error'>{error}</span>
                     </div>
                 </div>
-
                 <div className='m-tabbed-panel'>
                     {panel !== 0 ? null : <>
                         <div className='m-tabbed-panel-form'>
@@ -275,7 +274,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
                         </div>
                         <div className='m-tabbed-panel-footer'>
-                            <button title={RESX.modal.add.option1.cta_title} className='btn btn-info' disabled={state.scopeId == '' || state.deviceId == '' || state.sasKey == '' || (state.pnpSdk && state.capabilityUrn === '')} onClick={() => clickAddDevice('dps')}>{RESX.modal.add.option1.cta_label}</button>
+                            <button title={RESX.modal.add.option1.cta_title} className='btn btn-primary' disabled={state.scopeId == '' || state.deviceId == '' || state.sasKey == '' || (state.pnpSdk && state.capabilityUrn === '')} onClick={() => clickAddDevice('dps')}>{RESX.modal.add.option1.cta_label}</button>
                         </div>
                     </>}
 
@@ -295,7 +294,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
-                            <button title={RESX.modal.add.option1.cta_title} className='btn btn-info' disabled={!state.connectionString || state.connectionString === '' || state.mockDeviceName === ''} onClick={() => clickAddDevice('hub')}>{RESX.modal.add.option1.cta_label}</button>
+                            <button title={RESX.modal.add.option1.cta_title} className='btn btn-primary' disabled={!state.connectionString || state.connectionString === '' || state.mockDeviceName === ''} onClick={() => clickAddDevice('hub')}>{RESX.modal.add.option1.cta_label}</button>
                         </div>
                     </>}
 
@@ -311,13 +310,13 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                     <button className='btn btn-success' onClick={() => loadFromDisk('capabilityModel')}>{RESX.modal.add.option2.label.browse}</button>
                                 </div>
                             </>}
-                            <div className='form-group' style={{ height: "calc(100% - 160px)" }}>
+                            <div className='form-group' style={{ height: "calc(100% - 170px)" }}>
                                 <Json json={state.capabilityModel} cb={(text: any) => { updateJson(text, 'capabilityModel') }} err={() => setError(RESX.modal.error_json)} />
                             </div>
 
                         </div>
                         <div className='m-tabbed-panel-footer'>
-                            <button title={RESX.modal.add.option2.cta_title} className='btn btn-info' onClick={() => clickAddDevice('template')}>{RESX.modal.add.option2.cta_label}</button>
+                            <button title={RESX.modal.add.option2.cta_title} className='btn btn-primary' onClick={() => clickAddDevice('template')}>{RESX.modal.add.option2.cta_label}</button>
                         </div>
                     </>}
 
@@ -329,7 +328,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
-                            <button title={RESX.modal.add.option2.cta_title} className='btn btn-info' disabled={!state.mockDeviceName || state.mockDeviceName === ''} onClick={() => clickAddDevice('template')}>{RESX.modal.add.option2.cta_label}</button>
+                            <button title={RESX.modal.add.option2.cta_title} className='btn btn-primary' disabled={!state.mockDeviceName || state.mockDeviceName === ''} onClick={() => clickAddDevice('template')}>{RESX.modal.add.option2.cta_label}</button>
                         </div>
                     </>}
 
@@ -360,7 +359,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
-                            <button title={RESX.modal.add.option3.cta_title} className='btn btn-info' onClick={() => updateCurrentState('machineStateClipboard')}>{RESX.modal.add.option3.cta_label}</button>
+                            <button title={RESX.modal.add.option3.cta_title} className='btn btn-primary' onClick={() => updateCurrentState('machineStateClipboard')}>{RESX.modal.add.option3.cta_label}</button>
                         </div>
                     </>}
 
@@ -377,12 +376,12 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
-                            <button disabled={state.mockDeviceName === '' || state.deviceId === ''} title={RESX.modal.add.option4.cta_title} className='btn btn-info' onClick={() => clickAddDevice('edge')}>{RESX.modal.add.option4.cta_label}</button>
+                            <button disabled={state.mockDeviceName === '' || state.deviceId === ''} title={RESX.modal.add.option4.cta_title} className='btn btn-primary' onClick={() => clickAddDevice('edge')}>{RESX.modal.add.option4.cta_label}</button>
                         </div>
                     </>}
 
                 </div>
-            </div>
-        </div >
-    </div >
+            </div >
+        </div>
+    </div>
 }

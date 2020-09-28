@@ -6,7 +6,7 @@ export class Modal extends React.Component<any, any> {
     render() {
         return ReactDOM.createPortal(
             this.props.children,
-            document.body
+            document.querySelector("#modal-root")
         );
     }
 }

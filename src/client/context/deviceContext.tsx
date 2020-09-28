@@ -145,7 +145,7 @@ export class DeviceProvider extends React.PureComponent {
             .then((response: any) => {
                 this.setState({ device: response.data.device, devices: response.data.devices });
             })
-            .catch((err) => { alert(err.response.data); })
+            .catch((err) => { console.log(err.response.data); })
     }
 
     updateDeviceModules = (updatePayload: any) => {
@@ -153,7 +153,7 @@ export class DeviceProvider extends React.PureComponent {
             .then((response: any) => {
                 this.setState({ device: response.data.device, devices: response.data.devices });
             })
-            .catch((err) => { alert(err.response.data); })
+            .catch((err) => { console.log(err.response.data); })
     }
 
     getDevice = (id: string, index: number) => {

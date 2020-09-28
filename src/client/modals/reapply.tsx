@@ -27,26 +27,27 @@ export const Reapply: React.FunctionComponent<any> = ({ handler }) => {
         }
     });
 
-    return <div className='m-modal'>
-        <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
-        <div className='m-content'>
-
-            <div className='reapply'>
+    return <div className='dialog-reapply'>
+        <div className='m-modal'>
+            <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
+            <div className='m-content'>
                 <div className='form-group'>
-                    <label>{RESX.modal.reapply.title1}</label>
-                    <br />
+                    <h4>{RESX.modal.reapply.title1}</h4>
                     <span>{RESX.modal.reapply.title2}</span>
                     <br /><br />
                     <span><input type='checkbox' name='all' checked={all} onClick={() => setAll(!all)} /> {RESX.modal.reapply.selectAll}</span>
-                    <select id='devices' disabled={all} multiple={true} size={20}>
+                    <select id='devices' disabled={all} multiple={true} size={16}>
                         {indexes && indexes.map((ele) => {
                             if (ele) { return <option value={ele.value}>{ele.name}</option> }
                         })}
-                    </select>
-                    <br /><br />
-                    <button title={RESX.modal.reapply.apply_title} className='btn btn-info' onClick={() => apply()}>{RESX.modal.reapply.apply_label}</button>
+                    </select>                    
+                </div>
+                <div className='m-footer'>
+                    <div className='form-group btn-bar'>
+                        <button title={RESX.modal.reapply.apply_title} className='btn btn-primary' onClick={() => apply()}>{RESX.modal.reapply.apply_label}</button>
+                    </div>
                 </div>
             </div>
-        </div >
+        </div>
     </div>
 }

@@ -1,19 +1,17 @@
 /* margin */
-$xs-gutter: 5px;
-$sm-gutter: 10px;
-$md-gutter: 15px;
-$lg-gutter: 20px;
-$xl-gutter: 25px;
+$xs-gutter: 0.3rem;
+$sm-gutter: 0.5rem;
+$md-gutter: 1rem;
+$lg-gutter: 1.5rem;
+$xl-gutter: 2rem;
 
 /* sizes */
 $width-nav: 60px;
 $width-selector: 240px;
 $width-content: 100%;
 $border-radius: 0.2rem;
-$device-commands-width: 555px;
 $border-thicker: 2px;
 $title-height: 48px;
-$forced-right-margin: 35px;
 
 /* ordering */
 $order-base: 0;
@@ -37,7 +35,7 @@ $app-clr-4: #888888;
 
 $app-clr-blue-1: #0275d8;
 $app-clr-blue-2: #6392c4;
-$app-clr-blue-3: #162C35;
+$app-clr-blue-3: #162c35;
 $app-clr-blue-4: #525c6a;
 $app-clr-yellow-1: #daba89;
 $app-clr-green-1: darkgreen;

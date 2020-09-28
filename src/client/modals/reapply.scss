@@ -1,8 +1,9 @@
 @import "../const.scss";
 
-.reapply {
-  height: 100%;
-  padding: 1rem;
+.dialog-reapply {
+  .m-modal {
+    padding: $sm-gutter $md-gutter $md-gutter $md-gutter;
+  }
 
   select {
     width: 100%;

@@ -10,12 +10,14 @@
   width: $width-nav;
   overflow: hidden;
   button {
-    margin: 0 $sm-gutter $sm-gutter $sm-gutter;
+    margin-bottom: $sm-gutter;
+    width: 100%;
   }
 
   hr {
+    margin: $sm-gutter 0 $md-gutter 0;
     border: 1px solid $app-clr-blue-1;
-    margin: $xs-gutter $sm-gutter $md-gutter $sm-gutter;
+    width: 100%;
   }
 
   .nav-links {
@@ -41,51 +43,6 @@
     margin-bottom: $sm-gutter;
     color: $app-clr-blue-4;
   }
-}
-
-.blast-shield {
-  z-index: $order-blastshield;
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100vh;
-  width: 100vw;
-  background-color: $app-shield;
-  opacity: 0.85;
-}
-
-.app-modal {
-  z-index: $order-dialog;
-  position: absolute;
-  background-color: $app-clr-2;
-  color: $app-white;
-  overflow: hidden;
-}
-
-.context-modal {
-  top: 0;
-  right: 0;
-  width: calc(100vw - 50%);
-  height: 100%;
-  overflow-y: auto;
-}
-
-.context-modal-wide {
-  width: calc(100vw - 20%);
-}
-
-.center-modal {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 810px;
-  height: 680px;
-  border-radius: $xs-gutter;
-}
-
-.small-modal {
-  width: 500px;
-  height: 320px;
 }
 
 .nav-active {

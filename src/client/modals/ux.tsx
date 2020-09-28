@@ -33,11 +33,11 @@ export const Ux: React.FunctionComponent<any> = ({ handler, index }) => {
 
     const combo = [{ name: '--Select to change', value: null }, { name: 'ux', value: 'ux' }, { name: 'server', value: 'server' }, { name: 'mixed', value: 'mixed' },]
 
-    return <div className='m-modal'>
-        <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
-        <div className='m-content'>
-            <div className='module'>
-                <h5>{RESX.modal.ux.title}</h5>
+    return <div className='dialog-ux'>
+        <div className='m-modal'>
+            <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
+            <div className='m-content'>
+                <h4>{RESX.modal.ux.title}</h4>
                 <div className='form-group'>
                     <label>{RESX.modal.ux.label.server}</label><br />
                     <input id="serverEndpoint" className='form-control form-control-sm' type='text' name='serverEndpoint' onChange={updateField} value={state.serverEndpoint || ''} />
@@ -50,10 +50,10 @@ export const Ux: React.FunctionComponent<any> = ({ handler, index }) => {
                     <span className='text-warning'>{RESX.modal.ux.warning}</span>
                 </div>
             </div>
-            <div className='m-footer module-footer'>
+            <div className='m-footer'>
                 <div className='form-group btn-bar'>
-                    <button title={RESX.modal.ux.cta_title} className='btn btn-info' onClick={() => save(state)}>{RESX.modal.ux.cta_label}</button>
-                    <button title={RESX.modal.ux.cta2_title} className='btn btn-outline-info' onClick={() => save()}>{RESX.modal.ux.cta2_label}</button>
+                    <button title={RESX.modal.ux.cta_title} className='btn btn-primary' onClick={() => save(state)}>{RESX.modal.ux.cta_label}</button>
+                    <button title={RESX.modal.ux.cta2_title} className='btn btn-secondary' onClick={() => save()}>{RESX.modal.ux.cta2_label}</button>
                 </div>
             </div>
         </div>

@@ -47,6 +47,12 @@ export class DeviceStore {
     }
 
     public deleteDevice = (d: Device) => {
+        if (d.configuration.modules) {
+            for (const index in d.configuration.modules) {
+                this.store.deleteItem(d.configuration.modules[index]);
+                this.messageService.removeStatsOrControl(d.configuration.modules[index]);
+            }
+        }
         this.store.deleteItem(d._id);
         this.messageService.removeStatsOrControl(d._id);
     }
@@ -112,7 +118,7 @@ export class DeviceStore {
         let d: Device = this.store.getItem(id);
         let newId: string = type === 'configuration' ? Utils.getDeviceId(payload.connectionString) || payload.deviceId || id : id;
 
-        if (type != 'module') {
+        if (type != undefined && type != 'module') {
             this.stopDevice(d);
             delete this.runners[d._id];
         }
@@ -400,6 +406,7 @@ export class DeviceStore {
     public startDevice = (device: Device, delay?: number) => {
 
         if (device.configuration._kind === 'template') { return; }
+        if (device.configuration._kind === 'edge') { return; }
 
         try {
             let rd: MockDevice = this.runners[device._id];
@@ -411,7 +418,10 @@ export class DeviceStore {
     }
 
     public stopDevice = (device: Device) => {
+
         if (device.configuration._kind === 'template') { return; }
+        if (device.configuration._kind === 'edge') { return; }
+
         let rd: MockDevice = this.runners[device._id];
         if (rd) { rd.stop(); }
     }

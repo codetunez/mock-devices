@@ -8,19 +8,42 @@ import { Edit } from '../modals/edit';
 import { RESX } from '../strings';
 import { decodeModuleKey } from '../ui/utilities';
 import { DeviceContext } from '../context/deviceContext';
+import { AppContext } from '../context/appContext';
+import { ModalConfirm } from '../modals/modalConfirm';
 
 export function DeviceCommands() {
 
     const deviceContext: any = React.useContext(DeviceContext);
+    const appContext: any = React.useContext(AppContext);
+
     const [showEdit, toggleEdit] = React.useState(false);
     const [showModule, toggleModule] = React.useState(false);
+    const [showDelete, toggleDelete] = React.useState(false);
 
     const kind = deviceContext.device.configuration._kind;
     const pnpSdk = deviceContext.device.configuration.pnpSdk;
 
     const index = deviceContext.devices.findIndex((x) => x._id == deviceContext.device._id);
     const edgeDevice = decodeModuleKey(deviceContext.device._id);
-    const _confirm = () => { if (confirm(RESX.device.commands.delete_confirm)) { deviceContext.deleteDevice(); } }
+
+    const deleteDialogAction = (result) => {
+        if (result === "Yes") {
+            //TODO: refactor
+            appContext.clearDirty();
+            deviceContext.deleteDevice();
+        }
+        toggleDelete(false);
+    }
+
+    const deleteModalConfig = {
+        title: RESX.modal.delete_title,
+        message: kind === 'edge' ? RESX.modal.delete_edge : kind === 'template' ? RESX.modal.delete_template : RESX.modal.delete_device,
+        options: {
+            buttons: [RESX.modal.YES, RESX.modal.NO],
+            handler: deleteDialogAction,
+            close: () => toggleDelete(false)
+        }
+    }
 
     return <div className='device-commands-container'>
         <div className='btn-bar'>
@@ -44,10 +67,11 @@ export function DeviceCommands() {
             :
             <div className='btn-bar'>
                 <button title={RESX.device.commands.config_title} className='btn btn-warning' onClick={() => { toggleEdit(!showEdit) }}><span className='fas fa-wrench'></span></button>
-                <button title={RESX.device.commands.delete_title} className='btn btn-danger' onClick={() => { _confirm() }}><span className={'fas fa-lg fa-trash-alt'}></span></button>
+                <button title={RESX.device.commands.delete_title} className='btn btn-danger' onClick={() => { toggleDelete(!showDelete) }}><span className={'fas fa-lg fa-trash-alt'}></span></button>
             </div>
         }
-        {showEdit ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><Edit handler={toggleEdit} index={index} /></div></Modal> : null}
-        {showModule ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal small-modal'><Module handler={toggleModule} index={index} /></div></Modal> : null}
+        {showEdit ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><Edit handler={toggleEdit} index={index} /></div></Modal> : null}
+        {showModule ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><Module handler={toggleModule} index={index} /></div></Modal> : null}
+        {showDelete ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><ModalConfirm config={deleteModalConfig} /></div></Modal> : null}
     </div>
 }

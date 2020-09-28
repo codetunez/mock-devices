@@ -46,11 +46,11 @@ export const Module: React.FunctionComponent<any> = ({ handler, index }) => {
         handler();
     }
 
-    return <div className='m-modal'>
-        <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
-        <div className='m-content'>
-            <div className='module'>
-                <h5>{RESX.modal.module.title}</h5>
+    return <div className='dialog-module'>
+        <div className='m-modal'>
+            <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
+            <div className='m-content'>
+                <h4>{RESX.modal.module.title}</h4>
                 <div className='form-group'>
                     <label>{RESX.modal.module.label.clone}</label><br />
                     <Combo items={state._deviceList} cls='custom-textarea-sm' name='mockDeviceCloneId' onChange={updateField} value={state.mockDeviceCloneId || ''} />
@@ -60,8 +60,8 @@ export const Module: React.FunctionComponent<any> = ({ handler, index }) => {
                     <input autoFocus={true} id="module-id" className='form-control form-control-sm' type='text' name='moduleId' onChange={updateField} value={state.moduleId || ''} />
                 </div>
             </div>
-            <div className='m-footer module-footer'>
-                <div className='form-group'>
+            <div className='m-footer'>
+                <div className='form-group btn-bar'>
                     <button disabled={state.moduleId === ''} title={RESX.modal.module.cta_title} className='btn btn-info' onClick={() => save()}>{RESX.modal.module.cta_label}</button>
                 </div>
             </div>

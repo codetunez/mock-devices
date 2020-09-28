@@ -9,9 +9,8 @@ import { NavLink, useRouteMatch } from 'react-router-dom'
 export function Nav({ actions }) {
 
     const deviceContext: any = React.useContext(DeviceContext);
-    const _confirm = () => { if (confirm(RESX.nav.reset_confirm)) { actions.menuReset(); } }
     let match = useRouteMatch("/:content");
-    
+
     return <div className='nav'>
         <div className='section-title section-title-nav'>{RESX.app.version}</div>
         <div className="nav-links">
@@ -30,7 +29,7 @@ export function Nav({ actions }) {
                 <button title={RESX.nav.sim} onClick={() => actions.menuSimulation()} className='btn btn-outline-primary'><span className='fas fa-flask'></span></button>
                 <hr />
                 <button title={RESX.nav.help} onClick={() => actions.menuHelp()} className={'btn btn-outline-primary'}><span className='fas fa-question-circle'></span></button >
-                <button title={RESX.nav.reset} onClick={() => _confirm()} className='btn btn-outline-danger'><span className='fas fa-trash'></span></button>
+                <button title={RESX.nav.reset} onClick={() => actions.menuReset()} className='btn btn-outline-danger'><span className='fas fa-trash'></span></button>
             </div>
             <div className="nav-items">
                 {deviceContext.ui.container ? <div className='container'><i className="fab fa-docker fa-2x fa-fw" /></div> : null}
