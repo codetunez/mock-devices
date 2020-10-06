@@ -23,6 +23,7 @@ export function Device() {
 
     const deviceContext: any = React.useContext(DeviceContext);
     const appContext: any = React.useContext(AppContext);
+    appContext.clearDirty();
 
     React.useEffect(() => {
         appContext.clearDirty();

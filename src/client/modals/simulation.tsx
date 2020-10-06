@@ -43,7 +43,7 @@ export const Simulation: React.FunctionComponent<any> = ({ handler }) => {
     return <div className='simulation'>
         <div className='simulation-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
         <div className='simulation-content'>
-            <h2>{RESX.modal.simulation.title}</h2>
+            <h4>{RESX.modal.simulation.title}</h4>
             <p>{RESX.modal.simulation.text1}</p>
             <label>{RESX.modal.simulation.configuration_label}</label>
             <div className="editor">

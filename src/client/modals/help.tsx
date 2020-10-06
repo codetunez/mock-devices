@@ -9,7 +9,7 @@ export const Help: React.FunctionComponent<any> = ({ handler }) => {
         <div className='help-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
         <div className='help-content'>
             <div className='help-row'>
-                <h3>New help coming soon ...</h3>
+                <h4>New help coming soon ...</h4>
             </div>
             {/*
              <div className='help-row'>

@@ -24,7 +24,6 @@ export const RESX = {
         "stop": "Power down all devices that are currently on",
         "sim": "Update the current simulation parameters (advanced)",
         "reset": "WARNING! Remove all mock devices, modules and templates (keeps the simulation configuration)",
-        "reset_confirm": "Are you OK to remove all devices, modules and templates?",
         "help": "Find out how to use mock-devices",
         "ux": "Change the mock-devices engine that this UX is viewing",
     },
@@ -38,7 +37,21 @@ export const RESX = {
         },
     },
     "modal": {
+        "OK": "OK",
+        "YES": "Yes",
+        "NO": "No",
+        "CANCEL": "Cancel",
         "error_json": "JSON has errors",
+        "save_error_title": "Update or save error",
+        "save_first": "Please save or revert the capability currently being edited",
+        "save_sensor_first": "Please select a sensor before saving this capability",
+        "delete_title": "Delete",
+        "delete_capability": "Do you want to delete this capability?",
+        "delete_all": "Do you want to remove all devices, modules and templates?",
+        "delete_edge": "Do you want to delete this Edge device?",
+        "delete_template": "Do you want to delete this template?",
+        "delete_device": "Do you want to delete this device?",
+        "delete_module": "Do you want to delete this Edge module?",
         "add": {
             "option1": {
                 "title": "Add a mock device",
@@ -123,7 +136,8 @@ export const RESX = {
             "text1": ["From", "of"]
         },
         "edit": {
-            "title1": "Update this mock device's configuration",
+            "title1": "Update configuration",
+            "text1": "Update the connection details of this mock device",
             "update1_label": "Update configuration",
             "update1_title": "Stops the device. Requires a restart for new setting to take effect",
             "title2": "Update this mock device's position",
@@ -132,7 +146,7 @@ export const RESX = {
         },
         "simulation": {
             "title": "Simulation",
-            "text1": "Adjust the min/max ranges of each AUTO type and add to the Semantic Type schemas. Changes persisted to state. Devices must be restarted",
+            "text1": "These are the default values used when a new mock device, module, template or capability is created. Settings to the engine such as start times can be adjusted here",
             "error_load": "Simulation data cannot be loaded",
             "error_save": "Simulation data cannot be saved",
             "configuration_label": "Configuration",
@@ -167,7 +181,7 @@ export const RESX = {
             "title2": "Select the specific devices or modules. Use the SHIFT and CTRL keys to select multiple items. WARNING: Selected device(s)/module(s) will be reconfigured with this template's capability setup. Connection configuration will remain untouched",
             "selectAll": "Select all the devices and modules",
             "apply_label": "Apply",
-            "apply_title": "Update the selected devices with this templates. Any changed device will be stopped an will need to be manually restarted",
+            "apply_title": "Update the selected devices with this template. Any changed device will be stopped and will need to be manually restarted",
         }
     },
     "edge": {
@@ -241,13 +255,11 @@ export const RESX = {
             "read_param_label": "Read",
             "read_param_title": "Read the last known set of parameters sent for this method capability",
             "waiting_placeholder": "Waiting ...",
-            "save_pre_error": "Select or remove a sensor to update this property",
             "color_title": "Pick a color for this capability in mock-devices",
             "color_label": "Color",
             "add_snippet_title": "Add snippet:",
             "select": "--Select",
             "noselect": "--No send capability",
-            "save_first_title": "Please save the capability currently being edited first",
             "toggle": {
                 "enabled_label": "Enabled",
                 "enabled_title": "Enable this capability in the simulation (always enabled)",
@@ -286,7 +298,7 @@ export const RESX = {
                 "unit_title": "Choose between minutes and seconds",
                 "duration_label": "Earliest",
                 "duration_title": "The engine will use this as the earliest possibly time the value will be sent. Make Earliest and Latest the same to send at a specific time. Recalculates on save",
-                "reset_duration_title": "Reset loop duration",                
+                "reset_duration_title": "Reset loop duration",
                 "duration_max_label": "Latest",
                 "duration_max_title": "The engine will use this as the latest possibly time the value will be sent. Make Earliest and Latest the same to send at a specific time. Recalculates on save",
                 "sensor_label": "Sensor",

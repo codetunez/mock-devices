@@ -1,11 +1,7 @@
 @import "../const.scss";
 
-.dialog-edit {
+.dialog-confirm {
   .m-modal {
     padding: $sm-gutter $md-gutter $md-gutter $md-gutter;
   }
-}
-
-.editor {
-  height: 280px;
 }

@@ -19,7 +19,7 @@ export class Config {
     // app settings
     public static APP_PORT: string = '9000';
     public static APP_HEIGHT: number = 740;
-    public static APP_WIDTH: number = 1000;
+    public static APP_WIDTH: number = 1016;
     public static MAX_NUM_DEVICES: number = 1000;
 
     // reporting settings

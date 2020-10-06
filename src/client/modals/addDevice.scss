@@ -1,26 +1,37 @@
 @import "../const.scss";
 
-.add-device {
+.dialog-add {
   height: 100%;
-  display: flex;
-}
 
-.menu-vertical button {
-  margin-bottom: $sm-gutter;
-}
+  .m-modal {
+    margin-top: $sm-gutter;
 
-label {
-  margin-left: 0 !important;
-  color: $app-clr-yellow-1;
-}
+    .m-content {
+      display: flex;
+    }
 
-.error {
-  color: $app-clr-red-1;
-}
+    .m-close {
+      padding-right: $md-gutter;
+    }
+  }
 
-.container {
-  font-size: 0.8rem;
-  i {
-    margin-top: $xs-gutter;
+  .menu-vertical button {
+    margin-bottom: $sm-gutter;
+  }
+
+  label {
+    margin-left: 0 !important;
+    color: $app-clr-yellow-1;
+  }
+
+  .error {
+    color: $app-clr-red-1;
+  }
+
+  .container {
+    font-size: 0.8rem;
+    i {
+      margin-top: $xs-gutter;
+    }
   }
 }

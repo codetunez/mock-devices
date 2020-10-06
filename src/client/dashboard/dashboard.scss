@@ -35,8 +35,8 @@
     background-color: $app-clr-2;
     border: solid 1px $app-clr-3;
     border-radius: 2px;
-    margin: 0 2rem 2rem 0;
-    min-width: 27.6rem;
+    margin: 0 1rem 1rem 0;
+    min-width: 26.5rem;
     height: fit-content;
     box-shadow: 0 0 0.5rem 0.1rem rgba(0, 0, 0, 0.2);
 
@@ -54,7 +54,7 @@
     .body {
         text-align: center;
         padding: $md-gutter;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
     }
 
     .tile-field {

@@ -9,12 +9,14 @@ import { Dashboard } from '../dashboard/dashboard';
 import { Console } from './console';
 import { DeviceContext } from '../context/deviceContext';
 import { RESX } from '../strings';
+import { AppContext } from '../context/appContext';
 import { Endpoint } from '../context/endpoint';
 import { Modal } from '../modals/modal';
 import { Help } from '../modals/help';
 import { AddDevice } from '../modals/addDevice';
 import { Simulation } from '../modals/simulation';
 import { Ux } from '../modals/ux';
+import { ModalConfirm } from '../modals/modalConfirm';
 
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
@@ -26,12 +28,14 @@ const height = window.innerHeight - minSize;
 export const Shell: React.FunctionComponent = () => {
 
   const deviceContext: any = React.useContext(DeviceContext);
+  const appContext: any = React.useContext(AppContext);
   const ep = Endpoint.getEndpoint() === '/' ? RESX.banner.local : Endpoint.getEndpoint();
 
   const [showAdd, toggleAdd] = React.useState(false);
   const [showSimulation, toggleSimulation] = React.useState(false);
   const [showHelp, toggleHelp] = React.useState(false);
   const [showUx, toggleUx] = React.useState(false);
+  const [showReset, toggleReset] = React.useState(false);
 
   const menuAdd = () => { toggleAdd(!showAdd); }
   const menuHelp = () => { toggleHelp(!showHelp); }
@@ -39,12 +43,31 @@ export const Shell: React.FunctionComponent = () => {
   const menuUx = () => { toggleUx(!showUx); }
   const menuStartAll = () => { deviceContext.startAllDevices(); }
   const menuStopAll = () => { deviceContext.stopAllDevices(); }
-  const menuReset = () => { deviceContext.reset(); }
+  const menuReset = () => { toggleReset(!showReset); }
+
+  const deleteDialogAction = (result) => {
+    if (result === "Yes") {
+      //TODO: refactor
+      appContext.clearDirty();
+      deviceContext.reset();
+    }
+    toggleReset(false);
+  }
+
+  const deleteModalConfig = {
+    title: RESX.modal.delete_title,
+    message: RESX.modal.delete_all,
+    options: {
+      buttons: [RESX.modal.YES, RESX.modal.NO],
+      handler: deleteDialogAction,
+      close: menuReset
+    }
+  }
 
   const nav = { menuAdd, menuHelp, menuSimulation, menuUx, menuStartAll, menuStopAll, menuReset }
 
   return <div className='shell'>
-    <SplitterLayout vertical={true} primaryMinSize={minSize} secondaryMinSize={minHeight} secondaryInitialSize={height}>
+    <SplitterLayout vertical={true} primaryMinSize={minSize} secondaryMinSize={minHeight} secondaryInitialSize={height} >
       <Console />
       <div className='shell-content-container'>
         <div className='shell-banner'>
@@ -61,8 +84,9 @@ export const Shell: React.FunctionComponent = () => {
         {showHelp ? <Modal><div className='blast-shield'></div><div className='app-modal context-modal context-modal-wide'><Help handler={menuHelp} /></div></Modal> : null}
         {showAdd ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><AddDevice handler={menuAdd} /></div></Modal> : null}
         {showSimulation ? <Modal><div className='blast-shield'></div><div className='app-modal context-modal'><Simulation handler={menuSimulation} /></div></Modal> : null}
-        {showUx ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal small-modal'><Ux handler={menuUx} /></div></Modal> : null}
+        {showUx ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><Ux handler={menuUx} /></div></Modal> : null}
+        {showReset ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><ModalConfirm config={deleteModalConfig} /></div></Modal> : null}
       </div>
-    </SplitterLayout>
-  </div>
+    </SplitterLayout >
+  </div >
 }
