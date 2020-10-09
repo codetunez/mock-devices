@@ -32,6 +32,8 @@
       padding: 1.2rem;
       position: fixed;
       font-size: 0.9rem;
+      overflow: hidden;
+      width: calc(100% - 60px);
     }
 
     pre {

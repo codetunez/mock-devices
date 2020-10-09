@@ -58,6 +58,9 @@ const LOGGING_TAGS = {
         TWIN: 'TWIN',
         MSG: 'MSG'
     },
+    SUB: {
+        COMP: 'C'
+    },
     STAT: {
         MSG: {
             FIRST: 'MSG_FIRST',
@@ -872,13 +875,15 @@ export class MockDevice {
             if (Object.keys(payload).length > 0) {
                 const transformed = this.transformPayload(payload);
                 for (const c in transformed.package) {
+                    let sub = '';
                     let data = transformed.package[c];
                     if (c != "_root") {
                         data = { [c]: data }
                         data[c]["__t"] = "c";
+                        sub = c;
                     }
                     twin.properties.reported.update(data, ((err) => {
-                        this.log(JSON.stringify(data), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.TWIN, LOGGING_TAGS.DATA.SEND);
+                        this.log(JSON.stringify(data), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.TWIN, LOGGING_TAGS.DATA.SEND, sub);
                         this.logStat(LOGGING_TAGS.STAT.TWIN.COUNT);
                         this.messageService.sendAsLiveUpdate(this.device._id, transformed.live);
                     }))
@@ -896,13 +901,14 @@ export class MockDevice {
             if (Object.keys(payload).length > 0) {
                 const transformed = this.transformPayload(payload);
                 for (const c in transformed.package) {
-                    const data = JSON.stringify(transformed.package[c])
+                    const data = JSON.stringify(transformed.package[c]);
+                    let sub = '';
                     let msg = new Message(data);
                     msg.contentType = 'application/json';
                     msg.contentEncoding = 'utf-8';
-                    if (c != "_root") { msg.properties.add('$.sub', c); }
+                    if (c != "_root") { msg.properties.add('$.sub', c); sub = c; }
                     this.iotHubDevice.client.sendEvent(msg, ((err) => {
-                        this.log(JSON.stringify(transformed.legacy), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.MSG, LOGGING_TAGS.DATA.SEND);
+                        this.log(JSON.stringify(transformed.legacy), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.MSG, LOGGING_TAGS.DATA.SEND, sub);
                         this.logStat(LOGGING_TAGS.STAT.MSG.COUNT);
                         this.messageService.sendAsLiveUpdate(this.device._id, transformed.live);
                     }))
