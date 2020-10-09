@@ -1,4 +1,4 @@
-# mock-devices v7 Beta (Desktop Edition)
+# mock-devices v7.3 Beta (Desktop Edition)
 mock-devices is a simulation engine that manages and runs simulated devices that connect to an Azure Iot Hub. When hosted in the Azure IoT Edge runtime, the engine will simulate Edge modules too. The simulated devices and modules implement D2C/C2D scenarios i.e telemetry, twin and commands as supported by the Azure IoT Device SDK
 
 The simulation engine does not share device configurations and is platform agnostic. Each configured device/module acts independently of other devices/modules running within the engine. Each has its own model (capabilities), configuration and connection details. Devices/modules running on the same simulation engine can be a mix of connection strings, DPS, SaS, Edge modules. The engine has additional scenarios like cloning, bulk, templates and acknowledgements. See internal help
@@ -38,9 +38,8 @@ Help is available inside the application
 
 ---
 
-#### v7- Beta
-- Dashboard statistics mode
-- 
+#### v7.3 Beta
+- Support for Components
 
 #### Features
 - Supports 1,000 mock devices/modules
@@ -53,6 +52,7 @@ Help is available inside the application
 - Plan mode - Create a timed series of events
 - Support for C2D command using cloud messages 
 - Support for Azure IoT Edge modules
+- Dashboard statistics mode
 - Connect to any mock-devices engine using IP or DNS
 
 #### Macro support for value payloads

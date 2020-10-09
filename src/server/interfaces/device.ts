@@ -1,19 +1,19 @@
+export interface Component {
+    enabled: boolean;
+    name: string;
+}
+
 export interface DeviceType {
     mock: boolean;
     direction: 'd2c' | 'c2d';
 }
 
 export interface RunLoop {
+    _ms: number;
     include: boolean;
     unit: 'secs' | 'mins';
     value: number;
     valueMax: number;
-    _ms: number;
-}
-
-export interface PnpInterface {
-    name: string;
-    urn: string;
 }
 
 export interface MockSensor {
@@ -33,7 +33,7 @@ export interface Property {
     _id: string;
     _type: "property";
     name: string;
-    interface: PnpInterface;
+    component: Component;
     string: boolean;
     value: any;
     sdk: string;
@@ -57,7 +57,7 @@ export interface Method {
     execution: "direct" | "cloud";
     enabled?: boolean;
     name: string;
-    interface: PnpInterface;
+    component: Component;
     status: 200 | 404 | 500;
     receivedParams: string;
     asProperty: boolean;

@@ -163,11 +163,11 @@ export class DeviceStore {
             "execution": 'direct',
             "enabled": true,
             "name": "method" + crypto.randomBytes(2).toString('hex'),
-            "color": this.simColors["Color1"],
-            "interface": {
-                "name": "Interface 1",
-                "urn": "urn:interface:device:1"
+            "component": {
+                "enabled": false,
+                "name": "Component"
             },
+            "color": this.simColors["Color1"],
             "status": 200,
             "receivedParams": null,
             "asProperty": false,
@@ -193,12 +193,12 @@ export class DeviceStore {
                     "_id": _id,
                     "_type": "property",
                     "name": "d2cProperty",
+                    "component": {
+                        "enabled": false,
+                        "name": "Component"
+                    },
                     "color": this.simColors["Default"],
                     "enabled": true,
-                    "interface": {
-                        "name": "Interface 1",
-                        "urn": "urn:interface:device:1"
-                    },
                     "string": false,
                     "value": 0,
                     "sdk": "msg",
@@ -225,11 +225,11 @@ export class DeviceStore {
                     "_type": "property",
                     "enabled": true,
                     "name": "c2dProperty",
-                    "color": this.simColors["Color2"],
-                    "interface": {
-                        "name": "Interface 1",
-                        "urn": "urn:interface:device:1"
+                    "component": {
+                        "enabled": false,
+                        "name": "Component"
                     },
+                    "color": this.simColors["Color2"],
                     "string": false,
                     "value": 0,
                     "sdk": "twin",
