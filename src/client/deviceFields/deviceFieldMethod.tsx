@@ -103,7 +103,7 @@ const reducer = (state: State, action: Action) => {
             state.appContext.setDirty(newData._id);
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData, dialog: diag };
         case "toggle-component":
-            if (newData.component) { newData.component.enabled = !newData.component.enabled; }
+            if (newData.component) { newData.component.enabled = !newData.component.enabled; } else { newData.component = { enabled: true, name: null } }
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData, dialog: diag };
         case "load-capability":
             return { ...state, form: { dirty: false, expanded: state.form.expanded }, data: action.payload.capability, dialog: diag };

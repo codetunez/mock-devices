@@ -318,7 +318,6 @@ export class MockDevice {
 
         for (let i = 0; i < this.device.comms.length; i++) {
             const comm = this.device.comms[i];
-            const name = comm.interface.name.replace(/\s/g, '');
 
             // only twin/msg require the runloop. methods are always on and not part of the runloop
             if (this.device.comms[i]._type != 'property') { continue; }
@@ -872,11 +871,18 @@ export class MockDevice {
 
             if (Object.keys(payload).length > 0) {
                 const transformed = this.transformPayload(payload);
-                twin.properties.reported.update(transformed.legacy, ((err) => {
-                    this.log(JSON.stringify(transformed.legacy), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.TWIN, LOGGING_TAGS.DATA.SEND);
-                    this.logStat(LOGGING_TAGS.STAT.TWIN.COUNT);
-                    this.messageService.sendAsLiveUpdate(this.device._id, transformed.live);
-                }))
+                for (const c in transformed.package) {
+                    let data = transformed.package[c];
+                    if (c != "_root") {
+                        data = { [c]: data }
+                        data[c]["__t"] = "c";
+                    }
+                    twin.properties.reported.update(data, ((err) => {
+                        this.log(JSON.stringify(data), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.TWIN, LOGGING_TAGS.DATA.SEND);
+                        this.logStat(LOGGING_TAGS.STAT.TWIN.COUNT);
+                        this.messageService.sendAsLiveUpdate(this.device._id, transformed.live);
+                    }))
+                }
             }
         }
     }
@@ -889,12 +895,18 @@ export class MockDevice {
 
             if (Object.keys(payload).length > 0) {
                 const transformed = this.transformPayload(payload);
-                let msg = new Message(JSON.stringify(transformed.legacy));
-                this.iotHubDevice.client.sendEvent(msg, ((err) => {
-                    this.log(JSON.stringify(transformed.legacy), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.MSG, LOGGING_TAGS.DATA.SEND);
-                    this.logStat(LOGGING_TAGS.STAT.MSG.COUNT);
-                    this.messageService.sendAsLiveUpdate(this.device._id, transformed.live);
-                }))
+                for (const c in transformed.package) {
+                    const data = JSON.stringify(transformed.package[c])
+                    let msg = new Message(data);
+                    msg.contentType = 'application/json';
+                    msg.contentEncoding = 'utf-8';
+                    if (c != "_root") { msg.properties.add('$.sub', c); }
+                    this.iotHubDevice.client.sendEvent(msg, ((err) => {
+                        this.log(JSON.stringify(transformed.legacy), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.MSG, LOGGING_TAGS.DATA.SEND);
+                        this.logStat(LOGGING_TAGS.STAT.MSG.COUNT);
+                        this.messageService.sendAsLiveUpdate(this.device._id, transformed.live);
+                    }))
+                }
             }
         }
     }
@@ -1053,65 +1065,65 @@ export class MockDevice {
     }
 
     transformPayload(payload: any) {
-        // this converts an id based json array to a name based array
         // if the name is duped then last one wins. this is ok for now
         // but a better solution is required.
-        let remap = { pnp: [], legacy: {}, live: {} };
+        let remap = { package: {}, legacy: {}, live: {} };
 
-        // this should be more efficient
-        for (let i = 0; i < this.device.comms.length; i++) {
-            if (this.device.comms[i]._type != 'property') { continue; }
-            let p: Property = this.device.comms[i];
-            if (payload[p._id] != undefined) {
-                if (p.propertyObject) {
-                    var val = p.string ? "\"" + payload[p._id] + "\"" : payload[p._id];
+        for (const item in payload) {
+            const index = this.resolversCollection.deviceCommsIndex[item];
+            const p: Property = this.device.comms[index];
 
-                    /* REFACTOR: this concept does not scale well. desired and reported for a setting
-                       are separate items in the array therefore there is no concept of version we the event
-                       loop arrives here. Address in V6 */
-                    if (this.desiredOverrides[p._id]) {
-                        const payload: DesiredPayload = this.desiredOverrides[p._id];
-                        let override: any = null;
-                        try {
-                            override = JSON.parse(payload.payload);
-                            if (payload.convention) { Object.assign(override, payload.value) }
-                            this.resolveRandom(override, payload);
-                        } catch (err) {
-                            override = this.resolveAuto(payload.payload, payload)
-                            // this can be ignored
-                        }
-                        remap.legacy[p.name] = override;
-                        remap.live[p._id] = override;
-                        remap.pnp.push({ id: p._id, name: p.name, value: override })
-                        delete this.desiredOverrides[p._id];
-                    } else if (p.propertyObject.type === 'templated') {
-                        try {
-                            var replacement = p.propertyObject.template.replace(new RegExp(/\"AUTO_VALUE\"/, 'g'), val);
-                            var object = JSON.parse(replacement);
-                            this.resolveRandom(object)
-                            remap.legacy[p.name] = object;
-                            remap.live[p._id] = object;
-                            remap.pnp.push({ id: p._id, name: p.name, value: object })
-                        } catch (ex) {
-                            const err = 'ERR - transformPayload: ' + ex;
-                            remap.legacy[p.name] = err;
-                            remap.live[p._id] = err;
-                            remap.pnp.push({ id: p._id, name: p.name, value: err })
-                        }
-                    } else {
-                        const resolve = this.resolveAuto(payload[p._id]);;
-                        remap.legacy[p.name] = resolve;
-                        remap.live[p._id] = resolve;
-                        remap.pnp.push({ id: p._id, name: p.name, value: resolve })
-                        break;
+            if (p && p.propertyObject) {
+                var val = p.string ? "\"" + payload[p._id] + "\"" : payload[p._id];
+                var component = p.component && p.component.enabled ? p.component.name : null;
+                if (component && !remap.package[component]) { remap.package[component] = {} }
+                if (!component && !remap.package["_root"]) { remap.package["_root"] = {} }
+
+                /* REFACTOR: this concept does not scale well. desired and reported for a setting
+                   are separate items in the array therefore there is no concept of version when the event
+                   loop arrives here. Address in V6 */
+                if (this.desiredOverrides[p._id]) {
+                    const payload: DesiredPayload = this.desiredOverrides[p._id];
+                    let override: any = null;
+                    try {
+                        override = JSON.parse(payload.payload);
+                        if (payload.convention) { Object.assign(override, payload.value) }
+                        this.resolveRandom(override, payload);
+                    } catch (err) {
+                        override = this.resolveAuto(payload.payload, payload)
+                        // this can be ignored
                     }
-
+                    remap.legacy[p.name] = override;
+                    remap.live[p._id] = override;
+                    remap.package[component ? component : '_root'][p.name] = override;
+                    delete this.desiredOverrides[p._id];
+                } else if (p.propertyObject.type === 'templated') {
+                    try {
+                        var replacement = p.propertyObject.template.replace(new RegExp(/\"AUTO_VALUE\"/, 'g'), val);
+                        var object = JSON.parse(replacement);
+                        this.resolveRandom(object)
+                        remap.legacy[p.name] = object;
+                        remap.live[p._id] = object;
+                        remap.package[component ? component : '_root'][p.name] = object;
+                    } catch (ex) {
+                        const err = 'ERR - transformPayload: ' + ex;
+                        remap.legacy[p.name] = err;
+                        remap.live[p._id] = err;
+                        remap.package[component ? component : '_root'][p.name] = err;
+                    }
                 } else {
                     const resolve = this.resolveAuto(payload[p._id]);;
                     remap.legacy[p.name] = resolve;
                     remap.live[p._id] = resolve;
-                    remap.pnp.push({ id: p._id, name: p.name, value: resolve })
+                    remap.package[component ? component : '_root'][p.name] = resolve;
+                    break;
                 }
+            } else {
+                //TODO: deprecate?
+                const resolve = this.resolveAuto(payload[p._id]);;
+                remap.legacy[p.name] = resolve;
+                remap.live[p._id] = resolve;
+                remap.package[component ? component : '_root'][p.name] = resolve;
             }
         }
         return remap;

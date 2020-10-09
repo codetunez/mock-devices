@@ -41,16 +41,18 @@ export const ConsoleInspector: React.FunctionComponent<any> = ({ lines, index, h
         setMessages({ lines, index: messages.index < lines.length - 1 ? messages.index + 1 : lines.length - 1 });
     }
 
-    return <div className='m-modal'>
-        <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
-        <div className='m-content'>
-            <div className='console-buttons'>
-                <a onClick={() => next()}><span className={cx('fas', 'fa-chevron-left')}></span></a>
-                <a onClick={() => prev()}><span className={cx('fas', 'fa-chevron-right')}></span></a>
-                <div>{RESX.modal.console.text1[0]} {lines.length - messages.index} {RESX.modal.console.text1[1]} {messages.lines.length}</div>
-            </div>
-            <div className='console-window'>
-                <div className='console-message'>{display()}</div>
+    return <div className='dialog-inspect'>
+        <div className='m-modal'>
+            <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
+            <div className='m-content'>
+                <div className='console-buttons'>
+                    <a onClick={() => next()}><span className={cx('fas', 'fa-chevron-left')}></span></a>
+                    <a onClick={() => prev()}><span className={cx('fas', 'fa-chevron-right')}></span></a>
+                    <div>{RESX.modal.console.text1[0]} {lines.length - messages.index} {RESX.modal.console.text1[1]} {messages.lines.length}</div>
+                </div>
+                <div className='console-window'>
+                    <div className='console-message'>{display()}</div>
+                </div>
             </div>
         </div>
     </div>
