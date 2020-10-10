@@ -81,14 +81,14 @@ export const RESX = {
             "option2": {
                 "title": "Add a template",
                 "buttons": {
-                    "button1_label": "Start with a DCM",
-                    "button1_title": "Create a new template using a DTDLv1 DCM",
+                    "button1_label": "Use a DTDLv1 or DTDLv2 DCM",
+                    "button1_title": "Create a new template from a DTDLv1 or DTDLv2 model (DCM)",
                     "button2_label": "Start new Template",
                     "button2_title": "Create a new empty (or cloned) template",
                 },
                 "label": {
                     "name": "mock-devices template Name",
-                    "name_placeholder": "Leave blank to use DCM displayName",
+                    "name_placeholder": "Leave blank to use the file's DCM displayName",
                     "browse": "Browse disk for a DCM",
                 },
                 "cta_title": "Create this template",
@@ -116,16 +116,16 @@ export const RESX = {
             "option4": {
                 "title": "Azure IoT Edge",
                 "buttons": {
-                    "button1_label": "Create Edge device",
-                    "button1_title": "Create an Edge device to add modules",
+                    "button1_label": "Create Edge host for modules",
+                    "button1_title": "Create an Edge device host device to add Edge modules. Then deploy mock-devices-de with the state file in a real Edge deployment",
                 },
                 "select": "--Do not fork. Create with empty capabilities",
                 "label": {
                     "clone": "Fork another mock device or template",
-                    "deviceId": "Edge Device ID (same as manifest.json)",
+                    "deviceId": "Edge Device ID (same as config.yaml)",
                     "friendly": "mock-devices friendly name",
                 },
-                "cta_title": "The Edge device is a container for modules and is not a real device. The Device Id and Module Id need to be the same as the ones in the manifest file.",
+                "cta_title": "The Edge device is a host for modules and is not a real device. The Device Id and Module Id need to be the same as the ones in the manifest file.",
                 "cta_label": "Create this Edge device profile",
             },
             "error_generic_add": "Check configuration, max devices reached or possible duplicate device",

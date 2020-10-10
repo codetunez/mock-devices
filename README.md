@@ -40,13 +40,14 @@ Help is available inside the application
 
 #### v7.3 Beta
 - Support for Components
+- Auto gen from DTDLv2 models/interfaces
+- Auto gen from DTDLv1 models (DCMs)
 
 #### Features
 - Supports 1,000 mock devices/modules
 - Various connection options; DPS single/group enrollment support with SaS. Sas and/or Connection String
 - Bulk/Clone/Templated device create operations
-- DTDLv1 DCM to simulated mock devices
-  - Auto Gen DTDL Complex Types; Objects/Maps/Arrays with random values using the DCM
+- Auto gen DTDL Complex Types; Objects/Maps/Arrays with random values using the DCM
 - Simulated versions of common device operations such as Reboot, Shutdown, Firmware
 - "Pretend" sensors like battery, heaters, fans, +1 and -1
 - Plan mode - Create a timed series of events
