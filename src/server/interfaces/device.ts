@@ -33,6 +33,7 @@ export interface Property {
     _id: string;
     _type: "property";
     name: string;
+    enabled: boolean;
     component: Component;
     string: boolean;
     value: any;
@@ -42,7 +43,6 @@ export interface Property {
     propertyObject: PropertyObjectDefault | PropertyObjectTemplated;
     runloop?: RunLoop;
     mock?: MockSensor;
-    enabled: boolean;
     color?: string;
     asProperty?: boolean;
     asPropertyId?: string;
@@ -55,15 +55,18 @@ export interface Method {
     _id: string;
     _type: "method";
     execution: "direct" | "cloud";
-    enabled?: boolean;
     name: string;
+    enabled?: boolean;
     component: Component;
-    status: 200 | 404 | 500;
+    status: string;
     receivedParams: string;
-    asProperty: boolean;
     payload: any;
     color?: string;
+    asProperty?: boolean;
     asPropertyId?: string;
+    asPropertyConvention?: boolean;
+    asPropertyVersion?: boolean;
+    asPropertyVersionPayload?: any;
 }
 
 export interface PropertyObjectDefault {
@@ -113,7 +116,6 @@ export class DeviceConfiguration {
     public capabilityUrn?: string;
     public machineState?: string;
     public machineStateClipboard?: string;
-    public pnpSdk?: boolean;
     public planMode?: boolean;
     public modules?: Array<string> = [];
 }

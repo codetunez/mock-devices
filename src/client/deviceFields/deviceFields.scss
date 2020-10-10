@@ -8,8 +8,9 @@ $device-card-minimized: 9rem;
 $device-card-button-size: 2.5rem;
 $device-card-field-label-height: 1.7rem;
 
-$device-card-title-width: 350px; //250px;
-$device-card-title-width-text: 320px; //220px;
+$device-card-title-width: 500px;
+$device-card-title-width-text: 500px;
+
 .device-field-card {
   padding: $sm-gutter $sm-gutter 0 $sm-gutter;
   overflow-wrap: break-word;
@@ -53,7 +54,7 @@ $device-card-title-width-text: 320px; //220px;
       outline: none;
       box-shadow: 0 0 2px $app-clr-4;
     }
-    
+
     .df-card-title-chevron-spacer {
       width: $xl-gutter;
     }

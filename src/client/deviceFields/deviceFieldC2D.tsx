@@ -11,6 +11,7 @@ import { RESX } from '../strings';
 
 import { Modal } from '../modals/modal';
 import { ModalConfirm } from '../modals/modalConfirm';
+
 interface Dialog {
     title: string,
     message: string,
@@ -105,6 +106,7 @@ const reducer = (state: State, action: Action) => {
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData, dialog: diag };
         case "toggle-component":
             if (newData.component) { newData.component.enabled = !newData.component.enabled; } else { newData.component = { enabled: true, name: null } }
+            state.appContext.setDirty(newData._id);
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData, dialog: diag };
         case "load-capability":
             return { ...state, form: { dirty: false, expanded: state.form.expanded }, data: action.payload.capability, dialog: diag };
@@ -128,7 +130,7 @@ const reducer = (state: State, action: Action) => {
     }
 }
 
-export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
+export function DeviceFieldC2D({ capability, shouldExpand, template }) {
 
     const deviceContext: any = React.useContext(DeviceContext);
     const appContext: any = React.useContext(AppContext);
@@ -195,6 +197,11 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
         }
     });
 
+    const title = () => {
+        const comp = state.data.component && state.data.component.enabled ? '[C] ' : '';
+        return `${comp}${RESX.device.card.receive.title}`;
+    }
+
     return <>
         {state.dialog ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><ModalConfirm config={state.dialog} /></div></Modal> : null}
         <div className={cx('device-field-card', state.form.expanded ? '' : 'device-field-card-small')} style={state.data.color ? { backgroundColor: state.data.color } : {}}>
@@ -204,7 +211,7 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
                         <i className={cx(state.form.expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-up')}></i>
                     </button>
                     <div className='df-card-title-text'>
-                        <div>{RESX.device.card.receive.title}</div>
+                        <div>{title()}</div>
                         <div>{state.data.name}</div>
                     </div>
                 </div>
@@ -230,7 +237,7 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
                     </div>
 
                     <div className='df-card-row'>
-                        <div></div>
+                        <div><label>{RESX.device.card.title.ack_label}</label></div>
                         <div><label>{RESX.device.card.receive.twin_rpt_label}</label>
                             <div title={RESX.device.card.receive.twin_rpt_title}><Toggle name={state.data._id + '-sendcapability'} defaultChecked={false} checked={state.data.asProperty} onChange={() => { dispatch({ type: 'toggle-property', payload: null }) }} /></div>
                         </div>
@@ -238,15 +245,15 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
 
                     {!state.data.asProperty ? null :
                         <>
-                            <div className='df-card-row'>
-                                <div><label></label><div></div></div>
-                                <div><label title={RESX.device.card.receive.property_report_title}>{RESX.device.card.receive.property_report_label}</label>
-                                    <div>
-                                        <Combo items={sendComms} cls='full-width' name='asPropertyId' onChange={updateField} value={state.data.asPropertyId || ''} />
+                            {state.data.asPropertyId === RESX.device.card.select ? null : <>
+                                <div className='df-card-row'>
+                                    <div></div>
+                                    <div><label title={RESX.device.card.receive.property_report_title}>{RESX.device.card.receive.property_report_label}</label>
+                                        <div>
+                                            <Combo items={sendComms} cls='full-width' name='asPropertyId' onChange={updateField} value={state.data.asPropertyId || ''} />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            {state.data.asPropertyId === RESX.device.card.select ? null : <>
                                 <div className='df-card-row'>
                                     <div></div>
                                     <div><label>{RESX.device.card.receive.property_version_label}</label>
@@ -259,7 +266,7 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
                                         {!state.data.asPropertyVersion ? null :
                                             <div>
                                                 <label title={RESX.device.card.receive.property_version_payload_title}>{RESX.device.card.receive.property_version_payload_label}</label>
-                                                <textarea className='form-control form-control-sm custom-textarea full-width' rows={7} name='asPropertyVersionPayload' onChange={updateField} value={state.data.asPropertyVersionPayload}></textarea>
+                                                <textarea className='form-control form-control-sm custom-textarea full-width' rows={12} name='asPropertyVersionPayload' onChange={updateField} value={state.data.asPropertyVersionPayload}></textarea>
                                             </div>
                                         }
                                     </div>
@@ -285,8 +292,8 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
 
                     {template ? null : <>
                         <div className='df-card-row'>
-                            <div></div>
-                            <div><label title={RESX.device.card.receive.value_title}>{RESX.device.card.receive.value_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={8} value={state.data.value || ''} placeholder={RESX.device.card.waiting_placeholder}>{state.data.value || ''}</textarea></div></div>
+                            <div><label>{RESX.device.card.title.desired_label}</label></div>
+                            <div><label title={RESX.device.card.receive.value_title}>{RESX.device.card.receive.value_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={4} value={state.data.value || ''} placeholder={RESX.device.card.waiting_placeholder}>{state.data.value || ''}</textarea></div></div>
                             <div>
                                 <div className="card-field-label-height"></div>
                                 {!template ? <button title={RESX.device.card.read_title} className='btn btn-sm btn-outline-primary' onClick={() => { dispatch({ type: 'read-parameters', payload: { context: deviceContext } }) }}>{RESX.device.card.read_label}</button> : null}
@@ -300,7 +307,7 @@ export function DeviceFieldC2D({ capability, shouldExpand, pnp, template }) {
                     }
 
                     <div className='df-card-row'>
-                        <div><label>{RESX.device.card.UX}</label></div>
+                        <div><label>{RESX.device.card.title.ux_label}</label></div>
                         <div><label title={RESX.device.card.color_title}>{RESX.device.card.color_label}</label>
                             <div>
                                 <Combo items={colors} cls='full-width' name='color' onChange={updateField} value={state.data.color} />

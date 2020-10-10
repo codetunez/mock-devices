@@ -49,7 +49,8 @@ export function DCMtoMockDevice(deviceConfiguration: any, deviceStore: DeviceSto
             //handle interfaces
             dcm.extends.forEach(element => {
                 if (element.contents) {
-                    const ns = element.displayName ? (element.displayName.en || element.displayName) : 'Interface';
+                    const parts = element['@id'].split(':');
+                    const ns = parts[parts.length - 1].split(';')[0];
                     element.contents.forEach(item => {
                         DCMCapabilityToComm(item, t._id, deviceStore, simRunloop, simColors, ns);
                     })

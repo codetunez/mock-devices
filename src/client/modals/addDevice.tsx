@@ -30,8 +30,7 @@ const initialState = {
     capabilityModel: '',
     capabilityUrn: '',
     machineState: '',
-    machineStateClipboard: '',
-    pnpSdk: false
+    machineStateClipboard: ''
 }
 
 export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
@@ -116,13 +115,8 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                 let payload: any = {}
                 payload.scopeId = json.configuration.scopeId
                 payload.capabilityUrn = json.configuration.capabilityUrn
-                payload.mockDeviceCloneId = id
-
-                if (state.pnpSdk) {
-                    payload.dpsPayload = { "__iot:interfaces": { "CapabilityModelId": json.configuration.capabilityUrn } }
-                } else {
-                    payload.dpsPayload = { "iotcModelId": json.configuration.capabilityUrn }
-                }
+                payload.mockDeviceCloneId = id;
+                payload.dpsPayload = { "iotcModelId": json.configuration.capabilityUrn }
 
                 if (json.configuration.isMasterKey) {
                     payload.sasKey = json.configuration.sasKey;
@@ -274,7 +268,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
                         </div>
                         <div className='m-tabbed-panel-footer'>
-                            <button title={RESX.modal.add.option1.cta_title} className='btn btn-primary' disabled={state.scopeId == '' || state.deviceId == '' || state.sasKey == '' || (state.pnpSdk && state.capabilityUrn === '')} onClick={() => clickAddDevice('dps')}>{RESX.modal.add.option1.cta_label}</button>
+                            <button title={RESX.modal.add.option1.cta_title} className='btn btn-primary' disabled={state.scopeId == '' || state.deviceId == '' || state.sasKey == '' || (state.capabilityUrn === '')} onClick={() => clickAddDevice('dps')}>{RESX.modal.add.option1.cta_label}</button>
                         </div>
                     </>}
 

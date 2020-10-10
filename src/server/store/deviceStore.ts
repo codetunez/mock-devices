@@ -168,7 +168,7 @@ export class DeviceStore {
                 "name": "Component"
             },
             "color": this.simColors["Color1"],
-            "status": 200,
+            "status": "200",
             "receivedParams": null,
             "asProperty": false,
             "payload": JSON.stringify({ "result": "OK" }, null, 2)
@@ -529,12 +529,14 @@ export class DeviceStore {
         const origDevice: Device = JSON.parse(JSON.stringify(this.store.getItem(cloneId)));
         if (Object.keys(origDevice).length != 0) {
             device.configuration.capabilityUrn = origDevice.configuration.capabilityUrn;
-            for (let i = 0; i < origDevice.comms.length; i++) {
-                let p = origDevice.comms[i];
+
+            const cache = {};
+            for (let p of origDevice.comms) {
                 const origPropertyId = p._id;
                 const newPropertyId = uuidV4();
                 p._id = newPropertyId;
                 if (p.mock) { p.mock._id = uuidV4(); }
+                cache[origPropertyId] = newPropertyId;
 
                 for (const property in origDevice.plan.startup) {
                     if (origDevice.plan.startup[property].property === origPropertyId) { origDevice.plan.startup[property].property = newPropertyId };
@@ -553,6 +555,10 @@ export class DeviceStore {
                     if (origDevice.plan.receive[property].propertyOut === origPropertyId) { origDevice.plan.receive[property].propertyOut = newPropertyId };
                 }
             }
+
+            // second pass required once all old to new ids are known
+            for (let p of origDevice.comms) { if (cache[p.asPropertyId]) { p.asPropertyId = cache[p.asPropertyId]; } }
+
             device.comms = origDevice.comms;
             device.plan = origDevice.plan;
             device.configuration.planMode = origDevice.configuration.planMode;

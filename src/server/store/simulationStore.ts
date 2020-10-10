@@ -111,13 +111,13 @@ export class SimulationStore {
             "timelineDelay": 5000
         },
         "snippets": {
-            "DTDLv2": {
+            "DTDL": {
                 "value": "DESIRED_VALUE",
                 "ac": 200,
                 "ad": "completed",
                 "av": "DESIRED_VERSION"
             },
-            "Legacy IoTC": {
+            "IoTC.M3 ": {
                 "value": "DESIRED_VALUE",
                 "status": "completed",
                 "message": "test message",
@@ -126,7 +126,11 @@ export class SimulationStore {
             },
             "Response": {
                 "result": "OK"
-            }
+            },
+            "Value": {
+                "value": null
+            },
+            "Empty": {}
         }
     }
 

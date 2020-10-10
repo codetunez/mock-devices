@@ -6,5 +6,6 @@ export interface DesiredPayload {
     payload: any,
     convention: boolean,
     value: any,
-    version: number
+    version: number,
+    component: boolean
 }

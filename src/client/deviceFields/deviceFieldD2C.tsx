@@ -131,6 +131,7 @@ const reducer = (state: State, action: Action) => {
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData, dialog: diag };
         case "toggle-component":
             if (newData.component) { newData.component.enabled = !newData.component.enabled; } else { newData.component = { enabled: true, name: null } }
+            state.appContext.setDirty(newData._id);
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData, dialog: diag };
         case "update-runloop":
             state.appContext.setDirty(newData._id);
@@ -173,7 +174,7 @@ const reducer = (state: State, action: Action) => {
     }
 }
 
-export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, template }) {
+export function DeviceFieldD2C({ capability, shouldExpand, template, sensors }) {
 
     const deviceContext: any = React.useContext(DeviceContext);
     const appContext: any = React.useContext(AppContext);
@@ -264,7 +265,8 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
         if (state.data.runloop._ms) { trueTime = state.data.runloop._ms / (state.data.runloop.unit === "secs" ? 1000 : 60000); }
         const loop = state.data.runloop.include ? ' every ' + (trueTime || '???') + ' ' + state.data.runloop.unit : '';
         const mock = state.data.mock && state.data.type.mock ? ' (mock ' + state.data.mock._type + ')' : '';
-        return `Send ${state.data.sdk === "msg" ? "telemetry" : state.data.sdk + " (Reported)"} ${loop} ${mock}`
+        const comp = state.data.component && state.data.component.enabled ? '[C] ' : '';
+        return `${comp}Send ${state.data.sdk === "msg" ? "telemetry" : state.data.sdk + " (Reported)"} ${loop} ${mock}`
     }
 
     let fields = [];
@@ -380,7 +382,7 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
                             <div></div>
                             <div className="snippets">
                                 <div>{RESX.device.card.send.reset_duration_title}</div>
-                                <div className="snippet-links"><div onClick={() => dispatch({ type: 'reset-time', payload: null })}>OK</div></div>
+                                <div className="snippet-links"><div onClick={() => dispatch({ type: 'reset-time', payload: null })}>{RESX.device.card.send.reset_duration_click_title}</div></div>
                             </div>
                         </div>
                     }
@@ -407,7 +409,7 @@ export function DeviceFieldD2C({ capability, sensors, shouldExpand, pnp, templat
                         : null}
 
                     <div className='df-card-row'>
-                        <div><label>{RESX.device.card.UX}</label></div>
+                        <div><label>{RESX.device.card.title.ux_label}</label></div>
                         <div><label title={RESX.device.card.color_title}>{RESX.device.card.color_label}</label>
                             <div>
                                 <Combo items={colors} cls='full-width' name='color' onChange={updateField} value={state.data.color} />
