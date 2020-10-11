@@ -24,6 +24,10 @@ $device-card-title-width-text: 500px;
   margin-right: $md-gutter;
 }
 
+.device-field-card-dirty {
+  box-shadow: inset 0px 0px 1px 1px $app-clr-yellow-2;
+}
+
 .device-field-card-small {
   height: $device-card-minimized;
 }

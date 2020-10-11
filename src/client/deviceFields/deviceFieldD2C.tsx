@@ -263,10 +263,10 @@ export function DeviceFieldD2C({ capability, shouldExpand, template, sensors }) 
     const title = () => {
         let trueTime = null;
         if (state.data.runloop._ms) { trueTime = state.data.runloop._ms / (state.data.runloop.unit === "secs" ? 1000 : 60000); }
-        const loop = state.data.runloop.include ? ' every ' + (trueTime || '???') + ' ' + state.data.runloop.unit : '';
+        const loop = state.data.runloop.include ? ' sent every ' + (trueTime || '???') + ' ' + state.data.runloop.unit : '';
         const mock = state.data.mock && state.data.type.mock ? ' (mock ' + state.data.mock._type + ')' : '';
         const comp = state.data.component && state.data.component.enabled ? '[C] ' : '';
-        return `${comp}Send ${state.data.sdk === "msg" ? "telemetry" : state.data.sdk + " (Reported)"} ${loop} ${mock}`
+        return `${comp}${state.data.sdk === "msg" ? RESX.device.card.send.title_telemetry : RESX.device.card.send.title_report} ${loop} ${mock}`
     }
 
     let fields = [];
@@ -299,7 +299,7 @@ export function DeviceFieldD2C({ capability, shouldExpand, template, sensors }) 
     return <>
         {state.dialog ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><ModalConfirm config={state.dialog} /></div></Modal> : null}
 
-        <div className={cx('device-field-card', state.form.expanded ? '' : 'device-field-card-small')} style={state.data.color ? { backgroundColor: state.data.color } : {}}>
+        <div className={cx('device-field-card', state.form.expanded ? '' : 'device-field-card-small', state.form.dirty ? 'device-field-card-dirty' : '')} style={state.data.color ? { backgroundColor: state.data.color } : {}}>
 
             <div className='df-card-header'>
                 <div className='df-card-title'>

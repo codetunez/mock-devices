@@ -321,7 +321,7 @@ export class MockDevice {
         this.msgRLReportedTimers = [];
         this.msgRLMockSensorTimers = {};
 
-        for (let i = 0; i < this.device.comms.length; i++) {
+        for (const i in this.device.comms) {
             const comm = this.device.comms[i];
 
             // only twin/msg require the runloop. methods are always on and not part of the runloop
@@ -732,7 +732,7 @@ export class MockDevice {
                 this.desiredOverrides[method.asPropertyId] = <DesiredPayload>{
                     payload: method.asPropertyVersionPayload,
                     convention: null,
-                    value: method.asPropertyVersionPayload,
+                    value: null,
                     version: null
                 }
             }
@@ -806,7 +806,7 @@ export class MockDevice {
 
                 // this response is the payload of the device
                 response.send((parseInt(method.status)), methodPayload, (err) => {
-                    this.log(err ? err.toString() : `[${method.status}]${method.name} : ${JSON.stringify(methodPayload)}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.DATA.METH, LOGGING_TAGS.DATA.SEND, 'DIRECT METHOD RESPONSE PAYLOAD');
+                    this.log(err ? err.toString() : `${method.name} -> [${method.status}] ${JSON.stringify(methodPayload)}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.DATA.METH, LOGGING_TAGS.DATA.SEND, 'DIRECT METHOD RESPONSE PAYLOAD');
                     this.logStat(LOGGING_TAGS.STAT.COMMANDS);
                     this.messageService.sendAsLiveUpdate(this.device._id, { [method._id]: new Date().toUTCString() });
 
@@ -952,7 +952,7 @@ export class MockDevice {
 
         // first get all the values to report
         let payload = {};
-        for (let i = 0; i < runloopProperties.length; i++) {
+        for (const i in runloopProperties) {
 
             // this is a paired structure
             let p: Property = runloopProperties[i];

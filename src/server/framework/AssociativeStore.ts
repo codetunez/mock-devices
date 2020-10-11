@@ -34,16 +34,12 @@ export class AssociativeStore<T> {
 
     public getAllItems = (): Array<T> => {
         let arr = [];
-        for (let key in this.store) {
-            arr.push(this.store[key])
-        }
+        for (const key in this.store) { arr.push(this.store[key]) }
         return arr;
     }
 
     public createStoreFromArray = (arr: Array<T>) => {
         this.initStore();
-        for (let i = 0; i < arr.length; i++) {
-            this.store[arr[i]['_id']] = arr[i];
-        }
+        for (const i in arr) { this.store[arr[i]['_id']] = arr[i]; }
     }
 }

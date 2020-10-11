@@ -201,13 +201,13 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <label>{RESX.modal.add.option2.title}</label>
                         <button title={RESX.modal.add.option2.buttons.button1_title} onClick={() => selectPanel(2)} className={cx('btn btn-outline-info', panel === 2 ? 'active' : '')}>{RESX.modal.add.option2.buttons.button1_label}</button><br />
                         <button title={RESX.modal.add.option2.buttons.button2_title} onClick={() => selectPanel(3)} className={cx('btn btn-outline-info', panel === 3 ? 'active' : '')}>{RESX.modal.add.option2.buttons.button2_label}</button><br />
+                        <label>{RESX.modal.add.option4.title}</label>
+                        <button title={RESX.modal.add.option4.buttons.button1_title} onClick={() => selectPanel(6)} className={cx('btn btn-outline-info', panel === 6 ? 'active' : '')}>{RESX.modal.add.option4.buttons.button1_label}</button><br />
                         <label>{RESX.modal.add.option3.title}</label>
                         {deviceContext.ui.container ? null : <>
                             <button title={RESX.modal.add.option3.buttons.button1_title} onClick={() => selectPanel(4)} className={cx('btn btn-outline-info', panel === 4 ? 'active' : '')}>{RESX.modal.add.option3.buttons.button1_label}</button><br />
                         </>}
                         <button title={RESX.modal.add.option3.buttons.button2_title} onClick={() => selectPanel(5)} className={cx('btn btn-outline-info', panel === 5 ? 'active' : '')}>{RESX.modal.add.option3.buttons.button2_label}</button><br />
-                        <label>{RESX.modal.add.option4.title}</label>
-                        <button title={RESX.modal.add.option4.buttons.button1_title} onClick={() => selectPanel(6)} className={cx('btn btn-outline-info', panel === 6 ? 'active' : '')}>{RESX.modal.add.option4.buttons.button1_label}</button><br />
                     </div>
                     <div className='form-group'>
                         {deviceContext.ui.container ? <div className='container'>{Endpoint.getEndpoint()}<br /><i className="fab fa-docker fa-2x fa-fw" /></div> : null}
@@ -243,7 +243,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                     </div>
                                 </div>
                                 <div className='form-group'>
-                                    <label>{RESX.modal.add.option1.label.dps}</label>
+                                    <label>{RESX.modal.add.option1.label.dps_blob}</label>
                                     <div className='form-group'>
                                         <Json json={state.dpsPayload} cb={(text: any) => { updateJson(text, 'dpsPayload') }} err={() => setError(RESX.modal.error_json)} />
                                     </div>

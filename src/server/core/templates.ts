@@ -9,6 +9,7 @@ export function DCMtoMockDevice(deviceConfiguration: any, deviceStore: DeviceSto
     let simulationStore = new SimulationStore();
     let simRunloop = simulationStore.get()["runloop"];
     let simColors = simulationStore.get()["colors"];
+    let simDcm = simulationStore.get()["dcm"];
 
     let t = new Device();
     t._id = uuid();
@@ -49,8 +50,11 @@ export function DCMtoMockDevice(deviceConfiguration: any, deviceStore: DeviceSto
             //handle interfaces
             dcm.extends.forEach(element => {
                 if (element.contents) {
-                    const parts = element['@id'].split(':');
-                    const ns = parts[parts.length - 1].split(';')[0];
+                    let ns = null;
+                    if (simDcm && simDcm["import"] && simDcm["import"]["interfaceAsComponents"]) {
+                        const parts = element['@id'].split(':');
+                        ns = parts[parts.length - 1].split(';')[0];
+                    }
                     element.contents.forEach(item => {
                         DCMCapabilityToComm(item, t._id, deviceStore, simRunloop, simColors, ns);
                     })

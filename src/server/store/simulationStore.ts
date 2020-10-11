@@ -131,6 +131,11 @@ export class SimulationStore {
                 "value": null
             },
             "Empty": {}
+        },
+        "dcm": {
+            "import": {
+                "interfaceAsComponents": false
+            }
         }
     }
 

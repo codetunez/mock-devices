@@ -204,7 +204,7 @@ export function DeviceFieldC2D({ capability, shouldExpand, template }) {
 
     return <>
         {state.dialog ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><ModalConfirm config={state.dialog} /></div></Modal> : null}
-        <div className={cx('device-field-card', state.form.expanded ? '' : 'device-field-card-small')} style={state.data.color ? { backgroundColor: state.data.color } : {}}>
+        <div className={cx('device-field-card', state.form.expanded ? '' : 'device-field-card-small', state.form.dirty ? 'device-field-card-dirty':'')} style={state.data.color ? { backgroundColor: state.data.color } : {}}>
             <div className='df-card-header'>
                 <div className='df-card-title'>
                     <button className='df-card-title-chevron' onClick={() => { dispatch({ type: 'toggle-expand', payload: { expand: !state.form.expanded, context: appContext } }) }}>

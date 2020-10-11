@@ -3,6 +3,7 @@ import { Router } from 'express';
 import * as uuidV4 from 'uuid/v4';
 import * as fs from 'fs';
 import { REPORTING_MODES } from '../config';
+var path = require('path');
 
 export default function (dialog, app, globalContext, ms) {
     let api = Router();
@@ -25,6 +26,10 @@ export default function (dialog, app, globalContext, ms) {
     api.get('/id', function (req, res) {
         res.status(200).send(uuidV4()).end();
     });
+
+    api.get('/help', function (req, res) {
+        res.status(200).send(fs.readFileSync(path.resolve(__dirname + '/../../../static/HELP.md'), { encoding: 'utf-8' })).end();
+    })
 
     api.post('/setmode/:mode', function (req, res) {
         const mode = req.params.mode;

@@ -216,13 +216,13 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
 
     const title = () => {
         const comp = state.data.component && state.data.component.enabled ? '[C] ' : '';
-        return `${comp}${RESX.device.card.method.title}`;
+        return `${comp}${state.data.execution === 'cloud' ? RESX.device.card.method.title_c2d : RESX.device.card.method.title_direct}`;
     }
 
     return <>
         {state.dialog ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><ModalConfirm config={state.dialog} /></div></Modal> : null}
 
-        <div className={cx('device-field-card', state.form.expanded ? '' : 'device-field-card-small')} style={state.data.color ? { backgroundColor: state.data.color } : {}}>
+        <div className={cx('device-field-card', state.form.expanded ? '' : 'device-field-card-small', state.form.dirty ? 'device-field-card-dirty' : '')} style={state.data.color ? { backgroundColor: state.data.color } : {}}>
 
             <div className='df-card-header'>
                 <div className='df-card-title'>
@@ -336,11 +336,10 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
                     {template ? null :
                         <div className='df-card-row'>
                             <div><label>{RESX.device.card.title.method_ack_params_label}</label></div>
-                            <div><label title={RESX.device.card.method.request_title}>{RESX.device.card.method.request_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={3} readOnly={true} value={request()} placeholder={RESX.device.card.waiting_placeholder}></textarea></div>
-                                <div>
-                                    <div className="card-field-label-height"></div>
-                                    {!template ? <button title={RESX.device.card.read_param_title} className='btn btn-sm btn-outline-primary' onClick={() => { deviceContext.getCapabilityMethodRequest(state.data._id) }}><span className='fa fa-read'></span>{RESX.device.card.read_param_label}</button> : null}
-                                </div>
+                            <div><label title={RESX.device.card.method.request_title}>{RESX.device.card.method.request_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={3} readOnly={true} value={request()} placeholder={RESX.device.card.waiting_placeholder}></textarea></div></div>
+                            <div>
+                                <div className="card-field-label-height"></div>
+                                {!template ? <button title={RESX.device.card.read_param_title} className='btn btn-sm btn-outline-primary' onClick={() => { deviceContext.getCapabilityMethodRequest(state.data._id) }}>{RESX.device.card.read_param_label}</button> : null}
                             </div>
                         </div>
                     }
