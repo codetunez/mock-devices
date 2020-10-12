@@ -1,19 +1,19 @@
+export interface Component {
+    enabled: boolean;
+    name: string;
+}
+
 export interface DeviceType {
     mock: boolean;
     direction: 'd2c' | 'c2d';
 }
 
 export interface RunLoop {
+    _ms: number;
     include: boolean;
     unit: 'secs' | 'mins';
     value: number;
     valueMax: number;
-    _ms: number;
-}
-
-export interface PnpInterface {
-    name: string;
-    urn: string;
 }
 
 export interface MockSensor {
@@ -33,7 +33,8 @@ export interface Property {
     _id: string;
     _type: "property";
     name: string;
-    interface: PnpInterface;
+    enabled: boolean;
+    component: Component;
     string: boolean;
     value: any;
     sdk: string;
@@ -42,7 +43,6 @@ export interface Property {
     propertyObject: PropertyObjectDefault | PropertyObjectTemplated;
     runloop?: RunLoop;
     mock?: MockSensor;
-    enabled: boolean;
     color?: string;
     asProperty?: boolean;
     asPropertyId?: string;
@@ -55,15 +55,18 @@ export interface Method {
     _id: string;
     _type: "method";
     execution: "direct" | "cloud";
-    enabled?: boolean;
     name: string;
-    interface: PnpInterface;
-    status: 200 | 404 | 500;
+    enabled?: boolean;
+    component: Component;
+    status: string;
     receivedParams: string;
-    asProperty: boolean;
     payload: any;
     color?: string;
+    asProperty?: boolean;
     asPropertyId?: string;
+    asPropertyConvention?: boolean;
+    asPropertyVersion?: boolean;
+    asPropertyVersionPayload?: any;
 }
 
 export interface PropertyObjectDefault {
@@ -113,7 +116,6 @@ export class DeviceConfiguration {
     public capabilityUrn?: string;
     public machineState?: string;
     public machineStateClipboard?: string;
-    public pnpSdk?: boolean;
     public planMode?: boolean;
     public modules?: Array<string> = [];
 }

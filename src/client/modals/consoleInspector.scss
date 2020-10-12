@@ -1,40 +1,47 @@
 @import "../const.scss";
 
-.console-buttons {
-  display: flex;
-  padding: 0 1rem 1rem 1rem;
-  a {
-    cursor: pointer;
-    margin-right: 0.6rem;
-  }
-}
-
-.console-window {
-  padding: 0 1rem 1rem 1rem;
-  height: calc(100% - 3rem);
-}
-
-.console-message {
-  background-color: $app-black;
-  border: solid 1px $app-clr-4;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  overflow-wrap: break-word;
+.dialog-inspect {
   height: 100%;
-
-  div {
-    background-color: $app-black;
-    padding: 1.2rem;
-    position: fixed;
-    width: calc(100% - 50px);
-    font-size: 0.9rem;
+  .m-modal {
+    padding: $sm-gutter $md-gutter $md-gutter $md-gutter;
   }
 
-  pre {
-    padding-top: $lg-gutter * 3.5;
-    padding-left: $lg-gutter;
-    color: $app-white;
-    font-size: 1.4rem;
-    white-space: pre-wrap;
+  .console-buttons {
+    display: flex;
+    padding: 0 1rem 1rem 0;
+    a {
+      cursor: pointer;
+      margin-right: 0.6rem;
+    }
+  }
+
+  .console-window {
+    height: calc(100% - 3rem);
+  }
+
+  .console-message {
+    background-color: $app-black;
+    border: solid 1px $app-clr-4;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    overflow-wrap: break-word;
+    height: 100%;
+
+    div {
+      background-color: $app-black;
+      padding: 1.2rem;
+      position: fixed;
+      font-size: 0.9rem;
+      overflow: hidden;
+      width: calc(100% - 60px);
+    }
+
+    pre {
+      padding-top: $lg-gutter * 3.5;
+      padding-left: $lg-gutter;
+      color: $app-white;
+      font-size: 1.4rem;
+      white-space: pre-wrap;
+    }
   }
 }

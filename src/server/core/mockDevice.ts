@@ -58,6 +58,9 @@ const LOGGING_TAGS = {
         TWIN: 'TWIN',
         MSG: 'MSG'
     },
+    SUB: {
+        COMP: 'C'
+    },
     STAT: {
         MSG: {
             FIRST: 'MSG_FIRST',
@@ -172,15 +175,17 @@ export class MockDevice {
     private delayStartTimer = null;
 
     private resolversCollection = {
-        desiredToId: {},
-        desiredToIndex: {},
-        methodToId: {},
-        deviceCommsIndex: {},
-        c2dIndex: {},
-        directMethodIndex: {}
+        nameDesiredToId: {},
+        idPropToCommIndex: {},
+        nameMethodToId: {},
+        nameDesiredToIndex: {},
+        nameC2dToCommIndex: {},
+        nameDmToCommIndex: {}
     }
 
     private stats: Stats;
+
+    private firstSendMins: string;
 
     constructor(device: Device, messageService) {
         if (ignoreKind(device.configuration._kind)) { return; }
@@ -256,12 +261,12 @@ export class MockDevice {
         this.logStat(LOGGING_TAGS.STAT.RECONFIGURES);
 
         this.resolversCollection = {
-            desiredToId: {},
-            desiredToIndex: {},
-            methodToId: {},
-            deviceCommsIndex: {},
-            c2dIndex: {},
-            directMethodIndex: {}
+            idPropToCommIndex: {},
+            nameDesiredToId: {},
+            nameMethodToId: {},
+            nameDesiredToIndex: {},
+            nameC2dToCommIndex: {},
+            nameDmToCommIndex: {}
         }
 
         this.twinRLProps = [];
@@ -282,7 +287,7 @@ export class MockDevice {
             const config = this.simulationStore.get()['plan'];
 
             this.device.plan.startup.forEach((item) => {
-                const comm = this.device.comms[this.resolversCollection.deviceCommsIndex[item.property]];
+                const comm = this.device.comms[this.resolversCollection.idPropToCommIndex[item.property]];
                 if (comm.sdk === 'twin') {
                     this.twinRLProps.push(comm);
                     this.twinRLPropsPlanValues.push(item.value);
@@ -297,7 +302,7 @@ export class MockDevice {
             this.device.plan.timeline.forEach((item) => {
                 // find the last event
                 this.planModeLastEventTime = (item.time * 1000) + config['timelineDelay'];
-                const comm = this.device.comms[this.resolversCollection.deviceCommsIndex[item.property]];
+                const comm = this.device.comms[this.resolversCollection.idPropToCommIndex[item.property]];
                 if (comm.sdk === 'twin') {
                     this.twinRLProps.push(comm);
                     this.twinRLPropsPlanValues.push(item.value);
@@ -316,9 +321,8 @@ export class MockDevice {
         this.msgRLReportedTimers = [];
         this.msgRLMockSensorTimers = {};
 
-        for (let i = 0; i < this.device.comms.length; i++) {
+        for (const i in this.device.comms) {
             const comm = this.device.comms[i];
-            const name = comm.interface.name.replace(/\s/g, '');
 
             // only twin/msg require the runloop. methods are always on and not part of the runloop
             if (this.device.comms[i]._type != 'property') { continue; }
@@ -367,22 +371,25 @@ export class MockDevice {
                 }
             }
         }
+
+        this.firstSendMins = (Math.min(Math.min.apply(null, this.twinRLReportedTimers.map((v) => v.timeRemain)), Math.min.apply(null, this.msgRLReportedTimers.map((v) => v.timeRemain))) / 60000).toFixed(1);
     }
 
     buildIndexes() {
         this.device.comms.forEach((comm, index) => {
-            this.resolversCollection.deviceCommsIndex[comm._id] = index;
+            this.resolversCollection.idPropToCommIndex[comm._id] = index;
             if (comm._type === 'property' && comm.sdk === 'twin' && comm.type.direction === 'c2d') {
-                this.resolversCollection.desiredToId[comm.name] = comm._id;
-                this.resolversCollection.desiredToIndex[comm.name] = index;
+                this.resolversCollection.nameDesiredToId[comm.name] = comm._id;
+                this.resolversCollection.nameDesiredToIndex[comm.name] = index;
             }
             if (comm._type === 'method') {
-                this.resolversCollection.methodToId[comm.name] = comm._id;
+                this.resolversCollection.nameMethodToId[comm.name] = comm._id;
+                const key = comm.component && comm.component.enabled ? `${comm.component.name}*${comm.name}` : comm.name
                 if (comm.execution === 'cloud') {
-                    this.resolversCollection.c2dIndex[comm.name] = index;
+                    this.resolversCollection.nameC2dToCommIndex[key] = index;
                 }
                 if (comm.execution === 'direct') {
-                    this.resolversCollection.directMethodIndex[comm.name] = index;
+                    this.resolversCollection.nameDmToCommIndex[key] = index;
                 }
             }
         })
@@ -391,7 +398,7 @@ export class MockDevice {
     // End of device setup and update code
 
     updateTwin(payload: ValueByIdPayload) {
-        this.twinRLPayloadAdditions = payload;
+        Object.assign(this.twinRLPayloadAdditions, payload);
     }
 
     readTwin() {
@@ -403,7 +410,7 @@ export class MockDevice {
     }
 
     updateMsg(payload: ValueByIdPayload) {
-        this.msgRLPayloadAdditions = payload;
+        Object.assign(this.msgRLPayloadAdditions, payload);
     }
 
     processMockDevicesCMD(name: string) {
@@ -589,13 +596,8 @@ export class MockDevice {
         }
     }
 
-
     mainLoop() {
         if (!this.running) { return; }
-        this.legacyMainLoop();
-    }
-
-    legacyMainLoop() {
         try {
             this.iotHubDevice.client.open(() => {
                 this.registerDirectMethods();
@@ -611,55 +613,13 @@ export class MockDevice {
                     twin.on('properties.desired', ((delta) => {
                         this.logStat(LOGGING_TAGS.STAT.DESIRED);
                         _.merge(this.desiredMergedCache, delta);
-
                         Object.assign(this.twinDesiredPayloadRead, delta);
-
                         this.log(JSON.stringify(delta), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.TWIN, LOGGING_TAGS.DATA.RECV);
                         this.CONNECT_RESTART = false;
-
-                        // this deals with a full twin or a single desired
-                        for (let name in delta) {
-                            if (this.device.configuration.planMode) {
-                                this.sendPlanResponse(this.resolversCollection.desiredToId, name);
-                            } else {
-                                const property: Property = this.device.comms[this.resolversCollection.desiredToIndex[name]];
-                                if (!property) { continue; }
-
-                                //REFACTOR: this needs to update the UI
-                                property.value = delta[name];
-                                property.version = delta['$version'];
-
-                                //REFACTOR: this custom schema needs rethinking
-                                if (property.asProperty && property.asPropertyId && property.asPropertyVersion) {
-
-                                    let value = property.value;
-
-                                    // the hub will always send the full desired for a given property in the twin
-                                    // so only do when selecting the convention which may only send the patch
-                                    if (property.asPropertyConvention) { value = this.desiredMergedCache[name]; }
-
-                                    this.desiredOverrides[property.asPropertyId] = <DesiredPayload>{
-                                        payload: property.asPropertyVersionPayload,
-                                        convention: property.asPropertyConvention,
-                                        value: value,
-                                        version: property.version,
-                                    }
-                                }
-
-                                const p = this.device.comms.filter((x) => { return x._id === property.asPropertyId })
-                                // should only be 1
-                                for (const send in p) {
-                                    let json: ValueByIdPayload = <ValueByIdPayload>{};
-                                    let converted = Utils.formatValue(p[send].string, p[send].value);
-                                    json[p[send]._id] = converted
-
-                                    // if this an immediate update, send to the runloop
-                                    if (p[send].sdk === 'twin') { this.updateTwin(json); }
-                                    if (p[send].sdk === 'msg') { this.updateMsg(json); }
-                                }
-                            }
-                        }
+                        this.registerDesiredProperties(delta, delta['$version'], false);
                     }))
+
+                    this.log(`LOOPS WILL NOT START SENDING DATA FOR ${this.firstSendMins} minutes`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
 
                     // this loop is a poller to check a payload the will be used to send the method response 
                     // as a reported property with the same name. once it processes the payload it clears it.
@@ -698,25 +658,47 @@ export class MockDevice {
         }
     }
 
-    sendPlanResponse(index, name) {
-        // this is from the hub where desired twin contains a meta tag
-        if (name === '$version') { return; }
-
-        const propertyId = index[name];
-        const property = this.device.plan.receive.find((prop) => { return prop.property === propertyId });
-        if (property) {
-            const outboundProperty: Property = this.device.comms[this.resolversCollection.deviceCommsIndex[property.propertyOut]];
-            if (!outboundProperty) { return; }
-            const payload = <ValueByIdPayload>{ [outboundProperty._id]: property.value }
-            if (outboundProperty.sdk === 'twin') { this.updateTwin(payload); } else { this.updateMsg(payload); }
+    registerDesiredProperties(delta, version, component) {
+        for (let name in delta) {
+            if (name === '$version') { continue; }
+            if (name === '__t') { continue; }
+            if (delta[name]['__t']) {
+                this.registerDesiredProperties(delta[name], version, true)
+            } else {
+                if (this.device.configuration.planMode) {
+                    this.sendPlanResponse(this.resolversCollection.nameDesiredToId[name]);
+                } else {
+                    this.sendPropertyResponse(delta[name], name, version, component)
+                }
+            }
         }
     }
 
-    sendMethodResponse(method: Method) {
-        if (this.device.configuration.planMode) {
-            this.sendPlanResponse(this.resolversCollection.methodToId, method.name);
-        } else if (!this.device.configuration.planMode && method.asProperty && method.asPropertyId) {
-            const p = this.device.comms.filter((x) => { return x._id === method.asPropertyId })
+    sendPropertyResponse(sentValue, name, version, component) {
+        // this deals with a full twin or a single desired
+        const property: Property = this.device.comms[this.resolversCollection.nameDesiredToIndex[name]];
+        if (!property) { return; }
+
+        //REFACTOR: this needs to update the UI
+        property.value = sentValue;
+        property.version = version;
+
+        //REFACTOR: this custom schema needs rethinking
+        if (property.asProperty && property.asPropertyId) {
+            // set up the global desired override
+            if (property.asPropertyVersion) {
+                this.desiredOverrides[property.asPropertyId] = <DesiredPayload>{
+                    payload: property.asPropertyVersionPayload,
+                    convention: property.asPropertyConvention,
+                    value: sentValue,
+                    version: property.version,
+                    component: component
+                }
+            }
+
+            // send the ack. if an override has been set, the value here will be ignored
+            const p = this.device.comms.filter((x) => { return x._id === property.asPropertyId });
+            // should only be 1
             for (const send in p) {
                 let json: ValueByIdPayload = <ValueByIdPayload>{};
                 let converted = Utils.formatValue(p[send].string, p[send].value);
@@ -726,6 +708,47 @@ export class MockDevice {
                 if (p[send].sdk === 'twin') { this.updateTwin(json); }
                 if (p[send].sdk === 'msg') { this.updateMsg(json); }
             }
+        }
+    }
+
+    sendPlanResponse(propertyId) {
+        // this is from the hub where desired twin contains a meta tag
+        const property = this.device.plan.receive.find((prop) => { return prop.property === propertyId });
+        if (property) {
+            const outboundProperty: Property = this.device.comms[this.resolversCollection.idPropToCommIndex[property.propertyOut]];
+            if (!outboundProperty) { return; }
+            const payload = <ValueByIdPayload>{ [outboundProperty._id]: property.value }
+            if (outboundProperty.sdk === 'twin') { this.updateTwin(payload); } else { this.updateMsg(payload); }
+        }
+    }
+
+    sendMethodResponse(method: Method) {
+        if (this.device.configuration.planMode) {
+            this.sendPlanResponse(this.resolversCollection.nameMethodToId[method.name]);
+        } else if (!this.device.configuration.planMode && method.asProperty && method.asPropertyId) {
+
+            // set up the global desired override
+            if (method.asPropertyVersion) {
+                this.desiredOverrides[method.asPropertyId] = <DesiredPayload>{
+                    payload: method.asPropertyVersionPayload,
+                    convention: null,
+                    value: null,
+                    version: null
+                }
+            }
+
+            const p = this.device.comms.filter((x) => { return x._id === method.asPropertyId });
+            // should only be 1
+            for (const send in p) {
+                let json: ValueByIdPayload = <ValueByIdPayload>{};
+                let converted = Utils.formatValue(p[send].string, p[send].value);
+                json[p[send]._id] = converted
+
+                // if this an immediate update, send to the runloop
+                if (p[send].sdk === 'twin') { this.updateTwin(json); }
+                if (p[send].sdk === 'msg') { this.updateMsg(json); }
+            }
+
         } else if (!this.device.configuration.planMode && method.asProperty) {
             this.methodReturnPayload = Object.assign({}, { [method.name]: method.payload })
         }
@@ -750,8 +773,8 @@ export class MockDevice {
                     cloudMethodPayload = JSON.parse(cloudMethodPayload);
                 } catch (err) { }
 
-                if (this.resolversCollection.c2dIndex[cloudMethod]) {
-                    const method: Method = this.device.comms[this.resolversCollection.c2dIndex[cloudMethod]];
+                if (this.resolversCollection.nameC2dToCommIndex[cloudMethod]) {
+                    const method: Method = this.device.comms[this.resolversCollection.nameC2dToCommIndex[cloudMethod]];
                     this.log(cloudMethod + ' ' + JSON.stringify(cloudMethodPayload), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.DATA.METH, LOGGING_TAGS.DATA.RECV, 'C2D REQUEST AND PAYLOAD');
                     this.logStat(LOGGING_TAGS.STAT.C2D);
                     Object.assign(this.receivedMethodParams, { [method._id]: { date: new Date().toUTCString(), payload: JSON.stringify(cloudMethodPayload, null, 2) } });
@@ -772,18 +795,18 @@ export class MockDevice {
 
     registerDirectMethods() {
 
-        for (const key in this.resolversCollection.directMethodIndex) {
+        for (const key in this.resolversCollection.nameDmToCommIndex) {
             const clientMethodKey = this.device.configuration._kind === 'module' ? 'onMethod' : 'onDeviceMethod';
             this.iotHubDevice.client[clientMethodKey](key, (request, response) => {
-                const method: Method = this.device.comms[this.resolversCollection.directMethodIndex[key]];
+                const method: Method = this.device.comms[this.resolversCollection.nameDmToCommIndex[key]];
                 const methodPayload = JSON.parse(method.payload || {});
 
                 this.log(`${request.methodName} : ${request.payload ? JSON.stringify(request.payload) : '<NO PAYLOAD>'}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.DATA.METH, LOGGING_TAGS.DATA.RECV, 'DIRECT METHOD REQUEST AND PAYLOAD');
                 Object.assign(this.receivedMethodParams, { [method._id]: { date: new Date().toUTCString(), payload: request.payload } });
 
                 // this response is the payload of the device
-                response.send((method.status), methodPayload, (err) => {
-                    this.log(err ? err.toString() : `${method.name} : ${JSON.stringify(methodPayload)}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.DATA.METH, LOGGING_TAGS.DATA.SEND, 'DIRECT METHOD RESPONSE PAYLOAD');
+                response.send((parseInt(method.status)), methodPayload, (err) => {
+                    this.log(err ? err.toString() : `${method.name} -> [${method.status}] ${JSON.stringify(methodPayload)}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.DATA.METH, LOGGING_TAGS.DATA.SEND, 'DIRECT METHOD RESPONSE PAYLOAD');
                     this.logStat(LOGGING_TAGS.STAT.COMMANDS);
                     this.messageService.sendAsLiveUpdate(this.device._id, { [method._id]: new Date().toUTCString() });
 
@@ -872,11 +895,23 @@ export class MockDevice {
 
             if (Object.keys(payload).length > 0) {
                 const transformed = this.transformPayload(payload);
-                twin.properties.reported.update(transformed.legacy, ((err) => {
-                    this.log(JSON.stringify(transformed.legacy), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.TWIN, LOGGING_TAGS.DATA.SEND);
-                    this.logStat(LOGGING_TAGS.STAT.TWIN.COUNT);
-                    this.messageService.sendAsLiveUpdate(this.device._id, transformed.live);
-                }))
+                for (const c in transformed.package) {
+                    let sub = '';
+                    let data = transformed.package[c];
+                    if (c != "_root") {
+                        data = { [c]: data }
+                        data[c]["__t"] = "c";
+                        sub = c;
+                    }
+                    // the small setTimeout here is to ease a little spamming
+                    setTimeout(() => {
+                        twin.properties.reported.update(data, ((err) => {
+                            this.log(JSON.stringify(data), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.TWIN, LOGGING_TAGS.DATA.SEND, sub);
+                            this.logStat(LOGGING_TAGS.STAT.TWIN.COUNT);
+                            this.messageService.sendAsLiveUpdate(this.device._id, transformed.live);
+                        }))
+                    }, 500);
+                }
             }
         }
     }
@@ -889,12 +924,22 @@ export class MockDevice {
 
             if (Object.keys(payload).length > 0) {
                 const transformed = this.transformPayload(payload);
-                let msg = new Message(JSON.stringify(transformed.legacy));
-                this.iotHubDevice.client.sendEvent(msg, ((err) => {
-                    this.log(JSON.stringify(transformed.legacy), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.MSG, LOGGING_TAGS.DATA.SEND);
-                    this.logStat(LOGGING_TAGS.STAT.MSG.COUNT);
-                    this.messageService.sendAsLiveUpdate(this.device._id, transformed.live);
-                }))
+                for (const c in transformed.package) {
+                    const data = JSON.stringify(transformed.package[c]);
+                    let sub = '';
+                    let msg = new Message(data);
+                    msg.contentType = 'application/json';
+                    msg.contentEncoding = 'utf-8';
+                    if (c != "_root") { msg.properties.add('$.sub', c); sub = c; }
+                    // the small setTimeout here is to ease a little spamming
+                    setTimeout(() => {
+                        this.iotHubDevice.client.sendEvent(msg, ((err) => {
+                            this.log(JSON.stringify(transformed.legacy), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.MSG, LOGGING_TAGS.DATA.SEND, sub);
+                            this.logStat(LOGGING_TAGS.STAT.MSG.COUNT);
+                            this.messageService.sendAsLiveUpdate(this.device._id, transformed.live);
+                        }))
+                    }, 500);
+                }
             }
         }
     }
@@ -907,7 +952,7 @@ export class MockDevice {
 
         // first get all the values to report
         let payload = {};
-        for (let i = 0; i < runloopProperties.length; i++) {
+        for (const i in runloopProperties) {
 
             // this is a paired structure
             let p: Property = runloopProperties[i];
@@ -1053,65 +1098,66 @@ export class MockDevice {
     }
 
     transformPayload(payload: any) {
-        // this converts an id based json array to a name based array
         // if the name is duped then last one wins. this is ok for now
         // but a better solution is required.
-        let remap = { pnp: [], legacy: {}, live: {} };
+        let remap = { package: {}, legacy: {}, live: {} };
 
-        // this should be more efficient
-        for (let i = 0; i < this.device.comms.length; i++) {
-            if (this.device.comms[i]._type != 'property') { continue; }
-            let p: Property = this.device.comms[i];
-            if (payload[p._id] != undefined) {
-                if (p.propertyObject) {
-                    var val = p.string ? "\"" + payload[p._id] + "\"" : payload[p._id];
+        for (const item in payload) {
+            const index = this.resolversCollection.idPropToCommIndex[item];
+            const p: Property = this.device.comms[index];
 
-                    /* REFACTOR: this concept does not scale well. desired and reported for a setting
-                       are separate items in the array therefore there is no concept of version we the event
-                       loop arrives here. Address in V6 */
-                    if (this.desiredOverrides[p._id]) {
-                        const payload: DesiredPayload = this.desiredOverrides[p._id];
-                        let override: any = null;
-                        try {
-                            override = JSON.parse(payload.payload);
-                            if (payload.convention) { Object.assign(override, payload.value) }
-                            this.resolveRandom(override, payload);
-                        } catch (err) {
-                            override = this.resolveAuto(payload.payload, payload)
-                            // this can be ignored
-                        }
-                        remap.legacy[p.name] = override;
-                        remap.live[p._id] = override;
-                        remap.pnp.push({ id: p._id, name: p.name, value: override })
-                        delete this.desiredOverrides[p._id];
-                    } else if (p.propertyObject.type === 'templated') {
-                        try {
-                            var replacement = p.propertyObject.template.replace(new RegExp(/\"AUTO_VALUE\"/, 'g'), val);
-                            var object = JSON.parse(replacement);
-                            this.resolveRandom(object)
-                            remap.legacy[p.name] = object;
-                            remap.live[p._id] = object;
-                            remap.pnp.push({ id: p._id, name: p.name, value: object })
-                        } catch (ex) {
-                            const err = 'ERR - transformPayload: ' + ex;
-                            remap.legacy[p.name] = err;
-                            remap.live[p._id] = err;
-                            remap.pnp.push({ id: p._id, name: p.name, value: err })
-                        }
-                    } else {
-                        const resolve = this.resolveAuto(payload[p._id]);;
-                        remap.legacy[p.name] = resolve;
-                        remap.live[p._id] = resolve;
-                        remap.pnp.push({ id: p._id, name: p.name, value: resolve })
-                        break;
+            if (p && p.propertyObject) {
+                var val = p.string ? "\"" + payload[p._id] + "\"" : payload[p._id];
+                var component = p.component && p.component.enabled ? p.component.name : null;
+                if (component && !remap.package[component]) { remap.package[component] = {} }
+                if (!component && !remap.package["_root"]) { remap.package["_root"] = {} }
+
+                /* REFACTOR: this concept does not scale well. desired and reported for a setting
+                   are separate items in the array therefore there is no concept of version when the event
+                   loop arrives here. Address in V6 */
+                if (this.desiredOverrides[p._id]) {
+                    const sendOverrides: DesiredPayload = this.desiredOverrides[p._id];
+                    let override: any = null;
+                    try {
+                        override = JSON.parse(sendOverrides.payload);
+                        // if this is an object then its probably a legacy desired property which is value wrapped
+                        if (sendOverrides.convention && (typeof sendOverrides.value === 'object' && sendOverrides.value !== null)) { Object.assign(override, sendOverrides.value) }
+                        this.resolveRandom(override, sendOverrides);
+                    } catch (err) {
+                        override = this.resolveAuto(sendOverrides.payload, sendOverrides)
+                        // this can be ignored
                     }
-
+                    remap.legacy[p.name] = override;
+                    remap.live[p._id] = override;
+                    remap.package[component ? component : '_root'][p.name] = override;
+                    delete this.desiredOverrides[p._id];
+                } else if (p.propertyObject.type === 'templated') {
+                    try {
+                        var replacement = p.propertyObject.template.replace(new RegExp(/\"AUTO_VALUE\"/, 'g'), val);
+                        var object = JSON.parse(replacement);
+                        this.resolveRandom(object)
+                        remap.legacy[p.name] = object;
+                        remap.live[p._id] = object;
+                        remap.package[component ? component : '_root'][p.name] = object;
+                    } catch (ex) {
+                        const err = 'ERR - transformPayload: ' + ex;
+                        remap.legacy[p.name] = err;
+                        remap.live[p._id] = err;
+                        remap.package[component ? component : '_root'][p.name] = err;
+                    }
                 } else {
                     const resolve = this.resolveAuto(payload[p._id]);;
                     remap.legacy[p.name] = resolve;
                     remap.live[p._id] = resolve;
-                    remap.pnp.push({ id: p._id, name: p.name, value: resolve })
+                    remap.package[component ? component : '_root'][p.name] = resolve;
+                    break;
                 }
+            } else {
+                //TODO: deprecate?
+                const resolve = this.resolveAuto(payload[p._id]);;
+                remap.legacy[p.name] = resolve;
+                remap.live[p._id] = resolve;
+                remap.package[component ? component : '_root'][p.name] = resolve;
             }
         }
         return remap;

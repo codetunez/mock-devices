@@ -61,9 +61,9 @@ export function Device() {
                     {deviceContext.device && deviceContext.device.comms && deviceContext.device.comms.map((capability: any) => {
                         const expand = appContext.property[capability._id] || false;
                         return <>
-                            {capability.type && capability.type.direction === 'd2c' ? <DeviceFieldD2C capability={capability} shouldExpand={expand} sensors={deviceContext.sensors} pnp={deviceContext.device.configuration.pnpSdk} template={kind === 'template'} /> : null}
-                            {capability.type && capability.type.direction === 'c2d' ? <DeviceFieldC2D capability={capability} shouldExpand={expand} pnp={deviceContext.device.configuration.pnpSdk} template={kind === 'template'} /> : null}
-                            {capability._type === 'method' ? <DeviceFieldMethod capability={capability} shouldExpand={expand} pnp={deviceContext.device.configuration.pnpSdk} template={kind === 'template'} originalName={capability.name} /> : null}
+                            {capability.type && capability.type.direction === 'd2c' ? <DeviceFieldD2C capability={capability} shouldExpand={expand} template={kind === 'template'} sensors={deviceContext.sensors} /> : null}
+                            {capability.type && capability.type.direction === 'c2d' ? <DeviceFieldC2D capability={capability} shouldExpand={expand} template={kind === 'template'} /> : null}
+                            {capability._type === 'method' ? <DeviceFieldMethod capability={capability} shouldExpand={expand} template={kind === 'template'} originalName={capability.name} originalComponentName={capability.component ? capability.component.name : null} /> : null}
                         </>
                     })}
                     <div className='device-capabilities-empty'>

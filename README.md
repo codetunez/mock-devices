@@ -1,7 +1,7 @@
-# mock-devices v7 Beta (Desktop Edition)
+# mock-devices v8 (Desktop Edition)
 mock-devices is a simulation engine that manages and runs simulated devices that connect to an Azure Iot Hub. When hosted in the Azure IoT Edge runtime, the engine will simulate Edge modules too. The simulated devices and modules implement D2C/C2D scenarios i.e telemetry, twin and commands as supported by the Azure IoT Device SDK
 
-The simulation engine does not share device configurations and is platform agnostic. Each configured device/module acts independently of other devices/modules running within the engine. Each has its own model (capabilities), configuration and connection details. Devices/modules running on the same simulation engine can be a mix of connection strings, DPS, SaS, Edge modules. The engine has additional scenarios like cloning, bulk, templates and acknowledgements. See internal help
+Each configured device/module acts independently of other devices/modules running within the engine. Each has its own model (capabilities), configuration and connection details. Devices/modules running on the same simulation engine can be a mix of connection strings, DPS, SaS, Edge modules. The engine has additional scenarios like cloning, bulk, templates and acknowledgements. See internal help
 
 This desktop edition of mock-devices is an Electron app for Windows/Linux/OSX and provides a UX + engine single install application experience. It is part of a suite of mock-devices tools
 
@@ -24,7 +24,7 @@ From a command prompt navigate to the folder where the repo was sync'd. Perform 
 npm ci && npm run build
 ```
 
-Do this everytime the code is sync'd from the repo i.e. getting a new version of the app. If you are experiencing issues with this step see the _Pre-Reqs and build issues_ step below
+Do this every time the code is sync'd from the repo i.e. getting a new version of the app. If you are experiencing issues with this step see the _Pre-Reqs and build issues_ step below
 
 #### Launching app (everyday use)
 From a command prompt navigate to the folder where the repo was sync'd and perform the following command
@@ -38,21 +38,23 @@ Help is available inside the application
 
 ---
 
-#### v7- Beta
-- Dashboard statistics mode
-- 
+#### v8
+- Support for Azure IoT PnP GA features
+  - Components
+  - Auto gen from DTDLv2 models/interfaces
+  - Auto gen from DTDLv1 models (DCMs)
 
 #### Features
 - Supports 1,000 mock devices/modules
 - Various connection options; DPS single/group enrollment support with SaS. Sas and/or Connection String
 - Bulk/Clone/Templated device create operations
-- DTDLv1 DCM to simulated mock devices
-  - Auto Gen DTDL Complex Types; Objects/Maps/Arrays with random values using the DCM
+- Auto gen DTDL Complex Types; Objects/Maps/Arrays with random values using the DCM
 - Simulated versions of common device operations such as Reboot, Shutdown, Firmware
 - "Pretend" sensors like battery, heaters, fans, +1 and -1
 - Plan mode - Create a timed series of events
 - Support for C2D command using cloud messages 
 - Support for Azure IoT Edge modules
+- Dashboard statistics mode
 - Connect to any mock-devices engine using IP or DNS
 
 #### Macro support for value payloads

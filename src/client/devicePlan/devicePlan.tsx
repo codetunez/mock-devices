@@ -274,7 +274,7 @@ export function DevicePlan({ device }) {
                 }
                 {state.data && state.data.receive && receive()}
                 <div className='mini-grid-row-toolbar'>
-                    <button disabled={receiveComms.length === 0 || deviceContext.device.configuration.pnpSdk} title={RESX.device.plan.core.receive_title} className='btn btn-sm btn-info' onClick={() => { dispatch({ type: 'add-receive', payload: { comms: receiveComms } }) }}><i className="fas fa-plus"></i></button>
+                    <button disabled={receiveComms.length === 0} title={RESX.device.plan.core.receive_title} className='btn btn-sm btn-info' onClick={() => { dispatch({ type: 'add-receive', payload: { comms: receiveComms } }) }}><i className="fas fa-plus"></i></button>
                 </div>
             </div>
         </div>

@@ -31,6 +31,10 @@ module.exports = {
         test: /\.svg$/,
         use: ['file-loader'],
       },
+      {
+        test: /\.md$/,
+        use: ['file-loader'],
+      },
     ]
   },
   externals: {

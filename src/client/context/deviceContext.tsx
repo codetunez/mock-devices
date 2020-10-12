@@ -185,8 +185,8 @@ export class DeviceProvider extends React.PureComponent {
     }
 
     // this handles creating a method and twin and telemetry. need to always up the list
-    createCapability = (type: string, direction: string, pnpSdk: boolean) => {
-        axios.post(`${Endpoint.getEndpoint()}api/device/${this.state.device._id}/${type}/new`, { pnpSdk: pnpSdk, type: direction ? direction : undefined })
+    createCapability = (type: string, direction: string) => {
+        axios.post(`${Endpoint.getEndpoint()}api/device/${this.state.device._id}/${type}/new`, { type: direction ? direction : undefined })
             .then((response: any) => {
                 this.setState({ device: response.data.device, devices: response.data.devices });
             })

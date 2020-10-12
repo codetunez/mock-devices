@@ -22,7 +22,6 @@ import { SensorStore } from './store/sensorStore';
 import { SimulationStore } from './store/simulationStore';
 import { ServerSideMessageService } from './core/messageService';
 var path = require('path');
-var pjson = require('../../package.json');
 
 class Server {
 

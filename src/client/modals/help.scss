@@ -1,9 +1,5 @@
 @import "../const.scss";
 
-em {
-  font-weight: bolder;
-}
-
 .help {
   width: 100%;
   height: 100%;
@@ -12,26 +8,8 @@ em {
   flex-wrap: nowrap;
 }
 
-.help-row {
-  h3,
-  h4,
-  h5 {
-    color: $app-clr-yellow-1;
-  }
-  margin-bottom: 2rem;
-  li {
-    margin-bottom: 0.75rem;
-  }
-  pre {
-    color: $app-white;
-    background-color: $app-black;
-    padding: 0.5rem;
-    font-size: 1.1rem;
-  }
-}
-
 .help-close {
-  margin: 0.5rem 1rem;
+  margin: 0.5rem 1rem 0 0;
   height: 1.4rem;
   flex-shrink: 0;
   align-self: flex-end;
@@ -43,4 +21,25 @@ em {
   overflow-x: hidden;
   overflow-y: auto;
   padding: 0 $md-gutter;
+
+  h2,
+  h3 {
+    color: $app-clr-yellow-1;
+  }
+  h4,
+  h5 {
+    color: $app-clr-blue-2;
+  }
+  li {
+    margin-bottom: 0.75rem;
+  }
+  pre {
+    color: $app-white;
+    background-color: $app-black;
+    padding: 1rem;
+  }
+  hr {
+    margin: 2rem 4rem;
+    border: 1px solid white;
+  }
 }

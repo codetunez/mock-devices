@@ -9,6 +9,7 @@ export function DCMtoMockDevice(deviceConfiguration: any, deviceStore: DeviceSto
     let simulationStore = new SimulationStore();
     let simRunloop = simulationStore.get()["runloop"];
     let simColors = simulationStore.get()["colors"];
+    let simDcm = simulationStore.get()["dcm"];
 
     let t = new Device();
     t._id = uuid();
@@ -20,31 +21,63 @@ export function DCMtoMockDevice(deviceConfiguration: any, deviceStore: DeviceSto
         t.configuration.mockDeviceName = dcm.displayName ? (dcm.displayName.en || dcm.displayName) : 'DCM has no display name';
         t.configuration.capabilityUrn = dcm['@id'];
 
-        dcm.implements.forEach(element => {
+        // DTDL v1
+        if (dcm['@context'].indexOf('http://azureiot.com/v1/contexts/IoTModel.json') > -1) {
+            dcm.implements.forEach(element => {
+                if (element.schema.contents) {
+                    element.schema.contents.forEach(item => {
+                        DCMCapabilityToComm(item, t._id, deviceStore, simRunloop, simColors);
+                    })
+                }
+            })
+        }
 
-            const pnpInterface: any = {
-                name: element.schema.displayName ? (element.schema.displayName.en || element.schema.displayName) : 'Interface has no display name',
-                urn: element.schema['@id'],
-                instanceName: element.displayName ? (element.displayName.en || element.displayName) : 'Interface Instance has no display name',
-                instanceUrn: element['@id']
-            }
 
-            if (element.schema.contents) {
-                element.schema.contents.forEach(item => {
-                    DCMCapabilityToComm(item, t._id, deviceStore, simRunloop, simColors, pnpInterface);
-                })
-            }
-        })
+        // DTDL v2
+        if (dcm['@context'].indexOf('dtmi:dtdl:context;2') > -1) {
+            // handle root level or components
+            dcm.contents.forEach(element => {
+                if (element['@type'] === 'Component') {
+                    const ns = element.name || 'Component';
+                    element.schema.contents.forEach(item => {
+                        DCMCapabilityToComm(item, t._id, deviceStore, simRunloop, simColors, ns);
+                    })
+                } else {
+                    DCMCapabilityToComm(element, t._id, deviceStore, simRunloop, simColors);
+                }
+            })
+
+            //handle interfaces
+            dcm.extends.forEach(element => {
+                if (element.contents) {
+                    let ns = null;
+                    if (simDcm && simDcm["import"] && simDcm["import"]["interfaceAsComponents"]) {
+                        const parts = element['@id'].split(':');
+                        ns = parts[parts.length - 1].split(';')[0];
+                    }
+                    element.contents.forEach(item => {
+                        DCMCapabilityToComm(item, t._id, deviceStore, simRunloop, simColors, ns);
+                    })
+                }
+            })
+        }
+
     }
 }
 
-function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceStore, simRunloop: any, simColors: any, pnpInterface: any) {
+function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceStore, simRunloop: any, simColors: any, component?: string) {
 
     var o: any = {};
     o._id = uuid();
     o._type = 'property';
     o.name = item.name;
-    o.interface = pnpInterface;
+
+    if (component) {
+        o.component = {
+            enabled: true,
+            name: component
+        }
+    }
 
     if (isType(item['@type'], 'Command')) {
         o.name = item.name;
@@ -145,7 +178,14 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
         rptTwin.name = item.name;
         rptTwin.sdk = 'twin';
         rptTwin.string = false;
-        rptTwin.interface = pnpInterface; //REFACTOR: pnp        
+
+        if (component) {
+            rptTwin.component = {
+                enabled: true,
+                name: component
+            }
+        }
+
         const reportedTwinId = deviceStore.addDeviceProperty(deviceId, 'd2c', rptTwin, false);
 
         o.color = simColors["Color2"] || '#333';

@@ -50,7 +50,7 @@ export default function (deviceStore: DeviceStore) {
     api.post('/:id/property/new', function (req, res, next) {
         var id = req.params.id;
         var body = req.body;
-        deviceStore.addDeviceProperty(id, body.type, body.pnpSdk, true);
+        deviceStore.addDeviceProperty(id, body.type, {}, true);
         res.json({ device: deviceStore.exists(id), devices: deviceStore.getListOfItems() });
     });
 

@@ -90,22 +90,30 @@ const reducer = (state: State, action: Action) => {
             }
             state.appContext.setDirty(newData._id);
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData, dialog: diag };
+        case "update-component":
+            newData.component[action.payload.name] = action.payload.value;
+            state.appContext.setDirty(newData._id);
+            return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData, dialog: diag };
         case "toggle-property":
             newData.asProperty = !newData.asProperty
+            state.appContext.setDirty(newData._id);
+            return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData, dialog: diag };
+        case "toggle-property-version":
+            newData.asPropertyVersion = !newData.asPropertyVersion
             state.appContext.setDirty(newData._id);
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData, dialog: diag };
         case "toggle-execution":
             newData.execution = action.payload.property ? 'cloud' : 'direct'
             state.appContext.setDirty(newData._id);
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData, dialog: diag };
-        case "update-interface":
-            newData.interface[action.payload.name] = action.payload.value;
+        case "toggle-component":
+            if (newData.component) { newData.component.enabled = !newData.component.enabled; } else { newData.component = { enabled: true, name: null } }
             state.appContext.setDirty(newData._id);
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData, dialog: diag };
         case "load-capability":
             return { ...state, form: { dirty: false, expanded: state.form.expanded }, data: action.payload.capability, dialog: diag };
         case "save-capability":
-            if (newData.execution != 'cloud' && newData.name != action.payload.originalName) {
+            if (newData.execution != 'cloud' && (newData.name != action.payload.originalName || (newData.component && newData.component.enabled && newData.component.name != action.payload.originalComponentName))) {
                 action.payload.context.updateDeviceMethod(state.data);
             } else {
                 action.payload.context.updateDeviceProperty(state.data, action.payload.save);
@@ -129,7 +137,7 @@ const reducer = (state: State, action: Action) => {
 }
 
 
-export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, shouldExpand, pnp, template, originalName }) => {
+export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, shouldExpand, template, originalName, originalComponentName }) => {
 
     const deviceContext: any = React.useContext(DeviceContext);
     const appContext: any = React.useContext(AppContext);
@@ -168,11 +176,8 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
     const updateField = (e: any) => {
 
         switch (e.target.name) {
-            case 'interface.name':
-                dispatch({ type: 'update-interface', payload: { name: "name", value: e.target.value } })
-                break;
-            case 'interface.urn':
-                dispatch({ type: 'update-interface', payload: { name: "urn", value: e.target.value } })
+            case 'component.name':
+                dispatch({ type: 'update-component', payload: { name: "name", value: e.target.value } })
                 break;
             default:
                 dispatch({ type: 'update-capability', payload: { name: e.target.name, value: e.target.value } })
@@ -181,13 +186,15 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
     }
 
     const save = (send: boolean) => {
-        dispatch({ type: 'save-capability', payload: { context: deviceContext, send: send, originalName: originalName } })
+        dispatch({ type: 'save-capability', payload: { context: deviceContext, send: send, originalName: originalName, originalComponentName: originalComponentName } })
     }
 
-    let snippets = []
+    let payloadSnippets = [];
+    let responseSnippets = [];
     for (const snippet in deviceContext.snippets) {
         const code = Object.assign({}, deviceContext.snippets[snippet]);
-        snippets.push(<div onClick={() => snippetsHandler(code)}>{snippet}</div>);
+        payloadSnippets.push(<div onClick={() => snippetsHandler(code, 'payload')}>{snippet}</div>);
+        responseSnippets.push(<div onClick={() => snippetsHandler(code, 'asPropertyVersionPayload')}>{snippet}</div>);
     }
 
     let colors = [];
@@ -195,8 +202,8 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
         colors.push({ name: color, value: deviceContext.colors[color] })
     }
 
-    const snippetsHandler = (code: any) => {
-        dispatch({ type: 'update-capability', payload: { name: 'payload', value: JSON.stringify(code, null, 2) } });
+    const snippetsHandler = (code: any, fieldName: string) => {
+        dispatch({ type: 'update-capability', payload: { name: fieldName, value: JSON.stringify(code, null, 2) } });
     }
 
     const request = () => {
@@ -207,10 +214,15 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
         return deviceContext.requests[state.data._id] && deviceContext.requests[state.data._id].date;
     }
 
+    const title = () => {
+        const comp = state.data.component && state.data.component.enabled ? '[C] ' : '';
+        return `${comp}${state.data.execution === 'cloud' ? RESX.device.card.method.title_c2d : RESX.device.card.method.title_direct}`;
+    }
+
     return <>
         {state.dialog ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><ModalConfirm config={state.dialog} /></div></Modal> : null}
 
-        <div className={cx('device-field-card', state.form.expanded ? '' : 'device-field-card-small')} style={state.data.color ? { backgroundColor: state.data.color } : {}}>
+        <div className={cx('device-field-card', state.form.expanded ? '' : 'device-field-card-small', state.form.dirty ? 'device-field-card-dirty' : '')} style={state.data.color ? { backgroundColor: state.data.color } : {}}>
 
             <div className='df-card-header'>
                 <div className='df-card-title'>
@@ -218,7 +230,7 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
                         <i className={cx(state.form.expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-up')}></i>
                     </button>
                     <div className='df-card-title-text'>
-                        <div>{RESX.device.card.method.title}</div>
+                        <div>{title()}</div>
                         <div>{state.data.name}</div>
                     </div>
                 </div>
@@ -237,7 +249,14 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
             {!state.form.expanded ? null :
                 <>
                     <div className='df-card-row'>
-                        <div><label></label><div></div></div>
+                        <div><label>{RESX.device.card.toggle.component_label}</label><div title={RESX.device.card.toggle.component_title}><Toggle name={state.data._id + '-component'} defaultChecked={false} checked={state.data.component && state.data.component.enabled} onChange={() => dispatch({ type: 'toggle-component', payload: null })} /></div></div>
+                        {state.data.component && state.data.component.enabled ?
+                            <div><label title={RESX.device.card.method.component_title}>{RESX.device.card.method.component_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='component.name' value={state.data.component.name} onChange={updateField} /></div></div>
+                            : <div style={{ height: '55px' }}></div>}
+                    </div>
+
+                    <div className='df-card-row'>
+                        <div><label>{RESX.device.card.title.execution_label}</label><div></div></div>
                         <div><label title={RESX.device.card.method.c2d_title}>{RESX.device.card.method.c2d_label}</label>
                             <div title={RESX.device.card.method.c2d_title}>
                                 <Toggle name={state.data._id + '-execution'} defaultChecked={false} checked={state.data.execution === 'cloud' ? true : false} onChange={(e) => { dispatch({ type: 'toggle-execution', payload: { property: e.target.checked } }) }} />
@@ -245,35 +264,10 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
                         </div>
                     </div>
 
-                    {!pnp ? null :
-                        <>
-                            <div className='df-card-row'>
-                                <div>{RESX.device.card.toggle.interface_label}</div>
-                                <div><label>{RESX.device.card.method.int_name_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.name' value={state.data.interface.name || 'Not supported'} onChange={updateField} /></div></div>
-
-                            </div>
-                            <div className='df-card-row'>
-                                <div></div>
-                                <div><label>{RESX.device.card.method.int_urn_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='interface.urn' value={state.data.interface.urn || 'Not supported'} onChange={updateField} /></div></div>
-                            </div>
-                        </>
-                    }
-
-                    {template ? null :
-                        <div className='df-card-row'>
-                            <div></div>
-                            <div><label title={RESX.device.card.method.request_title}>{RESX.device.card.method.request_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={3} readOnly={true} value={request()} placeholder={RESX.device.card.waiting_placeholder}></textarea></div></div>
-                            <div>
-                                <div className="card-field-label-height"></div>
-                                {!template ? <button title={RESX.device.card.read_param_title} className='btn btn-sm btn-outline-primary' onClick={() => { deviceContext.getCapabilityMethodRequest(state.data._id) }}><span className='fa fa-read'></span>{RESX.device.card.read_param_label}</button> : null}
-                            </div>
-                        </div>
-                    }
-
                     {state.data.execution === 'cloud' ? null :
                         <>
                             <div className='df-card-row'>
-                                <div></div>
+                                <div><label>{RESX.device.card.title.method_ack_label}</label></div>
                                 <div><label title={RESX.device.card.method.response_title} >{RESX.device.card.method.response_label}</label><div><input type='number' max={3} className='form-control form-control-sm full-width' name='status' value={state.data.status} onChange={updateField} /></div></div>
                             </div>
 
@@ -285,32 +279,73 @@ export const DeviceFieldMethod: React.FunctionComponent<any> = ({ capability, sh
                                 <div></div>
                                 <div className="snippets">
                                     <div>{RESX.device.card.add_snippet_title}</div>
-                                    <div className="snippet-links">{snippets}</div>
+                                    <div className="snippet-links">{payloadSnippets}</div>
                                 </div>
                             </div>
                         </>
                     }
 
                     <div className='df-card-row'>
-                        <div></div>
+                        <div><label>{RESX.device.card.title.ack_label}</label></div>
                         <div><label>{RESX.device.card.method.twin_rpt_label}</label>
                             <div title={RESX.device.card.method.twin_rpt_title}><Toggle name={state.data._id + '-sendtwin'} defaultChecked={false} checked={state.data.asProperty} onChange={() => { dispatch({ type: 'toggle-property', payload: null }) }} /></div>
                         </div>
                     </div>
 
                     {!state.data.asProperty ? null :
-                        <div className='df-card-row'>
-                            <div><label></label><div></div></div>
-                            <div><label title={RESX.device.card.method.property_report_title}>{RESX.device.card.method.property_report_label}</label>
-                                <div>
-                                    <Combo items={sendComms} cls='full-width' name='asPropertyId' onChange={updateField} value={state.data.asPropertyId || ''} />
+                        <>
+                            {state.data.asPropertyId === RESX.device.card.select ? null : <>
+                                <div className='df-card-row'>
+                                    <div><label></label><div></div></div>
+                                    <div><label title={RESX.device.card.receive.property_report_title}>{RESX.device.card.receive.property_report_label}</label>
+                                        <div>
+                                            <Combo items={sendComms} cls='full-width' name='asPropertyId' onChange={updateField} value={state.data.asPropertyId || ''} />
+                                        </div>
+                                    </div>
                                 </div>
+                                <div className='df-card-row'>
+                                    <div></div>
+                                    <div><label>{RESX.device.card.receive.property_version_label}</label>
+                                        <div title={RESX.device.card.receive.property_version_title}><Toggle name={state.data._id + '-applyversion'} defaultChecked={false} checked={state.data.asPropertyVersion} onChange={() => { dispatch({ type: 'toggle-property-version', payload: null }) }} /></div>
+                                    </div>
+                                </div>
+                                {!state.data.asPropertyVersion ? null : <>
+                                    <div className='df-card-row'>
+                                        <div></div>
+                                        {!state.data.asPropertyVersion ? null :
+                                            <div>
+                                                <label title={RESX.device.card.receive.property_version_payload_title}>{RESX.device.card.receive.property_version_payload_label}</label>
+                                                <textarea className='form-control form-control-sm custom-textarea full-width' rows={7} name='asPropertyVersionPayload' onChange={updateField} value={state.data.asPropertyVersionPayload}></textarea>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div className='df-card-row df-card-row-nogap'>
+                                        <div></div>
+                                        <div className="snippets">
+                                            <div>{RESX.device.card.add_snippet_title}</div>
+                                            <div className="snippet-links">{responseSnippets}</div>
+                                        </div>
+                                    </div>
+                                </>
+                                }
+                            </>
+                            }
+                        </>
+                    }
+
+                    {template ? null :
+                        <div className='df-card-row'>
+                            <div><label>{RESX.device.card.title.method_ack_params_label}</label></div>
+                            <div><label title={RESX.device.card.method.request_title}>{RESX.device.card.method.request_label}</label><div><textarea className='form-control form-control-sm custom-textarea full-width' rows={3} readOnly={true} value={request()} placeholder={RESX.device.card.waiting_placeholder}></textarea></div></div>
+                            <div>
+                                <div className="card-field-label-height"></div>
+                                {!template ? <button title={RESX.device.card.read_param_title} className='btn btn-sm btn-outline-primary' onClick={() => { deviceContext.getCapabilityMethodRequest(state.data._id) }}>{RESX.device.card.read_param_label}</button> : null}
                             </div>
                         </div>
                     }
 
                     <div className='df-card-row'>
-                        <div><label>{RESX.device.card.UX}</label></div>
+                        <div><label>{RESX.device.card.title.ux_label}</label></div>
                         <div><label title={RESX.device.card.color_title}>{RESX.device.card.color_label}</label>
                             <div>
                                 <Combo items={colors} cls='full-width' name='color' onChange={updateField} value={state.data.color} />
