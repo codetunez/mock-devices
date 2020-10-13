@@ -268,7 +268,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
                         </div>
                         <div className='m-tabbed-panel-footer'>
-                            <button title={RESX.modal.add.option1.cta_title} className='btn btn-primary' disabled={state.scopeId == '' || state.deviceId == '' || state.sasKey == '' || (state.capabilityUrn === '')} onClick={() => clickAddDevice('dps')}>{RESX.modal.add.option1.cta_label}</button>
+                            <button title={RESX.modal.add.option1.cta_title} className='btn btn-primary' disabled={state.scopeId === '' || state.deviceId === '' || state.sasKey === ''} onClick={() => clickAddDevice('dps')}>{RESX.modal.add.option1.cta_label}</button>
                         </div>
                     </>}
 
