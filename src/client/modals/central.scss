@@ -11,6 +11,7 @@
         display: flex;
         height: auto;
         align-items: flex-end;
+        width: 100%;
         h3 {
           margin-bottom: $md-gutter;
         }
@@ -32,7 +33,18 @@
       label {
         margin-left: 0 !important;
         color: $app-clr-yellow-1;
-      }      
+      }
+
+      .btn-bar {
+        button {
+          color: $app-clr-4;
+        }
+
+        .active {
+          color: white;
+          text-decoration: underline;
+        }
+      }
     }
   }
 }

@@ -56,6 +56,7 @@ export function DCMtoMockDevice(deviceStore: DeviceStore, t: Device) {
             })
         }
 
+        delete t.configuration.capabilityModel;
     }
 }
 
