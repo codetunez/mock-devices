@@ -1,0 +1,33 @@
+@import "../const.scss";
+
+.dialog-central {
+  height: 100%;
+
+  .m-modal {
+    padding: $md-gutter;
+
+    .m-content {
+      .form-inline {
+        display: flex;
+        height: auto;
+        align-items: flex-end;
+        h2 {
+          margin-bottom: $lg-gutter;
+        }
+        .form-group:not(:last-child) {
+          padding-right: $sm-gutter;
+        }
+      }
+
+      .form-group {
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      select {
+        width: 100%;
+      }
+    }
+  }
+}

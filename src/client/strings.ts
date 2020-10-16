@@ -14,12 +14,13 @@ export const RESX = {
         "edge": ['EDGE RUNTIME DETECTED: ', 'MODULE', 'RUNNING ON DEVICE'],
     },
     "shell": {
-        "title": "Select Devices, Dashboard or Create from the menu"
+        "title": "Select Devices, Dashboard, Create or Central from the menu"
     },
     "nav": {
         "stats": "Dashboard - See the current simulation statistics",
         "devices": "Devices - See the list of devices, modules and templates",
         "file": "Create - Create a new mock device, template or module using DCMs, SDKs, DPS and connection strings combinations",
+        "central": "Central - Connect to a Central application, use a template and create a mock-device",
         "power": "Power up all devices and modules (use config for start timings)",
         "stop": "Power down all devices that are currently on",
         "sim": "Update the current simulation parameters (advanced)",
@@ -181,6 +182,19 @@ export const RESX = {
             "selectAll": "Select all the devices and modules",
             "apply_label": "Apply",
             "apply_title": "Update the selected devices with this template. Any changed device will be stopped and will need to be manually restarted",
+        },
+        "central": {
+            "title": "",
+            "label": {
+                "name": "App Name",
+                "token": "Token",
+                "deviceId": "Device ID",
+                "templates": "Device Templates"
+            },
+            "cta_title": "Get the list of templates from this IoT Central application",
+            "cta_label": "Get Templates",
+            "cta2_title": "Use this template to create a mock device nd register in IoT Central ",
+            "cta2_label": "Create this as a mock device in my application",
         }
     },
     "edge": {
