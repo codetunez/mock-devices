@@ -1,15 +1,23 @@
 import { Router } from 'express';
 import axios from 'axios';
+import { DeviceStore } from '../store/deviceStore';
+import { ServerSideMessageService } from '../core/messageService';
+import { Device } from '../interfaces/device';
+import { DCMtoMockDevice } from '../core/templates';
 
-export default function () {
+interface Cache {
+    templates: [];
+}
+
+export default function (deviceStore: DeviceStore, ms: ServerSideMessageService) {
     let api = Router();
-    let templates = [];
+
+    let cache: Cache = { templates: [] };
 
     api.post('/templates', function (req, res, next) {
         const { name, token } = req.body;
 
-        //TODO: non-production code
-        if (templates.length > 0) { res.json(templates); return; }
+        if (cache.templates.length > 0) { res.json(cache.templates); return; }
 
         axios.get(`https://${name}.azureiotcentral.com/api/preview/deviceTemplates`, {
             headers: {
@@ -17,11 +25,10 @@ export default function () {
             }
         })
             .then((res2) => {
-                templates = res2.data && res2.data.value || [];
-                res.json(templates);
+                cache.templates = res2.data && res2.data.value || [];
+                res.json(cache.templates);
             })
             .catch((err) => {
-                console.error(err);
                 res.sendStatus(500);
             })
             .finally(() => {
@@ -30,8 +37,54 @@ export default function () {
     });
 
     api.post('/create', function (req, res, next) {
-        const { id, deviceId } = req.body;
-        res.end();
+        const { name, token, id, deviceId } = req.body;
+
+        let dcm = null;
+        axios.put(`https://${name}.azureiotcentral.com/api/preview/devices/${deviceId}`, { instanceOf: id }, { headers: { Authorization: token } })
+            .then(() => {
+                return axios.get(`https://${name}.azureiotcentral.com/api/preview/deviceTemplates/${id}`, { headers: { Authorization: token } });
+            })
+            .then((response) => {
+                dcm = response.data.capabilityModel;
+                return axios.get(`https://${name}.azureiotcentral.com/api/preview/devices/${deviceId}/credentials`, { headers: { Authorization: token } });
+            })
+            .then((response) => {
+
+                const deviceConfiguration: any = {
+                    "_kind": "dps",
+                    "deviceId": deviceId,
+                    "mockDeviceName": deviceId,
+                    "scopeId": response.data.idScope,
+                    "dpsPayload": {
+                        "iotcModelId": id
+                    },
+                    "sasKey": response.data.symmetricKey.primaryKey,
+                    "isMasterKey": false,
+                    "capabilityModel": dcm,
+                    "capabilityUrn": id,
+                    "centralAdded": true
+                }
+
+                let d: Device = new Device();
+                d._id = deviceId;
+                d.configuration = deviceConfiguration;
+                d.configuration.deviceId = deviceId;
+                deviceStore.addDevice(d);
+
+                if (dcm) { DCMtoMockDevice(deviceStore, d); }
+
+                ms.sendAsStateChange({ 'devices': 'loaded' })
+
+                deviceStore.startDevice(d);
+                res.sendStatus(200);
+            })
+            .catch((err) => {
+                res.sendStatus(500);
+                console.log(err);
+            })
+            .finally(() => {
+                res.end();
+            })
     });
 
     return api;

@@ -11,8 +11,8 @@
         display: flex;
         height: auto;
         align-items: flex-end;
-        h2 {
-          margin-bottom: $lg-gutter;
+        h3 {
+          margin-bottom: $md-gutter;
         }
         .form-group:not(:last-child) {
           padding-right: $sm-gutter;
@@ -28,6 +28,11 @@
       select {
         width: 100%;
       }
+
+      label {
+        margin-left: 0 !important;
+        color: $app-clr-yellow-1;
+      }      
     }
   }
 }

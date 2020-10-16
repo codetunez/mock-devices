@@ -61,7 +61,7 @@ class Server {
         this.expressServer.use('/_dist', express.static(__dirname + '/..'));
         this.expressServer.use('/node_modules', express.static(__dirname + '/../../node_modules'));
 
-        this.expressServer.use('/api/central', central());
+        this.expressServer.use('/api/central', central(this.deviceStore, ms));
         this.expressServer.use('/api/simulation', semantics(this.deviceStore, this.simulationStore));
         this.expressServer.use('/api/device', device(this.deviceStore));
         this.expressServer.use('/api/devices', devices(this.deviceStore));

@@ -184,17 +184,17 @@ export const RESX = {
             "apply_title": "Update the selected devices with this template. Any changed device will be stopped and will need to be manually restarted",
         },
         "central": {
-            "title": "",
+            "title": "Create a mock device for IoT Central",
             "label": {
                 "name": "App Name",
                 "token": "Token",
-                "deviceId": "Device ID",
+                "deviceId": "Enter a new Device ID",
                 "templates": "Device Templates"
             },
             "cta_title": "Get the list of templates from this IoT Central application",
             "cta_label": "Get Templates",
             "cta2_title": "Use this template to create a mock device nd register in IoT Central ",
-            "cta2_label": "Create this as a mock device in my application",
+            "cta2_label": "Create and add to application",
         }
     },
     "edge": {

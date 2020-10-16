@@ -1,23 +1,17 @@
 import { DeviceStore } from '../store/deviceStore'
-import { Device, Property } from '../interfaces/device'
+import { Device } from '../interfaces/device'
 import { SimulationStore } from '../store/simulationStore';
 import uuid = require('uuid');
-import * as Utils from '../core/utils'
 
-export function DCMtoMockDevice(deviceConfiguration: any, deviceStore: DeviceStore) {
+export function DCMtoMockDevice(deviceStore: DeviceStore, t: Device) {
 
     let simulationStore = new SimulationStore();
     let simRunloop = simulationStore.get()["runloop"];
     let simColors = simulationStore.get()["colors"];
     let simDcm = simulationStore.get()["dcm"];
 
-    let t = new Device();
-    t._id = uuid();
-    t.configuration = deviceConfiguration;
-    deviceStore.addDevice(t);
-
-    if (deviceConfiguration.capabilityModel && Object.keys(deviceConfiguration.capabilityModel).length > 0) {
-        var dcm = deviceConfiguration.capabilityModel;
+    if (t.configuration.capabilityModel && Object.keys(t.configuration.capabilityModel).length > 0) {
+        var dcm: any = t.configuration.capabilityModel;
         t.configuration.mockDeviceName = dcm.displayName ? (dcm.displayName.en || dcm.displayName) : 'DCM has no display name';
         t.configuration.capabilityUrn = dcm['@id'];
 

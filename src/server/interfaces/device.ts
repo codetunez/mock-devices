@@ -118,4 +118,5 @@ export class DeviceConfiguration {
     public machineStateClipboard?: string;
     public planMode?: boolean;
     public modules?: Array<string> = [];
+    public centralAdded?: boolean;
 }

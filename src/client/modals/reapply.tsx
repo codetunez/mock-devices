@@ -36,7 +36,7 @@ export const Reapply: React.FunctionComponent<any> = ({ handler }) => {
                     <span>{RESX.modal.reapply.title2}</span>
                     <br /><br />
                     <span><input type='checkbox' name='all' checked={all} onClick={() => setAll(!all)} /> {RESX.modal.reapply.selectAll}</span>
-                    <select id='devices' disabled={all} multiple={true} size={16}>
+                    <select className='custom-select' id='devices' disabled={all} multiple={true} size={16}>
                         {indexes && indexes.map((ele) => {
                             if (ele) { return <option value={ele.value}>{ele.name}</option> }
                         })}

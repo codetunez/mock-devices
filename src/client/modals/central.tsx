@@ -57,10 +57,13 @@ export const Central: React.FunctionComponent<any> = ({ handler }) => {
 
         axios.post(`${Endpoint.getEndpoint()}api/central/create`, {
             id: item,
-            deviceId: state.data.deviceId
+            deviceId: state.data.deviceId,
+            name: state.data.name,
+            token: state.data.token
         })
             .then((res) => {
-                dispatch({ type: 'create-device', payload: res.data })
+                dispatch({ type: 'create-device', payload: res.data });
+                handler(false);
             })
             .catch((err) => {
             })
@@ -78,7 +81,7 @@ export const Central: React.FunctionComponent<any> = ({ handler }) => {
                     <h3>{RESX.modal.central.title}</h3>
                     <div className='form-group'>
                         <label>{RESX.modal.central.label.name}</label>
-                        <input className='form-control form-control-sm' name='name' onChange={updateField} value={state.data.name || ''} />
+                        <input className='form-control form-control-sm' type='text' name='name' onChange={updateField} value={state.data.name || ''} />
                     </div>
                     <div className='form-group'>
                         <label>{RESX.modal.central.label.token}</label>
@@ -93,7 +96,7 @@ export const Central: React.FunctionComponent<any> = ({ handler }) => {
                 {state.data.templates.length === 0 ? null : <>
                     <label>{RESX.modal.central.label.templates}</label>
                     <div className='form-group'>
-                        <select id='templates' size={8}>
+                        <select className='custom-select' id='templates' size={8}>
                             {state.data.templates && state.data.templates.map((ele) => {
                                 if (ele) { return <option value={ele.id}>{ele.displayName}</option> }
                             })}
@@ -101,7 +104,7 @@ export const Central: React.FunctionComponent<any> = ({ handler }) => {
                     </div>
                     <div className='form-group'>
                         <label>{RESX.modal.central.label.deviceId}</label>
-                        <input className='form-control form-control-sm' name='deviceId' onChange={updateField} value={state.data.deviceId || ''} />
+                        <input className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.data.deviceId || ''} />
                     </div>
                     <button title={RESX.modal.central.cta2_title} className='btn btn-success' disabled={false} onClick={() => { createDevice() }}>{RESX.modal.central.cta2_label}</button>
                 </>
