@@ -14,12 +14,13 @@ export const RESX = {
         "edge": ['EDGE RUNTIME DETECTED: ', 'MODULE', 'RUNNING ON DEVICE'],
     },
     "shell": {
-        "title": "Select Devices, Dashboard or Create from the menu"
+        "title": "Select Devices, Dashboard, Create or Connect from the menu"
     },
     "nav": {
         "stats": "Dashboard - See the current simulation statistics",
         "devices": "Devices - See the list of devices, modules and templates",
         "file": "Create - Create a new mock device, template or module using DCMs, SDKs, DPS and connection strings combinations",
+        "connect": "Connect - Connect to a Central application or IoT Hub, use a template and create a mock-device",
         "power": "Power up all devices and modules (use config for start timings)",
         "stop": "Power down all devices that are currently on",
         "sim": "Update the current simulation parameters (advanced)",
@@ -58,8 +59,10 @@ export const RESX = {
                 "buttons": {
                     "button1_label": "Use DPS",
                     "button1_title": "Create the device using the DPS configuration",
-                    "button2_label": "Use Connection String",
+                    "button2_label": "Use Connection string",
                     "button2_title": "Create the device using the a IoT device connection",
+                    "button3_label": "Sample device",
+                    "button3_title": "Create the device using a sample device configuration and provision using DPS",
                 },
                 "select": "--Do not fork. Create with empty capabilities",
                 "label": {
@@ -74,6 +77,9 @@ export const RESX = {
                     "friendly": "mock-devices friendly name (-# appended in bulk create)",
                     "connstr": "Device connection string",
                     "friendly_sm": "mock-devices friendly name",
+                    "quick": "Create a sample mock device with some pre-configured capabilities and connect to a hub using DPS. The DTDL JSON for the device's configuration can be downloaded at github.com/codetunez/mock-devices/deviceModel.json",
+                    "deviceQuick": "Device ID",
+                    "deviceQuick_placeholder": "Leave blank to auto-generate if using root key",
                 },
                 "cta_title": "Create this device",
                 "cta_label": "Create this mock device",
@@ -90,6 +96,8 @@ export const RESX = {
                     "name": "mock-devices template Name",
                     "name_placeholder": "Leave blank to use the file's DCM displayName",
                     "browse": "Browse disk for a DCM",
+                    "catalog": "Select a DCM",
+                    "catalog_sample": "Sample device DCM"
                 },
                 "cta_title": "Create this template",
                 "cta_label": "Create template",
@@ -124,7 +132,7 @@ export const RESX = {
                     "deviceId": "Edge Device ID (same as config.yaml)",
                     "friendly": "mock-devices friendly name",
                 },
-                "cta_title": "The Edge device is a host for modules and is not a real device. The Device Id and Module Id need to be the same as the ones in the manifest file.",
+                "cta_title": "The Edge device is a host for modules and is not a real device. The Device Id and Module Id need to be the same as the ones in the manifest file",
                 "cta_label": "Create this Edge device host",
             },
             "error_generic_add": "Check configuration, max devices reached or possible duplicate device",
@@ -181,6 +189,27 @@ export const RESX = {
             "selectAll": "Select all the devices and modules",
             "apply_label": "Apply",
             "apply_title": "Update the selected devices with this template. Any changed device will be stopped and will need to be manually restarted",
+        },
+        "connect": {
+            "title": "Connect",
+            "central": {
+                "subtitle": "Using an IoT Central API token, select a template from an IoT Central application and create/register a new mock device for the application",
+                "label": {
+                    "appUrl": "App Name + DNS",
+                    "token": "API Token",
+                    "deviceId": "Enter the Device ID (can be new)",
+                    "templates": "Published device templates",
+                },
+                "cta_title": "Get the list of templates from this IoT Central application",
+                "cta_label": "Get Templates",
+                "cta2_title": "Use this template to create a mock device nd register in IoT Central",
+                "cta2_label": "Create and add to application",
+                "cta3_title": "Use this device to create Device Template in IoT Central and create a new device in the application",
+                "cta3_label": "Publish template and add the device to the application",
+            },
+            "hub": {
+                "subtitle": 'IoT Hub integration coming in 8.2.0',
+            },
         }
     },
     "edge": {

@@ -17,11 +17,12 @@ import { AddDevice } from '../modals/addDevice';
 import { Simulation } from '../modals/simulation';
 import { Ux } from '../modals/ux';
 import { ModalConfirm } from '../modals/modalConfirm';
+import { Connect } from '../modals/connect';
 
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
 
-const minSize = 40;
+const minSize = 48;
 const minHeight = 46;
 const height = window.innerHeight - minSize;
 
@@ -36,6 +37,7 @@ export const Shell: React.FunctionComponent = () => {
   const [showHelp, toggleHelp] = React.useState(false);
   const [showUx, toggleUx] = React.useState(false);
   const [showReset, toggleReset] = React.useState(false);
+  const [showCentral, toggleCentral] = React.useState(false);
 
   const menuAdd = () => { toggleAdd(!showAdd); }
   const menuHelp = () => { toggleHelp(!showHelp); }
@@ -44,6 +46,7 @@ export const Shell: React.FunctionComponent = () => {
   const menuStartAll = () => { deviceContext.startAllDevices(); }
   const menuStopAll = () => { deviceContext.stopAllDevices(); }
   const menuReset = () => { toggleReset(!showReset); }
+  const menuCentral = () => { toggleCentral(!showCentral); }
 
   const deleteDialogAction = (result) => {
     if (result === "Yes") {
@@ -64,7 +67,7 @@ export const Shell: React.FunctionComponent = () => {
     }
   }
 
-  const nav = { menuAdd, menuHelp, menuSimulation, menuUx, menuStartAll, menuStopAll, menuReset }
+  const nav = { menuAdd, menuHelp, menuSimulation, menuUx, menuStartAll, menuStopAll, menuReset, menuCentral }
 
   return <div className='shell'>
     <SplitterLayout vertical={true} primaryMinSize={minSize} secondaryMinSize={minHeight} secondaryInitialSize={height} >
@@ -86,6 +89,7 @@ export const Shell: React.FunctionComponent = () => {
         {showSimulation ? <Modal><div className='blast-shield'></div><div className='app-modal context-modal'><Simulation handler={menuSimulation} /></div></Modal> : null}
         {showUx ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><Ux handler={menuUx} /></div></Modal> : null}
         {showReset ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><ModalConfirm config={deleteModalConfig} /></div></Modal> : null}
+        {showCentral ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><Connect handler={menuCentral} /></div></Modal> : null}
       </div>
     </SplitterLayout >
   </div >

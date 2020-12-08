@@ -619,7 +619,15 @@ export class MockDevice {
                         this.registerDesiredProperties(delta, delta['$version'], false);
                     }))
 
-                    this.log(`LOOPS WILL NOT START SENDING DATA FOR ${this.firstSendMins} minutes`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+                    if (this.device.comms.length === 0) {
+                        this.log(`DEVICE/MODULE HAS NO CAPABILITIES DEFINED. DEVICE/MODULE CAN RECEIVE EVENTS BUT WILL NOT SEND ANY DATA`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+                    } else {
+                        if (Utils.isNumeric(this.firstSendMins)) {
+                            this.log(`LOOPS HAVE BEEN DEFINED. DATA WILL START SENDING IN ${this.firstSendMins} MINUTES`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+                        } else {
+                            this.log(`NO LOOPS HAVE BEEN DEFINED. SEND DATA MANUALLY`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+                        }
+                    }
 
                     // this loop is a poller to check a payload the will be used to send the method response 
                     // as a reported property with the same name. once it processes the payload it clears it.

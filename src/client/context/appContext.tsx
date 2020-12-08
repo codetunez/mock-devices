@@ -37,7 +37,7 @@ export class AppProvider extends React.PureComponent {
     state: any = {
         property: {},
         dirtyProperty: '',
-        selectorExpand: false,
+        selectorExpand: true,
         setExpand: this.setExpand,
         setSelectorExpand: this.setSelectorExpand,
         setDirty: this.setDirty,

@@ -112,10 +112,11 @@ export class DeviceConfiguration {
     public dpsPayload?: any;
     public sasKey?: string;
     public isMasterKey?: boolean;
-    public capabilityModel?: string;
+    public capabilityModel?: any;
     public capabilityUrn?: string;
     public machineState?: string;
     public machineStateClipboard?: string;
     public planMode?: boolean;
     public modules?: Array<string> = [];
+    public centralAdded?: boolean;
 }

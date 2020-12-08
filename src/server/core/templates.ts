@@ -1,71 +1,58 @@
 import { DeviceStore } from '../store/deviceStore'
-import { Device, Property } from '../interfaces/device'
+import { Device } from '../interfaces/device'
 import { SimulationStore } from '../store/simulationStore';
+import { SensorStore } from '../store/sensorStore';
 import uuid = require('uuid');
-import * as Utils from '../core/utils'
 
-export function DCMtoMockDevice(deviceConfiguration: any, deviceStore: DeviceStore) {
+export function DCMtoMockDevice(deviceStore: DeviceStore, t: Device, useMocks?: boolean) {
 
     let simulationStore = new SimulationStore();
     let simRunloop = simulationStore.get()["runloop"];
     let simColors = simulationStore.get()["colors"];
     let simDcm = simulationStore.get()["dcm"];
 
-    let t = new Device();
-    t._id = uuid();
-    t.configuration = deviceConfiguration;
-    deviceStore.addDevice(t);
+    if (t.configuration.capabilityModel && Object.keys(t.configuration.capabilityModel).length < 0) { return; }
 
-    if (deviceConfiguration.capabilityModel && Object.keys(deviceConfiguration.capabilityModel).length > 0) {
-        var dcm = deviceConfiguration.capabilityModel;
+    const dcm: any = t.configuration.capabilityModel;
+
+    // DTDL v1
+    if (dcm['@context'] && dcm['@context'].indexOf('http://azureiot.com/v1/contexts/IoTModel.json') > -1) {
         t.configuration.mockDeviceName = dcm.displayName ? (dcm.displayName.en || dcm.displayName) : 'DCM has no display name';
         t.configuration.capabilityUrn = dcm['@id'];
 
-        // DTDL v1
-        if (dcm['@context'].indexOf('http://azureiot.com/v1/contexts/IoTModel.json') > -1) {
-            dcm.implements.forEach(element => {
-                if (element.schema.contents) {
-                    element.schema.contents.forEach(item => {
-                        DCMCapabilityToComm(item, t._id, deviceStore, simRunloop, simColors);
-                    })
-                }
-            })
-        }
-
-
-        // DTDL v2
-        if (dcm['@context'].indexOf('dtmi:dtdl:context;2') > -1) {
-            // handle root level or components
-            dcm.contents.forEach(element => {
-                if (element['@type'] === 'Component') {
-                    const ns = element.name || 'Component';
-                    element.schema.contents.forEach(item => {
-                        DCMCapabilityToComm(item, t._id, deviceStore, simRunloop, simColors, ns);
-                    })
-                } else {
-                    DCMCapabilityToComm(element, t._id, deviceStore, simRunloop, simColors);
-                }
-            })
-
-            //handle interfaces
-            dcm.extends.forEach(element => {
-                if (element.contents) {
-                    let ns = null;
-                    if (simDcm && simDcm["import"] && simDcm["import"]["interfaceAsComponents"]) {
-                        const parts = element['@id'].split(':');
-                        ns = parts[parts.length - 1].split(';')[0];
-                    }
-                    element.contents.forEach(item => {
-                        DCMCapabilityToComm(item, t._id, deviceStore, simRunloop, simColors, ns);
-                    })
-                }
-            })
-        }
-
+        dcm.implements.forEach(element => {
+            if (element.schema.contents) {
+                element.schema.contents.forEach(item => {
+                    DCMCapabilityToComm(item, t._id, deviceStore, simRunloop, simColors, null, useMocks);
+                })
+            }
+        })
     }
+
+    // DTDL v2 - NEW
+    if (Array.isArray(dcm) && dcm.length >= 2) {
+        t.configuration.mockDeviceName = dcm[0].displayName ? (dcm[0].displayName.en || dcm[0].displayName) : 'DCM has no display name';
+        t.configuration.capabilityUrn = dcm[0]['@id'];
+
+        const componentCache = {};
+        dcm.map((document: any) => {
+            if (document['@context'] && document['@context'].indexOf('dtmi:dtdl:context;2') > 0 && document.contents) {
+                document.contents.forEach((capability: any) => {
+                    if (capability['@type'] === 'Component') {
+                        componentCache[capability['schema']] = capability['name'];
+                    } else {
+                        const ns = componentCache[document['@id']];
+                        DCMCapabilityToComm(capability, t._id, deviceStore, simRunloop, simColors, ns, useMocks);
+                    }
+                })
+            }
+        })
+    }
+
+    delete t.configuration.capabilityModel;
 }
 
-function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceStore, simRunloop: any, simColors: any, component?: string) {
+function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceStore, simRunloop: any, simColors: any, component?: string, useMocks?: boolean) {
 
     var o: any = {};
     o._id = uuid();
@@ -122,7 +109,7 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
 
     // Set up Value fields
 
-    // This will set a primative value but nothing for complex
+    // This will set a primitive value but nothing for complex
     if (hasAuto(item.schema)) {
         o.value = item.writable ? "Waiting for Read ..." : "AUTO_" + item.schema.toString().toUpperCase()
     }
@@ -168,6 +155,18 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
             'unit': runLoopUnit === 'mins' ? 'mins' : 'secs',
             'value': simRunloop[runLoopUnit]["min"],
             'valueMax': simRunloop[runLoopUnit]["max"]
+        }
+    }
+
+    // Only the quick device will use mock sensors
+    if (useMocks) {
+        if (o.name === 'battery' || o.name === 'fan' || o.name === 'hotplate' || o.name === 'random' || o.name === 'inc' || o.name === 'dec') {
+            const sensorStore = new SensorStore();
+            o.type = {
+                mock: true,
+                direction: item.writable ? 'c2d' : 'd2c'
+            }
+            o.mock = sensorStore.getNewSensor(o.name);
         }
     }
 

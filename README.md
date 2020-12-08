@@ -38,11 +38,9 @@ Help is available inside the application
 
 ---
 
-#### v8
-- Support for Azure IoT PnP GA features
-  - Components
-  - Auto gen from DTDLv2 models/interfaces
-  - Auto gen from DTDLv1 models (DCMs)
+#### v8.1
+- Connect experience - Generate devices for IoT Central or IoT Hub
+- Sample device - Generate a sample mock device based from a pre-defined configuration
 
 #### Features
 - Supports 1,000 mock devices/modules
@@ -56,6 +54,7 @@ Help is available inside the application
 - Support for Azure IoT Edge modules
 - Dashboard statistics mode
 - Connect to any mock-devices engine using IP or DNS
+- Auto gen from DTDLv2 models/interfaces and DTDLv1 models (DCMs)
 
 #### Macro support for value payloads
 Use auto generated values to send as a device value when running in loops

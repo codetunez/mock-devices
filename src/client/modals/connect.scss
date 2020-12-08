@@ -1,0 +1,52 @@
+@import "../const.scss";
+
+.dialog-central {
+  height: 100%;
+
+  .m-modal {
+    padding: $md-gutter;
+
+    .m-content {
+      padding: 0 $md-gutter;
+
+      .form-inline {
+        display: flex;
+        height: auto;
+        align-items: flex-end;
+        width: 100%;
+        h3 {
+          margin-bottom: $md-gutter;
+        }
+        .form-group:not(:last-child) {
+          padding-right: $md-gutter;
+        }
+      }
+
+      .form-group {
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      input {
+        width: 280px;
+      }
+
+      label {
+        margin-left: 0 !important;
+        color: $app-clr-yellow-1;
+      }
+
+      .btn-bar {
+        button {
+          color: $app-clr-4;
+        }
+
+        .active {
+          color: white;
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}

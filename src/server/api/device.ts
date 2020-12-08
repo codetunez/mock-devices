@@ -4,6 +4,8 @@ import { Device } from '../interfaces/device';
 import { DCMtoMockDevice } from '../core/templates';
 import * as Utils from '../core/utils';
 import { Config } from '../config';
+import uuid = require('uuid');
+import { DtdlStore } from '../store/DtdlStore';
 
 export default function (deviceStore: DeviceStore) {
     let api = Router();
@@ -194,6 +196,32 @@ export default function (deviceStore: DeviceStore) {
         }
     });
 
+    // create a quick device
+    api.post('/new/quick', function (req, res, next) {
+
+        if (deviceStore.maxReached()) {
+            res.status(500).json({ "message": "Max devices reached" });
+            return;
+        }
+
+        var updatePayload = req.body;
+        const ds = new DtdlStore();
+        try {
+            let d: Device = new Device();
+            d._id = updatePayload.deviceId != '' ? updatePayload.deviceId : uuid();
+            d.configuration = updatePayload;
+            d.configuration.deviceId = d._id;
+            d.configuration.capabilityModel = ds.getDtdl('mockDevices');
+            deviceStore.addDevice(d);
+            DCMtoMockDevice(deviceStore, d, true);
+            deviceStore.startDevice(d);
+        } catch (err) {
+            res.status(500).json({ "message": "Problem creating this quick device" });
+            return;
+        }
+        res.json(deviceStore.getListOfItems());
+    })
+
     // create a new device, template or bulk devices
     api.post('/new', function (req, res, next) {
 
@@ -203,49 +231,53 @@ export default function (deviceStore: DeviceStore) {
         }
 
         var updatePayload = req.body;
-
         if (updatePayload._kind === 'template') {
             try {
-                DCMtoMockDevice(updatePayload, deviceStore);
+                let d: Device = new Device();
+                d._id = uuid();
+                d.configuration = updatePayload;
+                d.configuration.deviceId = d._id;
+                deviceStore.addDevice(d);
+                DCMtoMockDevice(deviceStore, d);
             } catch (err) {
-                res.status(500).json({ "message": " The DCM has errors or has an unrecognized schema" });
+                res.status(500).json({ "message": "The DCM has errors or has an unrecognized schema" });
                 return;
             }
-        } else {
+            res.json(deviceStore.getListOfItems());
+        }
 
-            let items = deviceStore.getListOfItems();
-            let capacity = Config.MAX_NUM_DEVICES - items.length;
+        let items = deviceStore.getListOfItems();
+        let capacity = Config.MAX_NUM_DEVICES - items.length;
 
-            let from = parseInt(updatePayload.mockDeviceCount);
-            const to = parseInt(updatePayload.mockDeviceCountMax) + 1;
-            const count = to - from === 0 ? 1 : to - from;
+        let from = parseInt(updatePayload.mockDeviceCount);
+        const to = parseInt(updatePayload.mockDeviceCountMax) + 1;
+        const count = to - from === 0 ? 1 : to - from;
 
-            let maxCount = count > capacity ? capacity : count;
+        let maxCount = count > capacity ? capacity : count;
 
-            for (let i = 0; i < maxCount; i++) {
-                let d: Device = new Device();
+        for (let i = 0; i < maxCount; i++) {
+            let d: Device = new Device();
 
-                let createId = null;
-                if (updatePayload._kind === 'dps') {
-                    createId = updatePayload.deviceId;
-                } else if (updatePayload._kind === 'hub') {
-                    createId = Utils.getDeviceId(updatePayload.connectionString);
-                } else {
-                    createId = updatePayload.deviceId;
-                }
-
-                createId = count > 1 ? createId + "-" + from : createId;
-                if (deviceStore.exists(createId)) {
-                    res.status(500).json({ "message": "Device already added" });
-                    return;
-                }
-                d._id = createId;
-                d.configuration = JSON.parse(JSON.stringify(updatePayload));
-                d.configuration.mockDeviceName = count > 1 ? d.configuration.mockDeviceName + "-" + from : d.configuration.mockDeviceName;
-                d.configuration.deviceId = createId;
-                deviceStore.addDevice(d);
-                from++;
+            let createId = null;
+            if (updatePayload._kind === 'dps') {
+                createId = updatePayload.deviceId;
+            } else if (updatePayload._kind === 'hub') {
+                createId = Utils.getDeviceId(updatePayload.connectionString);
+            } else {
+                createId = updatePayload.deviceId;
             }
+
+            createId = count > 1 ? createId + "-" + from : createId;
+            if (deviceStore.exists(createId)) {
+                res.status(500).json({ "message": "Device already added" });
+                return;
+            }
+            d._id = createId;
+            d.configuration = JSON.parse(JSON.stringify(updatePayload));
+            d.configuration.mockDeviceName = count > 1 ? d.configuration.mockDeviceName + "-" + from : d.configuration.mockDeviceName;
+            d.configuration.deviceId = createId;
+            deviceStore.addDevice(d);
+            from++;
         }
 
         res.json(deviceStore.getListOfItems());
