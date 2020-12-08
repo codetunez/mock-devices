@@ -22,7 +22,7 @@ export function Nav({ actions }) {
                     <button title={RESX.nav.stats} className={cx('btn btn-outline-primary', match && match.url.indexOf('/dashboard') > -1 ? 'nav-active' : '')}><span className='fa fa-tachometer-alt'></span></button>
                 </NavLink >
                 <button title={RESX.nav.file} onClick={() => actions.menuAdd()} className={'btn btn-outline-primary'}><span className='fa fa-plus'></span></button >
-                <button title={RESX.nav.central} onClick={() => actions.menuCentral()} className={'btn btn-outline-primary'}><span className='fas fa-dice-d20'></span></button >
+                <button title={RESX.nav.connect} onClick={() => actions.menuCentral()} className={'btn btn-outline-primary'}><span className='fas fa-dice-d20'></span></button >
                 <hr />
                 <button title={RESX.nav.power} onClick={() => actions.menuStartAll()} className='btn btn-outline-primary'><span className='fas fa-power-off'></span></button>
                 <button title={RESX.nav.stop} onClick={() => actions.menuStopAll()} className='btn btn-outline-primary'><span className='fas fa-stop'></span></button>

@@ -1,5 +1,5 @@
 var classNames = require('classnames');
-const cx = classNames.bind(require('./central.scss'));
+const cx = classNames.bind(require('./connect.scss'));
 
 import { Endpoint } from '../context/endpoint';
 import { RESX } from '../strings';
@@ -35,7 +35,7 @@ const reducer = (state: State, action: Action) => {
     }
 }
 
-export const Central: React.FunctionComponent<any> = ({ handler }) => {
+export const Connect: React.FunctionComponent<any> = ({ handler }) => {
     const deviceContext: any = React.useContext(DeviceContext);
 
     const [state, dispatch] = React.useReducer(reducer, { data: { templates: [] } });
@@ -43,7 +43,7 @@ export const Central: React.FunctionComponent<any> = ({ handler }) => {
 
     const getTemplates = () => {
         axios.post(`${Endpoint.getEndpoint()}api/central/templates`, {
-            name: state.data.name,
+            appUrl: state.data.appUrl,
             token: state.data.token
         })
             .then((res) => {
@@ -61,7 +61,7 @@ export const Central: React.FunctionComponent<any> = ({ handler }) => {
         axios.post(`${Endpoint.getEndpoint()}api/central/create`, {
             id: item,
             deviceId: state.data.deviceId,
-            name: state.data.name,
+            appUrl: state.data.appUrl,
             token: state.data.token
         })
             .then((res) => {
@@ -86,34 +86,36 @@ export const Central: React.FunctionComponent<any> = ({ handler }) => {
         <div className='m-modal'>
             <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
             <div className='m-content'>
-                <h3>{RESX.modal.central.title}</h3>
+                <h3>{RESX.modal.connect.title}</h3>
 
                 <div className='form-group'>
                     <div className='btn-bar'>
-                        <button className={cx('btn btn-link', panel === 0 ? 'active' : '')} onClick={() => { showPanel(0) }}>Create</button>
-                        <button className={cx('btn btn-link', panel === 1 ? 'active' : '')} onClick={() => { showPanel(1) }}>Publish</button>
+                        <button className={cx('btn btn-link', panel === 0 ? 'active' : '')} onClick={() => { showPanel(0) }}>IoT Central</button>
+                        <button className={cx('btn btn-link', panel === 1 ? 'active' : '')} onClick={() => { showPanel(1) }}>IoT Hub</button>
                     </div>
                 </div>
 
                 {panel === 0 ? <>
+                    <div>{RESX.modal.connect.central.subtitle}</div>
+                    <br />
                     <div className='form-inline'>
                         <div className='form-group'>
-                            <label>{RESX.modal.central.label.name}</label>
-                            <input className='form-control form-control-sm' type='text' name='name' onChange={updateField} value={state.data.name || ''} />
+                            <label>{RESX.modal.connect.central.label.appUrl}</label>
+                            <input className='form-control form-control-sm' type='text' name='appUrl' onChange={updateField} value={state.data.appUrl || ''} placeholder={RESX.modal.connect.central.label.appUrl_placeholder} />
                         </div>
                         <div className='form-group'>
-                            <label>{RESX.modal.central.label.token}</label>
+                            <label>{RESX.modal.connect.central.label.token}</label>
                             <input className='form-control form-control-sm' type='text' name='token' onChange={updateField} value={state.data.token || ''} />
                         </div>
                         <div className='form-group'>
                             <label></label>
-                            <button title={RESX.modal.central.cta_title} className='btn btn-sm btn-primary' disabled={false} onClick={() => { getTemplates() }}>{RESX.modal.central.cta_label}</button>
+                            <button title={RESX.modal.connect.central.cta_title} className='btn btn-sm btn-primary' disabled={false} onClick={() => { getTemplates() }}>{RESX.modal.connect.central.cta_label}</button>
                         </div>
                     </div>
 
                     {state.data.templates.length != 0 ? <>
                         <br />
-                        <label>{RESX.modal.central.label.templates}</label>
+                        <label>{RESX.modal.connect.central.label.templates}</label>
                         <div className='form-group'>
                             <select className='custom-select' id='templates' size={8}>
                                 {state.data.templates && state.data.templates.map((ele) => {
@@ -122,54 +124,16 @@ export const Central: React.FunctionComponent<any> = ({ handler }) => {
                             </select>
                         </div>
                         <div className='form-group'>
-                            <label>{RESX.modal.central.label.deviceId}</label>
+                            <label>{RESX.modal.connect.central.label.deviceId}</label>
                             <input className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.data.deviceId || ''} />
                         </div>
-                        <button title={RESX.modal.central.cta2_title} className='btn btn-success' disabled={false} onClick={() => { createDevice() }}>{RESX.modal.central.cta2_label}</button>
+                        <button title={RESX.modal.connect.central.cta2_title} className='btn btn-success' disabled={false} onClick={() => { createDevice() }}>{RESX.modal.connect.central.cta2_label}</button>
                     </> : null}
                 </> : null}
 
                 {panel === 1 ? <>
-
-                    <div className='form-group'>
-                        <label>{RESX.modal.central.label.devices}</label>
-                        <select className='custom-select' id='devices' size={4}>
-                            {indexes && indexes.map((ele) => {
-                                if (ele) { return <option value={ele.value}>{ele.name}</option> }
-                            })}
-                        </select>
-                    </div>
-
-                    <div className='form-group'>
-                        <div className='form-inline'>
-                            <div className='form-group'>
-                                <label>{RESX.modal.central.label.name}</label>
-                                <input className='form-control form-control-sm' type='text' name='name' onChange={updateField} value={state.data.name || ''} />
-                            </div>
-                            <div className='form-group'>
-                                <label>{RESX.modal.central.label.token}</label>
-                                <input className='form-control form-control-sm' type='text' name='token' onChange={updateField} value={state.data.token || ''} />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className='form-group'>
-                        <label>{RESX.modal.central.label.templateUrn}</label>
-                        <input className='form-control form-control-sm' type='text' name='token' onChange={updateField} value={state.data.templateUrn || ''} />
-                    </div>
-
-                    <div className='form-group'>
-                        <label>{RESX.modal.central.label.templateName}</label>
-                        <input className='form-control form-control-sm' type='text' name='token' onChange={updateField} value={state.data.templateName || ''} />
-                    </div>
-
-                    <div className='form-group'>
-                        <label>{RESX.modal.central.label.deviceId}</label>
-                        <input className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.data.deviceId || ''} />
-                    </div>
-
-                    <button title={RESX.modal.central.cta3_title} className='btn btn-success' disabled={false} onClick={() => { createDevice() }}>{RESX.modal.central.cta3_label}</button>
-
+                    <div>{RESX.modal.connect.hub.subtitle}</div>
+                    <br />
                 </> : null}
 
             </div>

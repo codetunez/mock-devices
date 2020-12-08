@@ -15,9 +15,11 @@ import server from './api/server';
 import sensors from './api/sensors';
 import semantics from './api/simulation';
 import template from './api/template';
-import central from './api/central';
+import connect from './api/connect';
+import dtdl from './api/dtdl';
 
 import { Config, GLOBAL_CONTEXT } from './config';
+import { DtdlStore } from './store/dtdlStore';
 import { DeviceStore } from './store/deviceStore';
 import { SensorStore } from './store/sensorStore';
 import { SimulationStore } from './store/simulationStore';
@@ -31,6 +33,7 @@ class Server {
     private deviceStore: DeviceStore;
     private sensorStore: SensorStore;
     private simulationStore: SimulationStore;
+    private dtdlStore: DtdlStore;
 
     public start = () => {
 
@@ -39,6 +42,7 @@ class Server {
         this.deviceStore = new DeviceStore(ms);
         this.sensorStore = new SensorStore();
         this.simulationStore = new SimulationStore();
+        this.dtdlStore = new DtdlStore();
 
         this.expressServer = express();
         this.expressServer.server = http.createServer(this.expressServer);
@@ -61,7 +65,7 @@ class Server {
         this.expressServer.use('/_dist', express.static(__dirname + '/..'));
         this.expressServer.use('/node_modules', express.static(__dirname + '/../../node_modules'));
 
-        this.expressServer.use('/api/central', central(this.deviceStore, ms));
+        this.expressServer.use('/api/central', connect(this.deviceStore, ms));
         this.expressServer.use('/api/simulation', semantics(this.deviceStore, this.simulationStore));
         this.expressServer.use('/api/device', device(this.deviceStore));
         this.expressServer.use('/api/devices', devices(this.deviceStore));
@@ -69,6 +73,7 @@ class Server {
         this.expressServer.use('/api/server', server(this.deviceStore));
         this.expressServer.use('/api/sensors', sensors(this.sensorStore));
         this.expressServer.use('/api/template', template(this.deviceStore));
+        this.expressServer.use('/api/dtdl', dtdl(this.dtdlStore));
         this.expressServer.use('/api', root(dialog, app, GLOBAL_CONTEXT, ms));
 
         // experimental stream api

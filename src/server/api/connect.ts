@@ -15,11 +15,11 @@ export default function (deviceStore: DeviceStore, ms: ServerSideMessageService)
     let cache: Cache = { templates: [] };
 
     api.post('/templates', function (req, res, next) {
-        const { name, token } = req.body;
+        const { appUrl, token } = req.body;
 
         if (cache.templates.length > 0) { res.json(cache.templates); return; }
 
-        axios.get(`https://${name}.azureiotcentral.com/api/preview/deviceTemplates`, {
+        axios.get(`https://${appUrl}/api/preview/deviceTemplates`, {
             headers: {
                 Authorization: token
             }
@@ -37,16 +37,16 @@ export default function (deviceStore: DeviceStore, ms: ServerSideMessageService)
     });
 
     api.post('/create', function (req, res, next) {
-        const { name, token, id, deviceId } = req.body;
+        const { appUrl, token, id, deviceId } = req.body;
 
         let dcm = null;
-        axios.put(`https://${name}.azureiotcentral.com/api/preview/devices/${deviceId}`, { instanceOf: id }, { headers: { Authorization: token } })
+        axios.put(`https://${appUrl}/api/preview/devices/${deviceId}`, { instanceOf: id }, { headers: { Authorization: token } })
             .then(() => {
-                return axios.get(`https://${name}.azureiotcentral.com/api/preview/deviceTemplates/${id}`, { headers: { Authorization: token } });
+                return axios.get(`https://${appUrl}/api/preview/deviceTemplates/${id}`, { headers: { Authorization: token } });
             })
             .then((response) => {
                 dcm = response.data.capabilityModel;
-                return axios.get(`https://${name}.azureiotcentral.com/api/preview/devices/${deviceId}/credentials`, { headers: { Authorization: token } });
+                return axios.get(`https://${appUrl}/api/preview/devices/${deviceId}/credentials`, { headers: { Authorization: token } });
             })
             .then((response) => {
 

@@ -17,12 +17,12 @@ import { AddDevice } from '../modals/addDevice';
 import { Simulation } from '../modals/simulation';
 import { Ux } from '../modals/ux';
 import { ModalConfirm } from '../modals/modalConfirm';
-import { Central } from '../modals/central';
+import { Connect } from '../modals/connect';
 
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
 
-const minSize = 40;
+const minSize = 48;
 const minHeight = 46;
 const height = window.innerHeight - minSize;
 
@@ -89,7 +89,7 @@ export const Shell: React.FunctionComponent = () => {
         {showSimulation ? <Modal><div className='blast-shield'></div><div className='app-modal context-modal'><Simulation handler={menuSimulation} /></div></Modal> : null}
         {showUx ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><Ux handler={menuUx} /></div></Modal> : null}
         {showReset ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><ModalConfirm config={deleteModalConfig} /></div></Modal> : null}
-        {showCentral ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><Central handler={menuCentral} /></div></Modal> : null}
+        {showCentral ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><Connect handler={menuCentral} /></div></Modal> : null}
       </div>
     </SplitterLayout >
   </div >

@@ -63,12 +63,12 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
     }, []);
 
     const clickAddDevice = (kind: string) => {
-        state._kind = kind;
+        state._kind = kind === 'quick' ? 'dps' : kind;
         state.machineStateClipboard = null;
         for (const j in jsons) {
             state[j] = jsons[j]
         }
-        axios.post(`${Endpoint.getEndpoint()}api/device/new`, state)
+        axios.post(`${Endpoint.getEndpoint()}api/device/new${kind === 'quick' ? '/quick' : ''}`, state)
             .then(res => {
                 deviceContext.setDevices(res.data);
                 history.push('/devices');
@@ -196,6 +196,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                 <div className='m-tabbed-nav' style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <div className='menu-vertical' >
                         <label>{RESX.modal.add.option1.title}</label>
+                        <button title={RESX.modal.add.option1.buttons.button3_title} onClick={() => selectPanel(7)} className={cx('btn btn-outline-info', panel === 7 ? 'active' : '')}>{RESX.modal.add.option1.buttons.button3_label}</button><br />
                         <button title={RESX.modal.add.option1.buttons.button1_title} onClick={() => selectPanel(0)} className={cx('btn btn-outline-info', panel === 0 ? 'active' : '')}>{RESX.modal.add.option1.buttons.button1_label}</button><br />
                         <button title={RESX.modal.add.option1.buttons.button2_title} onClick={() => selectPanel(1)} className={cx('btn btn-outline-info', panel === 1 ? 'active' : '')}>{RESX.modal.add.option1.buttons.button2_label}</button><br />
                         <label>{RESX.modal.add.option2.title}</label>
@@ -372,6 +373,33 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <div className='m-tabbed-panel-footer'>
                             <button disabled={state.mockDeviceName === '' || state.deviceId === ''} title={RESX.modal.add.option4.cta_title} className='btn btn-primary' onClick={() => clickAddDevice('edge')}>{RESX.modal.add.option4.cta_label}</button>
                         </div>
+                    </>}
+
+                    {panel !== 7 ? null : <>
+                        <div className='m-tabbed-panel-form'>
+                            <div className='form-group'>{RESX.modal.add.option1.label.quick}</div>
+                            <div className='form-group'>
+                                <div className='form-group'>
+                                    <label>{RESX.modal.add.option1.label.dps}</label>
+                                    <input className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
+                                </div>
+                                <div className='form-group'>
+                                    <label>{RESX.modal.add.option1.label.sas}</label>
+                                    <input className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
+                                </div>
+                                <div className='form-group'>
+                                    <label>{RESX.modal.add.option1.label.root}</label>
+                                    <div><Toggle name='masterKey' checked={state.isMasterKey} defaultChecked={false} onChange={() => { toggleMasterKey() }} /></div>
+                                </div>
+                                <div className='form-group'>
+                                    <label>{RESX.modal.add.option1.label.deviceQuick}</label><br />
+                                    <input autoFocus={true} id="device-id" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} placeholder={RESX.modal.add.option1.label.deviceQuick_placeholder} />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className='m-tabbed-panel-footer'>
+                            <button title={RESX.modal.add.option1.cta_title} className='btn btn-primary' disabled={!state.isMasterKey && state.deviceId === ''} onClick={() => clickAddDevice('quick')}>{RESX.modal.add.option1.cta_label}</button>                        </div>
                     </>}
 
                 </div>

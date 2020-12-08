@@ -5,6 +5,7 @@ import { DCMtoMockDevice } from '../core/templates';
 import * as Utils from '../core/utils';
 import { Config } from '../config';
 import uuid = require('uuid');
+import { DtdlStore } from '../store/DtdlStore';
 
 export default function (deviceStore: DeviceStore) {
     let api = Router();
@@ -195,6 +196,32 @@ export default function (deviceStore: DeviceStore) {
         }
     });
 
+    // create a quick device
+    api.post('/new/quick', function (req, res, next) {
+
+        if (deviceStore.maxReached()) {
+            res.status(500).json({ "message": "Max devices reached" });
+            return;
+        }
+
+        var updatePayload = req.body;
+        const ds = new DtdlStore();
+        try {
+            let d: Device = new Device();
+            d._id = updatePayload.deviceId != '' ? updatePayload.deviceId : uuid();
+            d.configuration = updatePayload;
+            d.configuration.deviceId = d._id;
+            d.configuration.capabilityModel = ds.getDtdl('mockDevices');
+            deviceStore.addDevice(d);
+            DCMtoMockDevice(deviceStore, d, true);
+            deviceStore.startDevice(d);
+        } catch (err) {
+            res.status(500).json({ "message": "Problem creating this quick device" });
+            return;
+        }
+        res.json(deviceStore.getListOfItems());
+    })
+
     // create a new device, template or bulk devices
     api.post('/new', function (req, res, next) {
 
@@ -204,7 +231,6 @@ export default function (deviceStore: DeviceStore) {
         }
 
         var updatePayload = req.body;
-
         if (updatePayload._kind === 'template') {
             try {
                 let d: Device = new Device();
@@ -214,7 +240,7 @@ export default function (deviceStore: DeviceStore) {
                 deviceStore.addDevice(d);
                 DCMtoMockDevice(deviceStore, d);
             } catch (err) {
-                res.status(500).json({ "message": " The DCM has errors or has an unrecognized schema" });
+                res.status(500).json({ "message": "The DCM has errors or has an unrecognized schema" });
                 return;
             }
             res.json(deviceStore.getListOfItems());

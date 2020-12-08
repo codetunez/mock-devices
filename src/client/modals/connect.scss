@@ -7,6 +7,8 @@
     padding: $md-gutter;
 
     .m-content {
+      padding: 0 $md-gutter;
+
       .form-inline {
         display: flex;
         height: auto;
@@ -16,7 +18,7 @@
           margin-bottom: $md-gutter;
         }
         .form-group:not(:last-child) {
-          padding-right: $sm-gutter;
+          padding-right: $md-gutter;
         }
       }
 
@@ -26,8 +28,8 @@
         flex-direction: column;
       }
 
-      select {
-        width: 100%;
+      input {
+        width: 280px;
       }
 
       label {
