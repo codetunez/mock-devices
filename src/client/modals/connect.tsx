@@ -101,7 +101,7 @@ export const Connect: React.FunctionComponent<any> = ({ handler }) => {
                     <div className='form-inline'>
                         <div className='form-group'>
                             <label>{RESX.modal.connect.central.label.appUrl}</label>
-                            <input className='form-control form-control-sm' type='text' name='appUrl' onChange={updateField} value={state.data.appUrl || ''} placeholder={RESX.modal.connect.central.label.appUrl_placeholder} />
+                            <input className='form-control form-control-sm' type='text' name='appUrl' onChange={updateField} value={state.data.appUrl || ''} />
                         </div>
                         <div className='form-group'>
                             <label>{RESX.modal.connect.central.label.token}</label>
