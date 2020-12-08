@@ -102,6 +102,16 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
         });
     }
 
+    const getCatalogDevice = (id: string) => {
+        axios.get(`${Endpoint.getEndpoint()}api/dtdl/${id}`)
+            .then(response => {
+                setPayload({
+                    ...state,
+                    "capabilityModel": response.data
+                })
+            })
+    }
+
     const getTemplate = (id: string) => {
         axios.get(`${Endpoint.getEndpoint()}api/device/${id}`)
             .then(response => {
@@ -127,7 +137,6 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                 document.getElementById('device-id').focus();
             })
     }
-
 
     const loadFromDisk = (file: string) => {
         axios.get(`${Endpoint.getEndpoint()}api/openDialog`)
@@ -305,10 +314,13 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                     <button className='btn btn-success' onClick={() => loadFromDisk('capabilityModel')}>{RESX.modal.add.option2.label.browse}</button>
                                 </div>
                             </>}
-                            <div className='form-group' style={{ height: "calc(100% - 170px)" }}>
+                            <div className='form-group' style={{ height: "calc(100% - 190px)" }}>
                                 <Json json={state.capabilityModel} cb={(text: any) => { updateJson(text, 'capabilityModel') }} err={() => setError(RESX.modal.error_json)} />
                             </div>
-
+                            <div className="snippets" style={{ "marginTop": "-10px" }}>
+                                <div>{RESX.modal.add.option2.label.catalog}</div>
+                                <div className="snippet-links"><div onClick={() => getCatalogDevice('mockDevices')}>{RESX.modal.add.option2.label.catalog_sample}</div></div>
+                            </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
                             <button title={RESX.modal.add.option2.cta_title} className='btn btn-primary' onClick={() => clickAddDevice('template')}>{RESX.modal.add.option2.cta_label}</button>

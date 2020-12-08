@@ -59,10 +59,10 @@ export const RESX = {
                 "buttons": {
                     "button1_label": "Use DPS",
                     "button1_title": "Create the device using the DPS configuration",
-                    "button2_label": "Use Connection String",
+                    "button2_label": "Use Connection string",
                     "button2_title": "Create the device using the a IoT device connection",
-                    "button3_label": "Quick Device",
-                    "button3_title": "Use DPS and a pre-defined device configuration",
+                    "button3_label": "Sample device",
+                    "button3_title": "Create the device using a sample device configuration and provision using DPS",
                 },
                 "select": "--Do not fork. Create with empty capabilities",
                 "label": {
@@ -77,7 +77,7 @@ export const RESX = {
                     "friendly": "mock-devices friendly name (-# appended in bulk create)",
                     "connstr": "Device connection string",
                     "friendly_sm": "mock-devices friendly name",
-                    "quick": "Create a new mock device with some configured capabilities and connect to a hub using DPS. The DTDL JSON for the device's configuration can be downloaded at github.com/codetunez/mock-devices/deviceModel.json",
+                    "quick": "Create a sample mock device with some pre-configured capabilities and connect to a hub using DPS. The DTDL JSON for the device's configuration can be downloaded at github.com/codetunez/mock-devices/deviceModel.json",
                     "deviceQuick": "Device ID",
                     "deviceQuick_placeholder": "Leave blank to auto-generate if using root key",
                 },
@@ -96,6 +96,8 @@ export const RESX = {
                     "name": "mock-devices template Name",
                     "name_placeholder": "Leave blank to use the file's DCM displayName",
                     "browse": "Browse disk for a DCM",
+                    "catalog": "Select a DCM",
+                    "catalog_sample": "Sample device DCM"
                 },
                 "cta_title": "Create this template",
                 "cta_label": "Create template",

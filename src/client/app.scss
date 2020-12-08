@@ -155,3 +155,32 @@ input[type="number"]:disabled {
 button:disabled {
   cursor: not-allowed;
 }
+
+.snippets {
+  font-size: 0.7rem;
+  display: flex;
+  width: 410px;
+  color: $app-clr-4;
+
+  > div:first-child {
+    color: $app-clr-yellow-1;
+    white-space: nowrap;
+  }
+
+  * {
+    margin-right: $sm-gutter;
+  }
+
+  .snippet-links {
+    display: flex;
+    flex-wrap: wrap;
+
+    div {
+      cursor: pointer;
+    }
+
+    div:hover {
+      color: $app-white;
+    }
+  }
+}
