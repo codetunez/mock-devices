@@ -40,7 +40,7 @@ Help is available inside the application
 
 #### v8.1
 - Connect experience - Generate devices for IoT Central or IoT Hub
-- Quick device - Generate a device based from a pre-defined configuration
+- Sample device - Generate a sample mock device based from a pre-defined configuration
 
 #### Features
 - Supports 1,000 mock devices/modules
