@@ -30,7 +30,7 @@ export function DCMtoMockDevice(deviceStore: DeviceStore, t: Device, useMocks?: 
     }
 
     // DTDL v2 - NEW
-    if (Array.isArray(dcm) && dcm.length >= 2) {
+    if (Array.isArray(dcm) && dcm.length > 0) {
         t.configuration.mockDeviceName = dcm[0].displayName ? (dcm[0].displayName.en || dcm[0].displayName) : 'DCM has no display name';
         t.configuration.capabilityUrn = dcm[0]['@id'];
 
