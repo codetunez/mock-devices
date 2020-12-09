@@ -210,6 +210,9 @@ export const RESX = {
             "hub": {
                 "subtitle": 'IoT Hub integration coming in 8.2.0',
             },
+        },
+        "device": {
+            "add_capability_title": "Add capability error"
         }
     },
     "edge": {
