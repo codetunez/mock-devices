@@ -389,11 +389,16 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
                     {panel !== 7 ? null : <>
                         <div className='m-tabbed-panel-form'>
-                            <div className='form-group'>{RESX.modal.add.option1.label.quick}</div>
+                            <label>{RESX.modal.add.option2.label.catalog_sample}</label>
+                            <div className='form-group'>{RESX.modal.add.option1.label.quick} <span className='quick-url'>{RESX.modal.add.option1.label.quick_url}</span></div>
                             <div className='form-group'>
                                 <div className='form-group'>
                                     <label>{RESX.modal.add.option1.label.dps}</label>
-                                    <input className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
+                                    <input autoFocus={true} className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
+                                </div>
+                                <div className='form-group'>
+                                    <label>{RESX.modal.add.option1.label.deviceQuick}</label><br />
+                                    <input id="device-id" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} placeholder={RESX.modal.add.option1.label.deviceQuick_placeholder} />
                                 </div>
                                 <div className='form-group'>
                                     <label>{RESX.modal.add.option1.label.sas}</label>
@@ -402,10 +407,6 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                 <div className='form-group'>
                                     <label>{RESX.modal.add.option1.label.root}</label>
                                     <div><Toggle name='masterKey' checked={state.isMasterKey} defaultChecked={false} onChange={() => { toggleMasterKey() }} /></div>
-                                </div>
-                                <div className='form-group'>
-                                    <label>{RESX.modal.add.option1.label.deviceQuick}</label><br />
-                                    <input autoFocus={true} id="device-id" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} placeholder={RESX.modal.add.option1.label.deviceQuick_placeholder} />
                                 </div>
                             </div>
                         </div>
