@@ -11,8 +11,19 @@
   align-items: center;
 
   .type {
+    display: flex;
+    align-items: center;
     font-size: 1.1rem;
     font-weight: 100;
     color: $app-clr-4;
+  }
+
+  .plugin {
+    margin-left: 0.5rem;
+    padding: 0.25rem 1rem;
+    font-size: 0.75rem;
+    background-color: $app-clr-purple-3;
+    color: $app-white;
+    border-radius: 2px;
   }
 }

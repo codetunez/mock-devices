@@ -1,0 +1,59 @@
+@import "../const.scss";
+
+.dialog-bulk {
+  .m-modal {
+    padding: $sm-gutter $md-gutter $md-gutter $md-gutter;
+  }
+
+  .split-pane {
+    margin-top: 1rem;
+    display: flex;
+    height: 100%;
+  }
+
+  .split-pane > div {
+    width: 40%;
+  }
+
+  .split-pane > div:first-child {
+    margin-right: 1.5rem;
+  }
+
+  .split-pane > div:nth-child(2) {
+    width: 60%;
+    overflow-y: auto;
+    height: 500px;
+    padding-right: 1rem;
+  }
+
+  .split-pane .form-group .df-card-row {
+    padding: 0;
+
+    > div {
+      margin-right: 0.5rem;
+    }
+  }
+
+  .inline-form {
+    display: flex;
+    align-items: center;
+
+    input:first-child {
+      margin-right: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  select {
+    width: 100%;
+  }
+
+  label {
+    margin-left: 0 !important;
+    color: $app-clr-yellow-1;
+  }
+
+  select:disabled {
+    cursor: not-allowed;
+  }
+}

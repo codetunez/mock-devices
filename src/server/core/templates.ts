@@ -16,7 +16,7 @@ export function DCMtoMockDevice(deviceStore: DeviceStore, t: Device, useMocks?: 
     const dcm: any = t.configuration.capabilityModel;
 
     // DTDL v1
-    if (dcm['@context'] && dcm['@context'].indexOf('http://azureiot.com/v1/contexts/IoTModel.json') > -1) {
+    if (dcm['@type'] && dcm['@type'].indexOf('CapabilityModel') > -1) {
         t.configuration.mockDeviceName = dcm.displayName ? (dcm.displayName.en || dcm.displayName) : 'DCM has no display name';
         t.configuration.capabilityUrn = dcm['@id'];
 
@@ -27,6 +27,11 @@ export function DCMtoMockDevice(deviceStore: DeviceStore, t: Device, useMocks?: 
                 })
             }
         })
+
+        dcm.contents.forEach(item => {
+            DCMCapabilityToComm(item, t._id, deviceStore, simRunloop, simColors, null, useMocks);
+        })
+
     }
 
     // DTDL v2 - NEW

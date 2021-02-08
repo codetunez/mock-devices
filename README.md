@@ -1,4 +1,4 @@
-# mock-devices v8 (Desktop Edition)
+# mock-devices v9 (Desktop Edition)
 mock-devices is a simulation engine that manages and runs simulated devices that connect to an Azure Iot Hub. When hosted in the Azure IoT Edge runtime, the engine will simulate Edge modules too. The simulated devices and modules implement D2C/C2D scenarios i.e telemetry, twin and commands as supported by the Azure IoT Device SDK
 
 Each configured device/module acts independently of other devices/modules running within the engine. Each has its own model (capabilities), configuration and connection details. Devices/modules running on the same simulation engine can be a mix of connection strings, DPS, SaS, Edge modules. The engine has additional scenarios like cloning, bulk, templates and acknowledgements. See internal help
@@ -38,11 +38,19 @@ Help is available inside the application
 
 ---
 
-#### v8.1
-- Connect experience - Generate devices for IoT Central or IoT Hub
-- Sample device - Generate a sample mock device based from a pre-defined configuration
+#### V9 Updates
+- Plugins - Provide app level state machines written in JavaScript that can be used at the device or capabilitiy level to provide values (Sample plugin provided)
+- Multiple GEOs - Each device can configure it’s own Geo radius
+- Override loop values - Use the simulation config to override loop duration for a capability
+- Reduced min/max loop times - Default times are now within the seconds and minute ranges
+- QR Code devices - Provision a new mock-device using a QR code
+- Connect dialog - Select a template and provision a device in IoT Central using an API token
+- Card UX refactor - Re-ordering of some fields and better UI to deal with primitive vs complex values
+- Send values on StartUp - Capabilities can now opt in to be sent on Power Up. Assembled into single payload
+- Bulk update - Update specific common properties in a capabilitiy across a selection of devices
 
 #### Features
+- Sample device - Generate a sample mock device based from a pre-defined configuration
 - Supports 1,000 mock devices/modules
 - Various connection options; DPS single/group enrollment support with SaS. Sas and/or Connection String
 - Bulk/Clone/Templated device create operations

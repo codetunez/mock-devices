@@ -244,6 +244,7 @@ export default function (deviceStore: DeviceStore) {
                 return;
             }
             res.json(deviceStore.getListOfItems());
+            return;
         }
 
         let items = deviceStore.getListOfItems();

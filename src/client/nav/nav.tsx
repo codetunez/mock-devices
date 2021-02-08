@@ -27,6 +27,7 @@ export function Nav({ actions }) {
                 <button title={RESX.nav.power} onClick={() => actions.menuStartAll()} className='btn btn-outline-primary'><span className='fas fa-power-off'></span></button>
                 <button title={RESX.nav.stop} onClick={() => actions.menuStopAll()} className='btn btn-outline-primary'><span className='fas fa-stop'></span></button>
                 <hr />
+                <button title={RESX.nav.bulk} onClick={() => actions.menuBulk()} className='btn btn-outline-primary'><span className='fas fa-pencil-alt'></span></button>
                 <button title={RESX.nav.sim} onClick={() => actions.menuSimulation()} className='btn btn-outline-primary'><span className='fas fa-flask'></span></button>
                 <hr />
                 <button title={RESX.nav.help} onClick={() => actions.menuHelp()} className={'btn btn-outline-primary'}><span className='fas fa-question-circle'></span></button >

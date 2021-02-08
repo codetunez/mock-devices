@@ -17,6 +17,7 @@ export function DevicePower({ control }) {
     const [showReapply, toggleReapply] = React.useState(false);
 
     const kind = deviceContext.device.configuration._kind;
+    const plugIn = deviceContext.device.configuration.plugIn;
 
     React.useEffect(() => {
         const on = control && control[deviceContext.device._id] ? control[deviceContext.device._id][2] != controlEvents.OFF : false;
@@ -39,6 +40,7 @@ export function DevicePower({ control }) {
 
         <div className='type'>
             {kind === 'template' ? RESX.device.toolbar.kindTemplate : kind === 'edge' ? RESX.device.toolbar.kindEdge : kind === 'module' ? RESX.device.toolbar.kindModule : RESX.device.toolbar.kindReal}
+            {plugIn ? <div className='plugin'>{plugIn} Plugin</div> : null}
         </div>
         {showReapply ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><Reapply handler={toggleReapply} /></div></Modal> : null}
     </div>

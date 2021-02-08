@@ -40,20 +40,26 @@ export class SimulationStore {
         },
         "runloop": {
             "secs": {
-                "min": 300,
-                "max": 900
+                "min": 30,
+                "max": 90
             },
             "mins": {
-                "min": 30,
-                "max": 120
+                "min": 5,
+                "max": 60
             }
         },
-        "geo": {
+        "geo": [{
             "latitude": 51.508009,
             "longitude": -0.128114,
             "altitude": 100,
             "radius": 25000
         },
+        {
+            "latitude": 47.608013,
+            "longitude": -122.335167,
+            "altitude": 100,
+            "radius": 20000
+        }],
         "colors": {
             "Default": "#333",
             "Color1": "#3a1e1e",
@@ -135,6 +141,11 @@ export class SimulationStore {
         "dcm": {
             "import": {
                 "interfaceAsComponents": false
+            }
+        },
+        "ux": {
+            "device": {
+                "expandPropertyCard": true
             }
         }
     }

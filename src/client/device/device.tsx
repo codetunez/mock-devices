@@ -35,6 +35,7 @@ export function Device() {
     const kind = deviceContext.device.configuration._kind;
     const modules = deviceContext.device.configuration.modules || [];
     const content = deviceContext.device.configuration.planMode ? 'plan' : kind === 'edge' ? 'edge' : 'caps';
+    const plugIn = deviceContext.device.configuration.plugIn && deviceContext.device.configuration.plugIn !== '' ? true : false;
 
     return <>{Object.keys(deviceContext.device).length > 0 ?
         <div className='device'>
@@ -61,7 +62,7 @@ export function Device() {
                     {deviceContext.device && deviceContext.device.comms && deviceContext.device.comms.map((capability: any) => {
                         const expand = appContext.property[capability._id] || false;
                         return <>
-                            {capability.type && capability.type.direction === 'd2c' ? <DeviceFieldD2C capability={capability} shouldExpand={expand} template={kind === 'template'} sensors={deviceContext.sensors} /> : null}
+                            {capability.type && capability.type.direction === 'd2c' ? <DeviceFieldD2C capability={capability} shouldExpand={expand} template={kind === 'template'} sensors={deviceContext.sensors} plugIn={plugIn} /> : null}
                             {capability.type && capability.type.direction === 'c2d' ? <DeviceFieldC2D capability={capability} shouldExpand={expand} template={kind === 'template'} /> : null}
                             {capability._type === 'method' ? <DeviceFieldMethod capability={capability} shouldExpand={expand} template={kind === 'template'} originalName={capability.name} originalComponentName={capability.component ? capability.component.name : null} /> : null}
                         </>
