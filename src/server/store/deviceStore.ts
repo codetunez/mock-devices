@@ -592,6 +592,10 @@ export class DeviceStore {
                     }
                 }
             }
+
+            // // make sure things get reconfigured
+            let rd: MockDevice = this.runners[deviceId];
+            if (rd) { rd.updateDevice(device, false); }
         }
     }
 
