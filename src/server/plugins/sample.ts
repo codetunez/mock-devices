@@ -6,6 +6,9 @@ export class Sample implements PlugIn {
     // Sample code
     private devices = {};
 
+    // this is used by the UX to show some information about the plugin
+    public usage: string = "This is a sample plugin that will provide an integer that increments by 1 on every loop or manual send. Acts on the device for all capabilities"
+
     // this is called when mock-devices first starts. time hear adds to start up time
     public initialize = () => {
         return undefined;

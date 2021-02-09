@@ -1,4 +1,5 @@
 export interface PlugIn {
+    usage: string;
     initialize: Function;
     reset: Function;
     configureDevice: Function;

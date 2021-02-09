@@ -211,7 +211,7 @@ export const Bulk: React.FunctionComponent<any> = ({ handler }) => {
                         </div>
 
                         <div className='form-group btn-bar'>
-                            <button disabled={state.ux.selectedCapabilitiesList.length === 0} title={RESX.modal.bulk.cta_title} className='btn btn-primary' onClick={() => apply()}>{RESX.modal.bulk.cta_label}</button>
+                            <button disabled={!state.ux.allCapabilities && state.ux.selectedCapabilitiesList.length === 0} title={RESX.modal.bulk.cta_title} className='btn btn-primary' onClick={() => apply()}>{RESX.modal.bulk.cta_label}</button>
                         </div>
                     </div>
                 </div>
