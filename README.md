@@ -39,7 +39,7 @@ Help is available inside the application
 ---
 
 #### V9 Updates
-- Plugins - Provide app level state machines written in JavaScript that can be used at the device or capabilitiy level to provide values (Sample plugin provided)
+- Plugins - Provide app level state machines written in JavaScript that can be used at the device or capability level to provide values (Sample plugin provided)
 - Multiple GEOs - Each device can configure it’s own Geo radius
 - Override loop values - Use the simulation config to override loop duration for a capability
 - Reduced min/max loop times - Default times are now within the seconds and minute ranges
@@ -47,7 +47,7 @@ Help is available inside the application
 - Connect dialog - Select a template and provision a device in IoT Central using an API token
 - Card UX refactor - Re-ordering of some fields and better UI to deal with primitive vs complex values
 - Send values on StartUp - Capabilities can now opt in to be sent on Power Up. Assembled into single payload
-- Bulk update - Update specific common properties in a capabilitiy across a selection of devices
+- Bulk update - Update specific common properties in a capability across a selection of devices
 
 #### Features
 - Sample device - Generate a sample mock device based from a pre-defined configuration
