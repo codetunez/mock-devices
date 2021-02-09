@@ -588,7 +588,32 @@ export class DeviceStore {
                             if (!comm.runloop) { comm.runloop = {}; }
                             comm.runloop.onStartUp = payload.data.startup || false;
                         }
-                        if (payload.include.value) { comm.value = payload.data.value || ''; }
+                        if (payload.include.value) {
+                            if (!payload.data.value) {
+                                // empty/null/clear
+                                comm.value = Utils.formatValue(comm.string, 0);
+                            } else if (Utils.isNumeric(payload.data.value)) {
+                                // number first because JSON/string can never be a number
+                                comm.value = parseFloat(payload.data.value);
+                            } else if ((payload.data.value.startsWith('[') && payload.data.value.endsWith(']')) ||
+                                (payload.data.value.startsWith('{') && payload.data.value.endsWith('}'))) {
+                                // JSON 2nd but check string for special characters    
+                                try {
+                                    JSON.parse(payload.data.value)
+                                    comm.propertyObject = {
+                                        "type": "templated",
+                                        "template": payload.data.value
+                                    }
+                                } catch {
+                                    // This is a malformed JSON. save it as the value
+                                    comm.value = Utils.formatValue(comm.string, payload.data.value);
+                                }
+                            } else {
+                                // Catches all other primitives
+                                comm.propertyObject.type = "default";
+                                comm.value = Utils.formatValue(comm.string, payload.data.value);
+                            }
+                        }
                     }
                 }
             }

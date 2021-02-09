@@ -1,7 +1,7 @@
 import { PlugIn } from '../interfaces/plugin'
 
 // This class name is used in the device configuration and UX
-export class Sample implements PlugIn {
+export class Increment implements PlugIn {
 
     // Sample code
     private devices = {};
@@ -37,22 +37,22 @@ export class Sample implements PlugIn {
     }
 
     // this is called during the loop cycle for a given capability or if Send is pressed in UX
-    public propertyResponse = (deviceId: string, capabilitiy: any, payload: any) => {
-        if (Object.getOwnPropertyNames(this.devices[deviceId]).indexOf(capabilitiy._id) > -1) {
-            this.devices[deviceId][capabilitiy._id] = this.devices[deviceId][capabilitiy._id] + 1;
+    public propertyResponse = (deviceId: string, capability: any, payload: any) => {
+        if (Object.getOwnPropertyNames(this.devices[deviceId]).indexOf(capability._id) > -1) {
+            this.devices[deviceId][capability._id] = this.devices[deviceId][capability._id] + 1;
         } else {
-            this.devices[deviceId][capabilitiy._id] = 0;
+            this.devices[deviceId][capability._id] = 0;
         }
-        return this.devices[deviceId][capabilitiy._id];
+        return this.devices[deviceId][capability._id];
     }
 
     // this is called when the device is sent a C2D Command or Direct Method
-    public commandResponse = (deviceId: string, capabilitiy: any) => {
+    public commandResponse = (deviceId: string, capability: any) => {
         return undefined;
     }
 
     // this is called when the device is sent a desired twin property
-    public desiredResponse = (deviceId: string, capabilitiy: any) => {
+    public desiredResponse = (deviceId: string, capability: any) => {
         return undefined;
     }
 }
