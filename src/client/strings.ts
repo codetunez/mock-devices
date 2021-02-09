@@ -1,6 +1,6 @@
 export const RESX = {
     "app": {
-        "version": "v8"
+        "version": "v9"
     },
     "core": {
         "templateNoSupport": "This is not supported for templates. Create a mock device from this template to use this feature",
@@ -23,7 +23,8 @@ export const RESX = {
         "connect": "Connect - Connect to a Central application or IoT Hub, use a template and create a mock-device",
         "power": "Power up all devices and modules (use config for start timings)",
         "stop": "Power down all devices that are currently on",
-        "sim": "Update the current simulation parameters (advanced)",
+        "bulk": "Bulk edit and apply common properties across a set of devices",
+        "sim": "Update the current simulation configuration (advanced)",
         "reset": "WARNING! Remove all mock devices, modules and templates (keeps the simulation configuration)",
         "help": "Find out how to use mock-devices",
         "ux": "Change the mock-devices engine that this UX is viewing",
@@ -53,6 +54,7 @@ export const RESX = {
         "delete_template": "Do you want to delete this template?",
         "delete_device": "Do you want to delete this device?",
         "delete_module": "Do you want to delete this Edge module?",
+        "plugin": "Plugin",
         "add": {
             "option1": {
                 "title": "Add a mock device",
@@ -63,17 +65,19 @@ export const RESX = {
                     "button2_title": "Create the device using the a IoT device connection",
                     "button3_label": "Sample device",
                     "button3_title": "Create the device using a sample device configuration and provision using DPS",
+                    "button4_label": "QR Code",
+                    "button4_title": "Use an QR code image to create and provision a device (see Help for format)",
                 },
                 "select": "--Do not fork. Create with empty capabilities",
                 "label": {
                     "clone": "Fork another mock device or template",
                     "deviceId": "Device ID (-# appended in bulk create)",
-                    "dps": "DPS scope ID",
+                    "dps": "Scope ID",
                     "sas": "SaS key",
                     "root": "Root key",
                     "dps_blob": "DPS blob payload",
-                    "bulk_from": "Bulk from # (needs root key)",
-                    "bulk_to": "Bulk from # (needs root key)",
+                    "bulk_from": "Bulk from # (need Root Key)",
+                    "bulk_to": "Bulk to # (need Root Key)",
                     "friendly": "mock-devices friendly name (-# appended in bulk create)",
                     "connstr": "Device connection string",
                     "friendly_sm": "mock-devices friendly name",
@@ -135,6 +139,17 @@ export const RESX = {
                 },
                 "cta_title": "The Edge device is a host for modules and is not a real device. The Device Id and Module Id need to be the same as the ones in the manifest file",
                 "cta_label": "Create this Edge device host",
+            },
+            "option8": {
+                "title": "Load a QR Code from an image file",
+                "label": {
+                    "display_name": "Display Name",
+                    "scope_id": "Scope ID",
+                    "device_id": "Device ID",
+                    "sas_key": "Sas Key",
+                    "template_id": "IoT Central Template ID",
+                },
+                "cta_text": "Load image...",
             },
             "error_generic_add": "Check configuration, max devices reached or possible duplicate device",
             "error_state": "State cannot be updated. Format is not valid",
@@ -198,8 +213,11 @@ export const RESX = {
                 "label": {
                     "appUrl": "App Name + DNS",
                     "token": "API Token",
-                    "deviceId": "Enter the Device ID (can be new)",
+                    "deviceId": "Device ID",
+                    "deviceId_placeholder": "New or existing ID",
+                    "deviceId_block": "Block if exists",
                     "templates": "Published device templates",
+                    "loading": "Loading published device templates",
                 },
                 "cta_title": "Get the list of templates from this IoT Central application",
                 "cta_label": "Get Templates",
@@ -209,11 +227,18 @@ export const RESX = {
                 "cta3_label": "Publish template and add the device to the application",
             },
             "hub": {
-                "subtitle": 'IoT Hub integration coming in 8.2.0',
+                "subtitle": 'IoT Hub integration not supported yet',
             },
         },
         "device": {
             "add_capability_title": "Add capability error"
+        },
+        "bulk": {
+            "title": "Bulk update",
+            "select_all_devices": "Select all devices",
+            "select_all_caps": "Select all capabilities",
+            "cta_label":"Apply all changes",
+            "cta_title":"Items need to be checked to be included in the update. Blanks will be treated as empty string/object or zero. Toggles will update any true/false setting regardless of current state",
         }
     },
     "edge": {
@@ -304,6 +329,10 @@ export const RESX = {
                 "mock_title": "Use a simulated sensor that behaves like a real world thing. Ignores current value field but can be overridden. Does not support complex values",
                 "component_label": "Component",
                 "component_title": "Use a component name for this capability",
+                "initial_label": "Initial",
+                "initial_title": "Enable this to send the value when the device powers on",
+                "override_label": "Use Earliest and Latest from simulation configuration",
+                "override_title": "Enable this to use the value to define the loop duration from the simulation config. If a duration is already set you will need to reset to clear the current duration",
             },
             "title": {
                 "ux_label": "Customize UX",
@@ -319,14 +348,15 @@ export const RESX = {
                 "property_label": "Capability name",
                 "property_title": "This is the name of the capability sent to the hub",
                 "value_label": "Enter value",
-                "value_title": "Use this field to define a value to use with the Send button. Mock sensors will use their own value enabling this to be used as an override when pressing Send",
+                "value_plugin_label": "Send value to the plugin",
+                "value_title": "Use this field to define a value to use with the Send button. Mock sensors will use their own value but can be overridden using Send. A plugin will receive this value but can decide to ignore and keep this value to send",
                 "value_placeholder": "Enter a value",
-                "value_complex_label": "Cannot override complex",
-                "value_mock_label": "Can override mock",
-                "value_complex_placeholder": "Using complex value",
+                "value_mock_label": "Override mock value",
                 "value_mock_placeholder": "Using mock value",
                 "complex_label": "JSON payload for the value of this capability",
+                "complex_plugin_label": "Send this JSON payload to the plugin",
                 "complex_title": "See Help for full ist of AUTO macros available",
+                "complex_plugin_title": "The plugin will receive this payload and decide what it wants to send back. If it decides not too, this payload will be sent",
                 "api_label": "API",
                 "api_title": "Choose between the Msg/Event API or the Twin API of the device SDK",
                 "string_label": "Send value as string",
@@ -335,8 +365,8 @@ export const RESX = {
                 "unit_title": "Choose between minutes and seconds",
                 "duration_label": "Earliest",
                 "duration_title": "The engine will use this as the earliest possibly time the value will be sent. Make Earliest and Latest the same to send at a specific time. Recalculates on save",
-                "reset_duration_title": "Loop duration",
-                "reset_duration_click_title": "reset",
+                "reset_duration_label": "Reset",
+                "reset_duration_title": "Clears the loop duration so it can be recalculated",
                 "duration_max_label": "Latest",
                 "duration_max_title": "The engine will use this as the latest possibly time the value will be sent. Make Earliest and Latest the same to send at a specific time. Recalculates on save",
                 "sensor_label": "Sensor",
@@ -344,6 +374,9 @@ export const RESX = {
                 "sensor_generic_title": "Click to configure the sensor",
                 "component_label": "Component Name",
                 "component_title": "Send this capability as part of a component",
+                "initial_label": "Send value when device powers on",
+                "initial_title": "The current value will be send when the device is powered on",
+                "initial_plugin_label": "Send value to the plugin when device powers on",
             },
             "method": {
                 "title_direct": "Direct Method",

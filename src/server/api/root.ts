@@ -4,6 +4,8 @@ import * as uuidV4 from 'uuid/v4';
 import * as fs from 'fs';
 import { REPORTING_MODES } from '../config';
 var path = require('path');
+var QrCode = require('qrcode-reader');
+var Jimp = require("jimp");
 
 export default function (dialog, app, globalContext, ms) {
     let api = Router();
@@ -86,6 +88,44 @@ export default function (dialog, app, globalContext, ms) {
                 console.error(error);
                 res.status(500).end();
             });
+    });
+
+    api.get('/qrcode', async function (req, res, next) {
+        dialog.showOpenDialog({
+            properties: ['openFile'],
+            filters: [
+                { name: 'PNG', extensions: ['png'] },
+                { name: 'All Files', extensions: ['*'] }
+            ]
+        }).then((result: any) => {
+            if (result.canceled) { res.status(444).end(); return; }
+            if (result.filePaths && result.filePaths.length > 0) {
+                const fileNamePath = result.filePaths[0];
+
+                var buffer = fs.readFileSync(fileNamePath);
+                Jimp.read(buffer, function (err, image) {
+                    if (err) {
+                        console.error(err);
+                        res.status(500).end();
+                        return;
+                    }
+                    var qr = new QrCode();
+                    qr.callback = function (err, value) {
+                        if (err) {
+                            console.error(err);
+                            res.status(500).end();
+                            return;
+                        }
+                        res.json({ code: value.result }).status(200).end();
+                    };
+                    qr.decode(image.bitmap);
+                });
+                res.end
+            }
+        }).catch((error: any) => {
+            console.error(error);
+            res.status(500).end();
+        });
     });
 
     return api;

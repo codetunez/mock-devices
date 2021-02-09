@@ -248,6 +248,14 @@ export class DeviceProvider extends React.PureComponent {
             })
     }
 
+    // --- refactor
+    appBulkUpdates = (updatePayload: any) => {
+        axios.post(`${Endpoint.getEndpoint()}api/bulk/update`, { payload: updatePayload })
+            .then((response: any) => {
+                this.setState({ device: {}, devices: response.data.devices });
+            })
+    }
+
     state: any = {
         snippets: {},
         colors: {},
@@ -282,7 +290,8 @@ export class DeviceProvider extends React.PureComponent {
         planSave: this.planSave,
         updateDeviceConfiguration: this.updateDeviceConfiguration,
         updateDeviceModules: this.updateDeviceModules,
-        reapplyTemplate: this.reapplyTemplate
+        reapplyTemplate: this.reapplyTemplate,
+        appBulkUpdates: this.appBulkUpdates
     }
 
     render() {

@@ -24,8 +24,11 @@ export class DeviceStore {
     private bulkRun = null;
     private runloop = null;
 
-    constructor(messageService) {
+    private plugIns = null;
+
+    constructor(messageService, plugIns) {
         this.messageService = messageService;
+        this.plugIns = plugIns;
         this.init();
     }
 
@@ -92,6 +95,7 @@ export class DeviceStore {
         if (d.configuration.mockDeviceCloneId) { this.cloneDeviceCommsAndPlan(d, d.configuration.mockDeviceCloneId); }
 
         delete d.configuration._deviceList;
+        delete d.configuration._plugIns;
         delete d.configuration.mockDeviceCount;
         delete d.configuration.mockDeviceCountMax;
         delete d.configuration.machineState;
@@ -101,7 +105,7 @@ export class DeviceStore {
         d.configuration.deviceId = d._id;
 
         this.store.setItem(d, d._id);
-        let md = new MockDevice(d, this.messageService);
+        let md = new MockDevice(d, this.messageService, this.resolvePlugin(d, this.plugIns));
         this.runners[d._id] = md;
 
         return d._id;
@@ -146,7 +150,7 @@ export class DeviceStore {
         this.store.setItem(d, d._id);
 
         //TODO: needed for modules?
-        let md = new MockDevice(d, this.messageService);
+        let md = new MockDevice(d, this.messageService, this.resolvePlugin(d, this.plugIns));
         this.runners[d._id] = md;
 
         return newId;
@@ -504,7 +508,7 @@ export class DeviceStore {
         if (!items) { return; }
         this.store.createStoreFromArray(items);
         for (const index in items) {
-            let rd = new MockDevice(items[index], this.messageService);
+            let rd = new MockDevice(items[index], this.messageService, this.resolvePlugin(items[index], this.plugIns));
             this.runners[items[index]._id] = rd;
         }
     }
@@ -522,6 +526,101 @@ export class DeviceStore {
 
             let rd: MockDevice = this.runners[devices[index]._id];
             if (rd) { rd.updateDevice(devices[index], false); }
+        }
+    }
+
+    // BETA
+    public getCommonCapabilities(deviceList: Array<string>, applyAll: boolean) {
+
+        const capabilities = [];
+        const devices: any = applyAll ? this.store.getAllItems() : deviceList;
+
+        for (const i in devices) {
+            const deviceId = applyAll ? devices[i].configuration.deviceId : devices[i];
+            const device = this.store.getItem(deviceId);
+            if (device) {
+                for (let index in device.comms) {
+                    if (capabilities.indexOf(device.comms[index].name) === -1) {
+                        capabilities.push(device.comms[index].name);
+                    }
+                }
+            }
+        }
+        return capabilities;
+    }
+
+    // BETA
+    public setCommonCapabilities(update: any) {
+
+        const { devicesList, capabilitiesList, allDevices, allCapabilities, payload } = update;
+        const devices: any = allDevices ? this.store.getAllItems() : devicesList;
+
+        for (const i in devices) {
+            const deviceId = allDevices ? devices[i].configuration.deviceId : devices[i];
+            const device = this.store.getItem(deviceId);
+
+            if (!device) { continue; }
+
+            for (let index in device.comms) {
+                const comm = device.comms[index];
+
+                if (allCapabilities || capabilitiesList.indexOf(comm.name) > -1) {
+                    // common to all
+                    if (payload.include.component) { comm.component = { "enabled": payload.data.component ? true : false, "name": payload.data.component || '' } }
+                    if (payload.include.geo) { device.configuration.geo = parseInt(payload.data.geo || 0); }
+
+                    // these are only applicable to properties
+                    if (comm['_type'] === 'property' && comm.type.direction === 'd2c') {
+                        if (payload.include.override) {
+                            if (!comm.runloop) { comm.runloop = {}; }
+                            comm.runloop.include = true;
+                            comm.runloop.override = payload.data.override || false;
+                        }
+                        if (payload.include.loop || (comm.runloop && !comm.runloop.override)) {
+                            comm.runloop = {
+                                "include": true,
+                                "unit": payload.data.loop_unit || 'secs',
+                                "value": payload.data.loop_min || 30,
+                                "valueMax": payload.data.loop_max || 90,
+                            }
+                        }
+                        if (payload.include.startup) {
+                            if (!comm.runloop) { comm.runloop = {}; }
+                            comm.runloop.onStartUp = payload.data.startup || false;
+                        }
+                        if (payload.include.value) {
+                            if (!payload.data.value) {
+                                // empty/null/clear
+                                comm.value = Utils.formatValue(comm.string, 0);
+                            } else if (Utils.isNumeric(payload.data.value)) {
+                                // number first because JSON/string can never be a number
+                                comm.value = parseFloat(payload.data.value);
+                            } else if ((payload.data.value.startsWith('[') && payload.data.value.endsWith(']')) ||
+                                (payload.data.value.startsWith('{') && payload.data.value.endsWith('}'))) {
+                                // JSON 2nd but check string for special characters    
+                                try {
+                                    JSON.parse(payload.data.value)
+                                    comm.propertyObject = {
+                                        "type": "templated",
+                                        "template": payload.data.value
+                                    }
+                                } catch {
+                                    // This is a malformed JSON. save it as the value
+                                    comm.value = Utils.formatValue(comm.string, payload.data.value);
+                                }
+                            } else {
+                                // Catches all other primitives
+                                comm.propertyObject.type = "default";
+                                comm.value = Utils.formatValue(comm.string, payload.data.value);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // // make sure things get reconfigured
+            let rd: MockDevice = this.runners[deviceId];
+            if (rd) { rd.updateDevice(device, false); }
         }
     }
 
@@ -565,4 +664,14 @@ export class DeviceStore {
             device.configuration.mockDeviceCloneId = cloneId;
         }
     }
+
+    private resolvePlugin(device: Device, plugIns) {
+        if (device.configuration.plugIn && device.configuration.plugIn !== '') {
+            return plugIns[device.configuration.plugIn] || undefined;
+        } else {
+            return undefined;
+        }
+    }
+
+
 }

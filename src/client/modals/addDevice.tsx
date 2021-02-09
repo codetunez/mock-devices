@@ -17,6 +17,7 @@ import { RESX } from '../strings';
 const initialState = {
     _kind: '',
     _deviceList: [],
+    _plugIns: [],
     deviceId: '',
     mockDeviceName: '',
     mockDeviceCount: 1,
@@ -30,7 +31,8 @@ const initialState = {
     capabilityModel: '',
     capabilityUrn: '',
     machineState: '',
-    machineStateClipboard: ''
+    machineStateClipboard: '',
+    plugIn: ''
 }
 
 export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
@@ -45,19 +47,32 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
     React.useEffect(() => {
         let list = [];
+        let plugIns = [];
+        let clipboard = '';
         axios.get(`${Endpoint.getEndpoint()}api/devices`)
             .then((response: any) => {
                 list.push({ name: RESX.modal.add.option1.select, value: null });
-                response.data.map(function (ele: any) {
+                response.data.map((ele: any) => {
                     list.push({ name: ele.configuration.mockDeviceName, value: ele._id });
                 });
                 return axios.get(`${Endpoint.getEndpoint()}api/state`);
             })
+            .then((res) => {
+                clipboard = res.data;
+                return axios.get(`${Endpoint.getEndpoint()}api/plugins`);
+            })
             .then((response: any) => {
+
+                plugIns.push({ name: "--No plug in selected", value: null });
+                response.data.map((ele: any) => {
+                    plugIns.push({ name: ele, value: ele });
+                });
+
                 setPayload({
                     ...state,
                     _deviceList: list,
-                    machineStateClipboard: response.data
+                    _plugIns: plugIns,
+                    machineStateClipboard: clipboard
                 })
             })
     }, []);
@@ -162,6 +177,25 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
             })
     }
 
+    const loadFromQRCode = () => {
+        axios.get(`${Endpoint.getEndpoint()}api/qrcode`)
+            .then(response => {
+                const qrCodeData = JSON.parse(response.data.code);
+                let payload: any = {};
+                payload.mockDeviceName = qrCodeData.displayName;
+                payload.scopeId = qrCodeData.idScope;
+                payload.deviceId = qrCodeData.deviceId;
+                payload.capabilityUrn = qrCodeData.template;
+                payload.dpsPayload = { "iotcModelId": qrCodeData.template }
+                payload.sasKey = qrCodeData.symmetricKey.primaryKey;
+                payload.isMasterKey = false;
+                setPayload(Object.assign({}, state, payload));
+            })
+            .catch((err) => {
+                setError('Cannot decode QR Code. Check generated image');
+            })
+    }
+
     const updateJson = (text: any, type: string) => {
         setJsons({ ...jsons, [type]: text });
         setError('');
@@ -208,6 +242,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <button title={RESX.modal.add.option1.buttons.button3_title} onClick={() => selectPanel(7)} className={cx('btn btn-outline-info', panel === 7 ? 'active' : '')}>{RESX.modal.add.option1.buttons.button3_label}</button><br />
                         <button title={RESX.modal.add.option1.buttons.button1_title} onClick={() => selectPanel(0)} className={cx('btn btn-outline-info', panel === 0 ? 'active' : '')}>{RESX.modal.add.option1.buttons.button1_label}</button><br />
                         <button title={RESX.modal.add.option1.buttons.button2_title} onClick={() => selectPanel(1)} className={cx('btn btn-outline-info', panel === 1 ? 'active' : '')}>{RESX.modal.add.option1.buttons.button2_label}</button><br />
+                        <button title={RESX.modal.add.option1.buttons.button4_title} onClick={() => selectPanel(8)} className={cx('btn btn-outline-info', panel === 8 ? 'active' : '')}>{RESX.modal.add.option1.buttons.button4_label}</button><br />
                         <label>{RESX.modal.add.option2.title}</label>
                         <button title={RESX.modal.add.option2.buttons.button1_title} onClick={() => selectPanel(2)} className={cx('btn btn-outline-info', panel === 2 ? 'active' : '')}>{RESX.modal.add.option2.buttons.button1_label}</button><br />
                         <button title={RESX.modal.add.option2.buttons.button2_title} onClick={() => selectPanel(3)} className={cx('btn btn-outline-info', panel === 3 ? 'active' : '')}>{RESX.modal.add.option2.buttons.button2_label}</button><br />
@@ -232,6 +267,12 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                 <label>{RESX.modal.add.option1.label.clone}</label><br />
                                 <Combo items={state._deviceList} cls='custom-textarea-sm' name='mockDeviceCloneId' onChange={(e) => getTemplate(e.target.value)} value={state.mockDeviceCloneId || ''} />
                             </div>
+
+                            <div className='form-group'>
+                                <label>{RESX.modal.plugin}</label><br />
+                                <Combo items={state._plugIns} cls='custom-textarea-sm' name='plugIn' onChange={updateField} value={state.plugIn || ''} />
+                            </div>
+
                             <div className='form-group'>
                                 <label>{RESX.modal.add.option1.label.deviceId}</label><br />
                                 <input autoFocus={true} id="device-id" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} />
@@ -287,6 +328,10 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             <div className='form-group'>
                                 <label>{RESX.modal.add.option1.label.clone}</label><br />
                                 <Combo items={state._deviceList} cls='custom-textarea-sm' name='mockDeviceCloneId' onChange={updateField} value={state.mockDeviceCloneId || ''} />
+                            </div>
+                            <div className='form-group'>
+                                <label>{RESX.modal.plugin}</label><br />
+                                <Combo items={state._plugIns} cls='custom-textarea-sm' name='plugIn' onChange={updateField} value={state.plugIn || ''} />
                             </div>
                             <div className='form-group'>
                                 <label>{RESX.modal.add.option1.label.connstr}</label>
@@ -393,6 +438,10 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             <div className='form-group'>{RESX.modal.add.option1.label.quick} <span className='quick-url'>{RESX.modal.add.option1.label.quick_url}</span></div>
                             <div className='form-group'>
                                 <div className='form-group'>
+                                    <label>Plugin</label><br />
+                                    <Combo items={state._plugIns} cls='custom-textarea-sm' name='plugIn' onChange={updateField} value={state.plugIn || ''} />
+                                </div>
+                                <div className='form-group'>
                                     <label>{RESX.modal.add.option1.label.dps}</label>
                                     <input autoFocus={true} className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
                                 </div>
@@ -412,11 +461,49 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         </div>
 
                         <div className='m-tabbed-panel-footer'>
-                            <button title={RESX.modal.add.option1.cta_title} className='btn btn-primary' disabled={!state.isMasterKey && state.deviceId === ''} onClick={() => clickAddDevice('quick')}>{RESX.modal.add.option1.cta_label}</button>                        </div>
+                            <button title={RESX.modal.add.option1.cta_title} className='btn btn-primary' disabled={!state.isMasterKey && state.deviceId === ''} onClick={() => clickAddDevice('quick')}>{RESX.modal.add.option1.cta_label}</button>
+                        </div>
                     </>}
 
+                    {panel !== 8 ? null : <>
+                        <div className='m-tabbed-panel-form'>
+                            <div className='form-group'>
+                                <label>{RESX.modal.add.option8.title}</label>
+                                <div>
+                                    <button className='btn btn-success' onClick={() => loadFromQRCode()}>{RESX.modal.add.option3.label.browse}</button>
+                                </div>
+                            </div>
+                            <div className='form-group'>
+                                <label>{RESX.modal.plugin}</label><br />
+                                <Combo items={state._plugIns} cls='custom-textarea-sm' name='plugIn' onChange={updateField} value={state.plugIn || ''} />
+                            </div>
+                            <div className='form-group'>
+                                <label>{RESX.modal.add.option8.label.display_name}</label><br />
+                                {state.mockDeviceName || RESX.modal.add.option8.cta_text}
+                            </div>
+                            <div className='form-group'>
+                                <label>{RESX.modal.add.option8.label.scope_id}</label><br />
+                                {state.scopeId || RESX.modal.add.option8.cta_text}
+                            </div>
+                            <div className='form-group'>
+                                <label>{RESX.modal.add.option8.label.device_id}</label><br />
+                                {state.deviceId || RESX.modal.add.option8.cta_text}
+                            </div>
+                            <div className='form-group'>
+                                <label>{RESX.modal.add.option8.label.sas_key}</label><br />
+                                {state.sasKey || RESX.modal.add.option8.cta_text}
+                            </div>
+                            <div className='form-group'>
+                                <label>{RESX.modal.add.option8.label.template_id}</label><br />
+                                {state.capabilityUrn || RESX.modal.add.option8.cta_text}
+                            </div>
+                        </div>
+                        <div className='m-tabbed-panel-footer'>
+                            <button title={RESX.modal.add.option1.cta_title} className='btn btn-primary' disabled={state.scopeId === '' || state.deviceId === '' || state.sasKey === ''} onClick={() => clickAddDevice('dps')}>{RESX.modal.add.option1.cta_label}</button>
+                        </div>
+                    </>}
                 </div>
             </div >
         </div>
-    </div>
+    </div >
 }

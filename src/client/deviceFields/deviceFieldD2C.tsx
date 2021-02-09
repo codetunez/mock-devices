@@ -119,6 +119,17 @@ const reducer = (state: State, action: Action) => {
             newData.runloop.include = !newData.runloop.include;
             state.appContext.setDirty(newData._id);
             return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData, dialog: diag };
+        case "toggle-runloop-onstartup":
+            newData.enabled = true;
+            newData.runloop.onStartUp = !newData.runloop.onStartUp;
+            state.appContext.setDirty(newData._id);
+            return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData, dialog: diag };
+        case "toggle-runloop-override":
+            newData.enabled = true;
+            newData.runloop.override = !newData.runloop.override;
+            state.appContext.setDirty(newData._id);
+            return { ...state, form: { dirty: true, expanded: state.form.expanded }, data: newData, dialog: diag };
+
         case "toggle-mock":
             newData.enabled = true;
             newData.type.mock = !newData.type.mock;
@@ -174,7 +185,7 @@ const reducer = (state: State, action: Action) => {
     }
 }
 
-export function DeviceFieldD2C({ capability, shouldExpand, template, sensors }) {
+export function DeviceFieldD2C({ capability, shouldExpand, template, sensors, plugIn }) {
 
     const deviceContext: any = React.useContext(DeviceContext);
     const appContext: any = React.useContext(AppContext);
@@ -287,14 +298,16 @@ export function DeviceFieldD2C({ capability, shouldExpand, template, sensors }) 
     let valuePlaceholder = RESX.device.card.send.value_placeholder;
     let valueSend = state.data.value;
 
-    if (state.data.propertyObject.type === 'templated') {
-        valueLabel = RESX.device.card.send.value_complex_label;
-        valuePlaceholder = RESX.device.card.send.value_complex_placeholder;
-        valueSend = ''
-    } else if (state.data.type.mock) {
+    if (state.data.type.mock) {
         valueLabel = RESX.device.card.send.value_mock_label;
         valuePlaceholder = RESX.device.card.send.value_mock_placeholder;
     }
+
+    if (plugIn) {
+        valueLabel = RESX.device.card.send.value_plugin_label;
+    }
+
+    const templated = state.data.propertyObject.type === 'templated';
 
     return <>
         {state.dialog ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><ModalConfirm config={state.dialog} /></div></Modal> : null}
@@ -320,45 +333,42 @@ export function DeviceFieldD2C({ capability, shouldExpand, template, sensors }) 
 
             <div className='df-card-row'>
                 <div><label>{RESX.device.card.toggle.enabled_label}</label><div title={RESX.device.card.toggle.enabled_title}><Toggle name={state.data._id + '-enabled'} disabled={true} checked={true} onChange={() => { }} /></div></div>
-                <div><label title={RESX.device.card.send.property_title}>{RESX.device.card.send.property_label}</label><div><input type='text' className='form-control form-control-sm double-width' name='name' value={state.data.name} onChange={updateField} /></div></div>
-                <div>
-                    <label title={RESX.device.card.send.value_title}>{valueLabel} </label>
-                    <div><input type='text' className='form-control form-control-sm double-width' name='value' value={valueSend} placeholder={valuePlaceholder} onChange={updateField} /></div>
-                </div>
-                <div>
-                    <div className="card-field-label-height"></div>
-                    <div>{!template ? <div className='single-item'><button title={RESX.device.card.send_title} className='btn btn-sm btn-outline-primary' onClick={() => { save(true) }}>{RESX.device.card.send_label}</button></div> : null}</div>
-                </div>
+                <div><label title={RESX.device.card.send.property_title}>{RESX.device.card.send.property_label}</label><div><input type='text' className={cx('form-control form-control-sm', templated ? 'full-width' : 'double-width')} name='name' value={state.data.name} onChange={updateField} /></div></div>
+                {templated ? null :
+                    <>
+                        <div>
+                            <label title={RESX.device.card.send.value_title}>{valueLabel} </label>
+                            <div><input type='text' className='form-control form-control-sm double-width' name='value' value={valueSend} placeholder={valuePlaceholder} onChange={updateField} /></div>
+                        </div>
+                        <div>
+                            <div className="card-field-label-height"></div>
+                            <div>{!template ? <div className='single-item'><button title={RESX.device.card.send_title} className='btn btn-sm btn-outline-primary' onClick={() => { save(true) }}>{RESX.device.card.send_label}</button></div> : null}</div>
+                        </div>
+                    </>
+                }
             </div>
 
             {!state.form.expanded ? null :
                 <>
                     <div className='df-card-row'>
-                        <div>{RESX.device.card.toggle.device_sdk_label}</div>
-                        <div><label title={RESX.device.card.send.api_title}>{RESX.device.card.send.api_label}</label><div><Combo items={[{ name: 'Msg/Telemetry', value: 'msg' }, { name: 'Twin', value: 'twin' }]} cls='custom-textarea-sm double-width' name='sdk' onChange={updateField} value={state.data.sdk} /></div></div>
-                        {state.data.propertyObject.type === 'templated' ? null :
-                            <div><label title={RESX.device.card.send.string_title}>{RESX.device.card.send.string_label}</label><div><Combo items={[{ name: 'Yes', value: true }, { name: 'No', value: false }]} cls='custom-textarea-sm single-width' name='string' onChange={updateField} value={state.data.string} /></div></div>
+                        <div><label>{RESX.device.card.toggle.complex_label}</label><div title={RESX.device.card.toggle.complex_title}><Toggle name={state.data._id + '-json'} defaultChecked={false} checked={templated} onChange={() => dispatch({ type: 'toggle-complex', payload: null })} /></div></div>
+                        {templated ?
+                            <>
+                                <div>
+                                    <label title={plugIn ? RESX.device.card.send.complex_plugin_title : RESX.device.card.send.complex_title}>{plugIn ? RESX.device.card.send.complex_plugin_label : RESX.device.card.send.complex_label}</label>
+                                    <textarea className='form-control form-control-sm custom-textarea full-width' rows={7} name='propertyObject.template' onChange={updateField} value={state.data.propertyObject.template || ''}></textarea>
+                                </div>
+                                <div>
+                                    <div className="card-field-label-height"></div>
+                                    <div>{!template ? <div className='single-item'><button title={RESX.device.card.send_title} className='btn btn-sm btn-outline-primary' onClick={() => { save(true) }}>{RESX.device.card.send_label}</button></div> : null}</div>
+                                </div>
+                            </>
+                            : null
                         }
+                        <div style={{ height: '55px' }}></div>
                     </div>
 
-                    <div className='df-card-row'>
-                        <div><label>{RESX.device.card.toggle.component_label}</label><div title={RESX.device.card.toggle.component_title}><Toggle name={state.data._id + '-component'} defaultChecked={false} checked={state.data.component && state.data.component.enabled} onChange={() => dispatch({ type: 'toggle-component', payload: null })} /></div></div>
-                        {state.data.component && state.data.component.enabled ?
-                            <div><label title={RESX.device.card.send.component_title}>{RESX.device.card.send.component_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='component.name' value={state.data.component.name} onChange={updateField} /></div></div>
-                            : <div style={{ height: '55px' }}></div>}
-                    </div>
-
-                    <div className='df-card-row'>
-                        <div><label>{RESX.device.card.toggle.complex_label}</label><div title={RESX.device.card.toggle.complex_title}><Toggle name={state.data._id + '-json'} defaultChecked={false} checked={state.data.propertyObject.type === 'templated'} onChange={() => dispatch({ type: 'toggle-complex', payload: null })} /></div></div>
-                        {state.data.propertyObject.type === 'templated' ? <>
-                            <div>
-                                <label title={RESX.device.card.send.complex_title}>{RESX.device.card.send.complex_label}</label>
-                                <textarea className='form-control form-control-sm custom-textarea full-width' rows={7} name='propertyObject.template' onChange={updateField} value={state.data.propertyObject.template || ''}></textarea>
-                            </div>
-                        </> : <div style={{ height: '55px' }}></div>}
-                    </div>
-
-                    {state.data.propertyObject.type != 'templated' ? null :
+                    {!templated ? null :
                         <div className='df-card-row df-card-row-nogap'>
                             <div></div>
                             <div className="snippets">
@@ -369,23 +379,51 @@ export function DeviceFieldD2C({ capability, shouldExpand, template, sensors }) 
                     }
 
                     <div className='df-card-row'>
+                        <div>{RESX.device.card.toggle.initial_label}</div>
+                        <div><label title={RESX.device.card.send.initial_title}>{plugIn ? RESX.device.card.send.initial_plugin_label : RESX.device.card.send.initial_label}</label>
+                            <div title={RESX.device.card.toggle.initial_title}><Toggle name={state.data._id + '-runloopOnStartUp'} defaultChecked={false} checked={state.data.runloop.onStartUp} onChange={() => { dispatch({ type: 'toggle-runloop-onstartup', payload: null }) }} /></div>
+                        </div>
+                    </div>
+
+                    <div className='df-card-row'>
                         <div><label>{RESX.device.card.toggle.runloop_label}</label><div title={RESX.device.card.toggle.runloop_title}><Toggle name={state.data._id + '-runloop'} defaultChecked={false} checked={state.data.runloop.include} onChange={() => dispatch({ type: 'toggle-runloop', payload: null })} /></div></div>
                         {state.data.runloop.include ? <>
                             <div><label title={RESX.device.card.send.unit_title}>{RESX.device.card.send.unit_label}</label><div><Combo items={[{ name: 'Mins', value: 'mins' }, { name: 'Secs', value: 'secs' }]} cls='custom-textarea-sm double-width' name='runloop.unit' onChange={updateField} value={state.data.runloop.unit} /></div></div>
-                            <div><label title={RESX.device.card.send.duration_title}>{RESX.device.card.send.duration_label}</label><div><input type='number' className='form-control form-control-sm single-width' name='runloop.value' min={0} value={state.data.runloop.value} onChange={updateField} /></div></div>
-                            <div><label title={RESX.device.card.send.duration_max_title}>{RESX.device.card.send.duration_max_label}</label><div><input type='number' className='form-control form-control-sm single-width' name='runloop.valueMax' min={0} value={state.data.runloop.valueMax} onChange={updateField} /></div></div>
+                            {!state.data.runloop.override ? <>
+                                <div><label title={RESX.device.card.send.duration_title}>{RESX.device.card.send.duration_label}</label><div><input type='number' className='form-control form-control-sm single-width' name='runloop.value' min={0} value={state.data.runloop.value} onChange={updateField} /></div></div>
+                                <div><label title={RESX.device.card.send.duration_max_title}>{RESX.device.card.send.duration_max_label}</label><div><input type='number' className='form-control form-control-sm single-width' name='runloop.valueMax' min={0} value={state.data.runloop.valueMax} onChange={updateField} /></div></div>
+                            </>
+                                : null}
+                            <div>
+                                <div className="card-field-label-height"></div>
+                                <div>{!template ? <div className='single-item'><button title={RESX.device.card.send.reset_duration_title} className='btn btn-sm btn-outline-primary' onClick={() => dispatch({ type: 'reset-time', payload: null })}>{RESX.device.card.send.reset_duration_label}</button></div> : null}</div>
+                            </div>
                         </> : <div style={{ height: '55px' }}></div>}
                     </div>
 
-                    {!state.data.runloop.include ? null :
-                        <div className='df-card-row df-card-row-nogap'>
+                    {state.data.runloop.include ?
+                        <div className='df-card-row'>
                             <div></div>
-                            <div className="snippets">
-                                <div>{RESX.device.card.send.reset_duration_title}</div>
-                                <div className="snippet-links"><div onClick={() => dispatch({ type: 'reset-time', payload: null })}>{RESX.device.card.send.reset_duration_click_title}</div></div>
+                            <div><label>{RESX.device.card.toggle.override_label}</label>
+                                <div title={RESX.device.card.toggle.override_title}><Toggle name={state.data._id + '-appl-runloopOverride'} defaultChecked={false} checked={state.data.runloop.override} onChange={() => { dispatch({ type: 'toggle-runloop-override', payload: null }) }} /></div>
                             </div>
                         </div>
-                    }
+                        : null}
+
+                    <div className='df-card-row'>
+                        <div><label>{RESX.device.card.toggle.component_label}</label><div title={RESX.device.card.toggle.component_title}><Toggle name={state.data._id + '-component'} defaultChecked={false} checked={state.data.component && state.data.component.enabled} onChange={() => dispatch({ type: 'toggle-component', payload: null })} /></div></div>
+                        {state.data.component && state.data.component.enabled ?
+                            <div><label title={RESX.device.card.send.component_title}>{RESX.device.card.send.component_label}</label><div><input type='text' className='form-control form-control-sm full-width' name='component.name' value={state.data.component.name} onChange={updateField} /></div></div>
+                            : <div style={{ height: '55px' }}></div>}
+                    </div>
+
+                    <div className='df-card-row'>
+                        <div>{RESX.device.card.toggle.device_sdk_label}</div>
+                        <div><label title={RESX.device.card.send.api_title}>{RESX.device.card.send.api_label}</label><div><Combo items={[{ name: 'Msg/Telemetry', value: 'msg' }, { name: 'Twin', value: 'twin' }]} cls='custom-textarea-sm double-width' name='sdk' onChange={updateField} value={state.data.sdk} /></div></div>
+                        {templated ? null :
+                            <div><label title={RESX.device.card.send.string_title}>{RESX.device.card.send.string_label}</label><div><Combo items={[{ name: 'Yes', value: true }, { name: 'No', value: false }]} cls='custom-textarea-sm single-width' name='string' onChange={updateField} value={state.data.string} /></div></div>
+                        }
+                    </div>
 
                     <div className='df-card-row'>
                         <div><label>{RESX.device.card.toggle.mock_label}</label><div title={RESX.device.card.toggle.mock_title}><Toggle name={state.data._id + '-mock'} defaultChecked={false} checked={state.data.type.mock} onChange={() => dispatch({ type: 'toggle-mock', payload: null })} /></div></div>

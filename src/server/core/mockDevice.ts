@@ -20,6 +20,7 @@ import * as request from 'request';
 import * as rw from 'random-words';
 import * as Crypto from 'crypto';
 import * as _ from 'lodash';
+import { PlugIn } from '../interfaces/plugin';
 
 function ignoreKind(kind) {
     return kind === 'template' || kind === 'edge';
@@ -127,6 +128,9 @@ export class MockDevice {
     private CONNECT_POLL: number;
     private RESTART_LOOP: number;
 
+    private LOOP_MINS: any;
+    private LOOP_SECS: any;
+
     private CONNECT_RESTART: boolean = false;
     private useSasMode = true;
     private sasTokenExpiry = 0;
@@ -143,19 +147,23 @@ export class MockDevice {
     private methodRLTimer = null;
     private methodReturnPayload = null;
     private receivedMethodParams = {}
+    private twinDesiredPayloadRead = {};
 
     private twinRLTimer = null;
     private twinRLProps: Array<Property> = [];
     private twinRLPropsPlanValues: Array<Property> = [];
     private twinRLReportedTimers: Array<Timers> = [];
     private twinRLPayloadAdditions: ValueByIdPayload = <ValueByIdPayload>{};
-    private twinDesiredPayloadRead = {};
+    private twinRLStartUp: Array<string> = [];
+    private twinRLStartUpCache: Array<string> = [];
 
     private msgRLTimer = null;
     private msgRLProps: Array<Property> = [];
     private msgRLPropsPlanValues: Array<Property> = [];
     private msgRLReportedTimers: Array<Timers> = [];
     private msgRLPayloadAdditions: ValueByIdPayload = <ValueByIdPayload>{};
+    private msgRLStartUp: Array<string> = [];
+    private msgRLStartUpCache: Array<string> = [];
 
     private desiredMergedCache = {};
     private desiredOverrides: DesiredPayload = <DesiredPayload>{};
@@ -187,9 +195,12 @@ export class MockDevice {
 
     private firstSendMins: string;
 
-    constructor(device: Device, messageService) {
+    private plugIn: PlugIn = undefined;
+
+    constructor(device: Device, messageService, plugIn: PlugIn) {
         if (ignoreKind(device.configuration._kind)) { return; }
         this.messageService = messageService;
+        this.plugIn = plugIn;
         this.initialize(device);
     }
 
@@ -202,11 +213,14 @@ export class MockDevice {
         return Math.ceil(raw);
     }
 
-
-    initialize(device) {
+    // making device any avoids a typing problem
+    initialize(device: any) {
         this.ranges = this.simulationStore.get()['ranges'];
-        this.geo = this.simulationStore.get()['geo'];
-
+        const i = 0;
+        if (device.configuration.geo) {
+            try { device.configuration.geo = parseInt(device.configuration.geo); } catch { }
+        }
+        this.geo = this.simulationStore.get()['geo'][i];
         const commands = this.simulationStore.get()['commands'];
         this.CMD_REBOOT = commands['reboot'];
         this.CMD_FIRMWARE = commands['firmware'];
@@ -216,6 +230,10 @@ export class MockDevice {
         this.FIRMWARE_LOOP = simulation['firmware'];
         this.CONNECT_POLL = simulation['connect'];
         const { min, max } = simulation['restart'];
+
+        const runloop = this.simulationStore.get()['runloop'];
+        this.LOOP_MINS = runloop['mins'];
+        this.LOOP_SECS = runloop['secs'];
 
         this.RESTART_LOOP = Utils.getRandomNumberBetweenRange(min, max, true) * 3600000;
         this.sasTokenExpiry = this.getSecondsFromHours(simulation['sasExpire']);
@@ -251,6 +269,7 @@ export class MockDevice {
             this.log('DEVICE/MODULE UPDATE ERROR. CONNECTION STRING HAS CHANGED. DELETE DEVICE', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
         } else {
             this.device = Object.assign({}, device);
+            if (this.plugIn) { this.plugIn.configureDevice(this.device.configuration.deviceId, this.running); }
             this.reconfigDeviceDynamically(valueOnlyUpdate);
         }
     }
@@ -258,6 +277,8 @@ export class MockDevice {
     reconfigDeviceDynamically(valueOnlyUpdate: boolean) {
 
         if (valueOnlyUpdate) { return; }
+
+        this.log('DEVICE/MODULE HAS BEEN CONFIGURED', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
         this.logStat(LOGGING_TAGS.STAT.RECONFIGURES);
 
         this.resolversCollection = {
@@ -273,11 +294,15 @@ export class MockDevice {
         this.twinRLPropsPlanValues = [];
         this.twinRLReportedTimers = [];
         this.twinRLMockSensorTimers = {};
+        this.twinRLStartUp = [];
+        this.twinRLStartUpCache = [];
 
         this.msgRLProps = [];
         this.msgRLPropsPlanValues = [];
         this.msgRLReportedTimers = [];
         this.msgRLMockSensorTimers = {};
+        this.msgRLStartUp = [];
+        this.msgRLStartUpCache = [];
 
         this.buildIndexes();
 
@@ -317,15 +342,16 @@ export class MockDevice {
             return;
         }
 
-        this.msgRLProps = [];
-        this.msgRLReportedTimers = [];
-        this.msgRLMockSensorTimers = {};
-
         for (const i in this.device.comms) {
             const comm = this.device.comms[i];
 
             // only twin/msg require the runloop. methods are always on and not part of the runloop
             if (this.device.comms[i]._type != 'property') { continue; }
+
+            // this is a start up event but not a runloop one. treat it differently
+            if (comm.runloop && comm.runloop.onStartUp && !comm.runloop.include) {
+                this.addLoopStartUpComm(comm, !this.running);
+            }
 
             // set up runloop reporting
             if (comm.runloop && comm.runloop.include === true) {
@@ -334,7 +360,14 @@ export class MockDevice {
                 // This will need an explicit reset bu remove the _ms property to change the time
                 if (!comm.runloop._ms) {
                     if (!comm.runloop.valueMax) { comm.runloop.valueMax = comm.runloop.value; }
-                    const newRunloopValue = Utils.getRandomNumberBetweenRange(comm.runloop.value, comm.runloop.valueMax, true);
+
+                    let newRunloopValue = 0;
+                    if (comm.runloop.override) {
+                        const simLoop = comm.runloop.unit === 'secs' ? this.LOOP_SECS : this.LOOP_MINS;
+                        newRunloopValue = Utils.getRandomNumberBetweenRange(simLoop.min, simLoop.max, true)
+                    } else {
+                        newRunloopValue = Utils.getRandomNumberBetweenRange(comm.runloop.value, comm.runloop.valueMax, true);
+                    }
                     comm.runloop._ms = newRunloopValue * (comm.runloop.unit === 'secs' ? 1000 : 60000);
                 }
 
@@ -362,12 +395,16 @@ export class MockDevice {
                     this.twinRLProps.push(comm);
                     this.twinRLReportedTimers.push({ timeRemain: comm.runloop._ms, originalTime: comm.runloop._ms });
                     if (mockSensorTimerObject != null) { this.twinRLMockSensorTimers[comm._id] = mockSensorTimerObject; }
+                    if (comm.runloop.onStartUp) { this.twinRLStartUpCache.push(comm._id); }
+                    if (comm.runloop.onStartUp && !this.running) { this.twinRLStartUp.push(comm._id); }
                 }
 
                 if (comm.sdk === 'msg') {
                     this.msgRLProps.push(comm);
                     this.msgRLReportedTimers.push({ timeRemain: comm.runloop._ms, originalTime: comm.runloop._ms });
                     if (mockSensorTimerObject != null) { this.msgRLMockSensorTimers[comm._id] = mockSensorTimerObject; }
+                    if (comm.runloop.onStartUp) { this.msgRLStartUpCache.push(comm._id); }
+                    if (comm.runloop.onStartUp && !this.running) { this.msgRLStartUp.push(comm._id); }
                 }
             }
         }
@@ -393,6 +430,22 @@ export class MockDevice {
                 }
             }
         })
+    }
+
+    addLoopStartUpComm(comm: any, liveUpdate: boolean) {
+        let json: ValueByIdPayload = <ValueByIdPayload>{};
+        let converted = Utils.formatValue(comm.string, comm.value);
+        json[comm._id] = converted;
+        if (comm.sdk === 'twin') {
+            if (comm.runloop.onStartUp) { this.twinRLStartUpCache.push(comm._id); }
+            if (comm.runloop.onStartUp && !this.running) { this.twinRLStartUp.push(comm._id); }
+            if (liveUpdate) { this.updateTwin(json); }
+        }
+        if (comm.sdk === 'msg') {
+            if (comm.runloop.onStartUp) { this.msgRLStartUpCache.push(comm._id); }
+            if (comm.runloop.onStartUp && !this.running) { this.msgRLStartUp.push(comm._id); }
+            if (liveUpdate) { this.updateMsg(json); }
+        }
     }
 
     // End of device setup and update code
@@ -539,6 +592,10 @@ export class MockDevice {
         this.log('IOT HUB INITIAL CONNECT START', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
         this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.INIT);
         this.connectClient(connectionString);
+        if (this.plugIn) {
+            this.plugIn.postConnect(this.device.configuration.deviceId);
+            this.log(`DEVICE/MODULE IS USING A PLUGIN`, LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
+        }
         this.mainLoop();
         this.connectionTimer = setInterval(() => {
             this.log('IOT HUB RECONNECT LOOP START', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
@@ -567,6 +624,7 @@ export class MockDevice {
         }
         this.logCP(LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.OFF);
         if (!this.running) { return; }
+        if (this.plugIn) { this.plugIn.stopDevice(this.device.configuration.deviceId); }
         this.final();
     }
 
@@ -607,6 +665,17 @@ export class MockDevice {
                 this.log(this.device.configuration.planMode ? 'PLAN MODE' : 'INTERACTIVE MODE', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
                 this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.CONNECTED);
 
+                // if we have startup events, ensure these get sent at start up again
+                this.twinRLStartUp = this.twinRLStartUpCache.slice();
+                this.msgRLStartUp = this.msgRLStartUpCache.slice();
+
+                // have to scan through everything because we don't know what is twin or msg startup
+                for (const i in this.device.comms) {
+                    if (this.device.comms[i].runloop && this.device.comms[i].runloop.onStartUp && !this.device.comms[i].runloop.include) {
+                        this.addLoopStartUpComm(this.device.comms[i], true);
+                    }
+                }
+
                 this.iotHubDevice.client.getTwin((err, twin) => {
 
                     // desired properties are cached
@@ -642,17 +711,19 @@ export class MockDevice {
 
                     // reported properties are cleared every runloop cycle
                     this.twinRLTimer = setInterval(() => {
-                        let payload: ValueByIdPayload = <ValueByIdPayload>this.calcPropertyValues(this.twinRLProps, this.twinRLReportedTimers, this.twinRLMockSensorTimers, this.twinRLPropsPlanValues);
+                        let payload: ValueByIdPayload = <ValueByIdPayload>this.calcPropertyValues(this.twinRLProps, this.twinRLReportedTimers, this.twinRLMockSensorTimers, this.twinRLPropsPlanValues, this.twinRLStartUp);
                         this.runloopTwin(this.twinRLPayloadAdditions, payload, twin);
                         this.twinRLPayloadAdditions = <ValueByIdPayload>{};
+                        this.twinRLStartUp = [];
                     }, 1000);
                 })
 
                 this.msgRLTimer = setInterval(() => {
                     let payload: ValueByIdPayload = null;
-                    payload = <ValueByIdPayload>this.calcPropertyValues(this.msgRLProps, this.msgRLReportedTimers, this.msgRLMockSensorTimers, this.msgRLPropsPlanValues);
+                    payload = <ValueByIdPayload>this.calcPropertyValues(this.msgRLProps, this.msgRLReportedTimers, this.msgRLMockSensorTimers, this.msgRLPropsPlanValues, this.msgRLStartUp);
                     this.runloopMsg(this.msgRLPayloadAdditions, payload);
                     this.msgRLPayloadAdditions = <ValueByIdPayload>{};
+                    this.msgRLStartUp = [];
                 }, 1000);
 
             })
@@ -918,7 +989,7 @@ export class MockDevice {
                             this.logStat(LOGGING_TAGS.STAT.TWIN.COUNT);
                             this.messageService.sendAsLiveUpdate(this.device._id, transformed.live);
                         }))
-                    }, 500);
+                    }, 250);
                 }
             }
         }
@@ -942,17 +1013,17 @@ export class MockDevice {
                     // the small setTimeout here is to ease a little spamming
                     setTimeout(() => {
                         this.iotHubDevice.client.sendEvent(msg, ((err) => {
-                            this.log(JSON.stringify(transformed.legacy), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.MSG, LOGGING_TAGS.DATA.SEND, sub);
+                            this.log(data, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.MSG, LOGGING_TAGS.DATA.SEND, sub);
                             this.logStat(LOGGING_TAGS.STAT.MSG.COUNT);
                             this.messageService.sendAsLiveUpdate(this.device._id, transformed.live);
                         }))
-                    }, 500);
+                    }, 250);
                 }
             }
         }
     }
 
-    calcPropertyValues(runloopProperties: any, runloopTimers: any, propertySensorTimers: any, runloopPropertiesValues: any) {
+    calcPropertyValues(runloopProperties: any, runloopTimers: any, propertySensorTimers: any, runloopPropertiesValues: any, startUpList: Array<string>) {
         if (this.iotHubDevice === null || this.iotHubDevice.client === null) {
             clearInterval(this.msgRLTimer);
             return null;
@@ -966,7 +1037,7 @@ export class MockDevice {
             let p: Property = runloopProperties[i];
             let { timeRemain, originalTime } = runloopTimers[i]
             let possibleResetTime = runloopTimers[runloopTimers.length - 1].timeRemain + originalTime;
-            let res = this.processCountdown(p, timeRemain, possibleResetTime);
+            let res = this.processCountdown(p, timeRemain, possibleResetTime, startUpList);
             runloopTimers[i] = { 'timeRemain': res.timeRemain, originalTime };
 
             // for plan mode we send regardless of enabled or not
@@ -1081,7 +1152,7 @@ export class MockDevice {
         })
     }
 
-    processCountdown(p: Property, timeRemain, originalPlanTime) {
+    processCountdown(p: Property, timeRemain, originalPlanTime, startUpList: Array<string>) {
 
         let res: any = {};
 
@@ -1089,6 +1160,13 @@ export class MockDevice {
         if (timeRemain != 0) {
             timeRemain = timeRemain - 1000;
             res.process = false;
+
+            // if this is a start up event then send the value regardless of time remain
+            if (startUpList.indexOf(p._id) > -1) {
+                res.timeRemain = timeRemain;
+                res.process = true;
+                return res;
+            }
         }
 
         // reset and process
@@ -1119,6 +1197,18 @@ export class MockDevice {
                 var component = p.component && p.component.enabled ? p.component.name : null;
                 if (component && !remap.package[component]) { remap.package[component] = {} }
                 if (!component && !remap.package["_root"]) { remap.package["_root"] = {} }
+
+                if (this.plugIn) {
+                    const val = p.propertyObject.type === 'templated' ? JSON.parse(p.propertyObject.template) : payload[p._id];
+                    const res = this.plugIn.propertyResponse(this.device.configuration.deviceId, p, val);
+
+                    if (res !== undefined) {
+                        remap.legacy[p.name] = res;
+                        remap.live[p._id] = res;
+                        remap.package[component ? component : '_root'][p.name] = res;
+                        continue;
+                    }
+                }
 
                 /* REFACTOR: this concept does not scale well. desired and reported for a setting
                    are separate items in the array therefore there is no concept of version when the event
@@ -1158,7 +1248,6 @@ export class MockDevice {
                     remap.legacy[p.name] = resolve;
                     remap.live[p._id] = resolve;
                     remap.package[component ? component : '_root'][p.name] = resolve;
-                    break;
                 }
             } else {
                 //TODO: deprecate?

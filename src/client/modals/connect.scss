@@ -9,6 +9,16 @@
     .m-content {
       padding: 0 $md-gutter;
 
+      .progress-container {
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        .p-bar {
+          margin: 0 0 $sm-gutter $sm-gutter;
+          height: 1rem;
+        }
+      }
+
       .form-inline {
         display: flex;
         height: auto;
@@ -20,6 +30,7 @@
         .form-group:not(:last-child) {
           padding-right: $md-gutter;
         }
+        margin-bottom: $lg-gutter;
       }
 
       .form-group {
@@ -47,6 +58,18 @@
           text-decoration: underline;
         }
       }
+
+      .error {
+        color: $app-clr-red-1;
+      }
     }
+  }
+}
+
+.button-spinner {
+  display: flex;
+  align-items: center;
+  > div {
+    margin-left: $sm-gutter;
   }
 }

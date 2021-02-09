@@ -14,6 +14,8 @@ export interface RunLoop {
     unit: 'secs' | 'mins';
     value: number;
     valueMax: number;
+    onStartUp?: boolean;
+    override?: boolean
 }
 
 export interface MockSensor {
@@ -91,6 +93,7 @@ export class Device {
     public configuration: DeviceConfiguration;
     public comms: Array<any>;
     public plan: Plan;
+    public plugin: string;
 
     constructor() {
         this.comms = new Array<any>();
@@ -101,6 +104,7 @@ export class Device {
 export class DeviceConfiguration {
     public _kind: 'dps' | 'hub' | 'template' | 'edge' | 'module';
     public _deviceList?: [];
+    public _plugIns?: [];
     public deviceId?: string;
     public devices?: [];
     public mockDeviceName?: string;
@@ -119,4 +123,6 @@ export class DeviceConfiguration {
     public planMode?: boolean;
     public modules?: Array<string> = [];
     public centralAdded?: boolean;
+    public plugIn: string;
+    public geo?: number;
 }
