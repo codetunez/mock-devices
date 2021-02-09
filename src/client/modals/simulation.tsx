@@ -4,6 +4,7 @@ const cxM = classNames.bind(require('./modal.scss'));
 
 import axios from 'axios';
 import * as React from 'react';
+
 import { RESX } from '../strings';
 import { Json } from '../ui/controls';
 import { Endpoint } from '../context/endpoint';
@@ -32,7 +33,9 @@ export const Simulation: React.FunctionComponent<any> = ({ handler }) => {
     const reset = () => {
         if (error != '') { return; }
         axios.post(`${Endpoint.getEndpoint()}api/simulation`, { simulation: json })
-            .then(res => {
+            .then((res) => {
+                // this is a temp hack to workaround a routing issue
+                window.location.href = "/";
                 handler(false);
             })
             .catch((err) => {

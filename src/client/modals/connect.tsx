@@ -104,7 +104,7 @@ export const Connect: React.FunctionComponent<any> = ({ handler }) => {
         <div className='m-modal'>
             <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
             <div className='m-content'>
-                <h3>{RESX.modal.connect.title}</h3>
+                <h3>{RESX.modal.connect.title} (Beta)</h3>
                 <div className='form-group'>
                     <div className='btn-bar'>
                         <button className={cx('btn btn-link', panel === 0 ? 'active' : '')} onClick={() => { showPanel(0) }}>IoT Central</button>

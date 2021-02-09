@@ -68,8 +68,8 @@ export const Bulk: React.FunctionComponent<any> = ({ handler }) => {
                 data: state.data
             }
         });
-        // this is a temp hack to workround a routing issue
-        window.location.href = "/devices";
+        // this is a temp hack to workaround a routing issue
+        window.location.href = "/";
         handler();
     }
 
