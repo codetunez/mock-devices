@@ -1,5 +1,3 @@
-
-
 ### Help
 mock-devices is a tool that can be used to create simulated devices with different telemetry/property/method and connection configurations. It uses the Azure IoT device SDK for MQTT to provide simulated C2D and D2C device behavior and also implement DTDL conventions
 
@@ -89,15 +87,17 @@ Add a capability to send ether telemetry or a Reported Twin, click the _+ Send D
 - Enabled - Enable this capability when device is running
 - Capability name - The JSON property name sent "down the wire"
 - Enter value - The value to send now using the _Send_ button
-- Can override mock - Same as Enter value
-- API - Make this capability a Twin or Msg/Telemetry
-- Send value as string - Select the data type for the JSON property value
-- Component Name - The name used to send this capability
 - Complex value - Use a JSON value instead of the _Enter value_ field
 - Add snippet - Paste into the editor a reference blob of JSON
+- Initial - Send the value when the device powers on
 - Loop - When enabled, will repeat sending the value at a random selected time. Persists after first save
 - Time unit - Choose between mins and seconds
-- Loop duration - Reset the current set loop time
+- Earliest - The earliest time the value will be sent. Persisted on save
+- Latest - The latest time the value will be sent. Persisted on save
+- Use Earliest and Latest from simulation configuration - Overrides user provided values
+- Component Name - The name used to send this capability
+- API - Make this capability a Twin or Msg/Telemetry
+- Send value as string - Select the data type for the JSON property value
 - Mock - Use a simulated sensor to generate a realistic value and override any static, complex or AUTO values.
 - Customize UX - Change the color of the capability
 
@@ -243,3 +243,4 @@ mock-devices is a state machine and the current running state can replaced with 
 
 ### Changing the Simulation parameters
 Some some parts of the simulation can be changed like the min/max ranges for number. Change with caution!
+
