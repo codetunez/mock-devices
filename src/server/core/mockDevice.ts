@@ -678,6 +678,11 @@ export class MockDevice {
 
                 this.iotHubDevice.client.getTwin((err, twin) => {
 
+                    if (err) {
+                        this.log('IOT HUB TWIN REQUEST FAILED. CLIENT IN BAD STATE', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+                        this.stop();
+                    }
+
                     // desired properties are cached
                     twin.on('properties.desired', ((delta) => {
                         this.logStat(LOGGING_TAGS.STAT.DESIRED);
@@ -729,6 +734,7 @@ export class MockDevice {
             })
         }
         catch (err) {
+            // this is a legacy SDK bug workaround. 99% sure it can go
             this.log(`SDK OPEN ERROR (CHECK CONN STRING): ${err.message}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
             this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.ERROR);
             setTimeout(() => {
@@ -895,7 +901,7 @@ export class MockDevice {
         }
     }
 
-    async connectClient(connectionString) {
+    connectClient(connectionString) {
         this.iotHubDevice = { client: undefined };
 
         if (this.useSasMode) {
