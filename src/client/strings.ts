@@ -14,20 +14,21 @@ export const RESX = {
         "edge": ['EDGE RUNTIME DETECTED: ', 'MODULE', 'RUNNING ON DEVICE'],
     },
     "shell": {
-        "title": "Select Devices, Dashboard, Create or Connect from the menu"
+        "title": "Select Devices, Stats, Add/Save or Connect from the menu on the left"
     },
     "nav": {
-        "stats": "Dashboard - See the current simulation statistics",
-        "devices": "Devices - See the list of devices, modules and templates",
-        "file": "Create - Create a new mock device, template or module using DCMs, SDKs, DPS and connection strings combinations",
-        "connect": "Connect - Connect to a Central application or IoT Hub, use a template and create a mock-device",
-        "power": "Power up all devices and modules (use config for start timings)",
-        "stop": "Power down all devices that are currently on",
-        "bulk": "Bulk edit and apply common properties across a set of devices",
-        "sim": "Update the current simulation configuration (advanced)",
-        "reset": "WARNING! Remove all mock devices, modules and templates (keeps the simulation configuration)",
-        "help": "Find out how to use mock-devices",
-        "ux": "Change the mock-devices engine that this UX is viewing",
+        "stats": ["STATS", "See the current send/recieve/power usage statistics for each device"],
+        "devices": ["DEVICES", "See the list of devices, modules and templates"],
+        "file": ["ADD/SAVE", "Create a new mock devices, templates or modules. Load/Save the current state of mock-devices"],
+        "connect": ["CONNECT", "Connect to a Central application or IoT Hub, use a template and create a mock-device"],
+        "power": ["PWR ALL", "Power up all devices and modules (use config for start timings)"],
+        "stop": ["STOP ALL", "Power down all devices that are currently on"],
+        "bulk": ["BULK", "Bulk edit and apply common properties across a set of devices"],
+        "sim": ["SIM", "Update the current simulation configuration (advanced)"],
+        "reset": ["RESET", "WARNING! Remove all mock devices, modules and templates (keeps the simulation configuration)"],
+        "help": ["HELP", "Find out how to use mock-devices"],
+        "ux": ["UX", "Change the mock-devices engine that this UX is viewing"],
+
     },
     "selector": {
         "title": "DEVICES & TEMPLATES",
@@ -237,8 +238,8 @@ export const RESX = {
             "title": "Bulk update",
             "select_all_devices": "Select all devices",
             "select_all_caps": "Select all capabilities",
-            "cta_label":"Apply all changes",
-            "cta_title":"Items need to be checked to be included in the update. Blanks will be treated as empty string/object or zero. Toggles will update any true/false setting regardless of current state",
+            "cta_label": "Apply all changes",
+            "cta_title": "Items need to be checked to be included in the update. Blanks will be treated as empty string/object or zero. Toggles will update any true/false setting regardless of current state",
         }
     },
     "edge": {

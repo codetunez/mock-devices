@@ -7,7 +7,7 @@
   align-content: center;
   background-color: $app-clr-2;
   height: 100%;
-  width: $width-nav;
+  width: $width-nav + 10px;
   overflow: hidden;
   button {
     margin-bottom: $sm-gutter;
@@ -35,6 +35,10 @@
     a {
       text-decoration: none;
     }
+  }
+
+  .nav-items button div {
+    font-size: 0.5rem;
   }
 
   .container {
