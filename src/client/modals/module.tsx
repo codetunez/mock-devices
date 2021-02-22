@@ -11,10 +11,15 @@ import { Combo, Json } from '../ui/controls';
 import { Endpoint } from '../context/endpoint';
 import Toggle from 'react-toggle';
 
-export const Module: React.FunctionComponent<any> = ({ handler, index }) => {
+export const Module: React.FunctionComponent<any> = ({ handler, deviceId, scopeId, sasKey }) => {
 
     const deviceContext: any = React.useContext(DeviceContext);
-    const [state, setPayload] = React.useState({ _deviceList: [], mockDeviceCloneId: '', moduleId: '', environmentModule: false });
+    const [state, setPayload] = React.useState({
+        _deviceList: [], mockDeviceCloneId: '', moduleId: '', environmentModule: false,
+        deviceId,
+        scopeId,
+        sasKey
+    });
 
     React.useEffect(() => {
         let list = [];
@@ -52,7 +57,10 @@ export const Module: React.FunctionComponent<any> = ({ handler, index }) => {
         deviceContext.updateDeviceModules({
             mockDeviceCloneId: state.mockDeviceCloneId,
             moduleId: state.moduleId,
-            environmentModule: state.environmentModule
+            environmentModule: state.environmentModule,
+            deviceId: state.deviceId,
+            scopeId: state.scopeId,
+            sasKey: state.sasKey,
         });
         handler();
     }

@@ -60,7 +60,7 @@ export class DeviceStore {
         this.messageService.removeStatsOrControl(d._id);
     }
 
-    public addDeviceModule = (deviceId, moduleId, cloneId): string => {
+    public addDeviceModule = (deviceId, moduleId, cloneId, gatewayScopeId, gatewaySasKey): string => {
         const d: Device = new Device();
         const moduleKey = Utils.getModuleKey(deviceId, moduleId);
         d._id = moduleKey
@@ -68,6 +68,9 @@ export class DeviceStore {
         d.configuration.deviceId = moduleKey;
         d.configuration.mockDeviceCloneId = cloneId;
         d.configuration.mockDeviceName = moduleKey;
+        d.configuration.gatewayDeviceId = deviceId;
+        d.configuration.gatewayScopeId = gatewayScopeId;
+        d.configuration.gatewaySasKey = gatewaySasKey;
         return this.addDevice(d)
     }
 
@@ -141,7 +144,7 @@ export class DeviceStore {
             const key = Utils.getModuleKey(id, payload.moduleId);
             const findIndex = d.configuration.modules.findIndex((m) => { return m === key; })
             if (findIndex === -1) {
-                d.configuration.modules.push(this.addDeviceModule(id, payload.moduleId, payload.mockDeviceCloneId));
+                d.configuration.modules.push(this.addDeviceModule(id, payload.moduleId, payload.mockDeviceCloneId, payload.scopeId, payload.sasKey));
                 if (!d.configuration.modulesConfig) { d.configuration.modulesConfig = {}; }
                 d.configuration.modulesConfig[Utils.getModuleKey(id, payload.moduleId)] = payload.environmentModule;
             } else {

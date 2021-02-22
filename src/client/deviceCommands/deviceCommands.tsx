@@ -94,7 +94,7 @@ export function DeviceCommands() {
             </div>
         }
         {showEdit ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><Edit handler={toggleEdit} index={index} /></div></Modal> : null}
-        {showModule ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><Module handler={toggleModule} index={index} /></div></Modal> : null}
+        {showModule ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><Module handler={toggleModule} index={index} scopeId={deviceContext.device.configuration.scopeId} deviceId={deviceContext.device.configuration.deviceId} sasKey={deviceContext.device.configuration.sasKey} /></div></Modal> : null}
         {showEdgeDevice ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><EdgeDevice handler={toggleEdgeDevice} gatewayId={deviceContext.device.configuration.deviceId} /></div></Modal> : null}
         {showDelete ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><ModalConfirm config={deleteModalConfig} /></div></Modal> : null}
         {showDirty ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><ModalConfirm config={dirtyModalConfig} /></div></Modal> : null}

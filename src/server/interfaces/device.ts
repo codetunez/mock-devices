@@ -128,4 +128,7 @@ export class DeviceConfiguration {
     public geo?: number;
     public gatewayId?: string;
     public environmentModule?: boolean;
+    public gatewayDeviceId?: string;
+    public gatewayScopeId?: string;
+    public gatewaySasKey?: string;
 }
