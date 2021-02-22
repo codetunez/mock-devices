@@ -1,6 +1,6 @@
 var classNames = require('classnames');
 const cx = classNames.bind(require('./module.scss'));
-const cxM = classNames.bind(require('./modal.scss'));
+const cxM = classNames.bind(require('./edgeDevice.scss'));
 import "react-toggle/style.css"
 
 import * as React from 'react';
@@ -9,12 +9,21 @@ import { DeviceContext } from '../context/deviceContext';
 import { RESX } from '../strings';
 import { Combo, Json } from '../ui/controls';
 import { Endpoint } from '../context/endpoint';
-import Toggle from 'react-toggle';
 
-export const Module: React.FunctionComponent<any> = ({ handler, index }) => {
+export const EdgeDevice: React.FunctionComponent<any> = ({ handler, gatewayId }) => {
 
     const deviceContext: any = React.useContext(DeviceContext);
-    const [state, setPayload] = React.useState({ _deviceList: [], mockDeviceCloneId: '', moduleId: '', environmentModule: false });
+    const [state, setPayload] = React.useState({
+        _deviceList: [],
+        _kind: 'edgeDevice',
+        mockDeviceCloneId: '',
+        deviceId: '',
+        scopeId: '',
+        sasKey: '',
+        gatewayId: gatewayId,
+        mockDeviceCount: 1,
+        mockDeviceCountMax: 1
+    });
 
     React.useEffect(() => {
         let list = [];
@@ -40,46 +49,43 @@ export const Module: React.FunctionComponent<any> = ({ handler, index }) => {
         })
     }
 
-    const toggleEnvironment = () => {
-        setPayload({
-            ...state,
-            environmentModule: !state.environmentModule
-        });
-    }
+    const clickAddDevice = () => {
+        axios.post(`${Endpoint.getEndpoint()}api/device/new`, state)
+            .then(res => {
+                deviceContext.setDevices(res.data);
+                handler(false);
+            })
+            .catch((err) => {
 
-
-    const save = () => {
-        deviceContext.updateDeviceModules({
-            mockDeviceCloneId: state.mockDeviceCloneId,
-            moduleId: state.moduleId,
-            environmentModule: state.environmentModule
-        });
-        handler();
+            })
     }
 
     return <div className='dialog-module'>
         <div className='m-modal'>
             <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
             <div className='m-content'>
-                <h4>{RESX.modal.module.title}</h4>
+                <h4>Edge Device</h4>
                 <div className='form-group'>
                     <label>{RESX.modal.module.label.clone}</label><br />
                     <Combo items={state._deviceList} cls='custom-textarea-sm' name='mockDeviceCloneId' onChange={updateField} value={state.mockDeviceCloneId || ''} />
                 </div>
                 <div className='form-group'>
-                    <label>{RESX.modal.module.label.moduleId}</label><br />
-                    <input autoFocus={true} id="module-id" className='form-control form-control-sm' type='text' name='moduleId' onChange={updateField} value={state.moduleId || ''} />
+                    <label>Device ID</label><br />
+                    <input className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} />
                 </div>
 
                 <div className='form-group'>
-                    <label>Make this an environment module for Docker execution</label><br />
-                    <div><Toggle name='masterKey' checked={state.environmentModule} defaultChecked={false} onChange={() => { toggleEnvironment() }} /></div>
+                    <label>{RESX.modal.add.option1.label.dps}</label>
+                    <input className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
                 </div>
-
+                <div className='form-group'>
+                    <label>{RESX.modal.add.option1.label.sas}</label>
+                    <input className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
+                </div>
             </div>
             <div className='m-footer'>
                 <div className='form-group btn-bar'>
-                    <button disabled={state.moduleId === ''} title={RESX.modal.module.cta_title} className='btn btn-info' onClick={() => save()}>{RESX.modal.module.cta_label}</button>
+                    <button title={RESX.modal.module.cta_title} className='btn btn-info' onClick={() => clickAddDevice()}>Create this device</button>
                 </div>
             </div>
         </div>

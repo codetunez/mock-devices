@@ -30,7 +30,7 @@ export class Config {
     public static STATS_LOGGING: boolean = true;
 
     // dev settings
-    public static NODE_MODE: boolean = false;
+    public static NODE_MODE: boolean = true;
     public static WEBAPI_LOGGING: boolean = false;
     public static DEV_TOOLS: boolean = false;
 

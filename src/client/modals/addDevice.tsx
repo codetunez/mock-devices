@@ -417,9 +417,21 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
                     {panel !== 6 ? null : <>
                         <div className='m-tabbed-panel-form'>
+                            <span>DPS Provisioning configuration (use settings that would be configured in the Edge device's config.yaml file)</span>
+                            <br /><br />
+
                             <div className='form-group'>
-                                <label>{RESX.modal.add.option4.label.deviceId}</label><br />
+                                <label>Registration ID</label><br />
                                 <input autoFocus={true} id="device-id" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} />
+                            </div>
+
+                            <div className='form-group'>
+                                <label>Scope ID</label>
+                                <input className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
+                            </div>
+                            <div className='form-group'>
+                                <label>Symmetric Key</label>
+                                <input className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
                             </div>
 
                             <div className='form-group'>

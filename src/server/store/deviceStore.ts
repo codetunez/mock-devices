@@ -142,6 +142,8 @@ export class DeviceStore {
             const findIndex = d.configuration.modules.findIndex((m) => { return m === key; })
             if (findIndex === -1) {
                 d.configuration.modules.push(this.addDeviceModule(id, payload.moduleId, payload.mockDeviceCloneId));
+                if (!d.configuration.modulesConfig) { d.configuration.modulesConfig = {}; }
+                d.configuration.modulesConfig[Utils.getModuleKey(id, payload.moduleId)] = payload.environmentModule;
             } else {
                 throw "This module has already been added"; //REFACTOR: new type of error
             }
