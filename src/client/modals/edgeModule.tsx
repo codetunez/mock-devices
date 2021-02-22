@@ -1,5 +1,5 @@
 var classNames = require('classnames');
-const cx = classNames.bind(require('./module.scss'));
+const cx = classNames.bind(require('./edgeModule.scss'));
 const cxM = classNames.bind(require('./modal.scss'));
 import "react-toggle/style.css"
 
@@ -11,7 +11,7 @@ import { Combo, Json } from '../ui/controls';
 import { Endpoint } from '../context/endpoint';
 import Toggle from 'react-toggle';
 
-export const Module: React.FunctionComponent<any> = ({ handler, deviceId, scopeId, sasKey }) => {
+export const EdgeModule: React.FunctionComponent<any> = ({ handler, deviceId, scopeId, sasKey }) => {
 
     const deviceContext: any = React.useContext(DeviceContext);
     const [state, setPayload] = React.useState({
@@ -76,7 +76,7 @@ export const Module: React.FunctionComponent<any> = ({ handler, deviceId, scopeI
                 </div>
                 <div className='form-group'>
                     <label>{RESX.modal.module.label.moduleId}</label><br />
-                    <input autoFocus={true} id="module-id" className='form-control form-control-sm' type='text' name='moduleId' onChange={updateField} value={state.moduleId || ''} />
+                    <input autoComplete="off" autoFocus={true} id="module-id" className='form-control form-control-sm' type='text' name='moduleId' onChange={updateField} value={state.moduleId || ''} />
                 </div>
 
                 <div className='form-group'>

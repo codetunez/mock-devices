@@ -275,18 +275,18 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
                             <div className='form-group'>
                                 <label>{RESX.modal.add.option1.label.deviceId}</label><br />
-                                <input autoFocus={true} id="device-id" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} />
+                                <input autoComplete="off" autoFocus={true} id="device-id" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} />
                             </div>
 
                             <div className='form-group' style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                 <div className='form-group' style={{ paddingRight: '20px' }} >
                                     <div className='form-group'>
                                         <label>{RESX.modal.add.option1.label.dps}</label>
-                                        <input className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
+                                        <input autoComplete="off" className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
                                     </div>
                                     <div className='form-group'>
                                         <label>{RESX.modal.add.option1.label.sas}</label>
-                                        <input className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
+                                        <input autoComplete="off" className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
                                     </div>
                                     <div className='form-group'>
                                         <label>{RESX.modal.add.option1.label.root}</label>
@@ -304,17 +304,17 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             <div className='form-group' style={{ display: 'flex', alignContent: 'stretch' }}>
                                 <div className='form-group' style={{ paddingRight: '10px' }} >
                                     <label>{RESX.modal.add.option1.label.bulk_from}</label><br />
-                                    <input className='form-control form-control-sm' type='number' name='mockDeviceCount' disabled={!state.isMasterKey} onChange={updateField} value={state.mockDeviceCount || ''} />
+                                    <input autoComplete="off" className='form-control form-control-sm' type='number' name='mockDeviceCount' disabled={!state.isMasterKey} onChange={updateField} value={state.mockDeviceCount || ''} />
                                 </div>
                                 <div className='form-group'>
                                     <label>{RESX.modal.add.option1.label.bulk_to}</label><br />
-                                    <input className='form-control form-control-sm' type='number' name='mockDeviceCountMax' disabled={!state.isMasterKey} onChange={updateField} value={state.mockDeviceCountMax || ''} />
+                                    <input autoComplete="off" className='form-control form-control-sm' type='number' name='mockDeviceCountMax' disabled={!state.isMasterKey} onChange={updateField} value={state.mockDeviceCountMax || ''} />
                                 </div>
                             </div>
 
                             <div className='form-group'>
                                 <label>{RESX.modal.add.option1.label.friendly}</label>
-                                <input className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
+                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
                             </div>
 
                         </div>
@@ -339,7 +339,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             </div>
                             <div className='form-group'>
                                 <label>{RESX.modal.add.option1.label.friendly_sm}</label>
-                                <input className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
+                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
                             </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
@@ -376,7 +376,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <div className='m-tabbed-panel-form'>
                             <div className='form-group'>
                                 <label>{RESX.modal.add.option2.label.name}</label>
-                                <input className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
+                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
                             </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
@@ -422,21 +422,21 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
                             <div className='form-group'>
                                 <label>Registration ID</label><br />
-                                <input autoFocus={true} id="device-id" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} />
+                                <input autoComplete="off" autoFocus={true} id="device-id" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} />
                             </div>
 
                             <div className='form-group'>
                                 <label>Scope ID</label>
-                                <input className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
+                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
                             </div>
                             <div className='form-group'>
                                 <label>Symmetric Key</label>
-                                <input className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
+                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
                             </div>
 
                             <div className='form-group'>
                                 <label>{RESX.modal.add.option4.label.friendly}</label>
-                                <input className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
+                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
                             </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
@@ -455,15 +455,15 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                 </div>
                                 <div className='form-group'>
                                     <label>{RESX.modal.add.option1.label.dps}</label>
-                                    <input autoFocus={true} className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
+                                    <input autoComplete="off" autoFocus={true} className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
                                 </div>
                                 <div className='form-group'>
                                     <label>{RESX.modal.add.option1.label.deviceQuick}</label><br />
-                                    <input id="device-id" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} placeholder={RESX.modal.add.option1.label.deviceQuick_placeholder} />
+                                    <input autoComplete="off" id="device-id" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} placeholder={RESX.modal.add.option1.label.deviceQuick_placeholder} />
                                 </div>
                                 <div className='form-group'>
                                     <label>{RESX.modal.add.option1.label.sas}</label>
-                                    <input className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
+                                    <input autoComplete="off" className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
                                 </div>
                                 <div className='form-group'>
                                     <label>{RESX.modal.add.option1.label.root}</label>

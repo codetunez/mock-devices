@@ -1,5 +1,5 @@
 var classNames = require('classnames');
-const cx = classNames.bind(require('./module.scss'));
+const cx = classNames.bind(require('./edgeModule.scss'));
 const cxM = classNames.bind(require('./edgeDevice.scss'));
 import "react-toggle/style.css"
 
@@ -71,16 +71,16 @@ export const EdgeDevice: React.FunctionComponent<any> = ({ handler, gatewayId })
                 </div>
                 <div className='form-group'>
                     <label>Device ID</label><br />
-                    <input className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} />
+                    <input autoComplete="off" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} />
                 </div>
 
                 <div className='form-group'>
                     <label>{RESX.modal.add.option1.label.dps}</label>
-                    <input className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
+                    <input autoComplete="off" className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
                 </div>
                 <div className='form-group'>
                     <label>{RESX.modal.add.option1.label.sas}</label>
-                    <input className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
+                    <input autoComplete="off" className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
                 </div>
             </div>
             <div className='m-footer'>
