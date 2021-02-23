@@ -1518,6 +1518,9 @@ export class MockDevice {
         result.deviceId +
         ";SharedAccessKey=" +
         transformedSasKey;
+      if (this.device.configuration._kind === "edgeDevice") {
+        this.registrationConnectionString += `;GatewayId=${this.device.configuration.gatewayDeviceId}`;
+      }
       this.log(
         "DEVICE REGISTRATION SUCCESS",
         LOGGING_TAGS.CTRL.DPS,
