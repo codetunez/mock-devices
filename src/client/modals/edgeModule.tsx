@@ -15,7 +15,10 @@ export const EdgeModule: React.FunctionComponent<any> = ({ handler, deviceId, sc
 
     const deviceContext: any = React.useContext(DeviceContext);
     const [state, setPayload] = React.useState({
-        _deviceList: [], mockDeviceCloneId: '', moduleId: '', environmentModule: false,
+        _deviceList: [],
+        mockDeviceCloneId: '',
+        moduleId: '',
+        environmentModule: false,
         deviceId,
         scopeId,
         sasKey
@@ -52,7 +55,6 @@ export const EdgeModule: React.FunctionComponent<any> = ({ handler, deviceId, sc
         });
     }
 
-
     const save = () => {
         deviceContext.updateDeviceModules({
             mockDeviceCloneId: state.mockDeviceCloneId,
@@ -61,7 +63,7 @@ export const EdgeModule: React.FunctionComponent<any> = ({ handler, deviceId, sc
             deviceId: state.deviceId,
             scopeId: state.scopeId,
             sasKey: state.sasKey,
-        });
+        }, 'module');
         handler();
     }
 
@@ -80,7 +82,7 @@ export const EdgeModule: React.FunctionComponent<any> = ({ handler, deviceId, sc
                 </div>
 
                 <div className='form-group'>
-                    <label>Make this an environment module for Docker execution</label><br />
+                    <label>Use for Docker hosted module</label><br />
                     <div><Toggle name='masterKey' checked={state.environmentModule} defaultChecked={false} onChange={() => { toggleEnvironment() }} /></div>
                 </div>
 

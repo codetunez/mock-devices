@@ -36,7 +36,7 @@ export const RESX = {
         "card": {
             "device_title": "Select this mock device",
             "template_title": "Select this template",
-            "modules_title": " modules(s)"
+            "children_title": " children"
         },
     },
     "modal": {
@@ -130,7 +130,7 @@ export const RESX = {
             "option4": {
                 "title": "Azure IoT Edge",
                 "buttons": {
-                    "button1_label": "Create Edge device host for modules",
+                    "button1_label": "Create Edge leaf devices and modules",
                     "button1_title": "Create an Edge host device to add Edge modules. To use modules, deploy mock-devices-de with the state file in a real Edge deployment",
                 },
                 "select": "--Do not fork. Create with empty capabilities",
@@ -243,11 +243,12 @@ export const RESX = {
         }
     },
     "edge": {
-        "title": "The Module Id and (Edge) Device Id must match for a module to run",
+        "title": "Azure IoT Edge simulated configuration",
         "empty": [
-            "Use + to add a new module. Modules get connection information via the Edge runtime",
-            "When running in the runtime, the Edge device's Id and module's Id will be used to map the module to the environments variables on the host Edge device. To run multiple modules, deploy multiple mock-devices containers in the Edge manifest",
-            "Modules have capabilities such as sending telemetry or reporting/receiving twin data like normal devices. Methods can be configured to send back a payload. Plan mode is disabled until capabilities are added"
+            "Use + to add a new module or a leaf device. They are configured in the same way as regular mock-devices items",
+            "Modules can be for desktop use or be hosted as part of a Docker deployment. Modules within mock-devices are best suited to Protocol translation scenarios.",
+            "For desktop, modules will connect with the host Edge device credentials propergating the MODULE_ID through the connection string. All desktop configured modules will run as part of the simulation. For Docker versions, the module id and host Edge device id must be identicle to manifest JSON file and only that module will execute for the given container. Run multiple mock-devices modules/containers to execute all modules.",
+            "Leaf devices require their own (DPS) credentials and will propergate the host Edge's device id as a GATEWAY_ID throught the connection string. All leaf devices execute as part of the simulation can run independently of the host Edge device. Leaf devices are best suited for Transparent Gateway scenarios."
         ],
         "buttons": {
             "module_title": "Select this module",
@@ -256,7 +257,8 @@ export const RESX = {
             "delete_confirm": "Are you OK to delete this module?"
         },
         "card": {
-            "title": "Module"
+            "title_module": "Module",
+            "title_device": "Device"
         },
     },
     "device": {
@@ -270,8 +272,9 @@ export const RESX = {
             "reapply_title": "Select devices to update with this template's configuration",
             "kindTemplate": "Template",
             "kindReal": "Hub device",
-            "kindEdge": "Edge device",
-            "kindModule": "Edge device module",
+            "kindEdge": "Edge/Gateway device",
+            "kindModule": "Edge module",
+            "kindEdgeDevice": "Edge leaf device",
         },
         "title": {
             "planMode": "PLAN",
@@ -293,7 +296,7 @@ export const RESX = {
             "config_title": "Change this device's configuration (advanced)",
             "delete_title": "Delete this device or template including all its capabilities. Ensure you have saved your state first",
             "delete_confirm": "Are you OK to delete this device or template?",
-            "edge_device_label": "Go to Edge device",
+            "edge_device_label": "Go to Edge/Gateway",
             "edge_device_title": "Manage the other modules in this Edge device",
 
         },

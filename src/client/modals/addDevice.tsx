@@ -337,10 +337,10 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                 <label>{RESX.modal.add.option1.label.connstr}</label>
                                 <textarea className='custom-textarea form-control form-control-sm' name='connectionString' rows={4} onChange={updateField} value={state.connectionString || ''}></textarea>
                             </div>
-                            <div className='form-group'>
+                            {/* NEED TO THINK HOW TO BRING FWD ALL THE WAY IN THE UX <div className='form-group'>
                                 <label>{RESX.modal.add.option1.label.friendly_sm}</label>
                                 <input autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
-                            </div>
+                            </div> */}
                         </div>
                         <div className='m-tabbed-panel-footer'>
                             <button title={RESX.modal.add.option1.cta_title} className='btn btn-primary' disabled={!state.connectionString || state.connectionString === '' || state.mockDeviceName === ''} onClick={() => clickAddDevice('hub')}>{RESX.modal.add.option1.cta_label}</button>

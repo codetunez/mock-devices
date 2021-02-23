@@ -148,8 +148,9 @@ export class DeviceProvider extends React.PureComponent {
             .catch((err) => { console.log(err.response.data); })
     }
 
-    updateDeviceModules = (updatePayload: any) => {
-        axios.put(`${Endpoint.getEndpoint()}api/device/${this.state.device._id}/module`, { payload: updatePayload })
+    //TODO: rename to support devices too
+    updateDeviceModules = (updatePayload: any, type: string) => {
+        axios.put(`${Endpoint.getEndpoint()}api/device/${this.state.device._id}/${type}`, { payload: updatePayload })
             .then((response: any) => {
                 this.setState({ device: response.data.device, devices: response.data.devices });
             })

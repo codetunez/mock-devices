@@ -122,7 +122,8 @@ export class DeviceConfiguration {
     public machineStateClipboard?: string;
     public planMode?: boolean;
     public modules?: Array<string> = [];
-    public modulesConfig?: any;
+    public modulesDocker?: any;
+    public edgeDevices?: Array<string> = [];
     public centralAdded?: boolean;
     public plugIn: string;
     public geo?: number;

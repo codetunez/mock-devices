@@ -10,7 +10,7 @@ import { decodeModuleKey, controlEvents } from '../ui/utilities';
 import { Modal } from '../modals/modal';
 import { ModalConfirm } from '../modals/modalConfirm';
 
-export function DeviceModule({ index, compositeKey, running }) {
+export function DeviceModule({ index, compositeKey, running, type, docker }) {
 
     const deviceContext: any = React.useContext(DeviceContext);
     const appContext: any = React.useContext(AppContext);
@@ -36,17 +36,28 @@ export function DeviceModule({ index, compositeKey, running }) {
         }
     }
 
-    const decoded = decodeModuleKey(compositeKey);
+    let moduleId, deviceId, title: any = '';
+    if (type === 'module') {
+        const decoded = decodeModuleKey(compositeKey);
+        moduleId = decoded.moduleId;
+        deviceId = decoded.deviceId;
+        title = RESX.edge.card.title_module;
+    } else {
+        moduleId = `(${compositeKey})`
+        deviceId = compositeKey;
+        title = RESX.edge.card.title_device;
+    }
 
     return <>
         <div className="edge-module">
             <div className='expander'>
-                <div>{RESX.edge.card.title} {index + 1}</div>
+                <div>{title} {index + 1}</div>
+                {docker && docker[compositeKey] ? <i className="fab fa-docker fa-fw" /> : null}
                 <button title={RESX.edge.buttons.delete_title} className='btn btn-sm btn-outline-danger' onClick={() => toggleDelete(!showDelete)}><span className='fa fa-times'></span></button>
             </div>
             <button className='selector-card selector-card-expanded' onClick={() => { deviceContext.getDevice(compositeKey) }}>
-                <h4>{decodeModuleKey(compositeKey).moduleId}</h4>
-                <strong>{decoded.deviceId || ''}</strong>
+                <h4>{moduleId || 'LEAF DEVICE'}</h4>
+                <strong>{deviceId || ''}</strong>
                 <div className='selector-card-spinner'>
                     <i className={cx('fas fa-spinner fa-2x fa-fw', { 'fa-pulse': running != controlEvents.OFF })} ></i>
                 </div>

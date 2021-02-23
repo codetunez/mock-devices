@@ -74,11 +74,22 @@ export class DeviceStore {
         return this.addDevice(d)
     }
 
+    //TODO: refactor. moduleId working is a ok but naming is all wrong now
     public removeDeviceModule = (d: Device, moduleId: string) => {
-        const i = d.configuration.modules.indexOf(moduleId);
+
+        let i = d.configuration.modules ? d.configuration.modules.indexOf(moduleId) : -1;
         if (i > -1) {
             const payload = {
                 modules: d.configuration.modules.splice(i, 1)
+            }
+            this.updateDevice(d._id, payload);
+            return;
+        }
+
+        i = d.configuration.edgeDevices ? d.configuration.edgeDevices.indexOf(moduleId) : -1;
+        if (i > -1) {
+            const payload = {
+                edgeDevices: d.configuration.edgeDevices.splice(i, 1)
             }
             this.updateDevice(d._id, payload);
         }
@@ -145,10 +156,32 @@ export class DeviceStore {
             const findIndex = d.configuration.modules.findIndex((m) => { return m === key; })
             if (findIndex === -1) {
                 d.configuration.modules.push(this.addDeviceModule(id, payload.moduleId, payload.mockDeviceCloneId, payload.scopeId, payload.sasKey));
-                if (!d.configuration.modulesConfig) { d.configuration.modulesConfig = {}; }
-                d.configuration.modulesConfig[Utils.getModuleKey(id, payload.moduleId)] = payload.environmentModule;
+                if (!d.configuration.modulesDocker) { d.configuration.modulesDocker = {}; }
+                d.configuration.modulesDocker[Utils.getModuleKey(id, payload.moduleId)] = payload.environmentModule;
             } else {
                 throw "This module has already been added"; //REFACTOR: new type of error
+            }
+        };
+
+        if (type === 'edgeDevice') {
+            if (!d.configuration.edgeDevices) { d.configuration.edgeDevices = []; }
+            const findIndex = d.configuration.edgeDevices.findIndex((m) => { return m === id; })
+            if (findIndex === -1) {
+                let edgeDevice: Device = new Device();
+                edgeDevice._id = payload.deviceId;
+                edgeDevice.configuration = JSON.parse(JSON.stringify(payload));
+                edgeDevice.configuration._kind = 'edgeDevice';
+                if (!edgeDevice.configuration.mockDeviceName || edgeDevice.configuration.mockDeviceName === '') {
+                    edgeDevice.configuration.mockDeviceName = edgeDevice._id;
+                }
+                this.addDevice(edgeDevice);
+
+                let md = new MockDevice(edgeDevice, this.messageService, this.resolvePlugin(edgeDevice, this.plugIns));
+                this.runners[edgeDevice._id] = md;
+
+                d.configuration.edgeDevices.push(payload.deviceId);
+            } else {
+                throw "This edgeDevice has already been added"; //REFACTOR: new type of error
             }
         };
 

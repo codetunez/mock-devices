@@ -559,7 +559,9 @@ export class MockDevice {
         this.logCP(LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.ON);
         this.logStat(LOGGING_TAGS.STAT.ON);
 
-        if (this.device.configuration._kind === 'dps') {
+        if (this.device.configuration._kind === 'dps' ||
+            this.device.configuration._kind === 'edgeDevice') {
+            //TODO: refactor the condition
             const simulation = this.simulationStore.get()['simulation'];
             this.dpsRetires = simulation['dpsRetries'] || 10;
             this.registrationConnectionString = null;

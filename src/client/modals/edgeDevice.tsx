@@ -20,9 +20,8 @@ export const EdgeDevice: React.FunctionComponent<any> = ({ handler, gatewayId })
         deviceId: '',
         scopeId: '',
         sasKey: '',
-        gatewayId: gatewayId,
-        mockDeviceCount: 1,
-        mockDeviceCountMax: 1
+        mockDeviceName: '',
+        gatewayId: gatewayId
     });
 
     React.useEffect(() => {
@@ -50,14 +49,15 @@ export const EdgeDevice: React.FunctionComponent<any> = ({ handler, gatewayId })
     }
 
     const clickAddDevice = () => {
-        axios.post(`${Endpoint.getEndpoint()}api/device/new`, state)
-            .then(res => {
-                deviceContext.setDevices(res.data);
-                handler(false);
-            })
-            .catch((err) => {
-
-            })
+        deviceContext.updateDeviceModules({
+            mockDeviceCloneId: state.mockDeviceCloneId,
+            mockDeviceName: state.mockDeviceName,
+            deviceId: state.deviceId,
+            scopeId: state.scopeId,
+            sasKey: state.sasKey,
+            gatewayId: state.gatewayId
+        }, 'edgeDevice');
+        handler();
     }
 
     return <div className='dialog-module'>
@@ -73,7 +73,6 @@ export const EdgeDevice: React.FunctionComponent<any> = ({ handler, gatewayId })
                     <label>Device ID</label><br />
                     <input autoComplete="off" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} />
                 </div>
-
                 <div className='form-group'>
                     <label>{RESX.modal.add.option1.label.dps}</label>
                     <input autoComplete="off" className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
@@ -81,6 +80,10 @@ export const EdgeDevice: React.FunctionComponent<any> = ({ handler, gatewayId })
                 <div className='form-group'>
                     <label>{RESX.modal.add.option1.label.sas}</label>
                     <input autoComplete="off" className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
+                </div>
+                <div className='form-group'>
+                    <label>{RESX.modal.add.option1.label.friendly_sm}</label>
+                    <input autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
                 </div>
             </div>
             <div className='m-footer'>

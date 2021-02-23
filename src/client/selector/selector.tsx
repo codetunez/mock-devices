@@ -32,7 +32,7 @@ export const Selector: React.FunctionComponent = () => {
         const decoded = decodeModuleKey(routeDeviceId || '')
         const active = routeDeviceId && routeDeviceId === item._id || item.configuration._kind === 'edge' && decoded && decoded.deviceId === item._id || false
         // hide the any modules as these are found in the Edge device
-        return item.configuration._kind === 'module' ? null :
+        return item.configuration._kind === 'module' || item.configuration._kind === 'edgeDevice' ? null :
           <ControlContext.Consumer>
             {(state: any) => (
               <SelectorCard key={item._id} exp={appContext.selectorExpand} index={index} active={active} device={item} control={state.control} />

@@ -32,6 +32,9 @@ export const SelectorCard: React.FunctionComponent<any> = ({ exp, index, active,
     }
   }
 
+  const childCountModules = device.configuration.modules && device.configuration.modules.length || 0
+  const childCountDevices = device.configuration.edgeDevices && device.configuration.edgeDevices.length || 0
+
   return <div className="selector-card-container">
     <button className='expander' onClick={() => setExpanded(!expanded)}><i className={cx(expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-up')}></i></button>
     {expanded ?
@@ -52,7 +55,7 @@ export const SelectorCard: React.FunctionComponent<any> = ({ exp, index, active,
             <div className='selector-card-spinner'>
               <i className={classNames('fa fa-hdd fa-2x fa-fw', edgeOn ? 'control-CONNECTED' : 'control-OFF')}></i>
             </div>
-            <div className='module-count'>{device.configuration.modules && device.configuration.modules.length || '0'} {RESX.selector.card.modules_title}</div>
+            <div className='module-count'>{childCountModules + childCountDevices} {RESX.selector.card.children_title}</div>
             <strong>{kind} {RESX.core.deviceL}</strong>
           </>
             : null}

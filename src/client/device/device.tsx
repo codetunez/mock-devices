@@ -34,6 +34,8 @@ export function Device() {
 
     const kind = deviceContext.device.configuration._kind;
     const modules = deviceContext.device.configuration.modules || [];
+    const modulesDocker = deviceContext.device.configuration.modulesDocker || {};
+    const edgeDevices = deviceContext.device.configuration.edgeDevices || [];
     const content = deviceContext.device.configuration.planMode ? 'plan' : kind === 'edge' ? 'edge' : 'caps';
     const plugIn = deviceContext.device.configuration.plugIn && deviceContext.device.configuration.plugIn !== '' ? true : false;
 
@@ -54,7 +56,7 @@ export function Device() {
                 {content === 'edge' ? <div className='device-edge'>
                     <ControlContext.Consumer>
                         {(state: any) => (
-                            <DeviceEdge modules={modules} control={state.control} />
+                            <DeviceEdge modules={modules} modulesDocker={modulesDocker} edgeDevices={edgeDevices} control={state.control} />
                         )}
                     </ControlContext.Consumer>
                 </div> : null}

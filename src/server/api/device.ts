@@ -149,6 +149,19 @@ export default function (deviceStore: DeviceStore) {
         res.json({ device: deviceStore.exists(id), devices: deviceStore.getListOfItems() });
     });
 
+    // update the device's configuration. will stop the device. send back state of all devices
+    api.put('/:id/edgeDevice', function (req, res, next) {
+        var id = req.params.id;
+        try {
+            deviceStore.updateDevice(id, req.body.payload, 'edgeDevice');
+        }
+        catch (msg) {
+            res.status(500).send(msg);
+            return;
+        }
+        res.json({ device: deviceStore.exists(id), devices: deviceStore.getListOfItems() });
+    });
+
     // required?
     api.post('/:id/property/:propertyId/mock/new', function (req, res, next) {
         var id = req.params.id;

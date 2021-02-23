@@ -39,7 +39,7 @@ export function DevicePower({ control }) {
         </div>
 
         <div className='type'>
-            {kind === 'template' ? RESX.device.toolbar.kindTemplate : kind === 'edge' ? RESX.device.toolbar.kindEdge : kind === 'module' ? RESX.device.toolbar.kindModule : RESX.device.toolbar.kindReal}
+            {kind === 'template' ? RESX.device.toolbar.kindTemplate : kind === 'edge' ? RESX.device.toolbar.kindEdge : kind === 'module' ? RESX.device.toolbar.kindModule : kind === 'edgeDevice' ? RESX.device.toolbar.kindEdgeDevice : RESX.device.toolbar.kindReal}
             {plugIn ? <div className='plugin'>{plugIn} Plugin</div> : null}
         </div>
         {showReapply ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><Reapply handler={toggleReapply} /></div></Modal> : null}
