@@ -34,7 +34,9 @@ export function DevicePower({ control }) {
             {kind === 'template' ?
                 <button title={RESX.device.toolbar.reapply_title} className={cx('btn btn-outline-primary')} onClick={() => { toggleReapply(!showReapply) }}>{RESX.device.toolbar.reapply_label}</button>
                 :
-                <button title={kind === 'edge' ? RESX.core.edgeNoSupport : power.title} className={cx('btn', power.style)} disabled={kind === 'template' || kind === 'edge'} onClick={() => { power.handler() }}><span className='fas fa-power-off'></span>{power.label}</button>
+                // <button title={kind === 'edge' ? RESX.core.edgeNoSupport : power.title} className={cx('btn', power.style)} disabled={kind === 'template' || kind === 'edge'} onClick={() => { power.handler() }}><span className='fas fa-power-off'></span>{power.label}</button>
+                // TODO: remove above if edge offline works
+                <button title={power.title} className={cx('btn', power.style)} disabled={kind === 'template'} onClick={() => { power.handler() }}><span className='fas fa-power-off'></span>{power.label}</button>
             }
         </div>
 
