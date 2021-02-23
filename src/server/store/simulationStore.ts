@@ -65,22 +65,19 @@ export class SimulationStore {
                 "latitude": 39.8952663456671,
                 "longitude": -169.80377348147474,
                 "altitude": 100,
-                "radius": 50000
-
+                "radius": 500000
             }, // Atalantic - Ocean
             {
                 "latitude": 40.736291221818526,
                 "longitude": -74.17785632140426,
                 "altitude": 100,
                 "radius": 20000
-
             }, // Newark - US East Coast
             {
                 "latitude": 47.37358185559139,
                 "longitude": 8.5511341111357,
                 "altitude": 100,
                 "radius": 50000
-
             }, // Zurich - Europe
         ],
         "colors": {
