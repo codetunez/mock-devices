@@ -59,6 +59,9 @@ export function DCMtoMockDevice(deviceStore: DeviceStore, t: Device, useMocks?: 
 
 function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceStore, simRunloop: any, simColors: any, component?: string, useMocks?: boolean) {
 
+    // Ignore non capabilities in the DCM like Gateway relationships where a type cannot be inferred
+    if (!item.schema) { return; }
+
     var o: any = {};
     o._id = uuid();
     o._type = 'property';

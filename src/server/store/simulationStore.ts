@@ -48,18 +48,41 @@ export class SimulationStore {
                 "max": 60
             }
         },
-        "geo": [{
-            "latitude": 51.508009,
-            "longitude": -0.128114,
-            "altitude": 100,
-            "radius": 25000
-        },
-        {
-            "latitude": 47.608013,
-            "longitude": -122.335167,
-            "altitude": 100,
-            "radius": 20000
-        }],
+        "geo": [
+            {
+                "latitude": 51.508009,
+                "longitude": -0.128114,
+                "altitude": 100,
+                "radius": 25000
+            }, // London - England
+            {
+                "latitude": 47.608013,
+                "longitude": -122.335167,
+                "altitude": 100,
+                "radius": 20000
+            }, // Seattle - US West Coast
+            {
+                "latitude": 39.8952663456671,
+                "longitude": -169.80377348147474,
+                "altitude": 100,
+                "radius": 50000
+
+            }, // Atalantic - Ocean
+            {
+                "latitude": 40.736291221818526,
+                "longitude": -74.17785632140426,
+                "altitude": 100,
+                "radius": 20000
+
+            }, // Newark - US East Coast
+            {
+                "latitude": 47.37358185559139,
+                "longitude": 8.5511341111357,
+                "altitude": 100,
+                "radius": 50000
+
+            }, // Zurich - Europe
+        ],
         "colors": {
             "Default": "#333",
             "Color1": "#3a1e1e",
