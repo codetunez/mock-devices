@@ -22,7 +22,7 @@ export const Reapply: React.FunctionComponent<any> = ({ handler }) => {
     }
 
     const indexes = deviceContext.devices.map((ele) => {
-        if (ele.configuration._kind === 'dps' || ele.configuration._kind === 'hub' || ele.configuration._kind === 'module') {
+        if (ele.configuration._kind === 'dps' || ele.configuration._kind === 'hub' || ele.configuration._kind === 'module' || ele.configuration._kind === 'edgeDevice') {
             return { name: ele.configuration.mockDeviceName, value: ele.configuration.deviceId }
         }
     });
