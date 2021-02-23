@@ -792,15 +792,10 @@ export class MockDevice {
         try {
           await registry.getModule(deviceId, moduleId);
         } catch (e) {
-          // if (e.response && e.response.statusCode === 404) {
           await registry.addModule({
             deviceId,
             moduleId,
           });
-          // } else {
-          //   this.logStat(LOGGING_TAGS.STAT.OFF);
-          //   throw e;
-          // }
         }
         this.iotHubDevice.client = ModuleClient.fromConnectionString(
           `HostName=${this.gateway.iotHubDevice.hubName};DeviceId=${deviceId};SharedAccessKey=${this.device.configuration.gatewaySasKey};ModuleId=${moduleId}`,
@@ -818,10 +813,6 @@ export class MockDevice {
         );
         this.mainLoop();
         return; //needed
-        // this.useSasMode = false;
-        // this.connectLoop(
-        //   `HostName=${this.gateway.iotHubDevice.hubName};DeviceId=${deviceId};SharedAccessKey=${this.device.configuration.gatewaySasKey};ModuleId=${moduleId}`
-        // );
       }
     }
 
