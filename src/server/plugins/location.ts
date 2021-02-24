@@ -1,6 +1,21 @@
 import { isArray } from 'lodash';
 import { PlugIn } from '../interfaces/plugin'
 
+const amtrakEmpireBuilder = [
+    { "lat": 41.768321848400014, "lon": -87.6875472938727, "alt": 150 },
+    { "lat": 44.853027003833986, "lon": -91.5767074501227, "alt": 150 },
+    { "lat": 45.93308261605998, "lon": -95.5537582313727, "alt": 150 },
+    { "lat": 47.854713044021224, "lon": -97.0918441688727, "alt": 150 },
+    { "lat": 48.615735050822146, "lon": -101.0469222938727, "alt": 150 },
+    { "lat": 48.324373734023865, "lon": -104.1670394813727, "alt": 150 },
+    { "lat": 48.67380662151449, "lon": -108.3418441688727, "alt": 150 },
+    { "lat": 48.659294997432106, "lon": -110.8247543251227, "alt": 150 },
+    { "lat": 48.74972897998688, "lon": -115.90872652632665, "alt": 150 },
+    { "lat": 48.311391656106984, "lon": -117.06778414351415, "alt": 150 },
+    { "lat": 46.97043699395145, "lon": -120.04413248271241, "alt": 150 },
+    { "lat": 47.276922917781874, "lon": -122.46112467021241, "alt": 150 }
+]
+
 const redmondToBellevue = [
     { "lat": 47.649982546308685, "lon": -122.13334800571964, "alt": 150 },
     { "lat": 47.649747649901215, "lon": -122.13333727688358, "alt": 150 },
@@ -96,7 +111,7 @@ export class Location implements PlugIn {
     // this is called during the loop cycle for a given capability or if Send is pressed in UX
     public propertyResponse = (deviceId: string, capability: any, payload: any) => {
 
-        const arr = isArray(payload) && payload.length > 0 ? payload : redmondToBellevue;
+        const arr = isArray(payload) && payload.length > 0 ? payload : payload && payload === 'AMTRAK' ? amtrakEmpireBuilder : redmondToBellevue;
 
         if (capability.name === 'location') {
             if (Object.getOwnPropertyNames(this.devices[deviceId]).indexOf(capability._id) > -1) {
