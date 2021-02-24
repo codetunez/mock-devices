@@ -536,9 +536,6 @@ export class DeviceStore {
     if (device.configuration._kind === "template") {
       return;
     }
-    // if (device.configuration._kind === "edge") {
-    //   return;
-    // }
 
     try {
       let rd: MockDevice = this.runners[device._id];
