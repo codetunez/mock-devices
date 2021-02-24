@@ -56,7 +56,7 @@ export function Device() {
                 {content === 'edge' ? <div className='device-edge'>
                     <ControlContext.Consumer>
                         {(state: any) => (
-                            <DeviceEdge modules={modules} modulesDocker={modulesDocker} edgeDevices={edgeDevices} control={state.control} />
+                            <DeviceEdge gatewayId={deviceContext.device.configuration.deviceId} modules={modules} modulesDocker={modulesDocker} edgeDevices={edgeDevices} control={state.control} />
                         )}
                     </ControlContext.Consumer>
                 </div> : null}

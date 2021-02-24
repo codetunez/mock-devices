@@ -151,10 +151,7 @@ export class DeviceStore {
 
   public updateDevice = (id: string, payload: any, type?: string) => {
     let d: Device = this.store.getItem(id);
-    let newId: string =
-      type === "configuration"
-        ? Utils.getDeviceId(payload.connectionString) || payload.deviceId || id
-        : id;
+    let newId: string = type === "configuration" ? Utils.getDeviceId(payload.connectionString) || payload.deviceId || id : id;
 
     if (type != undefined && type != "module") {
       this.stopDevice(d);
@@ -167,82 +164,73 @@ export class DeviceStore {
       this.store.deleteItem(id);
     }
 
-    if (type === "urn")
-      Object.assign(d.configuration.capabilityUrn, payload.capabilityUrn);
-    if (type === "plan") {
-      d.plan = payload;
-    }
+    if (type === "urn") { Object.assign(d.configuration.capabilityUrn, payload.capabilityUrn); }
+    if (type === "plan") { d.plan = payload; }
     if (type === "configuration") Object.assign(d.configuration, payload);
     if (type === "module") {
-      if (!d.configuration.modules) {
-        d.configuration.modules = [];
-      }
+      if (!d.configuration.modules) { d.configuration.modules = []; }
+
       const key = Utils.getModuleKey(id, payload.moduleId);
-      const findIndex = d.configuration.modules.findIndex((m) => {
-        return m === key;
-      });
+      const findIndex = d.configuration.modules.findIndex((m) => { return m === key; });
+
       if (findIndex === -1) {
-        d.configuration.modules.push(
-          this.addDeviceModule(
-            id,
-            payload.moduleId,
-            payload.mockDeviceCloneId,
-            payload.scopeId,
-            payload.sasKey
-          )
-        );
-        if (!d.configuration.modulesDocker) {
-          d.configuration.modulesDocker = {};
-        }
-        d.configuration.modulesDocker[
-          Utils.getModuleKey(id, payload.moduleId)
-        ] = payload.environmentModule;
+        d.configuration.modules.push(this.addDeviceModule(id, payload.moduleId, payload.mockDeviceCloneId, payload.scopeId, payload.sasKey));
+        if (!d.configuration.modulesDocker) { d.configuration.modulesDocker = {}; }
+        d.configuration.modulesDocker[Utils.getModuleKey(id, payload.moduleId)] = payload.environmentModule;
       } else {
         throw "This module has already been added"; //REFACTOR: new type of error
       }
     }
 
     if (type === "edgeDevice") {
-      if (!d.configuration.edgeDevices) {
-        d.configuration.edgeDevices = [];
-      }
-      const findIndex = d.configuration.edgeDevices.findIndex((m) => {
-        return m === id;
-      });
+      if (!d.configuration.edgeDevices) { d.configuration.edgeDevices = []; }
+
+      const findIndex = d.configuration.edgeDevices.findIndex((m) => { return m === id; });
       if (findIndex === -1) {
-        let edgeDevice: Device = new Device();
-        edgeDevice._id = payload.deviceId;
-        edgeDevice.configuration = JSON.parse(JSON.stringify(payload));
-        edgeDevice.configuration._kind = "edgeDevice";
-        if (
-          !edgeDevice.configuration.mockDeviceName ||
-          edgeDevice.configuration.mockDeviceName === ""
-        ) {
-          edgeDevice.configuration.mockDeviceName = edgeDevice._id;
+        let items = this.getListOfItems();
+        let capacity = Config.MAX_NUM_DEVICES - items.length;
+
+        let from = parseInt(payload.mockDeviceCount);
+        const to = parseInt(payload.mockDeviceCountMax) + 1;
+        const count = to - from === 0 ? 1 : to - from;
+
+        let maxCount = count > capacity ? capacity : count;
+
+        for (let i = 0; i < maxCount; i++) {
+          let edgeDevice: Device = new Device();
+
+          let createId = null;
+          if (payload._kind === 'dps' || payload._kind === 'edgeDevice') {
+            createId = payload.deviceId;
+          } else if (payload._kind === 'hub') {
+            createId = Utils.getDeviceId(payload.connectionString);
+          } else {
+            createId = payload.deviceId;
+          }
+
+          createId = count > 1 ? createId + "-" + from : createId;
+          if (this.exists(createId)) {
+            throw new Error("This edgeDevice has already been added"); //REFACTOR: new type of error
+          }
+
+          const rename = !payload.mockDeviceName ? createId : payload.mockDeviceName === '' ? createId : count > 1 ? payload.mockDeviceName + '-' + count : payload.mockDeviceName;
+          edgeDevice._id = createId;
+          edgeDevice.configuration = JSON.parse(JSON.stringify(payload));
+          edgeDevice.configuration.mockDeviceName = rename;
+          edgeDevice.configuration.deviceId = createId;
+          this.addDevice(edgeDevice);
+          d.configuration.edgeDevices.push(createId);
+          from++;
         }
-        this.addDevice(edgeDevice);
-
-        let md = new MockDevice(
-          edgeDevice,
-          this.messageService,
-          this.resolvePlugin(edgeDevice, this.plugIns)
-        );
-        this.runners[edgeDevice._id] = md;
-
-        d.configuration.edgeDevices.push(payload.deviceId);
       } else {
-        throw "This edgeDevice has already been added"; //REFACTOR: new type of error
+        throw "This edgeDevice has already been added";
       }
     }
 
     this.store.setItem(d, d._id);
 
     //TODO: needed for modules?
-    let md = new MockDevice(
-      d,
-      this.messageService,
-      this.resolvePlugin(d, this.plugIns)
-    );
+    let md = new MockDevice(d, this.messageService, this.resolvePlugin(d, this.plugIns));
     this.runners[d._id] = md;
 
     return newId;
@@ -693,14 +681,9 @@ export class DeviceStore {
       if (!applyAll && deviceList.indexOf(devices[index]._id) === -1) {
         continue;
       }
-      if (
-        devices[index].configuration._kind === "edge" ||
-        devices[index].configuration._kind === "template"
-      ) {
-        continue;
-      }
       this.stopDevice(devices[index]);
       this.cloneDeviceCommsAndPlan(devices[index], templateId);
+      devices[index].configuration.capabilityUrn = template.configuration.capabilityUrn;
 
       let rd: MockDevice = this.runners[devices[index]._id];
       if (rd) {

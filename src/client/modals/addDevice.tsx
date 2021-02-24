@@ -337,10 +337,10 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                 <label>{RESX.modal.add.option1.label.connstr}</label>
                                 <textarea className='custom-textarea form-control form-control-sm' name='connectionString' rows={4} onChange={updateField} value={state.connectionString || ''}></textarea>
                             </div>
-                            {/* NEED TO THINK HOW TO BRING FWD ALL THE WAY IN THE UX <div className='form-group'>
+                            <div className='form-group'>
                                 <label>{RESX.modal.add.option1.label.friendly_sm}</label>
                                 <input autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
-                            </div> */}
+                            </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
                             <button title={RESX.modal.add.option1.cta_title} className='btn btn-primary' disabled={!state.connectionString || state.connectionString === '' || state.mockDeviceName === ''} onClick={() => clickAddDevice('hub')}>{RESX.modal.add.option1.cta_label}</button>
@@ -417,7 +417,18 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
                     {panel !== 6 ? null : <>
                         <div className='m-tabbed-panel-form'>
-                            <span>DPS Provisioning configuration (use settings that would be configured in the Edge device's config.yaml file)</span>
+                            <div className='form-group'>
+                                <label>Use this device/template/module to config this Edge device</label><br />
+                                <Combo items={state._deviceList} cls='custom-textarea-sm' name='mockDeviceCloneId' onChange={(e) => getTemplate(e.target.value)} value={state.mockDeviceCloneId || ''} />
+                            </div>
+
+                            <div className='form-group'>
+                                <label>{RESX.modal.add.option4.label.friendly}</label>
+                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
+                            </div>
+
+                            <br />
+                            <span>Use the DPS config.yaml settings for the following...</span>
                             <br /><br />
 
                             <div className='form-group'>
@@ -434,10 +445,6 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                 <input autoComplete="off" className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
                             </div>
 
-                            <div className='form-group'>
-                                <label>{RESX.modal.add.option4.label.friendly}</label>
-                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
-                            </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
                             <button disabled={state.mockDeviceName === '' || state.deviceId === ''} title={RESX.modal.add.option4.cta_title} className='btn btn-primary' onClick={() => clickAddDevice('edge')}>{RESX.modal.add.option4.cta_label}</button>

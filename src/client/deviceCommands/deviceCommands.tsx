@@ -99,7 +99,7 @@ export function DeviceCommands() {
         </div>
         {showEdit ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><Edit handler={toggleEdit} index={index} /></div></Modal> : null}
         {showEdgeModule ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><EdgeModule handler={toggleEdgeModule} index={index} scopeId={deviceContext.device.configuration.scopeId} deviceId={deviceContext.device.configuration.deviceId} sasKey={deviceContext.device.configuration.sasKey} /></div></Modal> : null}
-        {showEdgeDevice ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><EdgeDevice handler={toggleEdgeDevice} gatewayId={deviceContext.device.configuration.deviceId} /></div></Modal> : null}
+        {showEdgeDevice ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal height-modal'><EdgeDevice handler={toggleEdgeDevice} gatewayId={deviceContext.device.configuration.deviceId} capabilityUrn={deviceContext.device.configuration.capabilityUrn || ''} /></div></Modal> : null}
         {showDelete ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><ModalConfirm config={deleteModalConfig} /></div></Modal> : null}
         {showDirty ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><ModalConfirm config={dirtyModalConfig} /></div></Modal> : null}
     </div>

@@ -10,7 +10,7 @@ import { decodeModuleKey, controlEvents } from '../ui/utilities';
 import { Modal } from '../modals/modal';
 import { ModalConfirm } from '../modals/modalConfirm';
 
-export function DeviceModule({ index, compositeKey, running, type, docker }) {
+export function DeviceModule({ gatewayId, index, compositeKey, running, type, docker }) {
 
     const deviceContext: any = React.useContext(DeviceContext);
     const appContext: any = React.useContext(AppContext);
@@ -44,7 +44,7 @@ export function DeviceModule({ index, compositeKey, running, type, docker }) {
         title = RESX.edge.card.title_module;
     } else {
         moduleId = `(${compositeKey})`
-        deviceId = compositeKey;
+        deviceId = gatewayId;
         title = RESX.edge.card.title_device;
     }
 

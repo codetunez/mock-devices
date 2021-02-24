@@ -139,7 +139,7 @@ export const RESX = {
                     "friendly": "mock-devices friendly name",
                 },
                 "cta_title": "The Edge device is a host for modules and is not a real device. The Device Id and Module Id need to be the same as the ones in the manifest file",
-                "cta_label": "Create this Edge device host",
+                "cta_label": "Create this Edge device",
             },
             "option8": {
                 "title": "Load a QR Code from an image file",

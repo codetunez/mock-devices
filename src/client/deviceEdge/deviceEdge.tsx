@@ -7,7 +7,7 @@ import { RESX } from '../strings';
 import { controlEvents } from '../ui/utilities';
 import { DeviceModule } from './deviceModule';
 
-export function DeviceEdge({ modules, modulesDocker, edgeDevices, control }) {
+export function DeviceEdge({ gatewayId, modules, modulesDocker, edgeDevices, control }) {
 
     return <>{modules.length > 0 || edgeDevices.length > 0 ?
         <div className='device-edge-modules'>
@@ -15,11 +15,11 @@ export function DeviceEdge({ modules, modulesDocker, edgeDevices, control }) {
             <div className='list'>
                 {modules.map((element, index) => {
                     const runningEvent = control && control[element] ? control[element][2] : controlEvents.OFF;
-                    return <DeviceModule index={index} compositeKey={element} running={runningEvent} type='module' docker={modulesDocker} />
+                    return <DeviceModule gatewayId={gatewayId} index={index} compositeKey={element} running={runningEvent} type='module' docker={modulesDocker} />
                 })}
                 {edgeDevices.map((element, index) => {
                     const runningEvent = control && control[element] ? control[element][2] : controlEvents.OFF;
-                    return <DeviceModule index={index} compositeKey={element} running={runningEvent} type='edgeDevice' docker={null} />
+                    return <DeviceModule gatewayId={gatewayId} index={index} compositeKey={element} running={runningEvent} type='edgeDevice' docker={null} />
                 })}
             </div>
         </div>

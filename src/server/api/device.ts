@@ -286,9 +286,11 @@ export default function (deviceStore: DeviceStore) {
                 res.status(500).json({ "message": "Device already added" });
                 return;
             }
+
+            const rename = !updatePayload.mockDeviceName ? createId : updatePayload.mockDeviceName === '' ? createId : count > 1 ? updatePayload.mockDeviceName + '-' + count : updatePayload.mockDeviceName;
             d._id = createId;
             d.configuration = JSON.parse(JSON.stringify(updatePayload));
-            d.configuration.mockDeviceName = count > 1 ? d.configuration.mockDeviceName + "-" + from : d.configuration.mockDeviceName;
+            d.configuration.mockDeviceName = rename;
             d.configuration.deviceId = createId;
             deviceStore.addDevice(d);
             from++;
