@@ -110,7 +110,7 @@ export const EdgeDevice: React.FunctionComponent<any> = ({ handler, gatewayId, c
         <div className='m-modal'>
             <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
             <div className='m-content'>
-                <h4>Add an Edge/Gateway leaf device</h4>
+                <h4>Add an Edge/Gateway leaf device (Beta)</h4>
                 <div className='form-group'>
                     <label>{RESX.modal.add.option1.label.clone}</label><br />
                     <Combo items={state._deviceList} cls='custom-textarea-sm' name='mockDeviceCloneId' onChange={(e) => getTemplate(e.target.value)} value={state.mockDeviceCloneId || ''} />
@@ -152,7 +152,7 @@ export const EdgeDevice: React.FunctionComponent<any> = ({ handler, gatewayId, c
 
                 <div className='form-group'>
                     <label>{RESX.modal.add.option1.label.friendly}</label>
-                    <input autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
+                    <input autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' disabled={true} placeholder='Not supported in Beta. Device ID will be used for friendly name' />
                 </div>
 
             </div>
