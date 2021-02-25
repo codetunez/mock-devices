@@ -12,7 +12,7 @@ import { SimulationStore } from "../store/simulationStore";
 export class DeviceStore {
   private store: AssociativeStore<Device>;
 
-  private runners: any = null;
+  private runners: { [deviceId: string]: MockDevice } = null;
 
   private sensorStore: SensorStore;
 
@@ -133,10 +133,7 @@ export class DeviceStore {
     let md = new MockDevice(
       d,
       this.messageService,
-      this.resolvePlugin(d, this.plugIns),
-      d.configuration.gatewayDeviceId
-        ? this.runners[d.configuration.gatewayDeviceId]
-        : undefined
+      this.resolvePlugin(d, this.plugIns)
     );
     this.runners[d._id] = md;
 
@@ -151,7 +148,10 @@ export class DeviceStore {
 
   public updateDevice = (id: string, payload: any, type?: string) => {
     let d: Device = this.store.getItem(id);
-    let newId: string = type === "configuration" ? Utils.getDeviceId(payload.connectionString) || payload.deviceId || id : id;
+    let newId: string =
+      type === "configuration"
+        ? Utils.getDeviceId(payload.connectionString) || payload.deviceId || id
+        : id;
 
     if (type != undefined && type != "module") {
       this.stopDevice(d);
@@ -164,28 +164,52 @@ export class DeviceStore {
       this.store.deleteItem(id);
     }
 
-    if (type === "urn") { Object.assign(d.configuration.capabilityUrn, payload.capabilityUrn); }
-    if (type === "plan") { d.plan = payload; }
+    if (type === "urn") {
+      Object.assign(d.configuration.capabilityUrn, payload.capabilityUrn);
+    }
+    if (type === "plan") {
+      d.plan = payload;
+    }
     if (type === "configuration") Object.assign(d.configuration, payload);
     if (type === "module") {
-      if (!d.configuration.modules) { d.configuration.modules = []; }
+      if (!d.configuration.modules) {
+        d.configuration.modules = [];
+      }
 
       const key = Utils.getModuleKey(id, payload.moduleId);
-      const findIndex = d.configuration.modules.findIndex((m) => { return m === key; });
+      const findIndex = d.configuration.modules.findIndex((m) => {
+        return m === key;
+      });
 
       if (findIndex === -1) {
-        d.configuration.modules.push(this.addDeviceModule(id, payload.moduleId, payload.mockDeviceCloneId, payload.scopeId, payload.sasKey));
-        if (!d.configuration.modulesDocker) { d.configuration.modulesDocker = {}; }
-        d.configuration.modulesDocker[Utils.getModuleKey(id, payload.moduleId)] = payload.environmentModule;
+        d.configuration.modules.push(
+          this.addDeviceModule(
+            id,
+            payload.moduleId,
+            payload.mockDeviceCloneId,
+            payload.scopeId,
+            payload.sasKey
+          )
+        );
+        if (!d.configuration.modulesDocker) {
+          d.configuration.modulesDocker = {};
+        }
+        d.configuration.modulesDocker[
+          Utils.getModuleKey(id, payload.moduleId)
+        ] = payload.environmentModule;
       } else {
         throw "This module has already been added"; //REFACTOR: new type of error
       }
     }
 
     if (type === "edgeDevice") {
-      if (!d.configuration.edgeDevices) { d.configuration.edgeDevices = []; }
+      if (!d.configuration.edgeDevices) {
+        d.configuration.edgeDevices = [];
+      }
 
-      const findIndex = d.configuration.edgeDevices.findIndex((m) => { return m === id; });
+      const findIndex = d.configuration.edgeDevices.findIndex((m) => {
+        return m === id;
+      });
       if (findIndex === -1) {
         let items = this.getListOfItems();
         let capacity = Config.MAX_NUM_DEVICES - items.length;
@@ -200,9 +224,9 @@ export class DeviceStore {
           let edgeDevice: Device = new Device();
 
           let createId = null;
-          if (payload._kind === 'dps' || payload._kind === 'edgeDevice') {
+          if (payload._kind === "dps" || payload._kind === "edgeDevice") {
             createId = payload.deviceId;
-          } else if (payload._kind === 'hub') {
+          } else if (payload._kind === "hub") {
             createId = Utils.getDeviceId(payload.connectionString);
           } else {
             createId = payload.deviceId;
@@ -213,7 +237,13 @@ export class DeviceStore {
             throw new Error("This edgeDevice has already been added"); //REFACTOR: new type of error
           }
 
-          const rename = !payload.mockDeviceName ? createId : payload.mockDeviceName === '' ? createId : count > 1 ? payload.mockDeviceName + '-' + count : payload.mockDeviceName;
+          const rename = !payload.mockDeviceName
+            ? createId
+            : payload.mockDeviceName === ""
+            ? createId
+            : count > 1
+            ? payload.mockDeviceName + "-" + count
+            : payload.mockDeviceName;
           edgeDevice._id = createId;
           edgeDevice.configuration = JSON.parse(JSON.stringify(payload));
           edgeDevice.configuration.mockDeviceName = rename;
@@ -229,8 +259,14 @@ export class DeviceStore {
 
     this.store.setItem(d, d._id);
 
+    // if edge, also re-add its modules
     //TODO: needed for modules?
-    let md = new MockDevice(d, this.messageService, this.resolvePlugin(d, this.plugIns));
+    let md = new MockDevice(
+      d,
+      this.messageService,
+      this.resolvePlugin(d, this.plugIns),
+      d.configuration.modules.map((m) => this.runners[m])
+    );
     this.runners[d._id] = md;
 
     return newId;
@@ -536,11 +572,18 @@ export class DeviceStore {
     if (device.configuration._kind === "template") {
       return;
     }
-
     try {
       let rd: MockDevice = this.runners[device._id];
+      let hubName: string;
       if (rd) {
-        rd.start(delay || undefined);
+        if (device.configuration._kind === "module") {
+          // if module, pass hub name from edge
+          const edgeMD: MockDevice = this.runners[
+            device.configuration.gatewayDeviceId
+          ];
+          hubName = edgeMD.getIoTHubHostname();
+        }
+        rd.start(delay || 0, hubName);
       }
     } catch (err) {
       console.error("[DEVICE ERR] " + err.message);
@@ -647,17 +690,36 @@ export class DeviceStore {
       return;
     }
     this.store.createStoreFromArray(items);
-    for (const index in items) {
-      let rd = new MockDevice(
-        items[index],
-        this.messageService,
-        this.resolvePlugin(items[index], this.plugIns),
-        items[index].configuration._kind === "module"
-          ? this.runners[items[index].configuration.gatewayDeviceId]
-          : undefined
-      );
-      this.runners[items[index]._id] = rd;
-    }
+
+    // sort items. create all modules first so we can pass them to edge device
+    items
+      .sort((a, b) => {
+        const aKind = a.configuration._kind;
+        const bKind = b.configuration._kind;
+        if (aKind === bKind) {
+          return 0;
+        }
+        if (aKind === "module") {
+          return -1;
+        }
+        if (bKind === "module") {
+          return 1;
+        }
+      })
+      .forEach((dev) => {
+        let modules: MockDevice[] = undefined;
+        // if an edge, get all its modules and passed them in the constructor
+        if (dev.configuration._kind === "edge") {
+          modules = dev.configuration.modules.map((m) => this.runners[m]);
+        }
+        const rd = new MockDevice(
+          dev,
+          this.messageService,
+          this.resolvePlugin(dev, this.plugIns),
+          modules
+        );
+        this.runners[dev._id] = rd;
+      });
   };
 
   public reapplyTemplate(
@@ -677,7 +739,8 @@ export class DeviceStore {
       }
       this.stopDevice(devices[index]);
       this.cloneDeviceCommsAndPlan(devices[index], templateId);
-      devices[index].configuration.capabilityUrn = template.configuration.capabilityUrn;
+      devices[index].configuration.capabilityUrn =
+        template.configuration.capabilityUrn;
 
       let rd: MockDevice = this.runners[devices[index]._id];
       if (rd) {
