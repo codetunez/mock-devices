@@ -1013,9 +1013,9 @@ export class MockDevice {
           }
         });
         if (this.modules.some((mod) => mod.getRuntimeStatus() === RuntimeStatus.STOPPED) && this.runtimeStatus !== RuntimeStatus.STOPPED) {
+          clearInterval(moduleStopLoop);
           await this.reportModuleStatus();
           this.stop();
-          clearInterval(moduleStopLoop);
         }
       }, 3000);
       this.runtimeStatus = RuntimeStatus.STOPPING;
