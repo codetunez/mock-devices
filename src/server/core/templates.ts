@@ -40,18 +40,29 @@ export function DCMtoMockDevice(deviceStore: DeviceStore, t: Device, useMocks?: 
         t.configuration.capabilityUrn = dcm[0]['@id'];
 
         const componentCache = {};
-        dcm.map((document: any) => {
+        let modules = [];
+        for (const document of dcm) {
+            //dcm.map((document: any) => {
             if (document['@context'] && document['@context'].indexOf('dtmi:dtdl:context;2') > 0 && document.contents) {
+
+                // TODO: for now, ignore creating the modules. These will need to be done separately
+                if (document['@id'] && modules.indexOf(document['@id']) > -1) {
+                    continue;
+                }
+
                 document.contents.forEach((capability: any) => {
                     if (capability['@type'] === 'Component') {
                         componentCache[capability['schema']] = capability['name'];
-                    } else {
+                    } else if (isType(capability['@type'], 'EdgeModule')) {
+                        modules = modules.concat(capability.target);
+                    }
+                    else {
                         const ns = componentCache[document['@id']];
                         DCMCapabilityToComm(capability, t._id, deviceStore, simRunloop, simColors, ns, useMocks);
                     }
                 })
             }
-        })
+        }
     }
 
     delete t.configuration.capabilityModel;

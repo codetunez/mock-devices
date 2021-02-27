@@ -150,10 +150,10 @@ export default function (deviceStore: DeviceStore) {
     });
 
     // update the device's configuration. will stop the device. send back state of all devices
-    api.put('/:id/edgeDevice', function (req, res, next) {
+    api.put('/:id/leafDevice', function (req, res, next) {
         var id = req.params.id;
         try {
-            deviceStore.updateDevice(id, req.body.payload, 'edgeDevice');
+            deviceStore.updateDevice(id, req.body.payload, 'leafDevice');
         }
         catch (msg) {
             res.status(500).send(msg);

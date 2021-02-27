@@ -104,17 +104,17 @@ export class DeviceProvider extends React.PureComponent {
         this.setState({ device: device });
     }
 
-    startDevice = () => {
-        axios.get(`${Endpoint.getEndpoint()}api/device/${this.state.device._id}/start`)
+    startDevice = (id?: string) => {
+        axios.get(`${Endpoint.getEndpoint()}api/device/${id ? id : this.state.device._id}/start`)
             .then((response: any) => {
-                this.setState({ device: response.data.device, devices: response.data.devices });
+                this.setState({ devices: response.data.devices });
             })
     }
 
-    stopDevice = () => {
-        axios.get(`${Endpoint.getEndpoint()}api/device/${this.state.device._id}/stop`)
+    stopDevice = (id?: string) => {
+        axios.get(`${Endpoint.getEndpoint()}api/device/${id ? id : this.state.device._id}/stop`)
             .then((response: any) => {
-                this.setState({ device: response.data.device, devices: response.data.devices });
+                this.setState({ devices: response.data.devices });
             })
     }
 

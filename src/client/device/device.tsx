@@ -11,6 +11,7 @@ import { DeviceFieldC2D } from '../deviceFields/deviceFieldC2D';
 import { DeviceFieldMethod } from '../deviceFields/deviceFieldMethod';
 import { DevicePlan } from '../devicePlan/devicePlan';
 import { DeviceEdge } from '../deviceEdge/deviceEdge';
+import { DeviceOptions } from '../deviceOptions/deviceOptions';
 import { RESX } from '../strings';
 
 import { DeviceContext } from '../context/deviceContext';
@@ -21,8 +22,10 @@ export function Device() {
 
     const { id } = useParams<any>();
 
+    const [edgeSelect, setEdgeSelect] = React.useState(true);
     const deviceContext: any = React.useContext(DeviceContext);
     const appContext: any = React.useContext(AppContext);
+
     appContext.clearDirty();
 
     React.useEffect(() => {
@@ -35,9 +38,10 @@ export function Device() {
     const kind = deviceContext.device.configuration._kind;
     const modules = deviceContext.device.configuration.modules || [];
     const modulesDocker = deviceContext.device.configuration.modulesDocker || {};
-    const edgeDevices = deviceContext.device.configuration.edgeDevices || [];
+    const leafDevices = deviceContext.device.configuration.leafDevices || [];
     const content = deviceContext.device.configuration.planMode ? 'plan' : kind === 'edge' ? 'edge' : 'caps';
     const plugIn = deviceContext.device.configuration.plugIn && deviceContext.device.configuration.plugIn !== '' ? true : false;
+    const showOptions = kind === 'edge' || kind === 'module' || kind === 'moduleHosted' || kind === 'leafDevice';
 
     return <>{Object.keys(deviceContext.device).length > 0 ?
         <div className='device'>
@@ -50,13 +54,27 @@ export function Device() {
             </div>
             <div className='device-title'><DeviceTitle /></div>
             <div className='device-commands'><DeviceCommands /></div>
+            {showOptions ? <div className='device-commands'><DeviceOptions selection={edgeSelect} handler={setEdgeSelect} /></div> : null}
 
             <div className='device-fields'>
                 {content === 'plan' ? <div className='device-plan'><DevicePlan device={deviceContext.device} /></div> : null}
                 {content === 'edge' ? <div className='device-edge'>
                     <ControlContext.Consumer>
                         {(state: any) => (
-                            <DeviceEdge gatewayId={deviceContext.device.configuration.deviceId} modules={modules} modulesDocker={modulesDocker} edgeDevices={edgeDevices} control={state.control} />
+                            <>
+                                {edgeSelect ?
+                                    <DeviceEdge gatewayId={deviceContext.device.configuration.deviceId} modules={modules} modulesDocker={modulesDocker} leafDevices={leafDevices} control={state.control} />
+                                    :
+                                    deviceContext.device && deviceContext.device.comms && deviceContext.device.comms.map((capability: any) => {
+                                        const expand = appContext.property[capability._id] || false;
+                                        return <>
+                                            {capability.type && capability.type.direction === 'd2c' ? <DeviceFieldD2C capability={capability} shouldExpand={expand} template={kind === 'template'} sensors={deviceContext.sensors} plugIn={plugIn} /> : null}
+                                            {capability.type && capability.type.direction === 'c2d' ? <DeviceFieldC2D capability={capability} shouldExpand={expand} template={kind === 'template'} /> : null}
+                                            {capability._type === 'method' ? <DeviceFieldMethod capability={capability} shouldExpand={expand} template={kind === 'template'} originalName={capability.name} originalComponentName={capability.component ? capability.component.name : null} /> : null}
+                                        </>
+                                    })
+                                }
+                            </>
                         )}
                     </ControlContext.Consumer>
                 </div> : null}

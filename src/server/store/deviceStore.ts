@@ -2,7 +2,7 @@ import { Config } from '../config';
 import { AssociativeStore } from '../framework/AssociativeStore'
 import { SensorStore } from './sensorStore'
 import { Method, Device, Property } from '../interfaces/device';
-import { MockDevice } from '../core/mockDevice';
+import { MockDevice, LOGGING_TAGS } from '../core/mockDevice';
 import { ValueByIdPayload } from '../interfaces/payload';
 import * as uuidV4 from 'uuid/v4';
 import * as Utils from '../core/utils';
@@ -14,6 +14,7 @@ export class DeviceStore {
     private store: AssociativeStore<Device>;
 
     private runners: { [deviceId: string]: MockDevice } = null;
+    private edgeManagers: any = {};
 
     private sensorStore: SensorStore;
 
@@ -60,12 +61,11 @@ export class DeviceStore {
         this.messageService.removeStatsOrControl(d._id);
     }
 
-    // EDGE
-    public addDeviceModule = (deviceId, moduleId, cloneId, gatewayScopeId, gatewaySasKey): string => {
+    public addDeviceModule = (deviceId, moduleId, cloneId, gatewayScopeId, gatewaySasKey, type): string => {
         const d: Device = new Device();
         const moduleKey = Utils.getModuleKey(deviceId, moduleId);
         d._id = moduleKey;
-        d.configuration._kind = 'module';
+        d.configuration._kind = type;
         d.configuration.deviceId = moduleKey;
         d.configuration.mockDeviceCloneId = cloneId;
         d.configuration.mockDeviceName = moduleKey;
@@ -86,10 +86,10 @@ export class DeviceStore {
             return;
         }
 
-        i = d.configuration.edgeDevices ? d.configuration.edgeDevices.indexOf(moduleId) : -1;
+        i = d.configuration.leafDevices ? d.configuration.leafDevices.indexOf(moduleId) : -1;
         if (i > -1) {
             const payload = {
-                edgeDevices: d.configuration.edgeDevices.splice(i, 1),
+                leafDevices: d.configuration.leafDevices.splice(i, 1),
             };
             this.updateDevice(d._id, payload);
         }
@@ -158,20 +158,20 @@ export class DeviceStore {
             const findIndex = d.configuration.modules.findIndex((m) => { return m === key; });
 
             if (findIndex === -1) {
-                d.configuration.modules.push(this.addDeviceModule(id, payload.moduleId, payload.mockDeviceCloneId, payload.scopeId, payload.sasKey));
+                d.configuration.modules.push(this.addDeviceModule(id, payload.moduleId, payload.mockDeviceCloneId, payload.scopeId, payload.sasKey, payload._kind));
                 if (!d.configuration.modulesDocker) { d.configuration.modulesDocker = {}; }
-                d.configuration.modulesDocker[Utils.getModuleKey(id, payload.moduleId)] = payload.environmentModule;
+                d.configuration.modulesDocker[Utils.getModuleKey(id, payload.moduleId)] = payload._kind === "module" ? false : true;
             } else {
                 throw 'This module has already been added'; //REFACTOR: new type of error
             }
         }
 
-        if (type === 'edgeDevice') {
-            if (!d.configuration.edgeDevices) {
-                d.configuration.edgeDevices = [];
+        if (type === 'leafDevice') {
+            if (!d.configuration.leafDevices) {
+                d.configuration.leafDevices = [];
             }
 
-            const findIndex = d.configuration.edgeDevices.findIndex((m) => {
+            const findIndex = d.configuration.leafDevices.findIndex((m) => {
                 return m === id;
             });
             if (findIndex === -1) {
@@ -185,10 +185,10 @@ export class DeviceStore {
                 let maxCount = count > capacity ? capacity : count;
 
                 for (let i = 0; i < maxCount; i++) {
-                    let edgeDevice: Device = new Device();
+                    let leafDevice: Device = new Device();
 
                     let createId = null;
-                    if (payload._kind === 'dps' || payload._kind === 'edgeDevice') {
+                    if (payload._kind === 'dps' || payload._kind === 'leafDevice') {
                         createId = payload.deviceId;
                     } else if (payload._kind === 'hub') {
                         createId = Utils.getDeviceId(payload.connectionString);
@@ -198,26 +198,20 @@ export class DeviceStore {
 
                     createId = count > 1 ? createId + '-' + from : createId;
                     if (this.exists(createId)) {
-                        throw new Error('This edgeDevice has already been added'); //REFACTOR: new type of error
+                        throw new Error('This leafDevice has already been added'); //REFACTOR: new type of error
                     }
 
-                    const rename = !payload.mockDeviceName
-                        ? createId
-                        : payload.mockDeviceName === ''
-                            ? createId
-                            : count > 1
-                                ? payload.mockDeviceName + '-' + count
-                                : payload.mockDeviceName;
-                    edgeDevice._id = createId;
-                    edgeDevice.configuration = JSON.parse(JSON.stringify(payload));
-                    edgeDevice.configuration.mockDeviceName = rename;
-                    edgeDevice.configuration.deviceId = createId;
-                    this.addDevice(edgeDevice);
-                    d.configuration.edgeDevices.push(createId);
+                    const rename = !payload.mockDeviceName ? createId : payload.mockDeviceName === '' ? createId : count > 1 ? payload.mockDeviceName + '-' + count : payload.mockDeviceName;
+                    leafDevice._id = createId;
+                    leafDevice.configuration = JSON.parse(JSON.stringify(payload));
+                    leafDevice.configuration.mockDeviceName = rename;
+                    leafDevice.configuration.deviceId = createId;
+                    this.addDevice(leafDevice);
+                    d.configuration.leafDevices.push(createId);
                     from++;
                 }
             } else {
-                throw 'This edgeDevice has already been added';
+                throw 'This leafDevice has already been added';
             }
         }
 
@@ -225,7 +219,7 @@ export class DeviceStore {
 
         // if edge, also re-add its modules
         //TODO: needed for modules?
-        let md = new MockDevice(d, this.messageService, this.resolvePlugin(d, this.plugIns), d.configuration.modules.map((m) => this.runners[m]));
+        let md = new MockDevice(d, this.messageService, this.resolvePlugin(d, this.plugIns));
         this.runners[d._id] = md;
 
         return newId;
@@ -483,23 +477,78 @@ export class DeviceStore {
     }
 
     // EDGE
-    public startDevice = (device: Device, delay?: number) => {
-        if (device.configuration._kind === 'template') {
-            return;
-        }
+    public startDevice = (device: Device, delay?: number, shallowStart?: boolean) => {
+        if (device.configuration._kind === 'template') { return; }
+
         try {
-            let rd: MockDevice = this.runners[device._id];
-            let hubName: string;
-            if (rd) {
-                if (device.configuration._kind === 'module') {
-                    // if module, pass hub name from edge
-                    const edgeMD: MockDevice = this.runners[
-                        device.configuration.gatewayDeviceId
-                    ];
-                    hubName = edgeMD.getIoTHubHostname();
+
+            // if there is a gateway device i.e. this device is a module or leaf device start the gateway
+            if (device.configuration.gatewayDeviceId) {
+                const gatewayDevice: MockDevice = this.runners[device.configuration.gatewayDeviceId];
+                if (gatewayDevice.getControlStatus() === LOGGING_TAGS.LOG.EV.OFF) {
+                    const gd = this.store.getItem(device.configuration.gatewayDeviceId);
+                    this.startDevice(gd, 0, true);
                 }
-                rd.start(delay || 0, hubName);
+
+                // if the device is a module then ensure the gateway has start before starting
+                if (device.configuration._kind === 'module') {
+                    let moduleTimer = setInterval(() => {
+                        if (gatewayDevice.getControlStatus() === LOGGING_TAGS.LOG.EV.CONNECTED) {
+                            clearInterval(moduleTimer);
+                            let md: MockDevice = this.runners[device._id];
+                            md.start(0, gatewayDevice.getIoTHubHostname());
+                        }
+                    }, 2000);
+                    return // needed
+                }
             }
+
+            // this will start every type of device except module and template
+            let rd: MockDevice = this.runners[device._id];
+            rd.start(delay || 0);
+
+
+            // if we are starting a edge device, start everything under it
+            if (device.configuration._kind === 'edge') {
+
+                this.edgeManagers[device.configuration.deviceId] = setInterval(() => {
+                    const moduleStatus: any = {};
+                    for (const compositeKey of device.configuration.modules) {
+                        const runner = this.runners[compositeKey];
+                        const { deviceId, moduleId } = Utils.decodeModuleKey(compositeKey);
+                        moduleStatus[moduleId] = runner.getControlStatus() === LOGGING_TAGS.LOG.EV.CONNECTED ? true : false;
+                    }
+                    rd.updateEdgeModules(moduleStatus);
+                }, 10000);
+
+                for (const id of device.configuration.modules) {
+                    let md: MockDevice = this.runners[id];
+                    if (!md.getRunningStatus()) { md.waitForInstruction(); }
+                }
+
+                const min = this.bulkRun["random"]["min"];
+                const max = this.bulkRun["random"]["max"];
+
+                if (!shallowStart) {
+                    for (const id of device.configuration.leafDevices) {
+                        const delay = Utils.getRandomNumberBetweenRange(min, max, true);
+                        const leafDevice = this.store.getItem(id);
+                        this.startDevice(leafDevice, delay)
+                    }
+                }
+
+                let startAllTimer = setInterval(() => {
+                    if (rd.getControlStatus() === LOGGING_TAGS.LOG.EV.CONNECTED) {
+                        clearInterval(startAllTimer);
+
+                        for (const id of device.configuration.modules) {
+                            const module = this.store.getItem(id);
+                            this.startDevice(module, 0)
+                        }
+                    }
+                }, 2000);
+            }
+
         } catch (err) {
             console.error('[DEVICE ERR] ' + err.message);
         }
@@ -508,6 +557,18 @@ export class DeviceStore {
     //EDGE
     public stopDevice = (device: Device) => {
         if (device.configuration._kind === 'template') { return; }
+
+        if (device.configuration.modules) {
+            for (const id of device.configuration.modules) {
+                const d = this.store.getItem(id);
+                if (d) {
+                    this.stopDevice(d);
+                }
+            }
+            clearInterval(this.edgeManagers[device.configuration.deviceId]);
+            this.edgeManagers[device.configuration.deviceId] = false;
+            // TODO: needs better orchestration but will do for now
+        }
 
         let rd: MockDevice = this.runners[device._id];
         if (rd) { rd.stop(); }
@@ -587,32 +648,15 @@ export class DeviceStore {
         return this.store.getAllItems();
     }
 
-    // EDGE
     public createFromArray = (items: Array<Device>) => {
         if (!items) { return; }
         this.store.createStoreFromArray(items);
+        for (const index in items) {
+            let rd = new MockDevice(items[index], this.messageService, this.resolvePlugin(items[index], this.plugIns));
+            this.runners[items[index]._id] = rd;
+        }
+    }
 
-        // sort items. create all modules first so we can pass them to edge device
-        items
-            .sort((a, b) => {
-                const aKind = a.configuration._kind;
-                const bKind = b.configuration._kind;
-                if (aKind === bKind) { return 0; }
-                if (aKind === 'module') { return -1; }
-                if (bKind === 'module') { return 1; }
-            })
-            .forEach((dev) => {
-                let modules: MockDevice[] = undefined;
-                // if an edge, get all its modules and passed them in the constructor
-                if (dev.configuration._kind === 'edge') {
-                    modules = dev.configuration.modules.map((m) => this.runners[m]);
-                }
-                const rd = new MockDevice(dev, this.messageService, this.resolvePlugin(dev, this.plugIns), modules);
-                this.runners[dev._id] = rd;
-            });
-    };
-
-    // EDGE
     public reapplyTemplate(templateId: string, deviceList: Array<string>, applyAll: boolean) {
         const template = this.store.getItem(templateId);
         if (!template) { return; }

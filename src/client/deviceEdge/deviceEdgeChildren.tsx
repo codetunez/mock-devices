@@ -10,10 +10,11 @@ import { decodeModuleKey, controlEvents } from '../ui/utilities';
 import { Modal } from '../modals/modal';
 import { ModalConfirm } from '../modals/modalConfirm';
 
-export function DeviceModule({ gatewayId, index, compositeKey, running, type, docker }) {
+export function DeviceEdgeChildren({ control, gatewayId, index, compositeKey, running, type, docker }) {
 
     const deviceContext: any = React.useContext(DeviceContext);
     const appContext: any = React.useContext(AppContext);
+    const [power, setPower] = React.useState<any>({});
 
     const [showDelete, toggleDelete] = React.useState(false);
 
@@ -48,18 +49,31 @@ export function DeviceModule({ gatewayId, index, compositeKey, running, type, do
         title = RESX.edge.card.title_device;
     }
 
+    React.useEffect(() => {
+        const on = control && control[compositeKey] ? control[compositeKey][2] != controlEvents.OFF : false;
+        setPower({
+            label: on ? RESX.device.toolbar.powerOff_label : RESX.device.toolbar.powerOn_label,
+            title: on ? RESX.device.toolbar.powerOff_title : RESX.device.toolbar.powerOn_title,
+            style: on ? "btn-success" : "btn-outline-secondary",
+            handler: on ? (() => deviceContext.stopDevice(compositeKey)) : (() => deviceContext.startDevice(compositeKey))
+        })
+    }, [deviceContext.device, control[compositeKey]])
+
     return <>
         <div className="edge-module">
             <div className='expander'>
                 <div>{title} {index + 1}</div>
-                {docker && docker[compositeKey] ? <i className="fab fa-docker fa-fw" /> : null}
-                <button title={RESX.edge.buttons.delete_title} className='btn btn-sm btn-outline-danger' onClick={() => toggleDelete(!showDelete)}><span className='fa fa-times'></span></button>
+                <div className='btn-bar'>
+                    <div>{docker && docker[compositeKey] ? <i className="fab fa-docker fa-fw" /> : null}</div>
+                    <button title={power.title} className={cx('btn btn-sm', power.style)} onClick={() => { power.handler() }}><span className='fas fa-power-off'></span></button>
+                    <button title={RESX.edge.buttons.delete_title} className='btn btn-sm btn-outline-danger' onClick={() => toggleDelete(!showDelete)}><span className='fa fa-times'></span></button>
+                </div>
             </div>
             <button className='selector-card selector-card-expanded' onClick={() => { deviceContext.getDevice(compositeKey) }}>
                 <h4>{moduleId || 'LEAF DEVICE'}</h4>
                 <strong>{deviceId || ''}</strong>
                 <div className='selector-card-spinner'>
-                    <i className={cx('fas fa-spinner fa-2x fa-fw', { 'fa-pulse': running != controlEvents.OFF })} ></i>
+                    <i className={cx('fas fa-cog fa-2x fa-fw', { 'fa-spin': running != controlEvents.OFF })} ></i>
                 </div>
                 <div className={'control control-' + running}>{running}</div>
             </button>

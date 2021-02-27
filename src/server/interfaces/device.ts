@@ -102,7 +102,7 @@ export class Device {
 }
 
 export class DeviceConfiguration {
-    public _kind: 'dps' | 'hub' | 'template' | 'edge' | 'module' | 'edgeDevice';
+    public _kind: 'dps' | 'hub' | 'template' | 'edge' | 'module' | 'moduleHosted' | 'leafDevice';
     public _deviceList?: [];
     public _plugIns?: [];
     public deviceId?: string;
@@ -123,12 +123,11 @@ export class DeviceConfiguration {
     public planMode?: boolean;
     public modules?: Array<string> = [];
     public modulesDocker?: any;
-    public edgeDevices?: Array<string> = [];
+    public leafDevices?: Array<string> = [];
     public centralAdded?: boolean;
     public plugIn: string;
     public geo?: number;
     public gatewayId?: string;
-    public environmentModule?: boolean;
     public gatewayDeviceId?: string;
     public gatewayScopeId?: string;
     public gatewaySasKey?: string;

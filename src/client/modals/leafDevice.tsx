@@ -1,6 +1,6 @@
 var classNames = require('classnames');
 const cx = classNames.bind(require('./edgeModule.scss'));
-const cxM = classNames.bind(require('./edgeDevice.scss'));
+const cxM = classNames.bind(require('./leafDevice.scss'));
 
 import Toggle from 'react-toggle';
 import "react-toggle/style.css"
@@ -12,11 +12,11 @@ import { RESX } from '../strings';
 import { Combo, Json } from '../ui/controls';
 import { Endpoint } from '../context/endpoint';
 
-export const EdgeDevice: React.FunctionComponent<any> = ({ handler, gatewayId, capabilityUrn }) => {
+export const LeafDevice: React.FunctionComponent<any> = ({ handler, gatewayDeviceId, capabilityUrn }) => {
 
     const deviceContext: any = React.useContext(DeviceContext);
     const [state, setPayload] = React.useState({
-        _kind: 'edgeDevice',
+        _kind: 'leafDevice',
         _deviceList: [],
         _plugIns: [],
         deviceId: '',
@@ -26,7 +26,7 @@ export const EdgeDevice: React.FunctionComponent<any> = ({ handler, gatewayId, c
         mockDeviceCloneId: '',
         connectionString: '',
         scopeId: '',
-        dpsPayload: { "iotcGateway": { "iotcGatewayId": capabilityUrn } },
+        dpsPayload: { "iotcGateway": { "iotcGatewayId": gatewayDeviceId } },
         sasKey: '',
         isMasterKey: false,
         capabilityModel: '',
@@ -34,7 +34,7 @@ export const EdgeDevice: React.FunctionComponent<any> = ({ handler, gatewayId, c
         machineState: '',
         machineStateClipboard: '',
         plugIn: '',
-        gatewayId: gatewayId
+        gatewayDeviceId: gatewayDeviceId
     });
 
     React.useEffect(() => {
@@ -102,7 +102,7 @@ export const EdgeDevice: React.FunctionComponent<any> = ({ handler, gatewayId, c
         const newState = Object.assign({}, state);
         delete newState._deviceList;
         delete newState._plugIns;
-        deviceContext.updateDeviceModules(state, 'edgeDevice');
+        deviceContext.updateDeviceModules(state, 'leafDevice');
         handler();
     }
 

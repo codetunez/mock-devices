@@ -12,7 +12,6 @@ import { RESX } from '../strings';
 export function DevicePower({ control }) {
 
     const deviceContext: any = React.useContext(DeviceContext);
-    const controlContext: any = React.useContext(ControlContext);
     const [power, setPower] = React.useState<any>({});
     const [showReapply, toggleReapply] = React.useState(false);
 
@@ -34,14 +33,12 @@ export function DevicePower({ control }) {
             {kind === 'template' ?
                 <button title={RESX.device.toolbar.reapply_title} className={cx('btn btn-outline-primary')} onClick={() => { toggleReapply(!showReapply) }}>{RESX.device.toolbar.reapply_label}</button>
                 :
-                // <button title={kind === 'edge' ? RESX.core.edgeNoSupport : power.title} className={cx('btn', power.style)} disabled={kind === 'template' || kind === 'edge'} onClick={() => { power.handler() }}><span className='fas fa-power-off'></span>{power.label}</button>
-                // TODO: remove above if edge offline works
                 <button title={power.title} className={cx('btn', power.style)} disabled={kind === 'template'} onClick={() => { power.handler() }}><span className='fas fa-power-off'></span>{power.label}</button>
             }
         </div>
 
         <div className='type'>
-            {kind === 'template' ? RESX.device.toolbar.kindTemplate : kind === 'edge' ? RESX.device.toolbar.kindEdge : kind === 'module' ? RESX.device.toolbar.kindModule : kind === 'edgeDevice' ? RESX.device.toolbar.kindEdgeDevice : RESX.device.toolbar.kindReal}
+            {kind === 'template' ? RESX.device.toolbar.kindTemplate : kind === 'edge' ? RESX.device.toolbar.kindEdge : kind === 'module' ? RESX.device.toolbar.kindModule : kind === 'leafDevice' ? RESX.device.toolbar.kindEdgeDevice : RESX.device.toolbar.kindReal}
             {plugIn ? <div className='plugin'>{plugIn} Plugin</div> : null}
         </div>
         {showReapply ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal'><Reapply handler={toggleReapply} /></div></Modal> : null}

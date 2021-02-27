@@ -15,10 +15,10 @@ export const EdgeModule: React.FunctionComponent<any> = ({ handler, deviceId, sc
 
     const deviceContext: any = React.useContext(DeviceContext);
     const [state, setPayload] = React.useState({
+        _kind: 'module',
         _deviceList: [],
         mockDeviceCloneId: '',
         moduleId: '',
-        environmentModule: false,
         deviceId,
         scopeId,
         sasKey
@@ -51,19 +51,12 @@ export const EdgeModule: React.FunctionComponent<any> = ({ handler, deviceId, sc
     const toggleEnvironment = () => {
         setPayload({
             ...state,
-            environmentModule: !state.environmentModule
+            _kind: state._kind === 'module' ? 'moduleHosted' : 'module'
         });
     }
 
     const save = () => {
-        deviceContext.updateDeviceModules({
-            mockDeviceCloneId: state.mockDeviceCloneId,
-            moduleId: state.moduleId,
-            environmentModule: state.environmentModule,
-            deviceId: state.deviceId,
-            scopeId: state.scopeId,
-            sasKey: state.sasKey,
-        }, 'module');
+        deviceContext.updateDeviceModules(state, 'module');
         handler();
     }
 
@@ -83,7 +76,7 @@ export const EdgeModule: React.FunctionComponent<any> = ({ handler, deviceId, sc
 
                 <div className='form-group'>
                     <label>Use for Docker hosted module</label><br />
-                    <div><Toggle name='masterKey' checked={state.environmentModule} defaultChecked={false} onChange={() => { toggleEnvironment() }} /></div>
+                    <div><Toggle name='masterKey' checked={state._kind === 'moduleHosted'} defaultChecked={false} onChange={() => { toggleEnvironment() }} /></div>
                 </div>
 
             </div>

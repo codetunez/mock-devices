@@ -4,7 +4,7 @@ const cx = classNames.bind(require('./deviceCommands.scss'));
 import * as React from 'react';
 import { Modal } from '../modals/modal';
 import { EdgeModule } from '../modals/edgeModule';
-import { EdgeDevice } from '../modals/edgeDevice';
+import { LeafDevice } from '../modals/leafDevice';
 import { Edit } from '../modals/edit';
 import { RESX } from '../strings';
 import { decodeModuleKey } from '../ui/utilities';
@@ -24,15 +24,7 @@ export function DeviceCommands() {
     const [showDirty, toggleDirty] = React.useState(false);
 
     const kind = deviceContext.device.configuration._kind;
-
     const index = deviceContext.devices.findIndex((x) => x._id == deviceContext.device._id);
-    let edgeDevice = decodeModuleKey(deviceContext.device._id);
-
-    if (kind === 'edgeDevice') {
-        edgeDevice = {
-            deviceId: deviceContext.device.configuration.gatewayId
-        }
-    }
 
     const deleteDialogAction = (result) => {
         if (result === "Yes") {
@@ -90,16 +82,12 @@ export function DeviceCommands() {
             }
         </div>
         <div className='btn-bar'>
-            {kind === 'module' || kind === 'edgeDevice' ?
-                <button title={RESX.device.commands.edge_device_title} className='btn btn-outline-primary' onClick={() => { { deviceContext.getDevice(edgeDevice.deviceId) } }}>{RESX.device.commands.edge_device_label}</button>
-                : null
-            }
             <button title={RESX.device.commands.config_title} className='btn btn-warning' onClick={() => { toggleEdit(!showEdit) }}><span className='fas fa-wrench'></span></button>
             <button title={RESX.device.commands.delete_title} className='btn btn-danger' onClick={() => { toggleDelete(!showDelete) }}><span className={'fas fa-lg fa-trash-alt'}></span></button>
         </div>
         {showEdit ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><Edit handler={toggleEdit} index={index} /></div></Modal> : null}
         {showEdgeModule ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><EdgeModule handler={toggleEdgeModule} index={index} scopeId={deviceContext.device.configuration.scopeId} deviceId={deviceContext.device.configuration.deviceId} sasKey={deviceContext.device.configuration.sasKey} /></div></Modal> : null}
-        {showEdgeDevice ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal height-modal'><EdgeDevice handler={toggleEdgeDevice} gatewayId={deviceContext.device.configuration.deviceId} capabilityUrn={deviceContext.device.configuration.capabilityUrn || ''} /></div></Modal> : null}
+        {showEdgeDevice ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal height-modal'><LeafDevice handler={toggleEdgeDevice} gatewayDeviceId={deviceContext.device.configuration.deviceId} capabilityUrn={deviceContext.device.configuration.capabilityUrn || ''} /></div></Modal> : null}
         {showDelete ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><ModalConfirm config={deleteModalConfig} /></div></Modal> : null}
         {showDirty ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><ModalConfirm config={dirtyModalConfig} /></div></Modal> : null}
     </div>

@@ -120,6 +120,13 @@ $card-width: 205px;
 
 .selector-card-spinner {
   padding: $sm-gutter;
+  height: 3.25rem;
+}
+
+.selector-card-spinner .leaf-msg {
+  font-size: 0.9rem;
+  font-weight: 1000;
+  text-transform: uppercase;
 }
 
 .selector-card:hover {
