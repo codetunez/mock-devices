@@ -81,9 +81,6 @@ export function DCMtoMockDevice(deviceStore: DeviceStore, templateDevice: Device
 
 function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceStore, simRunloop: any, simColors: any, component?: string, useMocks?: boolean) {
 
-    // Ignore non capabilities in the DCM like Gateway relationships where a type cannot be inferred
-    if (!item.schema) { return; }
-
     var o: any = {};
     o._id = uuid();
     o._type = 'property';
@@ -105,6 +102,9 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
         deviceStore.addDeviceMethod(deviceId, o, false);
         return;
     }
+
+    // After this, anything that doesn't have a schema doesn't need to be processed
+    if (!item.schema) { return; }
 
     //let addMock: boolean = false;
     let addRunLoop: boolean = false;
@@ -206,7 +206,9 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
         var rptTwin: any = {};
         rptTwin.name = item.name;
         rptTwin.sdk = 'twin';
-        rptTwin.string = false;
+        rptTwin.string = o.string;
+        rptTwin.value = "";
+        rptTwin.propertyObject = { type: 'templated', template: JSON.stringify({}) };
 
         if (component) {
             rptTwin.component = {
