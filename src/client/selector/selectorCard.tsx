@@ -54,7 +54,7 @@ export const SelectorCard: React.FunctionComponent<any> = ({ exp, index, active,
             <strong>{device.configuration.deviceId || ''}</strong>
             <div className='module-count'>{childCountModules + childCountDevices} {RESX.selector.card.children_title}</div>
             <div className='selector-card-spinner'>
-              {leafsRunning ? <div className='leaf-msg control-CONNECTED'>Some Leaf devices are still running</div> : <i className={cx('fas fa-cog fa-2x fa-fw', { 'fa-spin': runningEvent != controlEvents.OFF })} ></i>}
+              {leafsRunning ? <div className='leaf-msg control-CONNECTED'>{RESX.selector.card.leafs_running}</div> : <i className={cx('fas fa-cog fa-2x fa-fw', { 'fa-spin': runningEvent != controlEvents.OFF })} ></i>}
             </div>
             <div className={'control control-' + runningEvent}>{runningEvent}</div>
             <strong>{kind} {RESX.core.deviceL}</strong>

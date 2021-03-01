@@ -36,7 +36,8 @@ export const RESX = {
         "card": {
             "device_title": "Select this mock device",
             "template_title": "Select this template",
-            "children_title": " children"
+            "children_title": " children",
+            "leafs_running": "Some Leaf devices are still running"
         },
     },
     "modal": {
@@ -117,6 +118,7 @@ export const RESX = {
                     "button2_title": "Create a new empty (or cloned) template",
                 },
                 "label": {
+                    "description": "When loading a state file, the current simulation config is replaced witht he contents of the file. To keep the current simulation config and devices/template use the Merge devices checkbox",
                     "state": "Load a state file",
                     "merge": "Merge Devices (keeps current Simulation config)",
                     "browse": "Browse for file",
@@ -179,13 +181,27 @@ export const RESX = {
         },
         "module": {
             "title": "Add a new Edge module (Beta)",
-            "select": "--Do not clone. Create module with no capabilities",
+            "select1": "--Do not clone. Create module with no capabilities",
+            "select2": "--No plug in selected",
+            "select3": "--No module selected",
             "label": {
                 "clone": "Clone another mock device or use a template",
                 "moduleId": "Module ID",
+                "moduleId_placeholder": "Module ID must be same as manifest JSON",
+                "hosted": "Create as a hosted module (for Docker deployments)"
             },
-            "cta_title": "Create this module",
-            "cta_label": "Add this module to the Edge device",
+            "cta1_title": "Use the Edge manifest file to find module names/IDs",
+            "cta1_label": "Select Module ID from manifest.json",
+            "cta2_title": "Create this module",
+            "cta2_label": "Add this module to the Edge device",
+        },
+        "leafDevice": {
+            "title": "Add an Edge/Gateway leaf device (Beta)",
+            "select1": "--Do not clone. Create module with no capabilities",
+            "select2": "--No plug in selected",
+            "select3": "--No module selected",
+            "cta1_title": "Create the device to a gteway with a DPS payload",
+            "cta1_label": "Create this leaf device",
         },
         "ux": {
             "title": "Change the mock-devices engine",
@@ -263,7 +279,7 @@ export const RESX = {
     },
     "device": {
         "empty": "Use + to add new capabilities such as sending telemetry or reporting/receiving twin data. Methods can be configured to send back a payload. Plan mode is disabled until capabilities are added",
-        "toolbar": {
+        "power": {
             "powerOn_label": " Turn on power",
             "powerOn_title": "Connect this mock device to the hub and start sending and receiving events",
             "powerOff_label": " Turn off power",
@@ -275,12 +291,21 @@ export const RESX = {
             "kindEdge": "Edge/Gateway device",
             "kindModule": "Edge module",
             "kindEdgeDevice": "Edge leaf device",
+            "plugin": " Plugin"
         },
         "title": {
             "planMode": "PLAN",
             "planMode_title": "Use plan mode create a series of timed send and receive events for all of the device capabilities. Switching modes stops the device and only the active mode runs",
             "interactiveMode": "INTERACTIVE",
             "interactiveMode_title": "Use interactive mode to setup each of the device's capabilities and/or send specific values. Switching modes stops the device and only the active mode runs",
+        },
+        "options": {
+            "view": {
+                "capabilities_title": "View this Edge device's capabilities",
+                "capabilities_label": "Edge Capabilites",
+                "children_title": "View the Edge device's modules and leaf devices",
+                "children_label": "Modules and leaf devices"
+            }
         },
         "commands": {
             "restart_label": "Restart plan",

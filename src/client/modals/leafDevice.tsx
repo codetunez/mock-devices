@@ -42,7 +42,7 @@ export const LeafDevice: React.FunctionComponent<any> = ({ handler, gatewayDevic
         let plugIns = [];
         axios.get(`${Endpoint.getEndpoint()}api/devices`)
             .then((response: any) => {
-                list.push({ name: RESX.modal.add.option1.select, value: null });
+                list.push({ name: RESX.modal.leafDevice.select1, value: null });
                 response.data.map((ele: any) => {
                     list.push({ name: ele.configuration.mockDeviceName, value: ele._id });
                 });
@@ -50,7 +50,7 @@ export const LeafDevice: React.FunctionComponent<any> = ({ handler, gatewayDevic
             })
             .then((response: any) => {
 
-                plugIns.push({ name: "--No plug in selected", value: null });
+                plugIns.push({ name: RESX.modal.leafDevice.select2, value: null });
                 response.data.map((ele: any) => {
                     plugIns.push({ name: ele, value: ele });
                 });
@@ -110,7 +110,7 @@ export const LeafDevice: React.FunctionComponent<any> = ({ handler, gatewayDevic
         <div className='m-modal'>
             <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
             <div className='m-content'>
-                <h4>Add an Edge/Gateway leaf device (Beta)</h4>
+                <h4>{RESX.modal.leafDevice.title}</h4>
                 <div className='form-group'>
                     <label>{RESX.modal.add.option1.label.clone}</label><br />
                     <Combo items={state._deviceList} cls='custom-textarea-sm' name='mockDeviceCloneId' onChange={(e) => getTemplate(e.target.value)} value={state.mockDeviceCloneId || ''} />
@@ -158,7 +158,7 @@ export const LeafDevice: React.FunctionComponent<any> = ({ handler, gatewayDevic
             </div>
             <div className='m-footer'>
                 <div className='form-group btn-bar'>
-                    <button title={RESX.modal.module.cta_title} className='btn btn-info' onClick={() => clickAddDevice()}>Create this device</button>
+                    <button title={RESX.modal.leafDevice.cta1_title} className='btn btn-info' onClick={() => clickAddDevice()}>{RESX.modal.leafDevice.cta1_label}</button>
                 </div>
             </div>
         </div>

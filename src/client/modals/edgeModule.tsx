@@ -32,7 +32,7 @@ export const EdgeModule: React.FunctionComponent<any> = ({ handler, deviceId, sc
         let plugIns = [];
         axios.get(`${Endpoint.getEndpoint()}api/devices`)
             .then((response: any) => {
-                list.push({ name: RESX.modal.add.option1.select, value: null });
+                list.push({ name: RESX.modal.module.select1, value: null });
                 response.data.map((ele: any) => {
                     list.push({ name: ele.configuration.mockDeviceName, value: ele._id });
                 });
@@ -40,7 +40,7 @@ export const EdgeModule: React.FunctionComponent<any> = ({ handler, deviceId, sc
             })
             .then((response: any) => {
 
-                plugIns.push({ name: "--No plug in selected", value: null });
+                plugIns.push({ name: RESX.modal.module.select2, value: null });
                 response.data.map((ele: any) => {
                     plugIns.push({ name: ele, value: ele });
                 });
@@ -77,7 +77,7 @@ export const EdgeModule: React.FunctionComponent<any> = ({ handler, deviceId, sc
             .then(response => {
                 if (response.data) {
                     const modules = response.data?.modulesContent?.['$edgeAgent']?.['properties.desired']?.['modules'] || {};
-                    const combo = [{ name: "--No module selected", value: null }];
+                    const combo = [{ name: RESX.modal.module.select3, value: null }];
                     for (const module in modules) {
                         combo.push({ name: module, value: module })
                     }
@@ -103,26 +103,26 @@ export const EdgeModule: React.FunctionComponent<any> = ({ handler, deviceId, sc
 
                 <div className='form-group'>
                     <label>{RESX.modal.module.label.moduleId}</label><br />
-                    <button className='btn btn-sm btn-success' onClick={() => loadManifest()}>Select Module ID from manifest.json</button>
+                    <button title={RESX.modal.module.cta1_title} className='btn btn-sm btn-success' onClick={() => loadManifest()}>{RESX.modal.module.cta1_label}</button>
                 </div>
 
                 <div className='form-group'>
                     {moduleList && moduleList.length > 0 ?
                         <Combo items={moduleList} cls='custom-textarea-sm' name='moduleId' onChange={updateField} value={state.moduleId || ''} />
                         :
-                        <input autoComplete="off" autoFocus={true} id="module-id" className='form-control form-control-sm' type='text' name='moduleId' onChange={updateField} value={state.moduleId || ''} placeholder='Module ID must be same as manifest JSON' />
+                        <input autoComplete="off" autoFocus={true} id="module-id" className='form-control form-control-sm' type='text' name='moduleId' onChange={updateField} value={state.moduleId || ''} placeholder={RESX.modal.module.label.moduleId_placeholder} />
                     }
                 </div>
 
                 <div className='form-group'>
-                    <label>Create as a hosted module (for Docker deployments)</label><br />
+                    <label>{RESX.modal.module.label.hosted}</label><br />
                     <div><Toggle name='masterKey' checked={state._kind === 'moduleHosted'} defaultChecked={false} onChange={() => { toggleEnvironment() }} /></div>
                 </div>
 
             </div>
             <div className='m-footer'>
                 <div className='form-group btn-bar'>
-                    <button disabled={state.moduleId === ''} title={RESX.modal.module.cta_title} className='btn btn-info' onClick={() => save()}>{RESX.modal.module.cta_label}</button>
+                    <button disabled={state.moduleId === ''} title={RESX.modal.module.cta2_title} className='btn btn-info' onClick={() => save()}>{RESX.modal.module.cta2_label}</button>
                 </div>
             </div>
         </div>

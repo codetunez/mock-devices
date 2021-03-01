@@ -23,13 +23,13 @@ export function DeviceOptions({ selection, handler }) {
             :
             <div className='btn-group' role='group' >
                 <button className={cx('btn btn-sm', !selection ? 'btn-light' : 'btn-outline-light')}
-                    title="Edge Capabilities"
+                    title={RESX.device.options.view.capabilities_title}
                     type='button'
-                    onClick={() => { handler(false) }} >Edge Capabilities</button>
+                    onClick={() => { handler(false) }} >{RESX.device.options.view.capabilities_label}</button>
                 <button className={cx('btn btn-sm', selection ? 'btn-light' : 'btn-outline-light')}
-                    title="Edge Devices and Modules"
+                    title={RESX.device.options.view.children_title}
                     type='button'
-                    onClick={() => { handler(true) }} >Modules and leaf devices</button>
+                    onClick={() => { handler(true) }} >{RESX.device.options.view.children_label}</button>
             </div>
         }
     </div>

@@ -388,6 +388,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <div className='m-tabbed-panel-form'>
                             <div className='form-group'>
                                 <div style={{ height: '250px' }}>
+                                    <span>{RESX.modal.add.option3.label.description}</span>
                                     <label>{RESX.modal.add.option3.label.state}</label>
                                     <div>
                                         <span><input type='checkbox' name='merge' checked={merge} onClick={() => setMerge(!merge)} /> {RESX.modal.add.option3.label.merge}</span>
