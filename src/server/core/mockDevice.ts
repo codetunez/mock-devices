@@ -956,7 +956,7 @@ export class MockDevice {
 
     registerDirectMethods() {
         for (const key in this.resolversCollection.nameDmToCommIndex) {
-            const clientMethodKey = this.device.configuration._kind === 'module' ? 'onMethod' : 'onDeviceMethod';
+            const clientMethodKey = this.iotHubDevice.client['onDeviceMethod'] ? 'onDeviceMethod' : 'onMethod';
             this.iotHubDevice.client[clientMethodKey](key, (request, response) => {
                 const method: Method = this.device.comms[this.resolversCollection.nameDmToCommIndex[key]];
                 const methodPayload = JSON.parse(method.payload || {});
