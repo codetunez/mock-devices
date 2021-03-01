@@ -21,12 +21,13 @@
   padding: 0 $md-gutter 0 $md-gutter;
 
   .editor {
-    height: calc(100vh - 272px);
+    height: calc(100vh - 316px);
+    margin-bottom: 1rem;
   }
 }
 .simulation-footer {
   flex-shrink: 0;
-  padding: $md-gutter;
+  padding: 0 $md-gutter $md-gutter $md-gutter;
   display: flex;
 
   > div {

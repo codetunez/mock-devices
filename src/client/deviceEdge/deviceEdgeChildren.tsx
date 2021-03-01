@@ -52,8 +52,8 @@ export function DeviceEdgeChildren({ control, gatewayId, index, compositeKey, ru
     React.useEffect(() => {
         const on = control && control[compositeKey] ? control[compositeKey][2] != controlEvents.OFF : false;
         setPower({
-            label: on ? RESX.device.toolbar.powerOff_label : RESX.device.toolbar.powerOn_label,
-            title: on ? RESX.device.toolbar.powerOff_title : RESX.device.toolbar.powerOn_title,
+            label: on ? RESX.device.power.powerOff_label : RESX.device.power.powerOn_label,
+            title: on ? RESX.device.power.powerOff_title : RESX.device.power.powerOn_title,
             style: on ? "btn-success" : "btn-outline-secondary",
             handler: on ? (() => deviceContext.stopDevice(compositeKey)) : (() => deviceContext.startDevice(compositeKey))
         })

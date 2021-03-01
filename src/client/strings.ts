@@ -118,7 +118,7 @@ export const RESX = {
                     "button2_title": "Create a new empty (or cloned) template",
                 },
                 "label": {
-                    "description": "When loading a state file, the current simulation config is replaced witht he contents of the file. To keep the current simulation config and devices/template use the Merge devices checkbox",
+                    "description": "When loading a state file, the current simulation config is replaced with the contents of the file. To keep the current simulation config and devices/templates use the Merge Devices checkbox",
                     "state": "Load a state file",
                     "merge": "Merge Devices (keeps current Simulation config)",
                     "browse": "Browse for file",
@@ -171,12 +171,13 @@ export const RESX = {
             "update2_title": "Move the position of the device or template in the list",
         },
         "simulation": {
-            "title": "Simulation",
-            "text1": "These are the default values used when a new mock device, module, template or capability is created. Settings to the engine such as start times can be adjusted here",
+            "title": "Simulation configuration",
+            "text1": "These values are used as default values for new devices and templates are runtime values for the simulation engine ",
+            "text2": "Changes to the simulation config can only be persisted in a state file. When launching mock-devices, the simulation configuration is reset to the application default specification",
             "error_load": "Simulation data cannot be loaded",
             "error_save": "Simulation data cannot be saved",
             "configuration_label": "Configuration",
-            "reset_label": "Reset simulation",
+            "reset_label": "Apply simulation change to current state",
             "reset_title": "Stops all devices, resets the engine and applies the new simulation changes",
         },
         "module": {

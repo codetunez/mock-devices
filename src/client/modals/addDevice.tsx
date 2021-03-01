@@ -278,7 +278,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                 <input autoComplete="off" autoFocus={true} id="device-id" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} />
                             </div>
 
-                            <div className='form-group' style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <div className='form-group' style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 0 }}>
                                 <div className='form-group' style={{ paddingRight: '20px' }} >
                                     <div className='form-group'>
                                         <label>{RESX.modal.add.option1.label.dps}</label>
@@ -387,8 +387,9 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                     {panel !== 4 ? null : <>
                         <div className='m-tabbed-panel-form'>
                             <div className='form-group'>
-                                <div style={{ height: '250px' }}>
+                                <div style={{ height: '300px' }}>
                                     <span>{RESX.modal.add.option3.label.description}</span>
+                                    <br /><br />
                                     <label>{RESX.modal.add.option3.label.state}</label>
                                     <div>
                                         <span><input type='checkbox' name='merge' checked={merge} onClick={() => setMerge(!merge)} /> {RESX.modal.add.option3.label.merge}</span>
@@ -396,6 +397,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                         <button className='btn btn-success' onClick={() => loadFromDisk('machineState')}>{RESX.modal.add.option3.label.browse}</button>
                                     </div>
                                 </div>
+                                <br />
                                 <div>
                                     <label>{RESX.modal.add.option3.label.state_save}</label><br />
                                     <button className='btn btn-danger' onClick={() => saveToDisk()}>{RESX.modal.add.option3.label.browse_folder}</button>
