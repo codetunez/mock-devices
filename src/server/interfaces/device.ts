@@ -125,7 +125,7 @@ export class DeviceConfiguration {
     public modulesDocker?: any;
     public leafDevices?: Array<string> = [];
     public centralAdded?: boolean;
-    public plugIn: string;
+    public plugIn?: string;
     public geo?: number;
     public gatewayId?: string;
     public gatewayDeviceId?: string;

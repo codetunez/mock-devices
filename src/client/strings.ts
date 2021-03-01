@@ -17,7 +17,7 @@ export const RESX = {
         "title": "Select Devices, Stats, Add/Save or Connect from the menu on the left"
     },
     "nav": {
-        "stats": ["STATS", "See the current send/recieve/power usage statistics for each device"],
+        "stats": ["STATS", "See the current send/receive/power usage statistics for each device"],
         "devices": ["DEVICES", "See the list of devices, modules and templates"],
         "file": ["ADD/SAVE", "Create a new mock devices, templates or modules. Load/Save the current state of mock-devices"],
         "connect": ["CONNECT", "Connect to a Central application or IoT Hub, use a template and create a mock-device"],
@@ -178,7 +178,7 @@ export const RESX = {
             "reset_title": "Stops all devices, resets the engine and applies the new simulation changes",
         },
         "module": {
-            "title": "Add a new module",
+            "title": "Add a new Edge module (Beta)",
             "select": "--Do not clone. Create module with no capabilities",
             "label": {
                 "clone": "Clone another mock device or use a template",

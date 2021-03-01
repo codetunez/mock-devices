@@ -26,22 +26,30 @@ npm ci && npm run build
 
 Do this every time the code is sync'd from the repo i.e. getting a new version of the app. If you are experiencing issues with this step see the _Pre-Reqs and build issues_ step below
 
-#### Launching app (everyday use)
+### Launching app (everyday use)
 From a command prompt navigate to the folder where the repo was sync'd and perform the following command
 
 ```
 npm run app
 ````
 
-#### Usage Instructions
-Help is available inside the application
+### Usage Instructions
+
+Basic help is available inside the application
 
 ---
 
-#### v10 Update
-- Azure IoT Edge Transparent Gateway and Identity Protocol support. Simulation runs in the mock-devices engine and therefore Virtual Machines or Docker is not required to simulate those two Edge scenarios.
+### v10 Update
+- Azure IoT Edge Transparent Gateway and Identity Protocol support. The simulation runs on the mock-devices engine and therefore virtual machines or docker are not required to simulate these two Edge scenarios. The following is supported...
 
-#### v9 Updates
+  1. Simulate the actual Edge device and have it send and receive telemetry/twin/commands 
+  2. Simulate leaf devices that will auto attach to the Edge parent device
+  2. Simulate any number of Modules for the Edge device and use Plugins for inter module communication
+  4. Simulate multiple Edge devices (and their children) at the same time
+
+- The simulation engine has been cranked up to support __3,500__ devices simultaneously (the count of all Edges/Leafs/Modules/Devices configured in the engine)
+
+### v9 Updates
 - Plugins - Provide app level state machines written in JavaScript that can be used at the device or capability level to provide values (Sample plugin provided)
 - Multiple GEOs - Each device can configure it’s own Geo radius
 - Override loop values - Use the simulation config to override loop duration for a capability
