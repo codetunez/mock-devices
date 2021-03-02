@@ -46,6 +46,7 @@ Basic help is available inside the application
   2. Simulate leaf devices that will auto attach to the Edge parent device
   2. Simulate any number of Modules for the Edge device and use Plugins for inter module communication
   4. Simulate multiple Edge devices (and their children) at the same time
+  5. Use single or group DPS enrollment credentials for the Edge device and modules
 
 - The simulation engine has been cranked up to support __3,500__ devices simultaneously (the count of all Edges/Leafs/Modules/Devices configured in the engine)
 

@@ -1,5 +1,7 @@
 @import "./const.scss";
-
+html {
+  scroll-behavior: smooth;
+}
 body {
   font-family: "Roboto Mono";
   z-index: $order-base;

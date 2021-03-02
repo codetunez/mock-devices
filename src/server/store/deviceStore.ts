@@ -61,7 +61,7 @@ export class DeviceStore {
         this.messageService.removeStatsOrControl(d._id);
     }
 
-    public addDeviceModule = (deviceId, moduleId, cloneId, gatewayScopeId, gatewaySasKey, type): string => {
+    public addDeviceModule = (deviceId, moduleId, cloneId, gatewayScopeId, gatewaySasKey, type, isMasterKey: boolean, plugIn: string): string => {
         const d: Device = new Device();
         const moduleKey = Utils.getModuleKey(deviceId, moduleId);
         d._id = moduleKey;
@@ -72,6 +72,8 @@ export class DeviceStore {
         d.configuration.gatewayDeviceId = deviceId;
         d.configuration.gatewayScopeId = gatewayScopeId;
         d.configuration.gatewaySasKey = gatewaySasKey;
+        d.configuration.isMasterKey = isMasterKey;
+        d.configuration.plugIn = plugIn;
         return this.addDevice(d);
     };
 
@@ -108,8 +110,11 @@ export class DeviceStore {
 
         if (d.configuration.mockDeviceCloneId) { this.cloneDeviceCommsAndPlan(d, d.configuration.mockDeviceCloneId); }
 
+        const modules = d.configuration._modules?.slice() || [];
+
         delete d.configuration._deviceList;
         delete d.configuration._plugIns;
+        delete d.configuration._modules;
         delete d.configuration.mockDeviceCount;
         delete d.configuration.mockDeviceCountMax;
         delete d.configuration.machineState;
@@ -122,6 +127,19 @@ export class DeviceStore {
         let md = new MockDevice(d, this.messageService, this.resolvePlugin(d, this.plugIns));
         this.runners[d._id] = md;
 
+        for (const module of modules) {
+            this.updateDevice(d._id, {
+                _kind: 'module',
+                deviceId: d.configuration.deviceId,
+                scopeId: d.configuration.scopeId,
+                sasKey: d.configuration.sasKey,
+                isMasterKey: d.configuration.isMasterKey,
+                connectionString: d.configuration.connectionString,
+                moduleId: module['id'],
+                plugIn: d.configuration.plugIn,
+                mockDeviceCloneId: module['templateId']
+            }, 'module');
+        }
         return d._id;
     }
 
@@ -158,7 +176,7 @@ export class DeviceStore {
             const findIndex = d.configuration.modules.findIndex((m) => { return m === key; });
 
             if (findIndex === -1) {
-                d.configuration.modules.push(this.addDeviceModule(id, payload.moduleId, payload.mockDeviceCloneId, payload.scopeId, payload.sasKey, payload._kind));
+                d.configuration.modules.push(this.addDeviceModule(id, payload.moduleId, payload.mockDeviceCloneId, payload.scopeId, payload.sasKey, payload._kind, payload.isMasterKey || false, payload.plugIn || ''));
                 if (!d.configuration.modulesDocker) { d.configuration.modulesDocker = {}; }
                 d.configuration.modulesDocker[Utils.getModuleKey(id, payload.moduleId)] = payload._kind === "module" ? false : true;
             } else {
@@ -529,7 +547,7 @@ export class DeviceStore {
                 const min = this.bulkRun["random"]["min"];
                 const max = this.bulkRun["random"]["max"];
 
-                if (!shallowStart) {
+                if (!shallowStart && device.configuration.leafDevices) {
                     for (const id of device.configuration.leafDevices) {
                         const delay = Utils.getRandomNumberBetweenRange(min, max, true);
                         const leafDevice = this.store.getItem(id);

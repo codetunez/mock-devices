@@ -602,13 +602,14 @@ export class MockDevice {
                 this.log(`MODULE '${moduleId}' CANNOT BE STARTED AS NO KNOWN HUBNAME FOR HOST. EDGE DEVICE PROBABLY FAILED TO START`, LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
                 this.stop();
             } else {
-                const registry = Registry.fromSharedAccessSignature(CommonSaS.create(this.edgeHubName, undefined, this.device.configuration.gatewaySasKey, Date.now()).toString());
+                let transformedSasKey = this.device.configuration.isMasterKey ? this.computeDrivedSymmetricKey(this.device.configuration.gatewaySasKey, this.device.configuration.gatewayDeviceId) : this.device.configuration.gatewaySasKey;
+                const registry = Registry.fromSharedAccessSignature(CommonSaS.create(this.edgeHubName, undefined, transformedSasKey, Date.now()).toString());
                 try {
                     await registry.getModule(deviceId, moduleId);
                 } catch (e) {
                     await registry.addModule({ deviceId, moduleId, });
                 }
-                this.iotHubDevice.client = Client.fromConnectionString(`HostName=${this.edgeHubName};DeviceId=${deviceId};SharedAccessKey=${this.device.configuration.gatewaySasKey};ModuleId=${moduleId}`, Protocol);
+                this.iotHubDevice.client = Client.fromConnectionString(`HostName=${this.edgeHubName};DeviceId=${deviceId};SharedAccessKey=${transformedSasKey};ModuleId=${moduleId}`, Protocol);
                 this.log(`MODULE '${moduleId}' CHECK PASSED. ENTERING MAIN LOOP`, LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS);
                 this.logCP(LOGGING_TAGS.CTRL.MOD, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.CONNECTED);
                 this.mainLoop();
@@ -1116,7 +1117,9 @@ export class MockDevice {
         const Agent_Running = 'running';
         const Agent_Stopped = 'stopped';
 
-        const edgeAgentClient = Client.fromConnectionString(`HostName=${this.iotHubDevice.hubName};DeviceId=${this.device._id};SharedAccessKey=${this.device.configuration.sasKey};ModuleId=$edgeAgent`, Protocol);
+        let transformedSasKey = this.device.configuration.isMasterKey ? this.computeDrivedSymmetricKey(this.device.configuration.sasKey, this.device.configuration.deviceId) : this.device.configuration.sasKey;
+        const edgeAgentClient = Client.fromConnectionString(`HostName=${this.iotHubDevice.hubName};DeviceId=${this.device.configuration.deviceId};SharedAccessKey=${transformedSasKey};ModuleId=$edgeAgent`, Protocol);
+
         try {
             await edgeAgentClient.open();
             const edgeAgentTwin = await edgeAgentClient.getTwin();
@@ -1137,7 +1140,9 @@ export class MockDevice {
             });
 
         } catch (err) {
-            this.log('CANNOT UPDATE MODULES STATUS. EDGE DEVICE SHOULD BE RESTARTED', LOGGING_TAGS.CTRL.EDG, LOGGING_TAGS.LOG.EV.ERROR);
+            if (this.running) {
+                this.log('CANNOT UPDATE MODULES STATUS. EDGE DEVICE SHOULD BE RESTARTED', LOGGING_TAGS.CTRL.EDG, LOGGING_TAGS.LOG.EV.ERROR);
+            }
         } finally {
             await edgeAgentClient.close();
         }

@@ -105,6 +105,7 @@ export class DeviceConfiguration {
     public _kind: 'dps' | 'hub' | 'template' | 'edge' | 'module' | 'moduleHosted' | 'leafDevice';
     public _deviceList?: [];
     public _plugIns?: [];
+    public _modules?: [];
     public deviceId?: string;
     public devices?: [];
     public mockDeviceName?: string;
