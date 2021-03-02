@@ -3,6 +3,7 @@ import { Device } from '../interfaces/device'
 import { SimulationStore } from '../store/simulationStore';
 import { SensorStore } from '../store/sensorStore';
 import uuid = require('uuid');
+import * as Utils from './utils';
 
 export function DCMtoMockDevice(deviceStore: DeviceStore, templateDevice: Device, useMocks?: boolean) {
 
@@ -28,7 +29,27 @@ export function DCMtoMockDevice(deviceStore: DeviceStore, templateDevice: Device
         })
 
         dcm.contents.forEach(item => {
-            DCMCapabilityToComm(item, templateDevice._id, deviceStore, simRunloop, simColors, null, useMocks);
+            if (item.target) {
+                item.target.forEach((innerItem) => {
+                    if (Utils.isObject(innerItem)) {
+                        try {
+                            let innerTemplate: Device = new Device();
+                            innerTemplate._id = uuid();
+                            innerTemplate.configuration = {
+                                "_kind": "template",
+                                "capabilityModel": innerItem
+                            };
+                            innerTemplate.configuration.deviceId = innerTemplate._id;
+                            deviceStore.addDevice(innerTemplate);
+                            DCMtoMockDevice(deviceStore, innerTemplate);
+                        } catch (err) {
+                            throw new Error("The DCM has errors or has an unrecognized schema");
+                        }
+                    }
+                })
+            } else {
+                DCMCapabilityToComm(item, templateDevice._id, deviceStore, simRunloop, simColors, null, useMocks);
+            }
         })
     }
 

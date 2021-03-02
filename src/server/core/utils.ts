@@ -26,6 +26,10 @@ export function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
+export function isObject(o) {
+    return (typeof o === "object" || typeof o === 'function') && (o !== null);
+}
+
 // create a string or non string value for a object property value
 export function formatValue(asString: boolean, value: any) {
     if (asString === false && (value.toString().toLowerCase() === "true" || value.toString().toLowerCase() === "false")) {

@@ -18,6 +18,7 @@ const initialState = {
     _kind: '',
     _deviceList: [],
     _plugIns: [],
+    _modules: [],
     deviceId: '',
     mockDeviceName: '',
     mockDeviceCount: 1,
@@ -38,11 +39,15 @@ const initialState = {
 export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
     const deviceContext: any = React.useContext(DeviceContext);
 
+    const edgeRef = React.useRef(null);
+
     const [panel, setPanel] = React.useState(0);
     const [state, setPayload] = React.useState(initialState);
     const [merge, setMerge] = React.useState(false);
     const [jsons, setJsons] = React.useState<any>({});
     const [error, setError] = React.useState<any>('');
+    const [moduleList, setModuleList] = React.useState([]);
+
     const history = useHistory();
 
     React.useEffect(() => {
@@ -53,7 +58,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
             .then((response: any) => {
                 list.push({ name: RESX.modal.add.option1.select, value: null });
                 response.data.map((ele: any) => {
-                    list.push({ name: ele.configuration.mockDeviceName, value: ele._id });
+                    list.push({ name: ele.configuration.mockDeviceName + (ele.configuration._kind === 'template' ? ' [T]' : ''), value: ele._id });
                 });
                 return axios.get(`${Endpoint.getEndpoint()}api/state`);
             })
@@ -76,24 +81,6 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                 })
             })
     }, []);
-
-    const clickAddDevice = (kind: string) => {
-        state._kind = kind === 'quick' ? 'dps' : kind;
-        state.machineStateClipboard = null;
-        for (const j in jsons) {
-            state[j] = jsons[j]
-        }
-        axios.post(`${Endpoint.getEndpoint()}api/device/new${kind === 'quick' ? '/quick' : ''}`, state)
-            .then(res => {
-                deviceContext.setDevices(res.data);
-                history.push('/devices');
-                handler(false);
-            })
-            .catch((err) => {
-                const msg = err.response && err.response.data && err.response.data.message || RESX.modal.add.error_generic_add;
-                setError(msg);
-            })
-    }
 
     const toggleMasterKey = () => {
         setPayload({
@@ -127,28 +114,51 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
             })
     }
 
-    const getTemplate = (id: string) => {
+    const clickAddDevice = (kind: string) => {
+        state._kind = kind === 'quick' ? 'dps' : kind;
+        state.machineStateClipboard = null;
+        for (const j in jsons) {
+            state[j] = jsons[j]
+        }
+        axios.post(`${Endpoint.getEndpoint()}api/device/new${kind === 'quick' ? '/quick' : ''}`, state)
+            .then(res => {
+                deviceContext.setDevices(res.data);
+                history.push('/devices');
+                handler(false);
+            })
+            .catch((err) => {
+                const msg = err.response && err.response.data && err.response.data.message || RESX.modal.add.error_generic_add;
+                setError(msg);
+            })
+    }
+
+    const setModuleTemplate = (id, index) => {
+        axios.get(`${Endpoint.getEndpoint()}api/device/${id}`)
+            .then(response => {
+                const json = response.data;
+                const newState = state._modules.slice();
+                newState[index].templateId = json.configuration.deviceId
+                setPayload({
+                    ...state,
+                    _modules: newState
+                });
+            })
+    }
+
+    const setMainDeviceTemplate = (id: string) => {
         axios.get(`${Endpoint.getEndpoint()}api/device/${id}`)
             .then(response => {
                 const json = response.data;
 
-                if (json == '') {
-                    setPayload(Object.assign({}, initialState, { _deviceList: state._deviceList }));
-                    return;
-                }
-
                 let payload: any = {}
-                payload.scopeId = json.configuration.scopeId
-                payload.capabilityUrn = json.configuration.capabilityUrn
-                payload.mockDeviceCloneId = id;
-                payload.dpsPayload = { "iotcModelId": json.configuration.capabilityUrn }
+                payload.mockDeviceCloneId = json === '' ? '' : id;
+                payload.capabilityUrn = json === '' ? '' : json.configuration.capabilityUrn
+                payload.dpsPayload = json === '' ? '' : { "iotcModelId": json.configuration.capabilityUrn }
 
-                if (json.configuration.isMasterKey) {
-                    payload.sasKey = json.configuration.sasKey;
-                    payload.isMasterKey = true;
-                }
-
-                setPayload(Object.assign({}, state, payload));
+                setPayload({
+                    ...state,
+                    ...payload
+                });
                 document.getElementById('device-id').focus();
             })
     }
@@ -232,6 +242,27 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
             })
     }
 
+    const loadManifest = () => {
+        axios.get(`${Endpoint.getEndpoint()}api/openDialog`)
+            .then(response => {
+                if (response.data) {
+                    const modules = response.data?.modulesContent?.['$edgeAgent']?.['properties.desired']?.['modules'] || {};
+                    const list = [];
+                    for (const module in modules) {
+                        list.push({ id: module, templateId: null });
+                    }
+                    setPayload({
+                        ...state,
+                        _modules: list
+                    });
+
+                    setTimeout(() => {
+                        edgeRef.current.scrollIntoView();
+                    }, 250)
+                };
+            })
+    }
+
     return <div className='dialog-add'>
         <div className='m-modal'>
             <div className='m-close' onClick={() => handler(false)}><i className='fas fa-times'></i></div>
@@ -243,11 +274,11 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <button title={RESX.modal.add.option1.buttons.button1_title} onClick={() => selectPanel(0)} className={cx('btn btn-outline-info', panel === 0 ? 'active' : '')}>{RESX.modal.add.option1.buttons.button1_label}</button><br />
                         <button title={RESX.modal.add.option1.buttons.button2_title} onClick={() => selectPanel(1)} className={cx('btn btn-outline-info', panel === 1 ? 'active' : '')}>{RESX.modal.add.option1.buttons.button2_label}</button><br />
                         <button title={RESX.modal.add.option1.buttons.button4_title} onClick={() => selectPanel(8)} className={cx('btn btn-outline-info', panel === 8 ? 'active' : '')}>{RESX.modal.add.option1.buttons.button4_label}</button><br />
+                        <label>{RESX.modal.add.option4.title}</label>
+                        <button title={RESX.modal.add.option4.buttons.button1_title} onClick={() => selectPanel(6)} className={cx('btn btn-outline-info', panel === 6 ? 'active' : '')}>{RESX.modal.add.option4.buttons.button1_label}</button><br />
                         <label>{RESX.modal.add.option2.title}</label>
                         <button title={RESX.modal.add.option2.buttons.button1_title} onClick={() => selectPanel(2)} className={cx('btn btn-outline-info', panel === 2 ? 'active' : '')}>{RESX.modal.add.option2.buttons.button1_label}</button><br />
                         <button title={RESX.modal.add.option2.buttons.button2_title} onClick={() => selectPanel(3)} className={cx('btn btn-outline-info', panel === 3 ? 'active' : '')}>{RESX.modal.add.option2.buttons.button2_label}</button><br />
-                        <label>{RESX.modal.add.option4.title}</label>
-                        <button title={RESX.modal.add.option4.buttons.button1_title} onClick={() => selectPanel(6)} className={cx('btn btn-outline-info', panel === 6 ? 'active' : '')}>{RESX.modal.add.option4.buttons.button1_label}</button><br />
                         <label>{RESX.modal.add.option3.title}</label>
                         {deviceContext.ui.container ? null : <>
                             <button title={RESX.modal.add.option3.buttons.button1_title} onClick={() => selectPanel(4)} className={cx('btn btn-outline-info', panel === 4 ? 'active' : '')}>{RESX.modal.add.option3.buttons.button1_label}</button><br />
@@ -265,7 +296,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
                             <div className='form-group'>
                                 <label>{RESX.modal.add.option1.label.clone}</label><br />
-                                <Combo items={state._deviceList} cls='custom-textarea-sm' name='mockDeviceCloneId' onChange={(e) => getTemplate(e.target.value)} value={state.mockDeviceCloneId || ''} />
+                                <Combo items={state._deviceList} cls='custom-textarea-sm' name='mockDeviceCloneId' onChange={(e) => setMainDeviceTemplate(e.target.value)} value={state.mockDeviceCloneId || ''} />
                             </div>
 
                             <div className='form-group'>
@@ -421,33 +452,59 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                     {panel !== 6 ? null : <>
                         <div className='m-tabbed-panel-form'>
                             <div className='form-group'>
-                                <label>Use this device/template/module to config this Edge device</label><br />
-                                <Combo items={state._deviceList} cls='custom-textarea-sm' name='mockDeviceCloneId' onChange={(e) => getTemplate(e.target.value)} value={state.mockDeviceCloneId || ''} />
+                                <label>Use a template or clone another device/module</label><br />
+                                <Combo items={state._deviceList} cls='custom-textarea-sm' name='mockDeviceCloneId' onChange={(e) => setMainDeviceTemplate(e.target.value)} value={state.mockDeviceCloneId || ''} />
                             </div>
 
                             <div className='form-group'>
-                                <label>{RESX.modal.add.option4.label.friendly}</label>
-                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
+                                <label>{RESX.modal.plugin}</label><br />
+                                <Combo items={state._plugIns} cls='custom-textarea-sm' name='plugIn' onChange={updateField} value={state.plugIn || ''} />
                             </div>
 
-                            <br />
-                            <span>Use the DPS config.yaml settings for the following...</span>
-                            <br /><br />
-
                             <div className='form-group'>
-                                <label>Registration ID</label><br />
+                                <label>DeviceID (Edge registration_id)</label><br />
                                 <input autoComplete="off" autoFocus={true} id="device-id" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} />
                             </div>
 
                             <div className='form-group'>
-                                <label>Scope ID</label>
+                                <label>Scope ID (Edge scope_id)</label>
                                 <input autoComplete="off" className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
                             </div>
                             <div className='form-group'>
-                                <label>Symmetric Key</label>
+                                <label>SaS Key (Edge symmetric_Key)</label>
                                 <input autoComplete="off" className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
                             </div>
+                            <div className='form-group'>
+                                <label>{RESX.modal.add.option1.label.root}</label>
+                                <div><Toggle name='masterKey' checked={state.isMasterKey} defaultChecked={false} onChange={() => { toggleMasterKey() }} /></div>
+                            </div>
 
+                            <div className='form-group'>
+                                <label>{RESX.modal.add.option1.label.friendly}</label>
+                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
+                            </div>
+
+                            <div className='form-group'>
+                                <label>Add Modules (do not load manifest to skip module creation)</label><br />
+                                <button title={RESX.modal.module.cta1_title} className='btn btn-sm btn-success' onClick={() => loadManifest()}>Load manifest JSON</button>
+                            </div>
+
+                            <div ref={edgeRef} className='form-group edge-modules-list'>
+                                {state._modules && state._modules.length === 0 ? <span>No modules loaded</span> :
+                                    <>
+                                        <div>
+                                            <label>Module Name</label>
+                                            <label>Use Template or clone device/module</label>
+                                        </div>
+                                        {state._modules.map((element, index) => {
+                                            return <div>
+                                                <input type='text' className='form-control form-control-sm' value={element.id} />
+                                                <Combo items={state._deviceList} cls='custom-textarea-sm' name={'module' + element.id} onChange={(e) => setModuleTemplate(e.target.value, index)} value={element.templateId || ''} />
+                                            </div>
+                                        })}
+                                    </>
+                                }
+                            </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
                             <button disabled={state.mockDeviceName === '' || state.deviceId === ''} title={RESX.modal.add.option4.cta_title} className='btn btn-primary' onClick={() => clickAddDevice('edge')}>{RESX.modal.add.option4.cta_label}</button>
