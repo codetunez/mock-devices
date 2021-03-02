@@ -48,10 +48,10 @@ export const Simulation: React.FunctionComponent<any> = ({ handler }) => {
         <div className='simulation-content'>
             <h4>{RESX.modal.simulation.title}</h4>
             <p>{RESX.modal.simulation.text1}</p>
-            <label>{RESX.modal.simulation.configuration_label}</label>
             <div className="editor">
                 <Json json={updatePayload} cb={(obj: any) => { updateField(obj) }} err={() => setError(RESX.modal.error_json)} />
             </div>
+            <p>{RESX.modal.simulation.text2}</p>
         </div>
         <div className='simulation-footer'>
             <button disabled={Object.keys(json).length === 0} title={RESX.modal.simulation.reset_title} onClick={() => reset()} className="btn btn-success">{RESX.modal.simulation.reset_label}</button>

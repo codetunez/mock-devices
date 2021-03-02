@@ -1,8 +1,12 @@
 @import "../const.scss";
 
-
 .dialog-module {
   .m-modal {
     padding: $sm-gutter $md-gutter $md-gutter $md-gutter;
+  }
+
+  label {
+    margin-left: 0 !important;
+    color: $app-clr-yellow-1;
   }
 }

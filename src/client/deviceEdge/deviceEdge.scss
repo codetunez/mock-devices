@@ -6,7 +6,7 @@
 
 .device-edge-modules {
   .title {
-    padding-bottom: $md-gutter;    
+    padding-bottom: $md-gutter;
   }
   .list {
     display: flex;
@@ -26,8 +26,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 2.4rem;
+    height: 2.6rem;
     cursor: default;
     font-size: 1rem;
+
+    .btn-bar {
+      align-items: center;
+      div {
+        margin-right: 0.5rem;
+      }
+    }
   }
 }

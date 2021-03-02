@@ -1,0 +1,9 @@
+@import "../const.scss";
+
+.device-options {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  padding: $sm-gutter $md-gutter;
+  height: 3.5rem;
+}

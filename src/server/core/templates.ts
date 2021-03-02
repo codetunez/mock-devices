@@ -4,57 +4,79 @@ import { SimulationStore } from '../store/simulationStore';
 import { SensorStore } from '../store/sensorStore';
 import uuid = require('uuid');
 
-export function DCMtoMockDevice(deviceStore: DeviceStore, t: Device, useMocks?: boolean) {
+export function DCMtoMockDevice(deviceStore: DeviceStore, templateDevice: Device, useMocks?: boolean) {
 
     let simulationStore = new SimulationStore();
     let simRunloop = simulationStore.get()["runloop"];
     let simColors = simulationStore.get()["colors"];
-    let simDcm = simulationStore.get()["dcm"];
 
-    if (t.configuration.capabilityModel && Object.keys(t.configuration.capabilityModel).length < 0) { return; }
+    if (templateDevice.configuration.capabilityModel && Object.keys(templateDevice.configuration.capabilityModel).length < 0) { return; }
 
-    const dcm: any = t.configuration.capabilityModel;
+    const dcm: any = templateDevice.configuration.capabilityModel;
 
     // DTDL v1
     if (dcm['@type'] && dcm['@type'].indexOf('CapabilityModel') > -1) {
-        t.configuration.mockDeviceName = dcm.displayName ? (dcm.displayName.en || dcm.displayName) : 'DCM has no display name';
-        t.configuration.capabilityUrn = dcm['@id'];
+        templateDevice.configuration.mockDeviceName = dcm.displayName ? (dcm.displayName.en || dcm.displayName) : 'DCM has no display name';
+        templateDevice.configuration.capabilityUrn = dcm['@id'];
 
         dcm.implements.forEach(element => {
             if (element.schema.contents) {
                 element.schema.contents.forEach(item => {
-                    DCMCapabilityToComm(item, t._id, deviceStore, simRunloop, simColors, null, useMocks);
+                    DCMCapabilityToComm(item, templateDevice._id, deviceStore, simRunloop, simColors, null, useMocks);
                 })
             }
         })
 
         dcm.contents.forEach(item => {
-            DCMCapabilityToComm(item, t._id, deviceStore, simRunloop, simColors, null, useMocks);
+            DCMCapabilityToComm(item, templateDevice._id, deviceStore, simRunloop, simColors, null, useMocks);
         })
-
     }
 
-    // DTDL v2 - NEW
-    if (Array.isArray(dcm) && dcm.length > 0) {
-        t.configuration.mockDeviceName = dcm[0].displayName ? (dcm[0].displayName.en || dcm[0].displayName) : 'DCM has no display name';
-        t.configuration.capabilityUrn = dcm[0]['@id'];
+    // DTDL v2 is specified as an array
+    if ((Array.isArray(dcm) && dcm.length > 0)) {
 
         const componentCache = {};
-        dcm.map((document: any) => {
+        let modules = [];
+        for (const document of dcm) {
             if (document['@context'] && document['@context'].indexOf('dtmi:dtdl:context;2') > 0 && document.contents) {
+
+                if (document['@id'] && modules.indexOf(document['@id']) > -1) {
+
+                    try {
+                        let innerTemplate: Device = new Device();
+                        innerTemplate._id = uuid();
+                        innerTemplate.configuration = {
+                            "_kind": "template",
+                            "capabilityModel": [document]
+                        };
+                        innerTemplate.configuration.deviceId = innerTemplate._id;
+                        deviceStore.addDevice(innerTemplate);
+                        DCMtoMockDevice(deviceStore, innerTemplate);
+                        continue;
+                    } catch (err) {
+                        throw new Error("The DCM has errors or has an unrecognized schema");
+                    }
+                }
+
+                templateDevice.configuration.mockDeviceName = document.displayName ? (document.displayName.en || document.displayName) : 'DCM has no display name';
+                templateDevice.configuration.capabilityUrn = document['@id'];
+
                 document.contents.forEach((capability: any) => {
                     if (capability['@type'] === 'Component') {
                         componentCache[capability['schema']] = capability['name'];
-                    } else {
+                    } else if (isType(capability['@type'], 'EdgeModule')) {
+                        modules = modules.concat(capability.target);
+                    }
+                    else {
                         const ns = componentCache[document['@id']];
-                        DCMCapabilityToComm(capability, t._id, deviceStore, simRunloop, simColors, ns, useMocks);
+                        DCMCapabilityToComm(capability, templateDevice._id, deviceStore, simRunloop, simColors, ns, useMocks);
                     }
                 })
             }
-        })
+        }
     }
 
-    delete t.configuration.capabilityModel;
+    delete templateDevice.configuration.capabilityModel;
 }
 
 function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceStore, simRunloop: any, simColors: any, component?: string, useMocks?: boolean) {
@@ -80,6 +102,9 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
         deviceStore.addDeviceMethod(deviceId, o, false);
         return;
     }
+
+    // After this, anything that doesn't have a schema doesn't need to be processed
+    if (!item.schema) { return; }
 
     //let addMock: boolean = false;
     let addRunLoop: boolean = false;
@@ -181,7 +206,9 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
         var rptTwin: any = {};
         rptTwin.name = item.name;
         rptTwin.sdk = 'twin';
-        rptTwin.string = false;
+        rptTwin.string = o.string;
+        rptTwin.value = "";
+        rptTwin.propertyObject = { type: 'templated', template: JSON.stringify({}) };
 
         if (component) {
             rptTwin.component = {

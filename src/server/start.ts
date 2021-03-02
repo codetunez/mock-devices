@@ -160,10 +160,11 @@ class Server {
             "height": override.size.height,
             "minWidth": Config.APP_WIDTH,
             "minHeight": Config.APP_HEIGHT,
-            webPreferences: {
-                devTools: true,
-                spellcheck: false,
-                enableWebSQL: false
+            "icon": __dirname + '/../../static/favicon.ico',
+            "webPreferences": {
+                "devTools": true,
+                "spellcheck": false,
+                "enableWebSQL": false
             }
         });
 

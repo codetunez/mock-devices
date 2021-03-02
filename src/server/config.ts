@@ -17,10 +17,10 @@ export const GLOBAL_CONTEXT = {
 
 export class Config {
     // app settings
-    public static APP_PORT: string = '9000';
+    public static APP_PORT: string = '17456';
     public static APP_HEIGHT: number = 767;
     public static APP_WIDTH: number = 1023;
-    public static MAX_NUM_DEVICES: number = 1500;
+    public static MAX_NUM_DEVICES: number = 3000;
 
     // reporting settings
     public static CONSOLE_LOGGING: boolean = true;

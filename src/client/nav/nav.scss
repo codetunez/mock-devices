@@ -1,6 +1,7 @@
 @import "../const.scss";
 
 .nav {
+  padding-top: 1rem;
   display: flex;
   flex-wrap: nowrap;
   flex-direction: column;
@@ -9,14 +10,15 @@
   height: 100%;
   width: $width-nav + 10px;
   overflow: hidden;
+  min-height: 720px;
   button {
     margin-bottom: $sm-gutter;
     width: 100%;
   }
 
   hr {
-    margin: $sm-gutter 0 $md-gutter 0;
-    border: 1px solid $app-clr-blue-1;
+    margin: 0 0 9px 0;
+    border-bottom: 1px solid $app-clr-blue-1;
     width: 100%;
   }
 
@@ -35,6 +37,8 @@
     a {
       text-decoration: none;
     }
+    width: 100%;
+    padding: 0 10px;
   }
 
   .nav-items button div {

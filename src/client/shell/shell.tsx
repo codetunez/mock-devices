@@ -23,9 +23,8 @@ import { Bulk } from '../modals/bulk';
 import SplitterLayout from 'react-splitter-layout';
 import 'react-splitter-layout/lib/index.css';
 
-const minSize = 48;
-const minHeight = 46;
-const height = window.innerHeight - minSize;
+const minSize = 64;
+const height = 28;
 
 export const Shell: React.FunctionComponent = () => {
 
@@ -73,7 +72,7 @@ export const Shell: React.FunctionComponent = () => {
   const nav = { menuAdd, menuHelp, menuSimulation, menuUx, menuStartAll, menuStopAll, menuReset, menuCentral, menuBulk }
 
   return <div className='shell'>
-    <SplitterLayout vertical={true} primaryMinSize={minSize} secondaryMinSize={minHeight} secondaryInitialSize={height} >
+    <SplitterLayout primaryIndex={1} vertical={true} primaryMinSize={height} secondaryMinSize={minSize} secondaryInitialSize={minSize} >
       <Console />
       <div className='shell-content-container'>
         <div className='shell-banner'>

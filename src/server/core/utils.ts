@@ -88,7 +88,7 @@ export function getRandomGeo(lat?: number, long?: number, alt?: number, radius?:
 export function decodeModuleKey(key: string): any {
     const r = new RegExp(`\<(.*)\>(.*)?`)
     const m = key.match(r);
-    if (!m && m.length != 3) { return key; }
+    if (!m || m.length != 3) { return key; }
     return { deviceId: m[1], moduleId: m[2] };
 }
 

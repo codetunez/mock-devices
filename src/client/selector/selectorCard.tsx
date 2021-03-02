@@ -16,21 +16,24 @@ export const SelectorCard: React.FunctionComponent<any> = ({ exp, index, active,
     setExpanded(exp);
   }, [exp]);
 
-  let edgeOn = false;
+  let leafsRunning = false;
   const runningEvent = control && control[device._id] ? control[device._id][2] : controlEvents.OFF;
   const kind = device.configuration._kind
   const selected = kind === 'edge' ? 'selector-card-active-edge' : 'selector-card-active';
 
-  if (device.configuration.modules) {
-    for (const index in device.configuration.modules) {
-      const key = device.configuration.modules[index];
-      const { deviceId, moduleId } = decodeModuleKey(key);
-      if (deviceId === device._id && control[key] && control[key][2] != controlEvents.OFF) {
-        edgeOn = true;
+  // if the edge device is switched off, but leaf devices are still running, change the selector card
+  if (runningEvent === controlEvents.OFF && device.configuration.leafDevices) {
+    for (const index in device.configuration.leafDevices) {
+      const leafDeviceId = device.configuration.leafDevices[index];
+      if (control[leafDeviceId] && control[leafDeviceId][2] != controlEvents.OFF) {
+        leafsRunning = true;
         break;
       }
     }
   }
+
+  const childCountModules = device.configuration.modules && device.configuration.modules.length || 0
+  const childCountDevices = device.configuration.leafDevices && device.configuration.leafDevices.length || 0
 
   return <div className="selector-card-container">
     <button className='expander' onClick={() => setExpanded(!expanded)}><i className={cx(expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-up')}></i></button>
@@ -49,10 +52,11 @@ export const SelectorCard: React.FunctionComponent<any> = ({ exp, index, active,
 
           {kind === 'edge' ? <>
             <strong>{device.configuration.deviceId || ''}</strong>
+            <div className='module-count'>{childCountModules + childCountDevices} {RESX.selector.card.children_title}</div>
             <div className='selector-card-spinner'>
-              <i className={classNames('fa fa-hdd fa-2x fa-fw', edgeOn ? 'control-CONNECTED' : 'control-OFF')}></i>
+              {leafsRunning ? <div className='leaf-msg control-CONNECTED'>{RESX.selector.card.leafs_running}</div> : <i className={cx('fas fa-cog fa-2x fa-fw', { 'fa-spin': runningEvent != controlEvents.OFF })} ></i>}
             </div>
-            <div className='module-count'>{device.configuration.modules && device.configuration.modules.length || '0'} {RESX.selector.card.modules_title}</div>
+            <div className={'control control-' + runningEvent}>{runningEvent}</div>
             <strong>{kind} {RESX.core.deviceL}</strong>
           </>
             : null}
@@ -61,7 +65,7 @@ export const SelectorCard: React.FunctionComponent<any> = ({ exp, index, active,
             <>
               <strong>{device.configuration.deviceId || ''}</strong>
               <div className='selector-card-spinner'>
-                <i className={cx('fas fa-spinner fa-2x fa-fw', { 'fa-pulse': runningEvent != controlEvents.OFF })} ></i>
+                <i className={cx('fas fa-cog fa-2x fa-fw', { 'fa-spin': runningEvent != controlEvents.OFF })} ></i>
               </div>
               <div className={'control control-' + runningEvent}>{runningEvent}</div>
               <strong>{kind} {RESX.core.deviceL}</strong>
@@ -74,11 +78,11 @@ export const SelectorCard: React.FunctionComponent<any> = ({ exp, index, active,
         <button className={cx('selector-card', 'selector-card-mini', active ? selected : '')} title={device.configuration._kind === 'template' ? RESX.selector.card.template_title : RESX.selector.card.device_title}>
           <div className='selector-card-mini'>
             {kind === 'template' ? <i className={classNames('fa fa-pencil-alt fa-sm fa-fw')}></i> : null}
-            {kind === 'edge' ? <i className={classNames('fa fa-hdd fa-sm fa-fw', edgeOn ? 'control-CONNECTED' : 'control-OFF')}></i> : null}
-            {kind != 'edge' && kind != 'template' ? <i className={cx('fas fa-spinner fa-sm fa-fw', { 'fa-pulse': runningEvent != controlEvents.OFF })} ></i> : null}
+            {kind === 'edge' ? leafsRunning ? <i className={classNames('fas fa-exclamation-triangle fa-sm control control-CONNECTED')}></i> : <i className={cx('fas fa-cog fa-fw', { 'fa-spin': runningEvent != controlEvents.OFF })} ></i> : null}
+            {kind != 'edge' && kind != 'template' ? <i className={cx('fas fa-cog fa-fw', { 'fa-spin': runningEvent != controlEvents.OFF })} ></i> : null}
             <h5>{device.configuration.mockDeviceName || ''}</h5>
           </div>
-          {kind != 'edge' && kind != 'template' ? <div><span className={'control control-' + runningEvent}>&#9679;</span></div> : null}
+          {kind != 'template' ? <div><span className={'control control-' + runningEvent}>&#9679;</span></div> : null}
         </button>
       </Link>
     }

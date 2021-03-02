@@ -3,7 +3,8 @@ const cx = classNames.bind(require('./deviceCommands.scss'));
 
 import * as React from 'react';
 import { Modal } from '../modals/modal';
-import { Module } from '../modals/module';
+import { EdgeModule } from '../modals/edgeModule';
+import { LeafDevice } from '../modals/leafDevice';
 import { Edit } from '../modals/edit';
 import { RESX } from '../strings';
 import { decodeModuleKey } from '../ui/utilities';
@@ -17,14 +18,13 @@ export function DeviceCommands() {
     const appContext: any = React.useContext(AppContext);
 
     const [showEdit, toggleEdit] = React.useState(false);
-    const [showModule, toggleModule] = React.useState(false);
+    const [showEdgeModule, toggleEdgeModule] = React.useState(false);
+    const [showEdgeDevice, toggleEdgeDevice] = React.useState(false);
     const [showDelete, toggleDelete] = React.useState(false);
     const [showDirty, toggleDirty] = React.useState(false);
 
     const kind = deviceContext.device.configuration._kind;
-
     const index = deviceContext.devices.findIndex((x) => x._id == deviceContext.device._id);
-    const edgeDevice = decodeModuleKey(deviceContext.device._id);
 
     const deleteDialogAction = (result) => {
         if (result === "Yes") {
@@ -74,22 +74,20 @@ export function DeviceCommands() {
                     <button title={RESX.device.commands.method_title} className='btn btn-info' onClick={() => { checkDirty('method') }}><span className='fas fa-plus'></span>{RESX.device.commands.method_label}</button>
                 </>
                     :
-                    <button title={RESX.device.commands.module_title} className='btn btn-info' onClick={() => { toggleModule(!showModule) }}><span className='fas fa-plus'></span>{RESX.device.commands.module_label}</button>
+                    <>
+                        <button title={RESX.device.commands.module_title} className='btn btn-info' onClick={() => { toggleEdgeModule(!showEdgeModule) }}><span className='fas fa-plus'></span>{RESX.device.commands.module_label}</button>
+                        <button title={RESX.device.commands.module_title} className='btn btn-info' onClick={() => { toggleEdgeDevice(!showEdgeDevice) }}><span className='fas fa-plus'></span> Leaf Device</button>
+                    </>
                 }</>
             }
         </div>
-        {kind === 'module' ?
-            <div className='btn-bar'>
-                <button title={RESX.device.commands.edge_device_title} className='btn btn-outline-primary' onClick={() => { { deviceContext.getDevice(edgeDevice.deviceId) } }}>{RESX.device.commands.edge_device_label}</button>
-            </div>
-            :
-            <div className='btn-bar'>
-                <button title={RESX.device.commands.config_title} className='btn btn-warning' onClick={() => { toggleEdit(!showEdit) }}><span className='fas fa-wrench'></span></button>
-                <button title={RESX.device.commands.delete_title} className='btn btn-danger' onClick={() => { toggleDelete(!showDelete) }}><span className={'fas fa-lg fa-trash-alt'}></span></button>
-            </div>
-        }
+        <div className='btn-bar'>
+            <button title={RESX.device.commands.config_title} className='btn btn-warning' onClick={() => { toggleEdit(!showEdit) }}><span className='fas fa-wrench'></span></button>
+            <button title={RESX.device.commands.delete_title} className='btn btn-danger' onClick={() => { toggleDelete(!showDelete) }}><span className={'fas fa-lg fa-trash-alt'}></span></button>
+        </div>
         {showEdit ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><Edit handler={toggleEdit} index={index} /></div></Modal> : null}
-        {showModule ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><Module handler={toggleModule} index={index} /></div></Modal> : null}
+        {showEdgeModule ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><EdgeModule handler={toggleEdgeModule} index={index} scopeId={deviceContext.device.configuration.scopeId} deviceId={deviceContext.device.configuration.deviceId} sasKey={deviceContext.device.configuration.sasKey} /></div></Modal> : null}
+        {showEdgeDevice ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal height-modal'><LeafDevice handler={toggleEdgeDevice} gatewayDeviceId={deviceContext.device.configuration.deviceId} capabilityUrn={deviceContext.device.configuration.capabilityUrn || ''} /></div></Modal> : null}
         {showDelete ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><ModalConfirm config={deleteModalConfig} /></div></Modal> : null}
         {showDirty ? <Modal><div className='blast-shield'></div><div className='app-modal center-modal min-modal'><ModalConfirm config={dirtyModalConfig} /></div></Modal> : null}
     </div>

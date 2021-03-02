@@ -104,17 +104,17 @@ export class DeviceProvider extends React.PureComponent {
         this.setState({ device: device });
     }
 
-    startDevice = () => {
-        axios.get(`${Endpoint.getEndpoint()}api/device/${this.state.device._id}/start`)
+    startDevice = (id?: string) => {
+        axios.get(`${Endpoint.getEndpoint()}api/device/${id ? id : this.state.device._id}/start`)
             .then((response: any) => {
-                this.setState({ device: response.data.device, devices: response.data.devices });
+                this.setState({ devices: response.data.devices });
             })
     }
 
-    stopDevice = () => {
-        axios.get(`${Endpoint.getEndpoint()}api/device/${this.state.device._id}/stop`)
+    stopDevice = (id?: string) => {
+        axios.get(`${Endpoint.getEndpoint()}api/device/${id ? id : this.state.device._id}/stop`)
             .then((response: any) => {
-                this.setState({ device: response.data.device, devices: response.data.devices });
+                this.setState({ devices: response.data.devices });
             })
     }
 
@@ -148,8 +148,9 @@ export class DeviceProvider extends React.PureComponent {
             .catch((err) => { console.log(err.response.data); })
     }
 
-    updateDeviceModules = (updatePayload: any) => {
-        axios.put(`${Endpoint.getEndpoint()}api/device/${this.state.device._id}/module`, { payload: updatePayload })
+    //TODO: rename to support devices too
+    updateDeviceModules = (updatePayload: any, type: string) => {
+        axios.put(`${Endpoint.getEndpoint()}api/device/${this.state.device._id}/${type}`, { payload: updatePayload })
             .then((response: any) => {
                 this.setState({ device: response.data.device, devices: response.data.devices });
             })

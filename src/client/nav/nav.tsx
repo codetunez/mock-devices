@@ -12,7 +12,6 @@ export function Nav({ actions }) {
     let match = useRouteMatch("/:content");
 
     return <div className='nav'>
-        <div className='section-title section-title-nav'>{RESX.app.version}</div>
         <div className="nav-links">
             <div className="nav-items">
                 <NavLink to='/devices'>
@@ -26,12 +25,11 @@ export function Nav({ actions }) {
                 <hr />
                 <button title={RESX.nav.power[1]} onClick={() => actions.menuStartAll()} className='btn btn-outline-primary'><span className='fas fa-power-off'></span><div>{RESX.nav.power[0]}</div></button>
                 <button title={RESX.nav.stop[1]} onClick={() => actions.menuStopAll()} className='btn btn-outline-primary'><span className='fas fa-stop'></span><div>{RESX.nav.stop[0]}</div></button>
-                <hr />
                 <button title={RESX.nav.bulk[1]} onClick={() => actions.menuBulk()} className='btn btn-outline-primary'><span className='fas fa-pencil-alt'></span><div>{RESX.nav.bulk[0]}</div></button>
                 <button title={RESX.nav.sim[1]} onClick={() => actions.menuSimulation()} className='btn btn-outline-primary'><span className='fas fa-flask'></span><div>{RESX.nav.sim[0]}</div></button>
+                <button title={RESX.nav.reset[1]} onClick={() => actions.menuReset()} className='btn btn-outline-danger'><span className='fas fa-trash'></span><div>{RESX.nav.reset[0]}</div></button>
                 <hr />
                 <button title={RESX.nav.help[1]} onClick={() => actions.menuHelp()} className={'btn btn-outline-primary'}><span className='fas fa-question-circle'></span><div>{RESX.nav.help[0]}</div></button >
-                <button title={RESX.nav.reset[1]} onClick={() => actions.menuReset()} className='btn btn-outline-danger'><span className='fas fa-trash'></span><div>{RESX.nav.reset[0]}</div></button>
             </div>
             <div className="nav-items">
                 {deviceContext.ui.container ? <div className='container'><i className="fab fa-docker fa-2x fa-fw" /></div> : null}
