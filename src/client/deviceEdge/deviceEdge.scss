@@ -21,6 +21,13 @@
   .edge-module:not(:last-child) {
     margin: 0 1rem 1rem 0;
   }
+
+  h4 {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
   .expander {
     padding-left: $xs-gutter;
     display: flex;

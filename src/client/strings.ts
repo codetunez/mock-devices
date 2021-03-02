@@ -65,14 +65,14 @@ export const RESX = {
                     "button1_title": "Create the device using the DPS configuration",
                     "button2_label": "Use Connection string",
                     "button2_title": "Create the device using the a IoT device connection",
-                    "button3_label": "Sample device",
+                    "button3_label": "Sample device (use DPS)",
                     "button3_title": "Create the device using a sample device configuration and provision using DPS",
                     "button4_label": "QR Code",
                     "button4_title": "Use an QR code image to create and provision a device (see Help for format)",
                 },
-                "select": "--Do not fork. Create with empty capabilities",
+                "select": "--Create with empty capabilities",
                 "label": {
-                    "clone": "Fork another mock device or template",
+                    "clone": "Use a template or clone another device/module",
                     "deviceId": "Device ID (-# appended in bulk create)",
                     "dps": "Scope ID",
                     "sas": "SaS key",
@@ -130,12 +130,12 @@ export const RESX = {
                 "cta_label": "Update current State",
             },
             "option4": {
-                "title": "Azure IoT Edge",
+                "title": "Add a mock Edge device",
                 "buttons": {
-                    "button1_label": "Create Edge leaf devices and modules",
+                    "button1_label": "Use DPS",
                     "button1_title": "Create an Edge host device to add Edge modules. To use modules, deploy mock-devices-de with the state file in a real Edge deployment",
                 },
-                "select": "--Do not fork. Create with empty capabilities",
+                "select": "--Create with empty capabilities",
                 "label": {
                     "deviceId": "Edge Device ID (same as config.yaml)",
                     "friendly": "mock-devices friendly name",

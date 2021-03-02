@@ -4,13 +4,15 @@
   height: 100%;
 
   .m-modal {
-    margin-top: $sm-gutter;
+    min-height: $sm-gutter !important;
 
     .m-content {
       display: flex;
     }
 
     .m-close {
+      min-height: 42px !important;
+      padding-top: $md-gutter;
       padding-right: $md-gutter;
     }
   }
@@ -37,5 +39,23 @@
 
   .quick-url {
     color: $app-clr-blue-2;
+  }
+
+  .edge-modules-list {
+    > span {
+      font-size: 0.8rem;
+    }
+    > div {
+      display: flex;
+    }
+
+    > div:not(:first-child) {
+      margin-bottom: 0.5rem;
+    }
+
+    > div > *:nth-child(1) {
+      width: 220px;
+      margin-right: 0.5rem;
+    }
   }
 }
