@@ -1,5 +1,5 @@
 import { DeviceStore } from '../store/deviceStore'
-import { Device } from '../interfaces/device'
+import { Device, Property } from '../interfaces/device'
 import { SimulationStore } from '../store/simulationStore';
 import { SensorStore } from '../store/sensorStore';
 import uuid = require('uuid');
@@ -228,8 +228,12 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
         rptTwin.name = item.name;
         rptTwin.sdk = 'twin';
         rptTwin.string = o.string;
-        rptTwin.value = "";
-        rptTwin.propertyObject = { type: 'templated', template: JSON.stringify({}) };
+        if (o.propertyObject && o.propertyObject.type === 'templated') {
+            rptTwin.propertyObject = o.propertyObject;
+        } else {
+            rptTwin.propertyObject = { type: 'default' }
+            rptTwin.value = o.value;
+        }
 
         if (component) {
             rptTwin.component = {
@@ -241,6 +245,7 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
         const reportedTwinId = deviceStore.addDeviceProperty(deviceId, 'd2c', rptTwin, false);
 
         o.color = simColors["Color2"] || '#333';
+        o._matchedId = reportedTwinId;
         o.asProperty = true;
         o.asPropertyId = reportedTwinId;
         o.asPropertyConvention = true;
@@ -251,6 +256,15 @@ function DCMCapabilityToComm(item: any, deviceId: string, deviceStore: DeviceSto
             "ad": "completed",
             "av": "DESIRED_VERSION"
         }, null, 2)
+
+        // Add the item. This handles Telemetry/Property/Command
+        const desiredTwinId = deviceStore.addDeviceProperty(deviceId, ((isType(item['@type'], 'Property')) && item.writable ? 'c2d' : 'd2c'), o, false);
+        const newItem = deviceStore.getDeviceProperty(deviceId, reportedTwinId);
+        if (newItem === null) {
+            throw new Error('DCM import - Could not create desired property');
+        }
+        deviceStore.updateDeviceProperty(deviceId, reportedTwinId, Object.assign({}, newItem, { _matchedId: desiredTwinId }) as Property, false);
+        return;
     }
 
     // Add the item. This handles Telemetry/Property/Command
@@ -297,11 +311,15 @@ function buildComplexType(node: any, nodeName: any, o: any) {
     o[nodeName] = {};
     if (node.schema.fields) {
         for (let f of node.schema.fields) {
-            if (f.schema['@type'] && f.schema['@type'] === "Object") {
+
+            const schemaNode = f.schema || f['dtmi:dtdl:property:schema;2'];
+            if (!schemaNode) { continue; }
+
+            if (schemaNode['@type'] && schemaNode['@type'] === "Object") {
                 buildComplexType(f, f.name, o[nodeName]);
-            } else if (f.schema['@type'] && f.schema['@type'] === "Enum") {
-                o[nodeName][f.name] = buildEnumAsValue(f.schema.enumValues);
-            } else if (f.schema['@type'] && f.schema['@type'] === "Map") {
+            } else if (schemaNode['@type'] && schemaNode['@type'] === "Enum") {
+                o[nodeName][f.name] = buildEnumAsValue(schemaNode.enumValues);
+            } else if (schemaNode['@type'] && schemaNode['@type'] === "Map") {
                 o[nodeName][f.name] = "AUTO_MAP";
             } else {
                 o[nodeName][f.name] = "AUTO_" + f.schema.toString().toUpperCase();

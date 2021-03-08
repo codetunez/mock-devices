@@ -351,6 +351,14 @@ export class DeviceStore {
         this.deleteDeviceProperty(id, propertyId, true);
     }
 
+    public getDeviceProperty = (id: string, propertyId: string) => {
+        const d: Device = this.store.getItem(id);
+        var index = d.comms.findIndex(function (item: Property, i: number) {
+            return item._id === propertyId;
+        });
+        return index != -1 ? d.comms[index] : null;
+    }
+
     /* method !!! unsafe !!! */
     public refreshDeviceProperty = (id: string, propertyId: string) => {
         let d: Device = this.store.getItem(id);

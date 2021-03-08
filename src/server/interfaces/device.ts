@@ -34,6 +34,7 @@ export interface MockSensor {
 export interface Property {
     _id: string;
     _type: "property";
+    _matchedId?: string;
     name: string;
     enabled: boolean;
     component: Component;

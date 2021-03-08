@@ -331,6 +331,12 @@ export function DeviceFieldD2C({ capability, shouldExpand, template, sensors, pl
                 </div>
             </div>
 
+            {state.data._matchedId && state.data._matchedId !== '' ?
+                <div className='df-card-row-wide'>
+                    <span>{RESX.device.card.matched}</span>
+                </div>
+                : null}
+
             <div className='df-card-row'>
                 <div><label>{RESX.device.card.toggle.enabled_label}</label><div title={RESX.device.card.toggle.enabled_title}><Toggle name={state.data._id + '-enabled'} disabled={true} checked={true} onChange={() => { }} /></div></div>
                 <div><label title={RESX.device.card.send.property_title}>{RESX.device.card.send.property_label}</label><div><input type='text' className={cx('form-control form-control-sm', templated ? 'full-width' : 'double-width')} name='name' value={state.data.name} onChange={updateField} /></div></div>

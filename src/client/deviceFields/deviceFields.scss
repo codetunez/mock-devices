@@ -104,6 +104,17 @@ $device-card-title-width-text: 500px;
   }
 }
 
+.df-card-row-wide {
+  font-size: 0.7rem;
+  text-align: justify;
+  font-weight: 700;
+  width: 99%;
+  margin-top: $md-gutter;
+  margin-bottom: $xl-gutter;
+  padding-left: 1.6rem;
+  color: $app-clr-blue-2;
+}
+
 .df-card-row {
   font-size: 0.8rem;
   font-weight: 700;

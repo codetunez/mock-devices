@@ -346,6 +346,7 @@ export const RESX = {
             "add_snippet_title": "Add snippet:",
             "select": "--Select",
             "noselect": "--No send capability",
+            "matched": "THIS IS AN AUTO CREATED SEND VERSION OF THE DESIRED TWIN CAPABILITY WITH THE SAME NAME. IT IS USED BY THE SIMULATION ENGINE FOR ACK RESPONSES AND PROVIDED HERE FOR CONVENIENCE USE. EXPAND THE CARD TO ACCESS FULL FUNCTIONALITY OF THIS CAPABILITY AND MANUALLY MANIPULATE THE REPORTED TWIN VALUE",
             "toggle": {
                 "enabled_label": "Enabled",
                 "enabled_title": "Enable this capability in the simulation (always enabled)",
