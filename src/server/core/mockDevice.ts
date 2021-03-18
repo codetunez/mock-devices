@@ -1099,7 +1099,7 @@ export class MockDevice {
                     if (c != "_root") { msg.properties.add('$.sub', c); sub = c; }
                     // the small setTimeout here is to ease a little spamming
                     setTimeout(() => {
-                        this.iotHubDevice.client.sendEvent(msg, ((err) => {
+                        this.iotHubDevice.client?.sendEvent(msg, ((err) => {
                             this.log(data, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.MSG, LOGGING_TAGS.DATA.SEND, sub);
                             this.logStat(LOGGING_TAGS.STAT.MSG.COUNT);
                             this.messageService.sendAsLiveUpdate(this.device._id, transformed.live);
