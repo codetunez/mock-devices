@@ -1070,14 +1070,19 @@ export class MockDevice {
                         data[c]["__t"] = "c";
                         sub = c;
                     }
-                    // the small setTimeout here is to ease a little spamming
-                    setTimeout(() => {
+                    try {
                         twin.properties.reported.update(data, ((err) => {
                             this.log(JSON.stringify(data), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.TWIN, LOGGING_TAGS.DATA.SEND, sub);
                             this.logStat(LOGGING_TAGS.STAT.TWIN.COUNT);
                             this.messageService.sendAsLiveUpdate(this.device._id, transformed.live);
-                        }))
-                    }, 250);
+                        }));
+                    } catch (error) {
+                        // sometimes the close connection throw error, add logs for better understanding
+                        this.log(`SDK CLOSE ERROR: ${error.message}`, LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.EV.OFF);
+                        setTimeout(() => {
+                            this.stop();
+                        }, 5000);
+                    }
                 }
             }
         }
@@ -1097,14 +1102,19 @@ export class MockDevice {
                     msg.contentType = 'application/json';
                     msg.contentEncoding = 'utf-8';
                     if (c != "_root") { msg.properties.add('$.sub', c); sub = c; }
-                    // the small setTimeout here is to ease a little spamming
-                    setTimeout(() => {
-                        this.iotHubDevice.client?.sendEvent(msg, ((err) => {
+                    try {
+                        this.iotHubDevice.client.sendEvent(msg, ((err) => {
                             this.log(data, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.MSG, LOGGING_TAGS.DATA.SEND, sub);
                             this.logStat(LOGGING_TAGS.STAT.MSG.COUNT);
                             this.messageService.sendAsLiveUpdate(this.device._id, transformed.live);
-                        }))
-                    }, 250);
+                        }));
+                    } catch (error) {
+                        // sometimes the close connection throw error, add logs for better understanding
+                        this.log(`SDK CLOSE ERROR: ${error.message}`, LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.EV.OFF);
+                        setTimeout(() => {
+                            this.stop();
+                        }, 5000);
+                    }
                 }
             }
         }
