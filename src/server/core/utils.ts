@@ -32,16 +32,21 @@ export function isObject(o) {
 
 // create a string or non string value for a object property value
 export function formatValue(asString: boolean, value: any) {
-    if (asString === false && (value.toString().toLowerCase() === "true" || value.toString().toLowerCase() === "false")) {
-        return (value.toString().toLowerCase() === "true");
-    } else if (asString === true) {
-        return value.toString();
-    } else {
-        let res = parseFloat(value);
-        if (!isNumeric(res)) {
-            res = value.toString();
+    try {
+        if (asString === false && (value.toString().toLowerCase() === "true" || value.toString().toLowerCase() === "false")) {
+            return (value.toString().toLowerCase() === "true");
+        } else if (asString === true) {
+            return value.toString();
+        } else {
+            let res = parseFloat(value);
+            if (!isNumeric(res)) {
+                res = value.toString();
+            }
+            return res;
         }
-        return res;
+    }
+    catch {
+        return null
     }
 }
 
