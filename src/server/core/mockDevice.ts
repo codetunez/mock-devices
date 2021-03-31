@@ -1038,7 +1038,7 @@ export class MockDevice {
                 return;
             }
             this.registrationConnectionString = 'HostName=' + result.assignedHub + ';DeviceId=' + result.deviceId + ';SharedAccessKey=' + transformedSasKey;
-            if (this.device.configuration._kind === 'leafDevice') {
+            if (this.device.configuration._kind === 'leafDevice' || (this.device.configuration.gatewayDeviceId && this.device.configuration.gatewayDeviceId !== '')) {
                 this.registrationConnectionString += `;GatewayId=${this.device.configuration.gatewayDeviceId}`;
             }
             this.log('DEVICE REGISTRATION SUCCESS', LOGGING_TAGS.CTRL.DPS, LOGGING_TAGS.LOG.OPS);

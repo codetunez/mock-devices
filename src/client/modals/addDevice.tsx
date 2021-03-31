@@ -26,14 +26,15 @@ const initialState = {
     mockDeviceCloneId: '',
     connectionString: '',
     scopeId: '',
-    dpsPayload: '',
+    dpsPayload: {},
     sasKey: '',
     isMasterKey: false,
     capabilityModel: '',
     capabilityUrn: '',
     machineState: '',
     machineStateClipboard: '',
-    plugIn: ''
+    plugIn: '',
+    gatewayDeviceId: '',
 }
 
 export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
@@ -120,6 +121,11 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
         for (const j in jsons) {
             state[j] = jsons[j]
         }
+
+        if (state.gatewayDeviceId) {
+            state.dpsPayload = { "iotcGateway": { "iotcGatewayId": state.gatewayDeviceId } }
+        }
+
         axios.post(`${Endpoint.getEndpoint()}api/device/new${kind === 'quick' ? '/quick' : ''}`, state)
             .then(res => {
                 deviceContext.setDevices(res.data);
@@ -344,6 +350,11 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             </div>
 
                             <div className='form-group'>
+                                <label>Gateway ID (This is a leaf device)</label>
+                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='gatewayDeviceId' onChange={updateField} value={state.gatewayDeviceId || ''} />
+                            </div>
+
+                            <div className='form-group'>
                                 <label>{RESX.modal.add.option1.label.friendly}</label>
                                 <input autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
                             </div>
@@ -367,6 +378,10 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             <div className='form-group'>
                                 <label>{RESX.modal.add.option1.label.connstr}</label>
                                 <textarea className='custom-textarea form-control form-control-sm' name='connectionString' rows={4} onChange={updateField} value={state.connectionString || ''}></textarea>
+                            </div>
+                            <div className='form-group'>
+                                <label>Gateway ID (This is a leaf device)</label>
+                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='gatewayDeviceId' onChange={updateField} value={state.gatewayDeviceId || ''} />
                             </div>
                             <div className='form-group'>
                                 <label>{RESX.modal.add.option1.label.friendly_sm}</label>
