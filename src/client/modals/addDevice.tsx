@@ -360,7 +360,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
                             <div className='form-group'>
                                 <label>Enable this as a leaf device connecting through EdgeHub</label>
-                                <div><Toggle name='masterKey' checked={state.gatewayHostEnabled} defaultChecked={false} onChange={() => { toggleGatewayHost() }} /></div>
+                                <div><Toggle name='gatewayHostName' checked={state.gatewayHostEnabled} defaultChecked={false} onChange={() => { toggleGatewayHost() }} /></div>
                             </div>
 
                             <div className='form-group'>
@@ -406,7 +406,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <div className='m-tabbed-panel-form'>
                             <div className='form-group'>
                                 <label>{RESX.modal.add.option2.label.name}</label>
-                                <input placeholder="This name is only for mock-devices. Device ID used if blank" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} placeholder={RESX.modal.add.option2.label.name_placeholder} />
+                                <input placeholder="This name is only for mock-devices. Device ID used if blank" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
                             </div>
                             {deviceContext.ui.container ? null : <>
                                 <br />

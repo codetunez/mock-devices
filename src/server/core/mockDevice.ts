@@ -978,10 +978,9 @@ export class MockDevice {
 
     connectClient(connectionString) {
         this.iotHubDevice = { client: undefined, hubName: undefined };
+        const cn = ConnectionString.parse(connectionString);
 
-        if (this.useSasMode && !this.device.configuration.gatewayHostEnabled) {
-            const cn = ConnectionString.parse(connectionString);
-
+        if (!this.device.configuration.gatewayHostEnabled && this.device.configuration.connectionString === '') {
             let sas: any = SharedAccessSignature.create(cn.HostName, cn.DeviceId, cn.SharedAccessKey, this.sasTokenExpiry);
             this.iotHubDevice.client = Client.fromSharedAccessSignature(sas, M1);
             this.iotHubDevice.hubName = cn.HostName;
@@ -993,8 +992,8 @@ export class MockDevice {
             this.iotHubDevice.client = clientFromConnectionString(connectionString);
             // store hub name
             this.iotHubDevice.hubName = ConnectionString.parse(connectionString).HostName;
-            if (this.device.configuration.gatewayHostEnabled) {
-                this.log(`DEVICE IS ATTEMPTING TO CONNECT THROUGH EDGE GATEWAY: ${this.device.configuration.gatewayHostName || 'ERR: HOST NAME IS MISSING'}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+            if (cn.GatewayHostName && cn.GatewayHostName !== '') {
+                this.log(`DEVICE IS ATTEMPTING TO CONNECT THROUGH EDGE GATEWAY: ${cn.GatewayHostName || 'ERR: HOST NAME IS MISSING'}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
             }
             this.log(`CONNECTING VIA CONN STRING`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
         }
