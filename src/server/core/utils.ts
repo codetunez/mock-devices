@@ -2,7 +2,7 @@ import * as rw from 'random-words';
 import * as randomLocation from 'random-location';
 
 export function getDeviceId(connString: string) {
-    var arr = /DeviceId=(.*);/g.exec(connString);
+    var arr = /DeviceId=(.*?);/g.exec(connString);
     if (arr && arr.length > 0) {
         return arr[1];
     }
@@ -10,7 +10,7 @@ export function getDeviceId(connString: string) {
 }
 
 export function getHostName(connString: string) {
-    var arr = /HostName=(.*);/g.exec(connString);
+    var arr = /HostName=(.*?);/g.exec(connString);
     if (arr && arr.length > 0) {
         return arr[1];
     }

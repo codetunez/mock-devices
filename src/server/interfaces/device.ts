@@ -133,4 +133,6 @@ export class DeviceConfiguration {
     public gatewayDeviceId?: string;
     public gatewayScopeId?: string;
     public gatewaySasKey?: string;
+    public gatewayHostName?: string;
+    public gatewayHostEnabled?: boolean;
 }

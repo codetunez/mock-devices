@@ -35,6 +35,8 @@ const initialState = {
     machineStateClipboard: '',
     plugIn: '',
     gatewayDeviceId: '',
+    gatewayHostName: '',
+    gatewayHostEnabled: false
 }
 
 export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
@@ -87,6 +89,13 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
         setPayload({
             ...state,
             isMasterKey: !state.isMasterKey
+        });
+    }
+
+    const toggleGatewayHost = () => {
+        setPayload({
+            ...state,
+            gatewayHostEnabled: !state.gatewayHostEnabled
         });
     }
 
@@ -312,18 +321,18 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
                             <div className='form-group'>
                                 <label>{RESX.modal.add.option1.label.deviceId}</label><br />
-                                <input autoComplete="off" autoFocus={true} id="device-id" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} />
+                                <input placeholder="Enter a new or existing device id" autoComplete="off" autoFocus={true} id="device-id" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} />
                             </div>
 
                             <div className='form-group' style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 0 }}>
                                 <div className='form-group' style={{ paddingRight: '20px' }} >
                                     <div className='form-group'>
                                         <label>{RESX.modal.add.option1.label.dps}</label>
-                                        <input autoComplete="off" className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
+                                        <input placeholder="Enter the DPS scope ID" autoComplete="off" className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
                                     </div>
                                     <div className='form-group'>
                                         <label>{RESX.modal.add.option1.label.sas}</label>
-                                        <input autoComplete="off" className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
+                                        <input placeholder="Enter Single or Group key" autoComplete="off" className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
                                     </div>
                                     <div className='form-group'>
                                         <label>{RESX.modal.add.option1.label.root}</label>
@@ -350,13 +359,17 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             </div>
 
                             <div className='form-group'>
-                                <label>Gateway ID (This is a leaf device)</label>
-                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='gatewayDeviceId' onChange={updateField} value={state.gatewayDeviceId || ''} />
+                                <label>Enable this as a leaf device connecting through EdgeHub</label>
+                                <div><Toggle name='masterKey' checked={state.gatewayHostEnabled} defaultChecked={false} onChange={() => { toggleGatewayHost() }} /></div>
+                            </div>
+
+                            <div className='form-group'>
+                                <input placeholder="Enter the GatewayHostName. Enable to enter" disabled={!state.gatewayHostEnabled} autoComplete="off" className='form-control form-control-sm' type='text' name='gatewayHostName' onChange={updateField} value={state.gatewayHostName || ''} />
                             </div>
 
                             <div className='form-group'>
                                 <label>{RESX.modal.add.option1.label.friendly}</label>
-                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
+                                <input placeholder="This name is only for mock-devices. Device ID used if blank" autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
                             </div>
 
                         </div>
@@ -376,16 +389,12 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                 <Combo items={state._plugIns} cls='custom-textarea-sm' name='plugIn' onChange={updateField} value={state.plugIn || ''} />
                             </div>
                             <div className='form-group'>
-                                <label>{RESX.modal.add.option1.label.connstr}</label>
-                                <textarea className='custom-textarea form-control form-control-sm' name='connectionString' rows={4} onChange={updateField} value={state.connectionString || ''}></textarea>
-                            </div>
-                            <div className='form-group'>
-                                <label>Gateway ID (This is a leaf device)</label>
-                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='gatewayDeviceId' onChange={updateField} value={state.gatewayDeviceId || ''} />
+                                <label>{RESX.modal.add.option1.label.connstr} (GatewayHostName parameter supported)</label>
+                                <textarea placeholder="Enter a valid Device Connection String" className='custom-textarea form-control form-control-sm' name='connectionString' rows={4} onChange={updateField} value={state.connectionString || ''}></textarea>
                             </div>
                             <div className='form-group'>
                                 <label>{RESX.modal.add.option1.label.friendly_sm}</label>
-                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
+                                <input placeholder="This name is only for mock-devices. Device ID used if blank" autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
                             </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
@@ -397,7 +406,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <div className='m-tabbed-panel-form'>
                             <div className='form-group'>
                                 <label>{RESX.modal.add.option2.label.name}</label>
-                                <input className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} placeholder={RESX.modal.add.option2.label.name_placeholder} />
+                                <input placeholder="This name is only for mock-devices. Device ID used if blank" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} placeholder={RESX.modal.add.option2.label.name_placeholder} />
                             </div>
                             {deviceContext.ui.container ? null : <>
                                 <br />
@@ -422,7 +431,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                         <div className='m-tabbed-panel-form'>
                             <div className='form-group'>
                                 <label>{RESX.modal.add.option2.label.name}</label>
-                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
+                                <input placeholder="This name is only for mock-devices. Device ID used if blank" autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
                             </div>
                         </div>
                         <div className='m-tabbed-panel-footer'>
@@ -478,16 +487,16 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
 
                             <div className='form-group'>
                                 <label>DeviceID (Edge registration_id)</label><br />
-                                <input autoComplete="off" autoFocus={true} id="device-id" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} />
+                                <input placeholder="Enter a new or existing device id" autoComplete="off" autoFocus={true} id="device-id" className='form-control form-control-sm' type='text' name='deviceId' onChange={updateField} value={state.deviceId || ''} />
                             </div>
 
                             <div className='form-group'>
                                 <label>Scope ID (Edge scope_id)</label>
-                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
+                                <input placeholder="Enter the DPS scope ID" autoComplete="off" className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
                             </div>
                             <div className='form-group'>
                                 <label>SaS Key (Edge symmetric_Key)</label>
-                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
+                                <input placeholder="Enter Single or Group key" autoComplete="off" className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
                             </div>
                             <div className='form-group'>
                                 <label>{RESX.modal.add.option1.label.root}</label>
@@ -495,8 +504,8 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                             </div>
 
                             <div className='form-group'>
-                                <label>{RESX.modal.add.option1.label.friendly}</label>
-                                <input autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
+                                <label>mock-devices friendly name</label>
+                                <input placeholder="This name is only for mock-devices. Device ID used if blank" autoComplete="off" className='form-control form-control-sm' type='text' name='mockDeviceName' onChange={updateField} value={state.mockDeviceName || ''} />
                             </div>
 
                             <div className='form-group'>
@@ -537,7 +546,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                 </div>
                                 <div className='form-group'>
                                     <label>{RESX.modal.add.option1.label.dps}</label>
-                                    <input autoComplete="off" autoFocus={true} className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
+                                    <input placeholder="Enter the DPS scope ID" autoComplete="off" autoFocus={true} className='form-control form-control-sm' type='text' name='scopeId' onChange={updateField} value={state.scopeId || ''} />
                                 </div>
                                 <div className='form-group'>
                                     <label>{RESX.modal.add.option1.label.deviceQuick}</label><br />
@@ -545,7 +554,7 @@ export const AddDevice: React.FunctionComponent<any> = ({ handler }) => {
                                 </div>
                                 <div className='form-group'>
                                     <label>{RESX.modal.add.option1.label.sas}</label>
-                                    <input autoComplete="off" className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
+                                    <input placeholder="Enter Single or Group key" autoComplete="off" className='form-control form-control-sm' type='text' name='sasKey' onChange={updateField} value={state.sasKey || ''} />
                                 </div>
                                 <div className='form-group'>
                                     <label>{RESX.modal.add.option1.label.root}</label>

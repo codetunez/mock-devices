@@ -726,14 +726,13 @@ export class MockDevice {
         if (!this.running) { return; }
         try {
             this.iotHubDevice.client.open(async () => {
-                this.log(`IOT HUB ${this.device.configuration._kind === 'module' ? 'MODULE' : ''} CLIENT CONNECTED`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+                this.log(`IOT HUB CLIENT CONNECTED FOR THIS ${this.device.configuration._kind.toUpperCase()} MOCK DEVICE`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
 
                 this.registerDirectMethods();
                 if (this.device.configuration._kind !== 'module') {
                     this.registerC2D();
                 }
 
-                this.log('IOT HUB CLIENT CONNECTED', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
                 this.log(this.device.configuration.planMode ? 'PLAN MODE' : 'INTERACTIVE MODE', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
                 this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.CONNECTED);
 
@@ -977,11 +976,10 @@ export class MockDevice {
         }
     }
 
-    // EDGE
     connectClient(connectionString) {
         this.iotHubDevice = { client: undefined, hubName: undefined };
 
-        if (this.useSasMode) {
+        if (this.useSasMode && !this.device.configuration.gatewayHostEnabled) {
             const cn = ConnectionString.parse(connectionString);
 
             let sas: any = SharedAccessSignature.create(cn.HostName, cn.DeviceId, cn.SharedAccessKey, this.sasTokenExpiry);
@@ -995,13 +993,15 @@ export class MockDevice {
             this.iotHubDevice.client = clientFromConnectionString(connectionString);
             // store hub name
             this.iotHubDevice.hubName = ConnectionString.parse(connectionString).HostName;
+            if (this.device.configuration.gatewayHostEnabled) {
+                this.log(`DEVICE IS ATTEMPTING TO CONNECT THROUGH EDGE GATEWAY: ${this.device.configuration.gatewayHostName || 'ERR: HOST NAME IS MISSING'}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+            }
             this.log(`CONNECTING VIA CONN STRING`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
         }
         this.logStat(LOGGING_TAGS.STAT.CONNECTS);
         this.log(`DEVICE/MODULE AUTO RESTARTS EVERY ${this.RESTART_LOOP / 60000} MINUTES`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
     }
 
-    // EDGE
     dpsRegistration() {
         if (this.registrationConnectionString === 'init') { return; }
         if (this.dpsRetires === 0) { return; }
@@ -1038,8 +1038,8 @@ export class MockDevice {
                 return;
             }
             this.registrationConnectionString = 'HostName=' + result.assignedHub + ';DeviceId=' + result.deviceId + ';SharedAccessKey=' + transformedSasKey;
-            if (this.device.configuration._kind === 'leafDevice' || (this.device.configuration.gatewayDeviceId && this.device.configuration.gatewayDeviceId !== '')) {
-                this.registrationConnectionString += `;GatewayId=${this.device.configuration.gatewayDeviceId}`;
+            if (this.device.configuration._kind === 'leafDevice' || (this.device.configuration.gatewayHostName && this.device.configuration.gatewayHostName !== '')) {
+                this.registrationConnectionString += `;GatewayHostName=${this.device.configuration.gatewayHostName}`;
             }
             this.log('DEVICE REGISTRATION SUCCESS', LOGGING_TAGS.CTRL.DPS, LOGGING_TAGS.LOG.OPS);
             this.logCP(LOGGING_TAGS.CTRL.DPS, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.SUCCESS);

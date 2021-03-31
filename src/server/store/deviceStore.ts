@@ -508,8 +508,8 @@ export class DeviceStore {
 
         try {
 
-            // if there is a gateway device i.e. this device is a module or leaf device start the gateway
-            if (device.configuration.gatewayDeviceId && (device.configuration._kind === 'module' || device.configuration._kind === 'leafDevice')) {
+            // If this is a leaf device or module, ensure the host Edge device is started too
+            if (!device.configuration.gatewayHostEnabled && (device.configuration._kind === 'module' || device.configuration._kind === 'leafDevice')) {
                 const gatewayDevice: MockDevice = this.runners[device.configuration.gatewayDeviceId];
                 if (gatewayDevice.getControlStatus() === LOGGING_TAGS.LOG.EV.OFF) {
                     const gd = this.store.getItem(device.configuration.gatewayDeviceId);
