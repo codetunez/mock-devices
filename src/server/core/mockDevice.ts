@@ -22,7 +22,6 @@ import * as Crypto from 'crypto';
 import * as _ from 'lodash';
 import { PlugIn } from '../interfaces/plugin';
 import { Registry } from 'azure-iothub';
-import { over } from 'lodash';
 
 export const LOGGING_TAGS = {
     CTRL: {
@@ -209,6 +208,8 @@ export class MockDevice {
     private firstSendMins: string;
 
     private plugIn: PlugIn = undefined;
+
+    private haveTwin: boolean = false;
 
     constructor(device: Device, messageService, plugIn: PlugIn) {
         if (device.configuration._kind === 'template') { return; }
@@ -747,12 +748,27 @@ export class MockDevice {
                     }
                 }
 
+                // This is a temp hack. The device SDK swallows the exception if the twin cannot be created. The only
+                // scenario this happens is when the device is connecting as a leaf device through an Edge hub and this
+                // machine does not trust the edge machine. Certs need to be installed in both places
+                this.log(`ATTEMPTING TO FETCH TWIN (30 SECONDS CHECK)`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+                setTimeout(() => {
+                    if (!this.haveTwin) {
+                        this.log(`FAILED TO FETCH CREATE AFTER 30 SECONDS. DEVICE IS LIKELY CONFIGURED AS A LEAF WITHOUT TRUSTED CERTS ON THIS MACHINE. SHUTTING DOWN`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+                        this.stop();
+                    }
+                }, 30000)
+
                 this.iotHubDevice.client.getTwin((err, twin) => {
 
                     if (err) {
-                        this.log('IOT HUB TWIN REQUEST FAILED. CLIENT IN BAD STATE', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+                        this.log('TWIN FETCH RETURNED ERROR. CLIENT IN BAD STATE. SHUTTING DOWN', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
                         this.stop();
+                        return;
                     }
+
+                    this.haveTwin = true;
+                    this.log(`TWIN SUCCESSFULLY FETCHED`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
 
                     // desired properties are cached
                     twin.on('properties.desired', ((delta) => {
@@ -792,7 +808,7 @@ export class MockDevice {
                         this.twinRLPayloadAdditions = <ValueByIdPayload>{};
                         this.twinRLStartUp = [];
                     }, 1000);
-                })
+                });
 
                 this.msgRLTimer = setInterval(() => {
                     let payload: ValueByIdPayload = null;
