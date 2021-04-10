@@ -287,7 +287,7 @@ export default function (deviceStore: DeviceStore) {
                 return;
             }
 
-            const rename = !updatePayload.mockDeviceName ? createId : updatePayload.mockDeviceName === '' ? createId : count > 1 ? updatePayload.mockDeviceName + '-' + count : updatePayload.mockDeviceName;
+            const rename = !updatePayload.mockDeviceName ? createId : updatePayload.mockDeviceName === '' ? createId : count > 1 ? updatePayload.mockDeviceName + '-' + (i + 1) : updatePayload.mockDeviceName;
             d._id = createId;
             d.configuration = JSON.parse(JSON.stringify(updatePayload));
             d.configuration.mockDeviceName = rename;

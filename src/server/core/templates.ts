@@ -58,6 +58,8 @@ export function DCMtoMockDevice(deviceStore: DeviceStore, templateDevice: Device
 
         const componentCache = {};
         let modules = [];
+        let nameFound: boolean = false;
+
         for (const document of dcm) {
             if (document['@context'] && document['@context'].indexOf('dtmi:dtdl:context;2') > 0 && document.contents) {
 
@@ -79,8 +81,11 @@ export function DCMtoMockDevice(deviceStore: DeviceStore, templateDevice: Device
                     }
                 }
 
-                templateDevice.configuration.mockDeviceName = document.displayName ? (document.displayName.en || document.displayName) : 'DCM has no display name';
-                templateDevice.configuration.capabilityUrn = document['@id'];
+                if (!nameFound) {
+                    templateDevice.configuration.mockDeviceName = document.displayName ? (document.displayName.en || document.displayName) : 'DCM has no display name';
+                    templateDevice.configuration.capabilityUrn = document['@id'];
+                    nameFound = true;
+                }
 
                 document.contents.forEach((capability: any) => {
                     if (capability['@type'] === 'Component') {
