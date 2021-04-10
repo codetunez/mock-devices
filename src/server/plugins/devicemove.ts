@@ -1,7 +1,7 @@
 import { PlugIn } from '../interfaces/plugin'
 
 // This class name is used in the device configuration and UX
-export class Increment implements PlugIn {
+export class DeviceMove implements PlugIn {
 
     // Sample code
     private devices = {};
@@ -9,7 +9,7 @@ export class Increment implements PlugIn {
     private deviceConfigurationCallbacks = {};
 
     // this is used by the UX to show some information about the plugin
-    public usage: string = "This is a sample plugin that will provide an integer that increments by 1 on every loop or manual send. Acts on the device for all capabilities"
+    public usage: string = "This is a sample plugin that implements IDeviceMove"
 
     // this is called when mock-devices first starts. time hear adds to start up time
     public initialize = () => {
@@ -42,16 +42,16 @@ export class Increment implements PlugIn {
 
     // this is called during the loop cycle for a given capability or if Send is pressed in UX
     public propertyResponse = (deviceId: string, capability: any, payload: any) => {
-        if (Object.getOwnPropertyNames(this.devices[deviceId]).indexOf(capability._id) > -1) {
-            this.devices[deviceId][capability._id] = this.devices[deviceId][capability._id] + 1;
-        } else {
-            this.devices[deviceId][capability._id] = 0;
-        }
-        return this.devices[deviceId][capability._id];
+        return undefined;
     }
 
     // this is called when the device is sent a C2D Command or Direct Method
-    public commandResponse = (deviceId: string, capability: any) => {
+    public commandResponse = (deviceId: string, capability: any, payload: any) => {
+        if (capability.name === 'DeviceMove') {
+            this.deviceConfigurations[deviceId].scopeId = payload;
+            this.deviceConfigurationCallbacks[deviceId](this.deviceConfigurations[deviceId]);
+            return true;
+        }
         return undefined;
     }
 

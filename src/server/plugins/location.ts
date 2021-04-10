@@ -77,6 +77,8 @@ export class Location implements PlugIn {
 
     // Sample code
     private devices = {};
+    private deviceConfigurations = {};
+    private deviceConfigurationCallbacks = {};
 
     // this is used by the UX to show some information about the plugin
     public usage: string = "This is a sample plugin that will provide a geopoint on every call for any capability called location. Geopoint can be sent via the payload. Device/Capability combination is honored"
@@ -92,10 +94,12 @@ export class Location implements PlugIn {
     }
 
     // this is called when a device is added or it's configuration has changed i.e. one of the capabilities has changed
-    public configureDevice = (deviceId: string, running: boolean) => {
+    public configureDevice = (configuration: any, cb: any, running: boolean) => {
         if (!running) {
-            this.devices[deviceId] = {};
+            this.devices[configuration.deviceId] = {};
         }
+        this.deviceConfigurations[configuration.deviceId] = configuration;
+        this.deviceConfigurationCallbacks[configuration.deviceId] = cb;
     }
 
     // this is called when a device has gone through dps/hub connection cycles and is ready to send data

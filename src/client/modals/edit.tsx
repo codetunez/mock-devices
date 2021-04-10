@@ -10,10 +10,13 @@ import { Combo, Json } from '../ui/controls';
 export const Edit: React.FunctionComponent<any> = ({ handler, index }) => {
 
     const deviceContext: any = React.useContext(DeviceContext);
-    const [updatePayload, setPayload] = React.useState<any>(deviceContext.device.configuration || {})
     const [json, setJson] = React.useState({ simulation: {} });
     const [error, setError] = React.useState<any>('');
     const [position, setPosition] = React.useState<any>(index + 1);
+
+    React.useEffect(() => {
+        deviceContext.getDevice(deviceContext.device.configuration.deviceId);
+    }, [])
 
     const updateDeviceConfiguration = () => {
         deviceContext.updateDeviceConfiguration(json);
@@ -46,7 +49,7 @@ export const Edit: React.FunctionComponent<any> = ({ handler, index }) => {
                     <h4>{RESX.modal.edit.title1}</h4>
                     <p>{RESX.modal.edit.text1}</p>
                     <div className="editor">
-                        <Json json={updatePayload} cb={(text: any) => { updateField(text) }} err={() => setError(RESX.modal.error_json)} />
+                        <Json json={deviceContext.device.configuration || {}} cb={(text: any) => { updateField(text) }} err={() => setError(RESX.modal.error_json)} />
                     </div>
                     <br />
                     <button title={RESX.modal.edit.update1_title} className='btn btn-primary' onClick={() => updateDeviceConfiguration()}>{RESX.modal.edit.update1_label}</button>

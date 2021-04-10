@@ -124,7 +124,7 @@ export class DeviceStore {
         d.configuration.deviceId = d._id;
 
         this.store.setItem(d, d._id);
-        let md = new MockDevice(d, this.messageService, this.resolvePlugin(d, this.plugIns));
+        let md = new MockDevice(d, this.messageService, this.resolvePlugin(d, this.plugIns), this.updateDeviceConfiguration.bind(this));
         this.runners[d._id] = md;
 
         for (const module of modules) {
@@ -237,7 +237,7 @@ export class DeviceStore {
 
         // if edge, also re-add its modules
         //TODO: needed for modules?
-        let md = new MockDevice(d, this.messageService, this.resolvePlugin(d, this.plugIns));
+        let md = new MockDevice(d, this.messageService, this.resolvePlugin(d, this.plugIns), this.updateDeviceConfiguration.bind(this));
         this.runners[d._id] = md;
 
         return newId;
@@ -678,7 +678,7 @@ export class DeviceStore {
         if (!items) { return; }
         this.store.createStoreFromArray(items);
         for (const index in items) {
-            let rd = new MockDevice(items[index], this.messageService, this.resolvePlugin(items[index], this.plugIns));
+            let rd = new MockDevice(items[index], this.messageService, this.resolvePlugin(items[index], this.plugIns), this.updateDeviceConfiguration.bind(this));
             this.runners[items[index]._id] = rd;
         }
     }
@@ -697,6 +697,13 @@ export class DeviceStore {
             let rd: MockDevice = this.runners[devices[index]._id];
             if (rd) { rd.updateDevice(devices[index], false); }
         }
+    }
+
+    // BETA - This should only be called when the device has its configuration updated by the device itself.
+    private updateDeviceConfiguration(configuration: any) {
+        const device: Device = this.store.getItem(configuration.deviceId);
+        device.configuration = configuration;
+        this.store.setItem(device, device._id);
     }
 
     // BETA

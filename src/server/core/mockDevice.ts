@@ -210,10 +210,13 @@ export class MockDevice {
 
     private plugIn: PlugIn = undefined;
 
-    constructor(device: Device, messageService, plugIn: PlugIn) {
+    private datastoreConfigCb = null;
+
+    constructor(device: Device, messageService, plugIn: PlugIn, configUpdateCb: any) {
         if (device.configuration._kind === 'template') { return; }
         this.messageService = messageService;
         this.plugIn = plugIn;
+        this.datastoreConfigCb = configUpdateCb;
         this.initialize(device);
     }
 
@@ -287,9 +290,24 @@ export class MockDevice {
             this.log('DEVICE/MODULE UPDATE ERROR. CONNECTION STRING HAS CHANGED. DELETE DEVICE', LOGGING_TAGS.CTRL.DEV, LOGGING_TAGS.LOG.OPS);
         } else {
             this.device = Object.assign({}, device);
-            if (this.plugIn) { this.plugIn.configureDevice(this.device.configuration.deviceId, this.running); }
+            if (this.plugIn) {
+                this.plugIn.configureDevice(this.device.configuration, this.updateDeviceConfiguration.bind(this), this.running);
+            }
             this.reconfigDeviceDynamically(valueOnlyUpdate);
         }
+    }
+
+    // this is a local change and will not change the datastore copy
+    updateDeviceConfiguration(configuration: any) {
+        this.log(`DEVICE CONFIGURATION UPDATE REQUEST. DEVICE WILL SHUTDOWN AND RESTART AFTER 5 SECS`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
+        setTimeout(() => {
+            this.stop();
+            this.device.configuration = configuration;
+            this.datastoreConfigCb(configuration);
+            setTimeout(() => {
+                this.start(undefined);
+            }, 5000)
+        }, 5000);
     }
 
     getRunningStatus() {
@@ -733,7 +751,6 @@ export class MockDevice {
                     this.registerC2D();
                 }
 
-                this.log('IOT HUB CLIENT CONNECTED', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
                 this.log(this.device.configuration.planMode ? 'PLAN MODE' : 'INTERACTIVE MODE', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS);
                 this.logCP(LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.CONNECTED);
 
@@ -961,9 +978,10 @@ export class MockDevice {
             this.iotHubDevice.client[clientMethodKey](key, (request, response) => {
                 const method: Method = this.device.comms[this.resolversCollection.nameDmToCommIndex[key]];
                 const methodPayload = JSON.parse(method.payload || {});
+                const requestPayload = request.payload;
 
-                this.log(`${request.methodName} : ${request.payload ? JSON.stringify(request.payload) : '<NO PAYLOAD>'}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.DATA.METH, LOGGING_TAGS.DATA.RECV, 'DIRECT METHOD REQUEST AND PAYLOAD');
-                Object.assign(this.receivedMethodParams, { [method._id]: { date: new Date().toUTCString(), payload: request.payload } });
+                this.log(`${request.methodName} : ${requestPayload ? JSON.stringify(requestPayload) : '<NO PAYLOAD>'}`, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.DATA.METH, LOGGING_TAGS.DATA.RECV, 'DIRECT METHOD REQUEST AND PAYLOAD');
+                Object.assign(this.receivedMethodParams, { [method._id]: { date: new Date().toUTCString(), payload: requestPayload } });
 
                 // this response is the payload of the device
                 response.send((parseInt(method.status)), methodPayload, (err) => {
@@ -971,7 +989,14 @@ export class MockDevice {
                     this.logStat(LOGGING_TAGS.STAT.COMMANDS);
                     this.messageService.sendAsLiveUpdate(this.device._id, { [method._id]: new Date().toUTCString() });
 
-                    this.sendMethodResponse(method);
+                    let res = null;
+                    if (this.plugIn) {
+                        res = this.plugIn.commandResponse(this.device.configuration.deviceId, method, requestPayload);
+                    }
+
+                    if (res === undefined) {
+                        this.sendMethodResponse(method);
+                    }
                 })
             });
         }
@@ -1026,6 +1051,7 @@ export class MockDevice {
         let provisioningClient = ProvisioningDeviceClient.create('global.azure-devices-provisioning.net', config.scopeId, new MqttDps(), provisioningSecurityClient);
 
         provisioningClient.setProvisioningPayload(dpsPayload);
+        this.log('CONNECTING TO ' + config.scopeId, LOGGING_TAGS.CTRL.DPS, LOGGING_TAGS.LOG.OPS);
         this.log('WAITING FOR REGISTRATION', LOGGING_TAGS.CTRL.DPS, LOGGING_TAGS.LOG.OPS);
         this.logCP(LOGGING_TAGS.CTRL.DPS, LOGGING_TAGS.LOG.OPS, LOGGING_TAGS.LOG.EV.TRYING);
         provisioningClient.register((err: any, result) => {
