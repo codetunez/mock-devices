@@ -17,7 +17,7 @@ export const RESX = {
         "title": "Select Devices, Stats, Add/Save or Connect from the menu on the left"
     },
     "nav": {
-        "stats": ["STATS", "See the current send/receive/power usage statistics for each device"],
+        "stats": ["DASHBOARD", "See the current send/receive/power usage statistics for each device"],
         "devices": ["DEVICES", "See the list of devices, modules and templates"],
         "file": ["ADD/SAVE", "Create a new mock devices, templates or modules. Load/Save the current state of mock-devices"],
         "connect": ["CONNECT", "Connect to a Central application or IoT Hub, use a template and create a mock-device"],
