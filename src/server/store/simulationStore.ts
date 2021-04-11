@@ -59,14 +59,14 @@ export class SimulationStore {
                 "latitude": 47.608013,
                 "longitude": -122.335167,
                 "altitude": 100,
-                "radius": 20000
+                "radius": 30000
             }, // Seattle - US West Coast
             {
                 "latitude": 39.8952663456671,
                 "longitude": -169.80377348147474,
-                "altitude": 100,
-                "radius": 500000
-            }, // Atalantic - Ocean
+                "altitude": 0,
+                "radius": 1500000
+            }, // Atlantic - Ocean
             {
                 "latitude": 40.736291221818526,
                 "longitude": -74.17785632140426,
@@ -77,8 +77,14 @@ export class SimulationStore {
                 "latitude": 47.37358185559139,
                 "longitude": 8.5511341111357,
                 "altitude": 100,
-                "radius": 50000
+                "radius": 90000
             }, // Zurich - Europe
+            {
+                "latitude": 33.533965950364625,
+                "longitude": -43.060207013303,
+                "altitude": 0,
+                "radius": 1500000
+            }, // Pacific - Ocean
         ],
         "colors": {
             "Default": "#333",
