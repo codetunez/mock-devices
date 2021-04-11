@@ -79,7 +79,7 @@ export class Location implements PlugIn {
     private devices = {};
 
     // this is used by the UX to show some information about the plugin
-    public usage: string = "This is a sample plugin that will provide a geopoint on every call for any capability called location. Geopoint can be sent via the payload. Device/Capability combination is honored"
+    public usage: string = "This is a sample plugin that will provide a Geopoint on every call for any capability called location. Geopoint can be sent via the payload. Device/Capability combination is honored"
 
     // this is called when mock-devices first starts. time hear adds to start up time
     public initialize = () => {

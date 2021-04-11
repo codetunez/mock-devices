@@ -1,45 +1,30 @@
 var classNames = require('classnames');
 const cx = classNames.bind(require('./dashboard.scss'));
-import { StatsContext } from '../context/statsContext';
 import * as React from 'react';
 import { RESX } from '../strings';
-import { Link } from 'react-router-dom'
+import { Stats } from './stats';
+import { Grid } from './grid';
 
 export const Dashboard: React.FunctionComponent = () => {
 
-    function dom(stats) {
-        const dom = []
-        for (const item in stats) {
-            const dom2 = [];
-            for (const item2 in stats[item]) {
-                const lbl = RESX.UI.STATS[item2] || item2
-                dom2.push(<div className={'tile-field'}>
-                    <div>{lbl}</div>
-                    <div>{stats[item][item2] || RESX.dashboard.nodata}</div>
-                </div>);
-            }
-            dom.push(<div className='tile'>
-                <div className='header'><Link to={'/devices/' + item}>{item}</Link></div>
-                <div className='body'>{dom2}</div>
-            </div>);
-        }
-        return dom;
-    }
+    const [type, setType] = React.useState(0);
 
-    return <StatsContext.Consumer>
-        {(state: any) => (
-            <div className='dashboard'>
-                {state.stats && Object.keys(state.stats).length === 0 ? <div className='waiting'>{RESX.dashboard.waiting}</div> :
-                    <>
-                        <div className='toolbar'>
-                            <div className='section-title'>{RESX.dashboard.title}</div>
-                        </div>
-                        <div className='content'>
-                            <div className='tile-host'>{dom(state.stats)}</div>
-                        </div>
-                    </>
-                }
+    return <div className='dashboard'>
+        <div className='dashboard-toolbar'>
+            <div className='btn-group' role='group' >
+                <button className={cx('btn btn-sm', type === 0 ? 'btn-light' : 'btn-outline-light')}
+                    title={RESX.dashboard.title_titles[0]}
+                    type='button'
+                    onClick={() => { setType(0) }} >{RESX.dashboard.title[0]}</button>
+                <button className={cx('btn btn-sm', type === 1 ? 'btn-light' : 'btn-outline-light')}
+                    title={RESX.dashboard.title_titles[1]}
+                    type='button'
+                    onClick={() => { setType(1) }} >{RESX.dashboard.title[1]}</button>
             </div>
-        )}
-    </StatsContext.Consumer>
+        </div>
+        <div className='dashboard-content'>
+            {type === 0 ? <Grid /> : null}
+            {type === 1 ? <Stats /> : null}
+        </div>
+    </div>
 }
