@@ -44,15 +44,15 @@ export const LOGGING_TAGS = {
     LOG: {
         OPS: 'PROC',
         EV: {
-            ON: 'ON',
             OFF: 'OFF',
-            INIT: 'INIT',
-            SUCCESS: 'SUCCESS',
-            CONNECTED: 'CONNECTED',
-            TRYING: 'TRYING',
-            ERROR: 'ERROR',
+            WAITING: 'WAITING',
             DELAY: 'DELAY',
-            WAITING: 'WAITING'
+            ON: 'ON',
+            TRYING: 'TRYING',
+            SUCCESS: 'SUCCESS',
+            INIT: 'INIT',
+            CONNECTED: 'CONNECTED',
+            ERROR: 'ERROR',
         },
     },
     MSG: {

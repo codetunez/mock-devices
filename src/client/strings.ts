@@ -502,7 +502,8 @@ export const RESX = {
         "erase_title": "Clear the logging window",
     },
     "dashboard": {
-        "title": "STATISTICS",
+        "title": ["POWER GRID", "METERS & METRICS"],
+        "title_titles": ["View the full set of devices' current power status", "Get information on the devices' telemetry counts and averages"],
         "waiting": "Waiting for data fetch ...",
         "nodata": "No Data"
     },
