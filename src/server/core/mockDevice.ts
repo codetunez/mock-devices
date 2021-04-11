@@ -1072,6 +1072,10 @@ export class MockDevice {
                     }
                     // the small setTimeout here is to ease a little spamming
                     setTimeout(() => {
+                        if (!this.iotHubDevice.client) {
+                            this.log('CLIENT HAS ALREADY CLOSED. ABANDONING MSG', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.TWIN, LOGGING_TAGS.DATA.SEND);
+                            return;
+                        }
                         twin.properties.reported.update(data, ((err) => {
                             this.log(JSON.stringify(data), LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.TWIN, LOGGING_TAGS.DATA.SEND, sub);
                             this.logStat(LOGGING_TAGS.STAT.TWIN.COUNT);
@@ -1099,6 +1103,10 @@ export class MockDevice {
                     if (c != "_root") { msg.properties.add('$.sub', c); sub = c; }
                     // the small setTimeout here is to ease a little spamming
                     setTimeout(() => {
+                        if (!this.iotHubDevice.client) {
+                            this.log('CLIENT HAS ALREADY CLOSED. ABANDONING MSG', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.MSG, LOGGING_TAGS.DATA.SEND);
+                            return;
+                        }
                         this.iotHubDevice.client.sendEvent(msg, ((err) => {
                             this.log(data, LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.MSG.MSG, LOGGING_TAGS.DATA.SEND, sub);
                             this.logStat(LOGGING_TAGS.STAT.MSG.COUNT);
