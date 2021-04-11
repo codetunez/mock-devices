@@ -42,8 +42,8 @@ Basic help is available inside the application
 ### v10 Update
 - Azure IoT Edge Transparent Gateway and Identity Protocol support. The simulation runs on the mock-devices engine and therefore virtual machines or docker are not required to simulate these two Edge scenarios. The following is supported...
 
-  1. Simulate the actual Edge device and have it send and receive telemetry/twin/commands 
-  2. Simulate leaf devices that will auto attach to the Edge parent device
+  1. Simulate an Edge device and have it send and receive telemetry/twin/commands 
+  2. Simulate leaf devices that can auto attach to the Edge parent device
   2. Simulate any number of Modules for the Edge device and use Plugins for inter module communication
   4. Simulate multiple Edge devices (and their children) at the same time
   5. Use single or group DPS enrollment credentials for the Edge device and modules
