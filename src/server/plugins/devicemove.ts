@@ -22,9 +22,9 @@ export class DeviceMove implements PlugIn {
     }
 
     // this is called when a device is added or it's configuration has changed i.e. one of the capabilities has changed
-    public configureDevice = (configuration: any, cb: any, running: boolean) => {
+    public configureDevice = (deviceId: string, running: boolean, configuration: any, cb: any) => {
         if (!running) {
-            this.devices[configuration.deviceId] = {};
+            this.devices[deviceId] = {};
         }
         this.deviceConfigurations[configuration.deviceId] = configuration;
         this.deviceConfigurationCallbacks[configuration.deviceId] = cb;
