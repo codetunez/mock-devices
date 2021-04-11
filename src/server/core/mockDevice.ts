@@ -291,7 +291,7 @@ export class MockDevice {
         } else {
             this.device = Object.assign({}, device);
             if (this.plugIn) {
-                this.plugIn.configureDevice(this.device.configuration, this.updateDeviceConfiguration.bind(this), this.running);
+                this.plugIn.configureDevice(this.device.configuration.deviceId, this.running, this.device.configuration, this.updateDeviceConfiguration.bind(this));
             }
             this.reconfigDeviceDynamically(valueOnlyUpdate);
         }
@@ -991,7 +991,11 @@ export class MockDevice {
 
                     let res = null;
                     if (this.plugIn) {
-                        res = this.plugIn.commandResponse(this.device.configuration.deviceId, method, requestPayload);
+                        try {
+                            res = this.plugIn.commandResponse(this.device.configuration.deviceId, method, requestPayload);
+                        } catch (err) {
+                            this.log(err ? err.toString() : 'PLUGIN COMMAND RESPONSE ERROR', LOGGING_TAGS.CTRL.HUB, LOGGING_TAGS.DATA.METH, LOGGING_TAGS.DATA.SEND);
+                        }
                     }
 
                     if (res === undefined) {
