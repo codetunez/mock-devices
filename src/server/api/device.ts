@@ -5,7 +5,7 @@ import { DCMtoMockDevice } from '../core/templates';
 import * as Utils from '../core/utils';
 import { Config } from '../config';
 import uuid = require('uuid');
-import { DtdlStore } from '../store/DtdlStore';
+import { DtdlStore } from '../store/dtdlStore';
 
 export default function (deviceStore: DeviceStore) {
     let api = Router();
