@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { DtdlStore } from '../store/DtdlStore'
+import { DtdlStore } from '../store/dtdlStore'
 
 export default function (dtdlStore: DtdlStore) {
     let api = Router();
