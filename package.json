@@ -45,7 +45,7 @@
     "markdown-loader": "^6.0.0",
     "mini-css-extract-plugin": "^0.6.0",
     "morgan": "^1.9.1",
-    "node-sass": "^4.12.0",
+    "node-sass": "^7.0.0",
     "qrcode-reader": "^1.0.4",
     "random-location": "^1.1.2",
     "random-words": "^1.1.0",
