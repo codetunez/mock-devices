@@ -40,7 +40,7 @@
     "file-loader": "^6.0.0",
     "is-docker": "^2.0.0",
     "jimp": "^0.16.1",
-    "jsoneditor": "^9.0.0",
+    "jsoneditor": "^9.5.6",
     "lodash": "^4.17.21",
     "markdown-loader": "^6.0.0",
     "mini-css-extract-plugin": "^0.6.0",
